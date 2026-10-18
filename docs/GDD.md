@@ -116,7 +116,7 @@ On emprunte des **sensations et principes**, jamais des noms, personnages, logos
 - **Gravité personnalisée** (pas la gravité globale d'Unity) pour supporter planètes et anomalies.
 - **Lentille gravitationnelle** : passe plein écran (Custom Pass HDRP / Fullscreen Shader Graph).
 - **Git + Git LFS** pour les assets lourds.
-- Cible matérielle : Mac Apple Silicon (à confirmer) + PC.
+- Cible matérielle : PC Windows (DirectX 12) en priorité.
 
 ## 10. Roadmap (24 phases)
 
@@ -158,7 +158,7 @@ On emprunte des **sensations et principes**, jamais des noms, personnages, logos
 
 ## 11. Questions ouvertes
 
-- Unity 6 est-il installé ? Quel Mac (Apple Silicon M1/M2/M3/M4 ou Intel) ?
-  → HDRP fonctionne sur Apple Silicon via Metal, mais certaines fonctions (ray tracing) ne sont pas disponibles sur Mac.
+- Unity 6 est-il installé ? Quelle carte graphique (NVIDIA RTX, AMD, autre) ?
+  → Sur PC avec une carte RTX, HDRP peut activer le ray tracing (reflets, ombres, illumination globale).
 - Génération des planètes : manuelle, procédurale ou hybride ?
 - Jusqu'où pousser le réalisme physique (relativité « crédible » ou « exacte ») ?

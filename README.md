@@ -2,11 +2,11 @@
 
 Jeu coop en monde ouvert, axé sur l'émerveillement et le mystère. Voir [`docs/GDD.md`](docs/GDD.md).
 
-## Mise en route (Mac)
+## Mise en route (PC Windows)
 
-1. Installer **Unity Hub**, puis **Unity 6 (6000.x LTS)** avec le module *Mac Build Support*.
-2. Installer Git LFS : `brew install git-lfs && git lfs install`.
-3. Cloner ce dépôt.
+1. Installer **Unity Hub**, puis **Unity 6 (6000.x LTS)** avec le module *Windows Build Support (IL2CPP)*.
+2. Installer **Git for Windows** (https://git-scm.com) — Git LFS est inclus — puis, dans un terminal : `git lfs install`.
+3. Cloner ce dépôt (ou utiliser GitHub Desktop).
 4. Dans Unity Hub : **New project → High Definition 3D (HDRP)**, et choisir **ce dossier** comme emplacement
    (Unity ajoutera `ProjectSettings/`, `Packages/` et complétera `Assets/` sans toucher à `Assets/_Projet/`).
 5. Package Manager : installer **Cinemachine** et **Netcode for GameObjects**.
