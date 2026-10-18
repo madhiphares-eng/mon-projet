@@ -76,7 +76,7 @@ Shader "FullScreen/LentilleGravitationnelle"
         Tags { "RenderPipeline" = "HDRenderPipeline" }
         Pass
         {
-            Name "Lentille"
+            Name "Custom Pass 0"
             ZWrite Off
             ZTest Always
             Blend Off
