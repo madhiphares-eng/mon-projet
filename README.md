@@ -2,6 +2,16 @@
 
 Jeu coop en monde ouvert, axé sur l'émerveillement et le mystère. Voir [`docs/GDD.md`](docs/GDD.md).
 
+## Installation rapide (PC Windows)
+
+Dans PowerShell, lancer **deux fois** (avant et après avoir créé le projet HDRP `EchosEther` dans `C:\Projets` avec Unity Hub) :
+
+```powershell
+irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/installer.ps1 | iex
+```
+
+La relancer plus tard met à jour les scripts et la documentation du jeu.
+
 ## Mise en route (PC Windows)
 
 1. Installer **Unity Hub**, puis **Unity 6 (6000.x LTS)** avec le module *Windows Build Support (IL2CPP)*.
