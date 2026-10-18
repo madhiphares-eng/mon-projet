@@ -27,4 +27,20 @@ Scripts dans `Assets/_Projet/Scripts/Physique/` :
 2. Capsule posée dessus → Rigidbody + `CorpsGravitationnel`.
 3. Objet vide « TrouNoir » loin dans le ciel → référencé par `DilatationTemporelle` sur la capsule.
 4. Ciel : *Volume → Physically Based Sky* + *Volumetric Clouds* + *Fog* volumétrique.
-5. Prochaine étape : passe plein écran (Custom Pass HDRP) pour la **lentille gravitationnelle** autour du trou noir.
+
+### Lentille gravitationnelle (déformation du ciel)
+
+Fichiers : `Assets/_Projet/Shaders/LentilleGravitationnelle.shader` + `Assets/_Projet/Scripts/Rendu/TrouNoir.cs`.
+
+1. Sur l'objet « TrouNoir » : ajouter le composant **TrouNoir** (rayonSchwarzschild = même valeur que dans `DilatationTemporelle`).
+2. Clic droit dans le dossier Shaders → *Create → Material*, nommé `M_Lentille`, shader **FullScreen/LentilleGravitationnelle**.
+3. Dans la scène : *GameObject → Volume → Custom Pass*. Dans l'Inspector :
+   - **Injection Point** : *Before Post Process* (pour que le bloom fasse briller l'anneau) ;
+   - *Add → FullScreenCustomPass* ;
+   - **FullScreen Material** : `M_Lentille` ;
+   - **Fetch Color Buffer** : ✅ coché (obligatoire, sinon écran noir ou image figée).
+4. Placer le trou noir loin dans le ciel (ex. 20 000 unités) et regarder vers lui : le ciel et les étoiles se tordent autour d'une ombre noire cerclée de lumière.
+5. Réglages à essayer : `forceDeviation` entre 1,5 et 3, `intensiteAnneau` entre 5 et 20.
+
+Limite connue du prototype : la déformation ne peut montrer que ce qui est déjà à l'écran (pas ce qui est derrière la caméra).
+Prochaine étape : le **disque d'accrétion** (anneau de matière lumineuse), qui deviendra aussi la source de lumière de la planète.

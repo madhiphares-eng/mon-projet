@@ -118,6 +118,22 @@ On emprunte des **sensations et principes**, jamais des noms, personnages, logos
 - **Git + Git LFS** pour les assets lourds.
 - Cible matérielle : PC Windows (DirectX 12) en priorité.
 
+### 9.1 Machine de développement : RTX 3060 12 Go
+Objectif : **1080p / 60 i/s** en qualité « Haute » et **1440p / 60 i/s** grâce à DLSS.
+
+| Fonction HDRP | Réglage sur RTX 3060 | Pourquoi |
+|---|---|---|
+| Nuages volumétriques | Activés, qualité moyenne à haute | Cœur de l'émerveillement, coût maîtrisé |
+| Brouillard volumétrique | Activé | Rayons de lumière du disque d'accrétion |
+| Physically Based Sky | Activé | Ciels de planètes réalistes |
+| Ray tracing — ombres | Soleil principal uniquement | Bon rapport beauté/coût |
+| Ray tracing — reflets | Désactivé par défaut, SSR à la place | Trop coûteux en monde ouvert |
+| Ray tracing — GI | Désactivé ; SSGI ou sondes APV | La 3060 ne tient pas le RTGI à 60 i/s |
+| DLSS | Activé (mode Qualité) | Gain de 30 à 50 % sur les cartes RTX |
+| Textures | Jusqu'à 4K sur les éléments proches | Les 12 Go de VRAM le permettent |
+
+La 3060 sert de **référence « config recommandée »** : si le jeu tourne bien dessus, il tournera bien chez la majorité des joueurs PC.
+
 ## 10. Roadmap (24 phases)
 
 ### Bloc A — Prototype de l'émerveillement
@@ -158,7 +174,6 @@ On emprunte des **sensations et principes**, jamais des noms, personnages, logos
 
 ## 11. Questions ouvertes
 
-- Unity 6 est-il installé ? Quelle carte graphique (NVIDIA RTX, AMD, autre) ?
-  → Sur PC avec une carte RTX, HDRP peut activer le ray tracing (reflets, ombres, illumination globale).
+- Unity 6 est-il installé ?
 - Génération des planètes : manuelle, procédurale ou hybride ?
 - Jusqu'où pousser le réalisme physique (relativité « crédible » ou « exacte ») ?
