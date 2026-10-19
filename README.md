@@ -54,3 +54,10 @@ Fichiers : `Assets/_Projet/Shaders/LentilleGravitationnelle.shader` + `Assets/_P
 
 Limite connue du prototype : la déformation ne peut montrer que ce qui est déjà à l'écran (pas ce qui est derrière la caméra).
 Prochaine étape : le **disque d'accrétion** (anneau de matière lumineuse), qui deviendra aussi la source de lumière de la planète.
+
+## Maquette jouable (navigateur)
+
+`maquette/echos-ether.html` : prototype WebGL (Three.js) de la Phase 1, publié comme Artifact claude.ai.
+Planète en relief à niveaux de détail, textures Poly Haven, modèles Kenney Space Kit (licence CC0, regroupés dans `maquette/modeles/kenney.json`),
+navette de largage et d'extraction, trou noir et lentille gravitationnelle, dilatation du temps, jauge de bruit et ver, cristaux d'Éther, monolithe.
+Pour tester en local : `python3 -m http.server` dans `maquette/`, puis ouvrir `http://localhost:8000/echos-ether.html` (ajouter `#debug` pour l'accès de test).

@@ -37,7 +37,7 @@ body {
 /* ---------- Écrans (accueil, pause, fin) ---------- */
 .ecran {
   position: fixed; inset: 0; z-index: 20;
-  display: flex; align-items: flex-end;
+  display: flex; align-items: flex-start;
   padding-block: max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -45,7 +45,9 @@ body {
   overflow-y: auto;
 }
 .ecran.centre { align-items: center; justify-content: center; background: rgba(6,7,12,.72); }
-.carte { display: grid; gap: 18px; max-width: 34rem; min-width: 0; }
+.carte { display: grid; gap: 18px; max-width: 34rem; min-width: 0; margin-top: auto; }   /* en bas s'il y a la place, défilable sinon */
+.ecran.centre .carte { margin-block: auto; }
+@media (max-height: 720px) { h1 { font-size: clamp(2.4rem, 7vw, 4.2rem); } .carte { gap: 12px; } }
 .surtitre { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--brume); margin: 0; }
 h1 {
   font-family: var(--f-titre); font-weight: 800; text-transform: uppercase;
@@ -163,9 +165,14 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
 #fin dt { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--brume); }
 #fin dd { margin: 0; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
 #fin .verite { font-family: var(--f-echo); font-style: italic; font-size: 1.3rem; line-height: 1.4; margin: 0; }
+#passer { position: absolute; right: max(14px, env(safe-area-inset-right, 0px)); top: max(14px, env(safe-area-inset-top, 0px)); color: var(--brume); font-size: 12px; background: var(--voile); border: 1px solid var(--filet); padding: 6px 10px; }
 #erreur { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: var(--encre); text-align: center; }
 @keyframes entree { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (max-width: 1000px) {
+  #aide { bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 66px); }
+}
 @media (max-width: 640px) {
+  #invite { top: 46%; }
   #temps { min-width: 0; }
   #objectifs { top: auto; bottom: 84px; right: max(14px, env(safe-area-inset-right, 0px)); max-width: 13rem; }
   #transmissions { bottom: 170px; }
@@ -195,6 +202,7 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
   <div id="transmissions" aria-live="polite"></div>
   <div id="echo" aria-live="polite"></div>
   <div id="marqueurs"></div>
+  <div id="passer" hidden><kbd>Espace</kbd> passer l'atterrissage</div>
   <div id="aide"><span><kbd>F</kbd> scanner</span><span><kbd>J</kbd> journal</span><span><kbd>M</kbd> son</span><span><kbd>Échap</kbd> pause</span></div>
 </div>
 
@@ -227,6 +235,8 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
       <button class="principal" id="btn-atterrir" type="button">Atterrir</button>
       <span class="note">Clavier et souris. Son au démarrage (<kbd>M</kbd> pour couper).</span>
     </div>
+    <p class="note" id="chargement">Génération de la planète…</p>
+    <p class="note">Modèles 3D : Space Kit de Kenney. Textures : Poly Haven. Licence CC0.</p>
     <p class="note note-tactile">Cette maquette se joue au clavier et à la souris, sur ordinateur.</p>
   </div>
 </div>
@@ -234,7 +244,7 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
 <div id="pause" class="ecran centre" hidden>
   <div class="carte">
     <p class="surtitre">Pause</p>
-    <h2>Le temps continue là-haut</h2>
+    <h2>Le temps est suspendu</h2>
     <p class="note">Rien ne s'écoule tant que le jeu est en pause, ni ici ni sur le vaisseau.</p>
     <div class="actions">
       <button class="principal" id="btn-reprendre" type="button">Reprendre</button>
@@ -261,8 +271,13 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
 
 <div id="erreur" hidden><p class="note">Cette maquette a besoin de WebGL 2. Essayez avec un navigateur récent sur ordinateur (Chrome, Edge, Firefox).</p></div>
 
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 // =====================================================================
 // Outils
@@ -312,81 +327,106 @@ function creerBruit(graine) {
            L(u, grad(p[AB + 1] & 15, x, y - 1, z - 1), grad(p[BB + 1] & 15, x - 1, y - 1, z - 1))));
   };
 }
-const bruit3 = creerBruit(7204);
-function fbm(x, y, z, octaves) {
+const bruitA = creerBruit(7204);
+const bruitB = creerBruit(1337);
+function fbm(b, x, y, z, octaves) {
   let s = 0, a = 0.5, f = 1;
-  for (let i = 0; i < octaves; i++) { s += a * bruit3(x * f, y * f, z * f); f *= 2.03; a *= 0.5; }
+  for (let i = 0; i < octaves; i++) { s += a * b(x * f, y * f, z * f); f *= 2.03; a *= 0.5; }
   return s;
-}
-
-// Direction sur la sphère : θ depuis le pôle de départ, φ autour de lui (degrés)
-function dirSph(theta, phi) {
-  const t = THREE.MathUtils.degToRad(theta), f = THREE.MathUtils.degToRad(phi);
-  return new V3(Math.sin(t) * Math.cos(f), Math.cos(t), Math.sin(t) * Math.sin(f)).normalize();
 }
 
 // =====================================================================
 // Constantes de jeu
 // =====================================================================
-const R = 150;                 // rayon de la planète (m)
+const R = 300;                 // rayon de la planète (m)
 const GRAVITE = 18;            // m/s²
 const ECHELLE_TEMPS = 8;       // 1 s réelle = 8 s vécues
 const F_BASE = 1 / 72;         // dτ/dt : 1 h ici = 72 h sur le vaisseau
 const QUOTA = 5;
-const DUREE_JOUR = 360;        // s réelles pour un tour complet du ciel
+const DUREE_JOUR = 420;        // s réelles pour un tour complet du ciel
 const BH_DIST = 4000;          // distance du trou noir
 const BH_OMBRE = 260;          // rayon apparent de l'ombre
 const BH_DIR0 = new V3(0.25, 0.45, -1).normalize();
 const AXE_CIEL = new V3(1, 0, 0);
 
-// Lieux importants
+// Direction sur la sphère à une distance au sol (m) du point de départ, dans la direction φ (degrés)
+function dirDist(distance, phi) {
+  const t = distance / R, f = THREE.MathUtils.degToRad(phi);
+  return new V3(Math.sin(t) * Math.cos(f), Math.cos(t), Math.sin(t) * Math.sin(f)).normalize();
+}
 const LIEUX = {
-  depart: dirSph(0, 0),
-  bulleA: dirSph(38, -62),     // bulle ralentie + monolithe
-  bulleB: dirSph(72, 105),     // bulle accélérée + écho d'Arpenteur
-  balise: dirSph(96, 200),     // extraction
+  depart: dirDist(0, 0),
+  camp: dirDist(75, 52),       // campement abandonné et épave
+  bulleA: dirDist(165, -62),   // bulle ralentie + monolithe
+  bulleB: dirDist(265, 105),   // bulle accélérée + écho d'Arpenteur
+  balise: dirDist(340, 200),   // extraction
 };
 const ZONES_PLATES = [
-  { d: LIEUX.depart, r: 0.09 }, { d: LIEUX.bulleA, r: 0.13 },
-  { d: LIEUX.bulleB, r: 0.11 }, { d: LIEUX.balise, r: 0.08 },
+  { d: LIEUX.depart, r: 24 / R }, { d: LIEUX.camp, r: 20 / R }, { d: LIEUX.bulleA, r: 26 / R },
+  { d: LIEUX.bulleB, r: 20 / R }, { d: LIEUX.balise, r: 18 / R },
 ];
 const CRISTAUX_DEF = [
-  [7, -90], [24, -18], [30, -135], [47, 38], [56, 172], [76, -104], [90, 12], [112, 128], [133, -32],
+  [26, -90], [70, -20], [95, -135], [130, 40], [170, 172], [205, -104], [240, 12], [300, 128], [380, -32],
 ];
 
 // Cratères, placés hors des zones importantes
 const CRATERES = (() => {
   const alea = mulberry32(99), liste = [];
   let essais = 0;
-  while (liste.length < 9 && essais++ < 400) {
+  while (liste.length < 14 && essais++ < 600) {
     const d = new V3(alea() * 2 - 1, alea() * 2 - 1, alea() * 2 - 1);
-    if (d.lengthSq() < 0.05) continue;
+    if (d.lengthSq() < 0.05 || d.lengthSq() > 1) continue;
     d.normalize();
-    const r = 0.05 + alea() * 0.09;
-    const loin = ZONES_PLATES.every((z) => d.angleTo(z.d) > z.r + r + 0.06) &&
-      CRISTAUX_DEF.every(([t, f]) => d.angleTo(dirSph(t, f)) > r + 0.04);
-    if (loin) liste.push({ x: d.x, y: d.y, z: d.z, r, p: 3 + alea() * 6 });
+    const r = 0.03 + alea() * 0.06;
+    const loin = ZONES_PLATES.every((z) => d.angleTo(z.d) > z.r + r + 0.03) &&
+      CRISTAUX_DEF.every(([t, f]) => d.angleTo(dirDist(t, f)) > r + 0.03);
+    if (loin) liste.push({ x: d.x, y: d.y, z: d.z, r, p: 4 + alea() * 9 });
   }
   return liste;
 })();
 
 // =====================================================================
-// Relief
+// Relief : montagnes, mesas en terrasses, canyons, mers de dunes, cratères, plaines de verre
 // =====================================================================
+const BIOME = { montagne: 0, plateau: 0, verre: 0 };   // rempli par hauteurBrute (évite les allocations)
+const DIR_DUNES = new V3(0.8, 0.2, 0.55).normalize();
 function hauteurBrute(x, y, z) {
-  const c = fbm(x * 1.6 + 11.3, y * 1.6 - 4.1, z * 1.6 + 2.7, 4);
-  const relief = lisse(-0.02, 0.32, c);
-  let m = 0, amp = 1, f = 3.1, somme = 0;
-  for (let i = 0; i < 4; i++) {
-    const n = 1 - Math.abs(bruit3(x * f + 3.1, y * f - 7.2, z * f + 5.5));
-    m += n * n * amp; somme += amp; amp *= 0.5; f *= 2.1;
+  // déformation du domaine : des formes moins régulières
+  const qx = x + fbm(bruitB, x * 2.1 + 5.2, y * 2.1, z * 2.1, 2) * 0.32;
+  const qy = y + fbm(bruitB, x * 2.1, y * 2.1 + 9.1, z * 2.1, 2) * 0.32;
+  const qz = z + fbm(bruitB, x * 2.1, y * 2.1, z * 2.1 - 3.7, 2) * 0.32;
+  const c = fbm(bruitA, qx * 1.3 + 11.3, qy * 1.3 - 4.1, qz * 1.3 + 2.7, 4);   // continents
+  const montagne = lisse(0.05, 0.4, c);
+  // multifractale en crêtes
+  let m = 0, amp = 1, f = 4.2, poids = 1, somme = 0;
+  for (let i = 0; i < 5; i++) {
+    let n = 1 - Math.abs(bruitA(qx * f + 3.1, qy * f - 7.2, qz * f + 5.5));
+    n = n * n * poids; poids = clamp(n * 1.7, 0, 1);
+    m += n * amp; somme += amp; amp *= 0.5; f *= 2.05;
   }
   m /= somme;
-  const torsion = bruit3(x * 3.5 + 9, y * 3.5, z * 3.5 - 2) * 3.0;
-  const crete = Math.sin((x * 0.8 + z * 0.55 + y * 0.2) * 92 + torsion * 2.5) * 0.5 + 0.5;
-  const dunes = Math.pow(crete, 3) * 1.5 * (1 - relief);
-  const detail = bruit3(x * 24, y * 24, z * 24) * 0.45;
-  let h = c * 9 + relief * m * 24 + dunes + detail;
+  let h = c * 16 + montagne * Math.pow(m, 1.35) * 72;
+  // mesas : plateaux en terrasses avec falaises
+  const plateau = lisse(-0.08, 0.06, c) * (1 - montagne) * lisse(0.0, 0.25, fbm(bruitB, qx * 2.4 + 7, qy * 2.4, qz * 2.4, 2) + 0.12);
+  if (plateau > 0.001) {
+    const hm = h + 14 + fbm(bruitA, qx * 6, qy * 6 + 3, qz * 6, 2) * 10;
+    const t = hm / 7, fl = Math.floor(t), fr = t - fl;
+    const terrasse = (fl + lisse(0.42, 0.58, fr)) * 7;
+    h = mix(h, terrasse, plateau);
+  }
+  // canyons sinueux dans les plaines
+  const can = 1 - Math.abs(bruitB(qx * 3.4 + 1.7, qy * 3.4 - 2.2, qz * 3.4 + 8.4));
+  h -= Math.pow(can, 14) * 24 * (1 - montagne) * lisse(-0.3, -0.05, c + 0.15);
+  // mers de dunes dans les bassins
+  const mer = (1 - montagne) * (1 - plateau) * lisse(0.1, -0.15, c);
+  if (mer > 0.001) {
+    const tors = bruitB(x * 5 + 9, y * 5, z * 5 - 2) * 4;
+    const crete = Math.sin((x * DIR_DUNES.x + y * DIR_DUNES.y + z * DIR_DUNES.z) * 135 + tors * 2.2) * 0.5 + 0.5;
+    h += Math.pow(crete, 2.5) * 2.6 * mer;
+  }
+  // détail fin
+  h += bruitA(x * 60, y * 60, z * 60) * 0.7 + bruitB(x * 150, y * 150, z * 150) * 0.22;
+  // cratères
   for (const k of CRATERES) {
     const t = Math.acos(clamp(x * k.x + y * k.y + z * k.z, -1, 1)) / k.r;
     if (t < 1.7) {
@@ -394,14 +434,15 @@ function hauteurBrute(x, y, z) {
       h += Math.exp(-Math.pow((t - 1) / 0.2, 2)) * k.p * 0.4;
     }
   }
+  BIOME.montagne = montagne; BIOME.plateau = plateau; BIOME.verre = lisse(-0.32, -0.45, c) * (1 - plateau);
   return h;
 }
-for (const z of ZONES_PLATES) z.h = hauteurBrute(z.d.x, z.d.y, z.d.z) * 0.35;
+for (const z of ZONES_PLATES) z.h = hauteurBrute(z.d.x, z.d.y, z.d.z);
 function hauteur(x, y, z) {
   let h = hauteurBrute(x, y, z);
   for (const zp of ZONES_PLATES) {
     const t = Math.acos(clamp(x * zp.d.x + y * zp.d.y + z * zp.d.z, -1, 1)) / zp.r;
-    if (t < 1) { const k = lisse(1, 0.55, t); h = mix(h, zp.h, k); }
+    if (t < 1) { const k = lisse(1, 0.5, t); h = mix(h, zp.h + bruitA(x * 60, y * 60, z * 60) * 0.3, k); }
   }
   return h;
 }
@@ -522,7 +563,7 @@ const matFinal = passeMat(`
     c.r = texture2D(tCompo, uv + vec2(ca, 0.0)).r;
     c.g = texture2D(tCompo, uv).g;
     c.b = texture2D(tCompo, uv - vec2(ca, 0.0)).b;
-    c += texture2D(tFlou, uv).rgb * 0.75;
+    c += texture2D(tFlou, uv).rgb * 0.7;
     float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
     c = mix(c, vec3(l) * vec3(0.7, 0.95, 1.3), 0.55 * uBulle);
     c = mix(c, vec3(l) * vec3(1.3, 0.95, 0.7), 0.35 * uChaud);
@@ -536,27 +577,12 @@ const matFinal = passeMat(`
     gl_FragColor = vec4(c, 1.0);
   }`, {
   tCompo: { value: rtCompo.texture }, tFlou: { value: rtFlouA.texture }, uTemps: { value: 0 }, uBulle: { value: 0 },
-  uChaud: { value: 0 }, uCoup: { value: 0 }, uBlanc: { value: 0 }, uGrain: { value: MOUVEMENT_REDUIT ? 0.0 : 0.025 },
+  uChaud: { value: 0 }, uCoup: { value: 0 }, uBlanc: { value: 0 }, uGrain: { value: MOUVEMENT_REDUIT ? 0.0 : 0.022 },
   uRes: { value: new THREE.Vector2(1, 1) },
 });
 
-function redimensionner() {
-  const l = window.innerWidth, h = window.innerHeight;
-  renderer.setSize(l, h, false);
-  camera.aspect = l / h;
-  camera.updateProjectionMatrix();
-  const taille = renderer.getDrawingBufferSize(new THREE.Vector2());
-  const w = Math.max(1, Math.floor(taille.x)), hh = Math.max(1, Math.floor(taille.y));
-  for (const rt of [rtCiel, rtMonde, rtLentille, rtCompo]) rt.setSize(w, hh);
-  const wq = Math.max(1, Math.floor(w / 4)), hq = Math.max(1, Math.floor(hh / 4));
-  rtFlouA.setSize(wq, hq); rtFlouB.setSize(wq, hq);
-  matFinal.uniforms.uRes.value.set(w, hh);
-  matLentille.uniforms.uAspect.value = w / hh;
-}
-window.addEventListener('resize', redimensionner);
-
 // =====================================================================
-// Ciel : étoiles, nébuleuse, trou noir, disque d'accrétion
+// Ciel : étoiles, nébuleuse, trou noir, disque d'accrétion, vaisseau-mère
 // =====================================================================
 const groupeCiel = new THREE.Group();
 scCiel.add(groupeCiel);
@@ -662,52 +688,222 @@ disque.quaternion.setFromUnitVectors(new V3(0, 0, 1), normaleDisque);
 disque.frustumCulled = false;
 groupeCiel.add(disque);
 
-// =====================================================================
-// Monde : planète, atmosphère, lumières
-// =====================================================================
-const planete = (() => {
-  const geo = new THREE.IcosahedronGeometry(1, 6);
-  const pos = geo.attributes.position;
-  const n = pos.count;
-  const couleurs = new Float32Array(n * 3);
-  const h = new Float32Array(n);
-  const v = new V3();
-  for (let i = 0; i < n; i++) {
-    v.fromBufferAttribute(pos, i).normalize();
-    h[i] = hauteur(v.x, v.y, v.z);
-    v.multiplyScalar(R + h[i]);
-    pos.setXYZ(i, v.x, v.y, v.z);
-  }
-  const C = (hex) => new THREE.Color(hex);
-  const sable = C('#b98a5c'), sableClair = C('#d6ad79'), roche = C('#5d4a41'), rocheSombre = C('#3a2f2b'),
-    cendre = C('#a19a90'), verre = C('#2c4a52'), verreClair = C('#41707a');
-  const a = new V3(), b = new V3(), c = new V3(), nrm = new V3(), ctr = new V3();
-  const tmp = new THREE.Color();
-  const alea = mulberry32(5);
-  for (let i = 0; i < n; i += 3) {
-    a.fromBufferAttribute(pos, i); b.fromBufferAttribute(pos, i + 1); c.fromBufferAttribute(pos, i + 2);
-    nrm.subVectors(c, b).cross(new V3().subVectors(a, b)).normalize();
-    ctr.copy(a).add(b).add(c).multiplyScalar(1 / 3);
-    const radial = ctr.clone().normalize();
-    if (nrm.dot(radial) < 0) nrm.negate();
-    const pente = 1 - nrm.dot(radial);
-    const hm = (h[i] + h[i + 1] + h[i + 2]) / 3;
-    if (hm < -2.2) tmp.copy(verre).lerp(verreClair, alea() * 0.5);
-    else if (hm > 15) tmp.copy(cendre).lerp(roche, clamp(pente * 3, 0, 1));
-    else tmp.copy(sable).lerp(sableClair, clamp((hm + 1) / 3, 0, 1) * 0.6 + alea() * 0.25);
-    if (pente > 0.18 && hm > -2.2) tmp.lerp(pente > 0.32 ? rocheSombre : roche, lisse(0.18, 0.32, pente));
-    const var_ = 0.94 + alea() * 0.12;
-    for (let k = 0; k < 3; k++) couleurs.set([tmp.r * var_, tmp.g * var_, tmp.b * var_], (i + k) * 3);
-  }
-  geo.setAttribute('color', new THREE.BufferAttribute(couleurs, 3));
-  geo.computeVertexNormals();
-  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.95, metalness: 0.0 }));
-  mesh.receiveShadow = true;
-  mesh.castShadow = true;
-  return mesh;
-})();
-scMonde.add(planete);
+// Lumières du ciel (pour le vaisseau-mère)
+const lumCiel = new THREE.DirectionalLight(0xffd2a0, 2.4);
+lumCiel.position.copy(BH_DIR0).multiplyScalar(100);
+groupeCiel.add(lumCiel);
+scCiel.add(new THREE.AmbientLight(0x4a5266, 0.9));
 
+// =====================================================================
+// Monde : terrain à niveaux de détail (sphère-cube en quadtree)
+// =====================================================================
+const texChargeur = new THREE.TextureLoader();
+function texture(nom, srgb) {
+  const t = texChargeur.load(`textures/${nom}`);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const TEX = {
+  sable: texture('aerial_sand_diff_1k.jpg', true), sableN: texture('aerial_sand_nor_gl_1k.jpg', false),
+  roche: texture('cliff_side_diff_1k.jpg', true), rocheN: texture('cliff_side_nor_gl_1k.jpg', false),
+  sol: texture('cracked_red_ground_diff_1k.jpg', true), solN: texture('cracked_red_ground_nor_gl_1k.jpg', false),
+};
+
+// Matériau du sol : textures triplanaires (sable, roche stratifiée, sol craquelé) mélangées par la pente et le biome
+function creerMatSol(forceRoche) {
+  const m = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0 });
+  m.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, {
+      tSable: { value: TEX.sable }, tSableN: { value: TEX.sableN }, tRoche: { value: TEX.roche }, tRocheN: { value: TEX.rocheN },
+      tSol: { value: TEX.sol }, tSolN: { value: TEX.solN }, uForceRoche: { value: forceRoche }, uRayon: { value: R },
+    });
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', `#include <common>
+        attribute vec3 aBiome; varying vec3 vBiome; varying vec3 vPosM; varying vec3 vNormM;`)
+      .replace('#include <fog_vertex>', `#include <fog_vertex>
+        vec3 nObj = objectNormal; vec4 pObj = vec4(transformed, 1.0);
+        #ifdef USE_INSTANCING
+          nObj = mat3(instanceMatrix) * nObj; pObj = instanceMatrix * pObj;
+        #endif
+        vPosM = (modelMatrix * pObj).xyz; vNormM = normalize(mat3(modelMatrix) * nObj); vBiome = aBiome;`);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>
+        uniform sampler2D tSable, tSableN, tRoche, tRocheN, tSol, tSolN; uniform float uForceRoche, uRayon;
+        varying vec3 vBiome; varying vec3 vPosM; varying vec3 vNormM;
+        vec3 triA(sampler2D t, vec3 p, vec3 w){ return texture2D(t, p.zy).rgb * w.x + texture2D(t, p.xz).rgb * w.y + texture2D(t, p.xy).rgb * w.z; }
+        vec3 triN(sampler2D t, vec3 p, vec3 w, vec3 n, float f){
+          vec3 tx = texture2D(t, p.zy).xyz * 2.0 - 1.0, ty = texture2D(t, p.xz).xyz * 2.0 - 1.0, tz = texture2D(t, p.xy).xyz * 2.0 - 1.0;
+          tx.xy *= f; ty.xy *= f; tz.xy *= f;
+          tx = vec3(tx.xy + n.zy, n.x); ty = vec3(ty.xy + n.xz, n.y); tz = vec3(tz.xy + n.xy, n.z);
+          return normalize(tx.zyx * w.x + ty.xzy * w.y + tz.xyz * w.z);
+        }`)
+      .replace('#include <map_fragment>', `
+        vec3 nG = normalize(vNormM);
+        vec3 radialG = normalize(vPosM);
+        float pente = 1.0 - dot(nG, radialG);
+        vec3 wTri = pow(abs(nG), vec3(4.0)); wTri /= (wTri.x + wTri.y + wTri.z);
+        vec3 pS = vPosM / 7.0, pR = vPosM / 13.0, pC = vPosM / 6.0;
+        float varMacro = dot(triA(tSol, vPosM / 97.0, wTri), vec3(0.2126, 0.7152, 0.0722)) / 0.0797;
+        float wR = clamp(smoothstep(0.17, 0.33, pente + (varMacro - 1.0) * 0.06) + vBiome.x * 0.25 + uForceRoche, 0.0, 1.0);
+        float wC = (1.0 - wR) * smoothstep(0.2, 0.6, vBiome.y);
+        float wS = max(0.0, 1.0 - wR - wC);
+        float lumS = dot(triA(tSable, pS, wTri), vec3(0.2126, 0.7152, 0.0722)) / 0.2786;
+        vec3 teinteSable = mix(vec3(0.42, 0.24, 0.11), vec3(0.035, 0.06, 0.075), vBiome.z);
+        vec3 albedo = teinteSable * lumS * wS + triA(tSol, pC, wTri) * 1.15 * wC + triA(tRoche, pR, wTri) * 1.05 * wR;
+        albedo *= mix(0.85, 1.15, clamp(varMacro * 0.5, 0.0, 1.0));
+        diffuseColor.rgb = albedo;
+        float poidsRoche = wR;`)
+      .replace('#include <roughnessmap_fragment>', `float roughnessFactor = roughness * mix(1.0, 0.4, vBiome.z * wS) * mix(1.0, 0.9, poidsRoche);`)
+      .replace('#include <normal_fragment_maps>', `{
+          vec3 nW = normalize(triN(tSableN, pS, wTri, nG, 0.9) * wS + triN(tSolN, pC, wTri, nG, 0.9) * wC + triN(tRocheN, pR, wTri, nG, 1.2) * wR);
+          normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
+        }`);
+  };
+  m.customProgramCacheKey = () => 'sol-' + forceRoche;
+  return m;
+}
+const matTerrain = creerMatSol(0);
+const matRocher = creerMatSol(1);
+
+const FACES = [
+  { n: new V3(1, 0, 0), u: new V3(0, 0, -1), v: new V3(0, 1, 0) },
+  { n: new V3(-1, 0, 0), u: new V3(0, 0, 1), v: new V3(0, 1, 0) },
+  { n: new V3(0, 1, 0), u: new V3(1, 0, 0), v: new V3(0, 0, -1) },
+  { n: new V3(0, -1, 0), u: new V3(1, 0, 0), v: new V3(0, 0, 1) },
+  { n: new V3(0, 0, 1), u: new V3(1, 0, 0), v: new V3(0, 1, 0) },
+  { n: new V3(0, 0, -1), u: new V3(-1, 0, 0), v: new V3(0, 1, 0) },
+];
+const CELLULES = 32;         // grille 32×32 par morceau de terrain
+const NIVEAU_MAX = 5;        // ~0,45 m entre deux sommets près du joueur
+function cubeVersSphere(face, u, v, cible) {
+  const x = face.n.x + u * face.u.x + v * face.v.x;
+  const y = face.n.y + u * face.u.y + v * face.v.y;
+  const z = face.n.z + u * face.u.z + v * face.v.z;
+  const x2 = x * x, y2 = y * y, z2 = z * z;
+  return cible.set(
+    x * Math.sqrt(1 - y2 / 2 - z2 / 2 + y2 * z2 / 3),
+    y * Math.sqrt(1 - z2 / 2 - x2 / 2 + z2 * x2 / 3),
+    z * Math.sqrt(1 - x2 / 2 - y2 / 2 + x2 * y2 / 3)).normalize();
+}
+const groupeTerrain = new THREE.Group();
+scMonde.add(groupeTerrain);
+class Morceau {
+  constructor(face, u0, v0, taille, niveau) {
+    Object.assign(this, { face, u0, v0, taille, niveau, enfants: null, mesh: null });
+    const d = cubeVersSphere(face, u0 + taille / 2, v0 + taille / 2, new V3());
+    this.centre = d.multiplyScalar(R + hauteurDir(d));
+    this.rayonMonde = R * (Math.PI / 2) * (taille / 2) * 0.8;
+  }
+  construire() {
+    const N = CELLULES, G = N + 3;           // grille avec une bordure pour des normales continues
+    const P = new Float32Array(G * G * 3), B = new Float32Array(G * G * 3);
+    const d = new V3();
+    for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) {
+      cubeVersSphere(this.face, this.u0 + (i - 1) / N * this.taille, this.v0 + (j - 1) / N * this.taille, d);
+      const h = hauteur(d.x, d.y, d.z);
+      const k = (j * G + i) * 3;
+      P[k] = d.x * (R + h); P[k + 1] = d.y * (R + h); P[k + 2] = d.z * (R + h);
+      B[k] = BIOME.montagne; B[k + 1] = BIOME.plateau; B[k + 2] = BIOME.verre;
+    }
+    const nbBord = 4 * N;
+    const nb = (N + 1) * (N + 1) + nbBord;
+    const pos = new Float32Array(nb * 3), nor = new Float32Array(nb * 3), bio = new Float32Array(nb * 3);
+    const a = new V3(), b = new V3(), c = new V3(), e = new V3();
+    const lire = (i, j, v) => { const k = (j * G + i) * 3; return v.set(P[k], P[k + 1], P[k + 2]); };
+    let n = 0;
+    for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) {
+      const gi = i + 1, gj = j + 1, k = (gj * G + gi) * 3;
+      pos.set([P[k], P[k + 1], P[k + 2]], n * 3);
+      lire(gi + 1, gj, a).sub(lire(gi - 1, gj, b));
+      lire(gi, gj + 1, c).sub(lire(gi, gj - 1, e));
+      a.cross(c).normalize();
+      nor.set([a.x, a.y, a.z], n * 3);
+      bio.set([B[k], B[k + 1], B[k + 2]], n * 3);
+      n++;
+    }
+    // jupe : un bord abaissé qui bouche les fissures entre niveaux de détail
+    const profondeur = 1.5 + this.rayonMonde * 0.02;
+    const bord = [];
+    for (let i = 0; i < N; i++) bord.push([i, 0]);
+    for (let j = 0; j < N; j++) bord.push([N, j]);
+    for (let i = N; i > 0; i--) bord.push([i, N]);
+    for (let j = N; j > 0; j--) bord.push([0, j]);
+    const indexBord = [];
+    for (const [i, j] of bord) {
+      const src = j * (N + 1) + i;
+      a.set(pos[src * 3], pos[src * 3 + 1], pos[src * 3 + 2]);
+      a.addScaledVector(b.copy(a).normalize(), -profondeur);
+      pos.set([a.x, a.y, a.z], n * 3);
+      nor.set([nor[src * 3], nor[src * 3 + 1], nor[src * 3 + 2]], n * 3);
+      bio.set([bio[src * 3], bio[src * 3 + 1], bio[src * 3 + 2]], n * 3);
+      indexBord.push([src, n]);
+      n++;
+    }
+    const idx = [];
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const p0 = j * (N + 1) + i, p1 = p0 + 1, p2 = p0 + N + 1, p3 = p2 + 1;
+      idx.push(p0, p1, p2, p1, p3, p2);
+    }
+    for (let k = 0; k < indexBord.length; k++) {
+      const [s0, b0] = indexBord[k], [s1, b1] = indexBord[(k + 1) % indexBord.length];
+      idx.push(s0, b0, s1, s1, b0, b1, s0, s1, b0, s1, b1, b0);   // les deux faces
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    geo.setAttribute('aBiome', new THREE.BufferAttribute(bio, 3));
+    geo.setIndex(idx);
+    geo.computeBoundingSphere();
+    this.mesh = new THREE.Mesh(geo, matTerrain);
+    this.mesh.castShadow = true; this.mesh.receiveShadow = true;
+    this.mesh.visible = false;
+    groupeTerrain.add(this.mesh);
+  }
+  liberer() {
+    if (this.enfants) for (const e of this.enfants) e.liberer();
+    this.enfants = null;
+    if (this.mesh) { groupeTerrain.remove(this.mesh); this.mesh.geometry.dispose(); this.mesh = null; }
+  }
+  cacherTout() {
+    if (this.mesh) this.mesh.visible = false;
+    if (this.enfants) for (const e of this.enfants) e.cacherTout();
+  }
+}
+const racines = FACES.map((f) => new Morceau(f, -1, -1, 2, 0));
+let budgetTerrain = 0;
+function visiter(m, oeil) {
+  const veut = m.niveau < NIVEAU_MAX && oeil.distanceTo(m.centre) < m.rayonMonde * 2.6;
+  if (veut) {
+    if (!m.enfants) {
+      const t = m.taille / 2;
+      m.enfants = [[0, 0], [t, 0], [0, t], [t, t]].map(([du, dv]) => new Morceau(m.face, m.u0 + du, m.v0 + dv, t, m.niveau + 1));
+    }
+    let prets = true;
+    for (const e of m.enfants) {
+      if (!e.mesh && budgetTerrain > 0) { e.construire(); budgetTerrain--; }
+      if (!e.mesh) prets = false;
+    }
+    if (prets) {
+      if (m.mesh) m.mesh.visible = false;
+      for (const e of m.enfants) visiter(e, oeil);
+      return;
+    }
+    for (const e of m.enfants) e.cacherTout();
+  } else if (m.enfants) {
+    for (const e of m.enfants) e.liberer();
+    m.enfants = null;
+  }
+  if (!m.mesh) m.construire();
+  m.mesh.visible = true;
+}
+function majTerrain(oeil, budget = 4) {
+  budgetTerrain = budget;
+  for (const r of racines) visiter(r, oeil);
+}
+
+// Atmosphère, brume, lumières
 const matAtmo = new THREE.ShaderMaterial({
   side: THREE.BackSide, transparent: true, depthWrite: false,
   uniforms: { uCam: { value: new V3() }, uSoleil: { value: new V3(0, 1, 0) } },
@@ -723,27 +919,30 @@ const matAtmo = new THREE.ShaderMaterial({
       float halo = pow(max(dot(v, uSoleil), 0.0), 10.0);
       vec3 ciel = mix(vec3(0.30, 0.19, 0.13), vec3(0.20, 0.17, 0.18), clamp(mu, 0.0, 1.0));
       vec3 c = ciel * jour + vec3(1.0, 0.55, 0.25) * halo * jour * 0.5 + vec3(0.85, 0.42, 0.2) * horizon * (0.15 + 0.85 * jour);
-      float a = clamp(jour * 0.28 * (1.0 - 0.5 * clamp(mu, 0.0, 1.0)) + horizon * 0.6 * (0.25 + 0.75 * jour) + halo * jour * 0.15, 0.0, 0.85);
+      float a = clamp(jour * 0.18 * (1.0 - 0.5 * clamp(mu, 0.0, 1.0)) + horizon * 0.6 * (0.25 + 0.75 * jour) + halo * jour * 0.15, 0.0, 0.85);
       gl_FragColor = vec4(c * 1.3, a);
     }`,
 });
-const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(R + 70, 64, 48), matAtmo);
+const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(R + 140, 64, 48), matAtmo);
 atmosphere.renderOrder = 5;
 scMonde.add(atmosphere);
 
-scMonde.fog = new THREE.FogExp2(0x2a1d16, 0.0062);
+scMonde.fog = new THREE.FogExp2(0x2a1d16, 0.0034);
 const lumiere = new THREE.DirectionalLight(0xffd2a0, 3.2);
 lumiere.castShadow = true;
 lumiere.shadow.mapSize.set(2048, 2048);
-Object.assign(lumiere.shadow.camera, { left: -45, right: 45, top: 45, bottom: -45, near: 1, far: 260 });
+Object.assign(lumiere.shadow.camera, { left: -55, right: 55, top: 55, bottom: -55, near: 1, far: 420 });
 lumiere.shadow.bias = -0.0004;
-lumiere.shadow.normalBias = 0.04;
+lumiere.shadow.normalBias = 0.05;
 scMonde.add(lumiere, lumiere.target);
 const hemi = new THREE.HemisphereLight(0x6a7896, 0x2a2018, 0.6);
 scMonde.add(hemi);
+const appoint = new THREE.DirectionalLight(0xc8d4ff, 0.5);   // lumière d'appoint depuis la caméra : l'Arpenteur reste lisible à contre-jour
+scMonde.add(appoint, appoint.target);
 
 // Lueur additive qui n'écrit pas dans l'alpha (n'assombrit pas le ciel à la composition)
-function materiauLueur(couleur, opacite = 1) {
+const MELANGE_LUEUR = { blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor };
+const texLueur = (() => {
   const c = document.createElement('canvas');
   c.width = c.height = 64;
   const g = c.getContext('2d');
@@ -752,27 +951,119 @@ function materiauLueur(couleur, opacite = 1) {
   grad.addColorStop(0.25, 'rgba(255,255,255,0.45)');
   grad.addColorStop(1, 'rgba(255,255,255,0)');
   g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
-  const tex = new THREE.CanvasTexture(c);
-  return new THREE.SpriteMaterial({
-    map: tex, color: couleur, transparent: true, depthWrite: false, opacity: opacite,
-    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation,
-    blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor,
-    blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
-  });
+  return new THREE.CanvasTexture(c);
+})();
+function materiauLueur(couleur, opacite = 1) {
+  return new THREE.SpriteMaterial({ map: texLueur, color: couleur, transparent: true, depthWrite: false, opacity: opacite, ...MELANGE_LUEUR });
 }
 function poser(objet, dir, decalage = 0) {
   objet.position.copy(dir).multiplyScalar(R + hauteurDir(dir) + decalage);
   objet.quaternion.setFromUnitVectors(Y, dir);
 }
+function versDir(base, dx, dz) {
+  const e1 = new V3(1, 0, 0).projectOnPlane(base);
+  if (e1.lengthSq() < 1e-6) e1.set(0, 0, 1).projectOnPlane(base);
+  e1.normalize();
+  const e2 = new V3().crossVectors(base, e1);
+  return base.clone().multiplyScalar(R).addScaledVector(e1, dx).addScaledVector(e2, dz).normalize();
+}
+
+// Faisceaux lumineux (réacteurs, rayon tracteur, balise) : dégradé le long du faisceau et bords adoucis
+function materiauFaisceau(couleur, force = 1) {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, ...MELANGE_LUEUR,
+    uniforms: { uCouleur: { value: couleur }, uForce: { value: force } },
+    vertexShader: `varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+      void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform vec3 uCouleur; uniform float uForce; varying vec2 vUv; varying vec3 vN; varying vec3 vV;
+      void main(){ float face = abs(dot(normalize(vN), normalize(vV)));
+        float a = pow(face, 1.6) * pow(vUv.y, 1.4) * uForce;
+        gl_FragColor = vec4(uCouleur, clamp(a, 0.0, 1.0)); }`,
+  });
+}
+
+// Points ronds, de taille bornée à l'écran
+function materiauPoints(couleur, taille, opacite, additif) {
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uCouleur: { value: couleur }, uTaille: { value: taille }, uOpacite: { value: opacite }, uEchelle: { value: 400 } },
+    vertexShader: `uniform float uTaille, uEchelle; varying float vProche;
+      void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); float d = -mv.z;
+        gl_PointSize = clamp(uTaille * uEchelle / max(d, 0.01), 0.0, 7.0); vProche = smoothstep(0.6, 2.5, d);
+        gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform vec3 uCouleur; uniform float uOpacite; varying float vProche;
+      void main(){ float r = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.1, r) * uOpacite * vProche;
+        if (a < 0.003) discard; gl_FragColor = vec4(uCouleur, a); }`,
+  });
+  if (additif) Object.assign(m, MELANGE_LUEUR);
+  return m;
+}
 
 // =====================================================================
-// L'Arpenteur
+// Rochers procéduraux (texturés comme les falaises)
 // =====================================================================
+const obstacles = [];   // rochers et épaves solides : { pos, rayon }
+const formesRochers = [11, 23, 37].map((graine) => {
+  let g = new THREE.IcosahedronGeometry(1, 3);
+  g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  g = mergeVertices(g);
+  const p = g.attributes.position, v = new V3();
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i);
+    const r = 1 + fbm(bruitB, v.x * 1.6 + graine, v.y * 1.6, v.z * 1.6, 3) * 0.55 + Math.abs(bruitA(v.x * 4 + graine, v.y * 4, v.z * 4)) * 0.18;
+    v.multiplyScalar(r);
+    v.y *= 0.72;
+    if (v.y < -0.25) v.y = -0.25 + (v.y + 0.25) * 0.25;
+    p.setXYZ(i, v.x, v.y, v.z);
+  }
+  g.computeVertexNormals();
+  g.setAttribute('aBiome', new THREE.BufferAttribute(new Float32Array(p.count * 3), 3));
+  return g;
+});
+(function semerRochers() {
+  const alea = mulberry32(2024);
+  const evite = [...ZONES_PLATES.map((z) => ({ d: z.d, r: z.r + 4 / R })), ...CRISTAUX_DEF.map(([t, f]) => ({ d: dirDist(t, f), r: 12 / R }))];
+  const listes = formesRochers.map(() => []);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), qy = new THREE.Quaternion(), qt = new THREE.Quaternion(), sc = new V3();
+  const ajouter = (d, taille, enfouir, solide) => {
+    if (evite.some((z) => d.angleTo(z.d) < z.r)) return;
+    const pos = d.clone().multiplyScalar(R + hauteurDir(d) - taille * enfouir);
+    q.setFromUnitVectors(Y, d);
+    qy.setFromAxisAngle(Y, alea() * 6.283);
+    qt.setFromAxisAngle(new V3(alea() - 0.5, 0, alea() - 0.5).normalize(), (alea() - 0.5) * 0.5);
+    q.multiply(qt).multiply(qy);
+    sc.set(taille * (0.8 + alea() * 0.5), taille * (0.7 + alea() * 0.6), taille * (0.8 + alea() * 0.5));
+    m4.compose(pos, q, sc);
+    listes[Math.floor(alea() * listes.length)].push(m4.clone());
+    if (solide) obstacles.push({ pos, rayon: taille * 0.95 });
+  };
+  for (let amas = 0; amas < 110; amas++) {
+    let c;
+    do { c = new V3(alea() * 2 - 1, alea() * 2 - 1, alea() * 2 - 1); } while (c.lengthSq() < 0.05 || c.lengthSq() > 1);
+    c.normalize();
+    const gros = 1 + Math.floor(alea() * 3);
+    for (let k = 0; k < gros; k++) ajouter(versDir(c, (alea() - 0.5) * 16, (alea() - 0.5) * 16), 1.6 + alea() * 3.4, 0.25, true);
+    const petits = 3 + Math.floor(alea() * 7);
+    for (let k = 0; k < petits; k++) ajouter(versDir(c, (alea() - 0.5) * 28, (alea() - 0.5) * 28), 0.25 + alea() * 0.7, 0.3, false);
+  }
+  // cailloux épars près du départ, pour l'échelle
+  for (let k = 0; k < 90; k++) ajouter(versDir(LIEUX.depart, (alea() - 0.5) * 120, (alea() - 0.5) * 120), 0.15 + alea() * 0.45, 0.35, false);
+  formesRochers.forEach((geo, i) => {
+    const im = new THREE.InstancedMesh(geo, matRocher, listes[i].length);
+    listes[i].forEach((m, k) => im.setMatrixAt(k, m));
+    im.castShadow = true; im.receiveShadow = true;
+    im.computeBoundingSphere();
+    scMonde.add(im);
+  });
+})();
+
+// =====================================================================
+// L'Arpenteur (forme simple, remplacée par le modèle 3D dès qu'il est chargé)
+// =====================================================================
+const matFantome = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.35, 1.4, 1.35), transparent: true, opacity: 0.22, depthWrite: false, ...MELANGE_LUEUR });
 function creerArpenteur(fantome = false) {
   const g = new THREE.Group();
-  const matCombi = fantome
-    ? new THREE.MeshBasicMaterial({ color: new THREE.Color(0.35, 1.4, 1.35), transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor })
-    : new THREE.MeshStandardMaterial({ color: 0xd9d3c4, roughness: 0.7 });
+  const matCombi = fantome ? matFantome : new THREE.MeshStandardMaterial({ color: 0xd9d3c4, roughness: 0.7 });
   const matSac = fantome ? matCombi : new THREE.MeshStandardMaterial({ color: 0x6b665d, roughness: 0.8 });
   const matVisiere = fantome ? matCombi : new THREE.MeshStandardMaterial({ color: 0x1a120a, emissive: 0xf2a24b, emissiveIntensity: 1.6, roughness: 0.15, metalness: 0.4 });
   const ajout = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = !fantome; g.add(m); return m; };
@@ -781,7 +1072,6 @@ function creerArpenteur(fantome = false) {
   const visiere = ajout(new THREE.SphereGeometry(0.22, 16, 12), matVisiere, 0, 1.77, -0.17);
   visiere.scale.set(1.05, 0.72, 0.6);
   ajout(new THREE.BoxGeometry(0.5, 0.6, 0.26), matSac, 0, 1.16, 0.33);
-  const antenne = ajout(new THREE.SphereGeometry(0.05, 8, 6), fantome ? matCombi : new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff3a20, emissiveIntensity: 3 }), 0.17, 1.55, 0.4);
   const membre = (x, y, l, epaisseur) => {
     const pivot = new THREE.Group(); pivot.position.set(x, y, 0); g.add(pivot);
     const m = new THREE.Mesh(new THREE.BoxGeometry(epaisseur, l, epaisseur * 1.1), matCombi);
@@ -789,7 +1079,7 @@ function creerArpenteur(fantome = false) {
   };
   g.userData = {
     jambeG: membre(-0.15, 0.66, 0.64, 0.17), jambeD: membre(0.15, 0.66, 0.64, 0.17),
-    brasG: membre(-0.46, 1.4, 0.58, 0.13), brasD: membre(0.46, 1.4, 0.58, 0.13), antenne,
+    brasG: membre(-0.46, 1.4, 0.58, 0.13), brasD: membre(0.46, 1.4, 0.58, 0.13),
   };
   return g;
 }
@@ -797,7 +1087,7 @@ const modele = creerArpenteur();
 scMonde.add(modele);
 
 // =====================================================================
-// Cristaux d'Éther
+// Cristaux d'Éther (prismes hexagonaux lumineux)
 // =====================================================================
 const ECHOS = [
   "… j'ai déjà tenu ce cristal. Demain, peut-être.",
@@ -810,31 +1100,50 @@ const ECHOS = [
   "Quelqu'un attend sur une passerelle. Il attend encore.",
   "Le sable chante une note que personne n'a encore jouée.",
 ];
-const matCristal = new THREE.MeshStandardMaterial({ color: 0x123438, emissive: 0x5fe8dc, emissiveIntensity: 2.6, roughness: 0.18, metalness: 0.1, flatShading: true });
+const geoEclat = (() => {
+  const prisme = new THREE.CylinderGeometry(0.85, 1, 1, 6, 1, true);
+  prisme.translate(0, 0.5, 0);
+  const pointe = new THREE.ConeGeometry(0.85, 0.9, 6, 1, true);
+  pointe.translate(0, 1.45, 0);
+  const g = mergeGeometries([prisme.toNonIndexed(), pointe.toNonIndexed()]);
+  g.computeVertexNormals();
+  return g;
+})();
+const matCristal = new THREE.MeshStandardMaterial({ color: 0x0f2e33, emissive: 0x5fe8dc, emissiveIntensity: 2.6, roughness: 0.12, metalness: 0.15, flatShading: true });
 const matCristalVide = new THREE.MeshStandardMaterial({ color: 0x2a2c2e, emissive: 0x1d4a48, emissiveIntensity: 0.25, roughness: 0.5, flatShading: true });
 const cristaux = CRISTAUX_DEF.map(([t, f], i) => {
-  const dir = dirSph(t, f);
+  const dir = dirDist(t, f);
   const g = new THREE.Group();
   const alea = mulberry32(300 + i);
   const mat = matCristal.clone();
   const pieces = [];
-  for (let k = 0; k < 6; k++) {
-    const hauteurC = 0.9 + alea() * 1.8;
-    const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), mat);
-    m.scale.set(0.55 + alea() * 0.3, hauteurC, 0.55 + alea() * 0.3);
-    const ang = alea() * Math.PI * 2, rr = k === 0 ? 0 : 0.35 + alea() * 0.45;
-    m.position.set(Math.cos(ang) * rr, hauteurC * 0.32, Math.sin(ang) * rr);
-    m.rotation.set((alea() - 0.5) * 0.7, alea() * 3, (alea() - 0.5) * 0.7);
+  const n = 6 + Math.floor(alea() * 4);
+  for (let k = 0; k < n; k++) {
+    const m = new THREE.Mesh(geoEclat, mat);
+    const r = 0.16 + alea() * 0.2, h = 0.8 + alea() * (k === 0 ? 2.4 : 1.6);
+    m.scale.set(r, h, r);
+    const ang = alea() * Math.PI * 2, d = k === 0 ? 0 : 0.25 + alea() * 0.6;
+    m.position.set(Math.cos(ang) * d, -0.15, Math.sin(ang) * d);
+    m.rotation.set(Math.sin(ang) * 0.45 * d * 1.5, alea() * 3, -Math.cos(ang) * 0.45 * d * 1.5);
     m.castShadow = true;
     g.add(m); pieces.push(m);
   }
+  const socle = new THREE.Mesh(formesRochers[i % 3], matRocher);
+  socle.scale.set(1.1, 0.5, 1.1); socle.position.y = -0.15; socle.castShadow = true; socle.receiveShadow = true;
+  g.add(socle);
   const lueur = new THREE.Sprite(materiauLueur(new THREE.Color(0.4, 1.6, 1.5), 0.85));
   lueur.scale.setScalar(5.5); lueur.position.y = 1.0;
   g.add(lueur);
-  poser(g, dir, -0.1);
+  poser(g, dir, 0);
   scMonde.add(g);
   return { dir, groupe: g, pieces, mat, lueur, recolte: false, progression: 0, echo: ECHOS[i % ECHOS.length], vu: false };
 });
+function etatCristal(c, recolte) {
+  c.recolte = recolte; c.progression = 0;
+  c.pieces.forEach((p) => { p.material = recolte ? matCristalVide : c.mat; });
+  c.lueur.visible = !recolte;
+  c.groupe.scale.setScalar(recolte ? 0.6 : 1);
+}
 
 // =====================================================================
 // Bulles temporelles, monolithe, écho d'Arpenteur, balise
@@ -864,7 +1173,6 @@ function creerBulle(dir, rayon, couleur, vitesse) {
 const bulleA = creerBulle(LIEUX.bulleA, 15, new THREE.Color(0.45, 0.75, 1.4), 1.2);
 const bulleB = creerBulle(LIEUX.bulleB, 11, new THREE.Color(1.4, 0.8, 0.4), 6.0);
 
-// Texture de glyphes pour le monolithe
 const texGlyphes = (() => {
   const c = document.createElement('canvas'); c.width = 128; c.height = 512;
   const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, 128, 512);
@@ -904,10 +1212,8 @@ const fantome = creerArpenteur(true);
 scMonde.add(fantome);
 
 const balise = new THREE.Group();
-const faisceau = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 260, 24, 1, true), new THREE.MeshBasicMaterial({
-  color: new THREE.Color(2.4, 1.3, 0.5), transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide,
-  blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
-}));
+const faisceau = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.6, 260, 24, 1, true), materiauFaisceau(new THREE.Color(2.4, 1.3, 0.5), 0.9));
+faisceau.rotation.x = Math.PI;   // le faisceau est plus intense au sol
 faisceau.position.y = 130;
 const socle = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.2, 0.8, 8), new THREE.MeshStandardMaterial({ color: 0x3a3632, emissive: 0xf2a24b, emissiveIntensity: 0.6, roughness: 0.6 }));
 socle.position.y = 0.3; socle.castShadow = true;
@@ -936,15 +1242,155 @@ const poussiere = (() => {
   for (let i = 0; i < n * 3; i++) pos[i] = (alea() - 0.5) * 50;
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const m = new THREE.PointsMaterial({
-    color: new THREE.Color(1.0, 0.8, 0.6), size: 0.09, transparent: true, opacity: 0.55, depthWrite: false,
-    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
-  });
-  const p = new THREE.Points(g, m);
+  const p = new THREE.Points(g, materiauPoints(new THREE.Color(1.0, 0.8, 0.6), 0.09, 0.55, true));
   p.frustumCulled = false;
   return p;
 })();
 scMonde.add(poussiere);
+
+// =====================================================================
+// Vaisseaux : vaisseau-mère dans le ciel, navette de largage et d'extraction
+// =====================================================================
+const vaisseauMere = new THREE.Group();          // dans le ciel, tourne avec lui
+groupeCiel.add(vaisseauMere);
+const DIR_MERE = new V3(-0.55, 0.62, 0.4).normalize();
+const AXE_MERE = new V3().crossVectors(DIR_MERE, new V3(0, 0, 1)).normalize();
+const feuxMere = [];
+for (const [x, y, z, c] of [[-60, 10, 0, 0xff3a20], [60, 10, 0, 0x9fe8ff], [0, 30, 120, 0xffffff]]) {
+  const f = new THREE.Sprite(new THREE.SpriteMaterial({ map: texLueur, color: c, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  f.position.set(x, y, z); f.scale.setScalar(40); vaisseauMere.add(f); feuxMere.push(f);
+}
+
+const navette = new THREE.Group();               // dans le monde
+navette.visible = false;
+scMonde.add(navette);
+const reacteurs = new THREE.Group();
+navette.add(reacteurs);
+const flammes = [];
+for (const [x, z] of [[-2.2, 2.5], [2.2, 2.5], [-2.2, -2.5], [2.2, -2.5]]) {
+  const f = new THREE.Sprite(materiauLueur(new THREE.Color(2.6, 1.4, 0.6), 1));
+  f.position.set(x, -0.4, z); f.scale.setScalar(5); reacteurs.add(f); flammes.push(f);
+}
+const jet = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 4.5, 14, 24, 1, true), materiauFaisceau(new THREE.Color(2.2, 1.2, 0.55), 0.6));
+jet.position.y = -7.2;
+reacteurs.add(jet);
+const lumReacteur = new THREE.PointLight(0xffa860, 0, 60, 1.6);
+lumReacteur.position.y = -2;
+navette.add(lumReacteur);
+const faisceauTracteur = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 2.6, 1, 24, 1, true), materiauFaisceau(new THREE.Color(0.5, 1.4, 1.6), 0));
+navette.add(faisceauTracteur);
+
+// =====================================================================
+// Modèles 3D (Kenney Space Kit, licence CC0), chargés en arrière-plan.
+// Tant qu'ils ne sont pas là, des formes simples servent de remplacement.
+// =====================================================================
+const NOMS_MODELES = ['astronautB', 'satelliteDish_detailed', 'rover', 'bones', 'barrels', 'structure_detailed', 'rocket_baseA',
+  'craft_cargoA', 'craft_cargoB', 'craft_miner'];
+const ORIENT_ASTRO = 0;         // l'astronaute de Kenney regarde déjà vers -Z, comme nos personnages
+const modeles = {};
+const centreCamp = sol(LIEUX.camp);
+const VISIERE = { color: '#1a120a', emissive: '#f2a24b', emissiveIntensity: 1.3, metalness: 0.4, roughness: 0.15 };
+const ROUGE_EMPIRE = '#a3281e';
+
+function preparerModele(scene, nom) {
+  const estAstronaute = nom.startsWith('astronaut');
+  scene.updateMatrixWorld(true);
+  const boite = new THREE.Box3().setFromObject(scene);
+  const centre = boite.getCenter(new V3());
+  scene.position.set(-centre.x, -boite.min.y, -centre.z);
+  const racine = new THREE.Group();
+  racine.add(scene);
+  racine.userData.taille = boite.getSize(new V3()).toArray();
+  scene.traverse((o) => {
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    const nomMat = o.material?.name;
+    if (estAstronaute && nomMat === 'rockTrack') {   // la visière du casque, dans la couleur ambre des Arpenteurs
+      o.material.color.set(VISIERE.color); o.material.emissive.set(VISIERE.emissive);
+      Object.assign(o.material, { emissiveIntensity: VISIERE.emissiveIntensity, metalness: VISIERE.metalness, roughness: VISIERE.roughness });
+    } else if (nomMat === 'metalRed') {
+      o.material.color.set(ROUGE_EMPIRE);            // les couleurs de l'Empire
+    }
+  });
+  return racine;
+}
+// Les modèles sont regroupés dans un seul fichier JSON (fichiers .glb encodés en base64)
+async function chargerModeles() {
+  const chargeur = new GLTFLoader();
+  const paquet = await (await fetch('modeles/kenney.json')).json();
+  await Promise.all(NOMS_MODELES.map(async (nom) => {
+    try {
+      const binaire = Uint8Array.from(atob(paquet[nom]), (c) => c.charCodeAt(0)).buffer;
+      const g = await chargeur.parseAsync(binaire, '');
+      modeles[nom] = preparerModele(g.scene, nom);
+    } catch (e) { console.warn('Modèle indisponible :', nom, e?.message || e); }
+  }));
+}
+function instance(nom, { hauteur: h = null, echelle = 1 } = {}) {
+  const m = modeles[nom];
+  if (!m) return null;
+  const c = m.clone(true);
+  c.scale.setScalar(h ? h / m.userData.taille[1] : echelle);
+  return c;
+}
+function largeur(nom, echelle) { const t = modeles[nom].userData.taille; return Math.max(t[0], t[2]) * echelle; }
+
+function habiller(cible, estFantome) {
+  const a = instance('astronautB', { hauteur: 2.0 });
+  if (!a) return;
+  a.rotation.y = ORIENT_ASTRO;
+  if (estFantome) a.traverse((o) => { if (o.isMesh) { o.material = matFantome; o.castShadow = false; o.receiveShadow = false; } });
+  const membres = { jambeG: a.getObjectByName('legLeft'), jambeD: a.getObjectByName('legRight'), brasG: a.getObjectByName('armLeft'), brasD: a.getObjectByName('armRight') };
+  if (!membres.jambeG || !membres.jambeD || !membres.brasG || !membres.brasD) return;
+  cible.clear();
+  cible.add(a);
+  cible.userData = membres;
+}
+
+function integrerModeles() {
+  habiller(modele, false);
+  habiller(fantome, true);
+
+  // Le campement abandonné, avec l'épave d'un vaisseau mineur
+  const base = LIEUX.camp;
+  const elements = [
+    ['craft_miner', 5.5, -9, -8, 0.7, 0.42, 1.4, true],
+    ['satelliteDish_detailed', 5, 0, 0, 0.6, 0.3, 0.2, true],
+    ['structure_detailed', 3.6, 6.5, -3, 0.2, -0.22, 0.3, true],
+    ['rover', 6, -5.5, 4, 1.1, 0.35, 0.5, true],
+    ['barrels', 4, 3, 5, 2.0, 0, 0, false],
+    ['bones', 3, -2.5, -6, 0.4, 0, 0.1, false],
+  ];
+  for (const [nom, e, dx, dz, lacet, incl, enf, solide] of elements) {
+    const m = instance(nom, { echelle: e });
+    if (!m) continue;
+    poser(m, versDir(base, dx, dz), -enf);
+    m.rotateY(lacet); m.rotateZ(incl);
+    scMonde.add(m);
+    if (solide) obstacles.push({ pos: m.position.clone(), rayon: largeur(nom, e) * 0.4 });
+  }
+  const combinaison = instance('astronautB', { hauteur: 1.95 });
+  if (combinaison) {
+    poser(combinaison, versDir(base, 1.5, 2.8), 0.25);
+    combinaison.rotateY(2.4); combinaison.rotateX(-Math.PI / 2);
+    scMonde.add(combinaison);
+  }
+
+  // Balise d'extraction sur une base de fusée
+  const fusee = instance('rocket_baseA', { hauteur: 3.2 });
+  if (fusee) { socle.visible = false; balise.add(fusee); }
+
+  // Navette impériale (largage et extraction)
+  const coque = instance('craft_cargoB', { echelle: 6.5 });
+  if (coque) { coque.position.y = -0.2; coque.rotation.y = Math.PI; navette.add(coque); }   // le nez du cargo Kenney est vers +Z
+
+  // Vaisseau-mère, immense, en orbite haute
+  const mere = instance('craft_cargoA', { echelle: 120 });
+  if (mere) {
+    mere.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+    vaisseauMere.add(mere);
+  }
+}
 
 // =====================================================================
 // La Ruche des Sables (le ver)
@@ -981,14 +1427,39 @@ const debris = (() => {
   const n = 160;
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
-  const m = new THREE.PointsMaterial({
-    color: new THREE.Color(0.9, 0.62, 0.38), size: 0.45, transparent: true, opacity: 0.9, depthWrite: false,
-  });
-  const p = new THREE.Points(g, m);
+  const p = new THREE.Points(g, materiauPoints(new THREE.Color(0.9, 0.62, 0.38), 0.45, 0.9, false));
   p.frustumCulled = false; p.visible = false;
   scMonde.add(p);
   return { points: p, vit: Array.from({ length: n }, () => new V3()), pos: Array.from({ length: n }, () => new V3()) };
 })();
+function gerbe(centre, force = 1) {
+  const haut = centre.clone().normalize();
+  debris.points.visible = true;
+  debris.points.material.uniforms.uOpacite.value = 0.9;
+  const attr = debris.points.geometry.attributes.position;
+  for (let i = 0; i < debris.pos.length; i++) {
+    debris.pos[i].copy(centre).addScaledVector(haut, 0.5);
+    const lat = new V3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).projectOnPlane(haut).normalize();
+    debris.vit[i].copy(haut).multiplyScalar((8 + Math.random() * 14) * force).addScaledVector(lat, (2 + Math.random() * 7) * (0.6 + force * 0.6));
+    attr.setXYZ(i, debris.pos[i].x, debris.pos[i].y, debris.pos[i].z);
+  }
+  attr.needsUpdate = true;
+  etat.gerbeT = 0;
+}
+function majGerbe(dt) {
+  if (!debris.points.visible) return;
+  etat.gerbeT += dt;
+  const attr = debris.points.geometry.attributes.position;
+  for (let i = 0; i < debris.pos.length; i++) {
+    const haut = vTmp.copy(debris.pos[i]).normalize();
+    debris.vit[i].addScaledVector(haut, -GRAVITE * 0.7 * dt);
+    debris.pos[i].addScaledVector(debris.vit[i], dt);
+    attr.setXYZ(i, debris.pos[i].x, debris.pos[i].y, debris.pos[i].z);
+  }
+  attr.needsUpdate = true;
+  debris.points.material.uniforms.uOpacite.value = Math.max(0, 0.9 - etat.gerbeT * 0.35);
+  if (etat.gerbeT > 2.6) debris.points.visible = false;
+}
 
 // =====================================================================
 // Son (Web Audio)
@@ -1029,7 +1500,7 @@ const son = {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.vent.gain.setTargetAtTime(0.02 + vitesse * 0.004, t, 0.3);
-    this.grondement.gain.setTargetAtTime(tremblement * 0.9, t, 0.15);
+    this.grondement.gain.setTargetAtTime(Math.max(tremblement * 0.9, (etat.pousseeSon || 0) * 0.3), t, 0.15);
     for (const n of this.nappe) n.o.frequency.setTargetAtTime(n.base * (1 - 0.35 * bulle), t, 0.6);
   },
   note(freqs, duree = 1.6, vol = 0.08, type = 'sine') {
@@ -1066,29 +1537,30 @@ const TRANSMISSIONS = [
 // =====================================================================
 const touches = new Set();
 const etat = {};
+let echoMinuteur = 0;
 function etatInitial() {
   Object.assign(etat, {
-    mode: 'accueil',            // accueil | jeu | pause | extraction | fin
+    mode: 'accueil',            // accueil | largage | jeu | pause | extraction | fin
+    modeAvantPause: 'jeu',
     pos: sol(LIEUX.depart),
     vT: new V3(), vR: 0, auSol: true,
     cadre: new THREE.Quaternion(), lacet: 0, tangage: 0.26, orientation: 0, pas: 0,
-    tVecu: 0, tVaisseau: 0, tJeu: 0, angleCiel: 0.0,
+    tVecu: 0, tVaisseau: 0, tJeu: 0, angleCiel: 0.0, facteur: F_BASE,
     bruit: 0, bruitMax: 0, ether: 0, monolithe: false, monolitheProg: 0,
     transmission: 0, journal: [],
-    tremblement: 0, verPhase: 'repos', verT: 0, verPoint: new V3(), verAvant: new V3(), verTouche: false, recharge: 0,
-    coup: 0, blanc: 0, scanT: -99, scanRecharge: 0, scanOrigine: new V3(), revele: 0,
+    tremblement: 0, verPhase: 'repos', verT: 0, verPoint: new V3(), verAvant: new V3(1, 0, 0), verTouche: false, recharge: 0,
+    coup: 0, blanc: 0, scanT: -99, scanRecharge: 0, scanOrigine: new V3(), revele: 0, gerbeT: 99,
     fantomeT: 0, fantomeFondu: 1, fantomeAbsent: 0, bulleAForce: 1, cycleA: 0,
-    extractionT: 0, baliseActive: false, dansA: 0, dansB: 0,
+    navT: 0, joueurLargue: false, pousseeSon: 0, gerbeFaite: false,
+    extractionT: 0, baliseActive: false, dansA: 0, dansB: 0, campVu: false, campDecouvert: false,
   });
-  for (const c of cristaux) {
-    c.recolte = false; c.progression = 0; c.vu = false;
-    c.pieces.forEach((p) => { p.material = c.mat; });
-    c.lueur.visible = true; c.groupe.scale.setScalar(1);
-  }
+  for (const c of cristaux) { etatCristal(c, false); c.vu = false; }
   bulleA.decouverte = false; bulleB.decouverte = false;
   matMonolithe.emissiveIntensity = 0.05; anneaux.forEach((a) => { a.visible = false; });
-  balise.visible = false; ver.groupe.visible = false; debris.points.visible = false;
+  balise.visible = false; ver.groupe.visible = false; debris.points.visible = false; navette.visible = false;
   $('#transmissions').replaceChildren();
+  $('#journal').hidden = true; $('#alerte').hidden = true; $('#invite').hidden = true; $('#passer').hidden = true;
+  clearTimeout(echoMinuteur); $('#echo').classList.remove('visible');
   majJournal();
 }
 
@@ -1098,19 +1570,22 @@ function etatInitial() {
 let verrou = false;
 let modeGlisser = false;
 let ignorerSourisJusqua = 0;   // le verrouillage du pointeur envoie parfois un grand saut de souris
+const estToucheM = (e) => e.code === 'KeyM' || (e.key && e.key.toLowerCase() === 'm');
 window.addEventListener('keydown', (e) => {
   if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
   if (e.repeat) { touches.add(e.code); return; }
   touches.add(e.code);
+  if (etat.mode === 'largage' && (e.code === 'Space' || e.code === 'KeyE' || e.code === 'Enter')) passerLargage();
   if (etat.mode === 'jeu') {
     if (e.code === 'KeyF') lancerScan();
     if (e.code === 'KeyJ') basculerJournal();
-    if (e.code === 'KeyM') son.basculer();
+    if (estToucheM(e)) son.basculer();
     if (e.code === 'Escape' && !verrou) mettrePause();
-  } else if (etat.mode === 'pause' && e.code === 'KeyM') son.basculer();
+  } else if ((etat.mode === 'pause' || etat.mode === 'largage') && estToucheM(e)) son.basculer();
+  else if (etat.mode === 'largage' && e.code === 'Escape' && !verrou) mettrePause();
 });
 window.addEventListener('keyup', (e) => touches.delete(e.code));
-window.addEventListener('blur', () => { touches.clear(); if (etat.mode === 'jeu' && !verrou) mettrePause(); });
+window.addEventListener('blur', () => { touches.clear(); if ((etat.mode === 'jeu' || etat.mode === 'largage') && !verrou) mettrePause(); });
 canvas.addEventListener('mousemove', (e) => {
   if (etat.mode !== 'jeu') return;
   if (!verrou && !(modeGlisser && (e.buttons & 1))) return;
@@ -1120,12 +1595,15 @@ canvas.addEventListener('mousemove', (e) => {
   etat.lacet -= dx * sens;
   etat.tangage = clamp(etat.tangage - dy * sens, -1.1, 1.15);
 });
-canvas.addEventListener('click', () => { if (etat.mode === 'jeu' && !verrou) demanderVerrou(); });
+canvas.addEventListener('click', () => {
+  if (etat.mode === 'largage') passerLargage();
+  if ((etat.mode === 'jeu' || etat.mode === 'largage') && !verrou) demanderVerrou();
+});
 document.addEventListener('pointerlockchange', () => {
   const avant = verrou;
   verrou = document.pointerLockElement === canvas;
   ignorerSourisJusqua = performance.now() + 200;
-  if (avant && !verrou && etat.mode === 'jeu') mettrePause();
+  if (avant && !verrou && (etat.mode === 'jeu' || etat.mode === 'largage')) mettrePause();
 });
 document.addEventListener('pointerlockerror', () => { modeGlisser = true; });
 function demanderVerrou() {
@@ -1165,7 +1643,6 @@ function transmettre(texte, { titre = 'Transmission impériale', perso = false, 
   setTimeout(() => el.remove(), duree);
   son.note(perso ? [523, 659] : [880, 660], 0.9, 0.05, 'square');
 }
-let echoMinuteur = 0;
 function afficherEcho(texte, duree = 7000) {
   const el = $('#echo');
   el.textContent = texte;
@@ -1199,7 +1676,7 @@ function majObjectifs() {
   const items = [];
   items.push({ t: `Quota impérial : cristaux d'Éther ${Math.min(etat.ether, QUOTA)}/${QUOTA}`, fait: etat.ether >= QUOTA });
   if (bulleA.decouverte || etat.monolithe) items.push({ t: etat.monolithe ? 'Le monolithe a parlé' : 'Hors mission : comprendre le monolithe dans la bulle', fait: etat.monolithe, secret: !etat.monolithe });
-  if (etat.ether >= QUOTA) items.push({ t: 'Rejoindre la balise d\'extraction', fait: false });
+  if (etat.baliseActive) items.push({ t: 'Rejoindre la balise d\'extraction', fait: false });
   const cle = JSON.stringify(items);
   if (ul.dataset.cle === cle) return;
   ul.dataset.cle = cle;
@@ -1247,8 +1724,9 @@ function lancerScan() {
   etat.bruit = Math.min(100, etat.bruit + 18);
   etat.revele = 9;
   son.note([392, 784, 1175], 1.4, 0.05, 'sine');
-  for (const c of cristaux) if (!c.recolte && c.groupe.position.distanceTo(etat.pos) < 170) c.vu = true;
-  for (const b of [bulleA, bulleB]) if (b.mesh.position.distanceTo(etat.pos) < 170) b.decouverte = true;
+  for (const c of cristaux) if (!c.recolte && c.groupe.position.distanceTo(etat.pos) < 220) c.vu = true;
+  for (const b of [bulleA, bulleB]) if (b.mesh.position.distanceTo(etat.pos) < 220) b.decouverte = true;
+  if (centreCamp.distanceTo(etat.pos) < 220) etat.campDecouvert = true;
 }
 
 function declencherVer() {
@@ -1259,12 +1737,20 @@ function declencherVer() {
   $('#alerte').innerHTML = 'Le sol tremble<small>Éloignez-vous de ce point, vite</small>';
   $('#alerte').hidden = false;
 }
+function annulerVer() {
+  etat.verPhase = 'repos'; etat.tremblement = 0; etat.verT = 0;
+  ver.groupe.visible = false;
+  $('#alerte').hidden = true;
+}
 
+// La gueule perce le sol exactement au point mémorisé (s = S0), là où était le joueur
+const VER_HAUT = 17, VER_FOND = 4, VER_LONG = 30;
+const S0 = Math.asin(VER_FOND / VER_HAUT) / Math.PI;
 function cheminVer(s, cible) {
   const haut = vTmp2.copy(etat.verPoint).normalize();
   return cible.copy(etat.verPoint)
-    .addScaledVector(haut, Math.sin(Math.PI * s) * 17 - 4)
-    .addScaledVector(etat.verAvant, (s - 0.5) * 38);
+    .addScaledVector(haut, Math.sin(Math.PI * s) * VER_HAUT - VER_FOND)
+    .addScaledVector(etat.verAvant, (s - S0) * VER_LONG);
 }
 
 const DUREE_TREMBLEMENT = 3.0, DUREE_VER = 2.8;
@@ -1277,17 +1763,6 @@ function majVer(dt) {
       etat.verPhase = 'attaque'; etat.verT = 0;
       ver.groupe.visible = true;
       $('#alerte').hidden = true;
-      // gerbe de sable
-      const haut = etat.verPoint.clone().normalize();
-      debris.points.visible = true;
-      const attr = debris.points.geometry.attributes.position;
-      for (let i = 0; i < debris.pos.length; i++) {
-        debris.pos[i].copy(etat.verPoint).addScaledVector(haut, 0.5);
-        const lat = new V3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).projectOnPlane(haut).normalize();
-        debris.vit[i].copy(haut).multiplyScalar(8 + Math.random() * 14).addScaledVector(lat, 2 + Math.random() * 7);
-        attr.setXYZ(i, debris.pos[i].x, debris.pos[i].y, debris.pos[i].z);
-      }
-      attr.needsUpdate = true;
       son.note([55, 41], 2.5, 0.25, 'sawtooth');
     }
     return;
@@ -1308,37 +1783,40 @@ function majVer(dt) {
     ver.tete.position.copy(p);
     ver.tete.lookAt(p2);
     ver.tete.visible = tete < 1.02;
-    // collision au moment où la gueule perce le sol
-    if (!etat.verTouche && s > 0.06 && s < 0.3) {
+    if (!etat.gerbeFaite && tete >= S0) { etat.gerbeFaite = true; gerbe(etat.verPoint, 1); }
+    // collision : quand la gueule perce le sol au point mémorisé
+    if (!etat.verTouche && tete >= S0 - 0.01 && tete <= S0 + 0.12) {
       const plat = etat.pos.clone().sub(etat.verPoint);
       if (plat.length() < 7.5) {
         etat.verTouche = true;
         const perte = Math.ceil(etat.ether / 2);
         etat.ether -= perte;
+        rendreCristaux(perte);
+        if (etat.baliseActive && etat.ether < QUOTA) {
+          etat.baliseActive = false; balise.visible = false;
+          transmettre("Quota non atteint : la balise d'extraction est coupée. Les cristaux perdus sont retournés à leurs gisements.", { titre: 'Bureau du Quota', duree: 8000 });
+        }
         etat.coup = 1;
         const haut = etat.pos.clone().normalize();
-        etat.vR = 9;
-        etat.vT.copy(plat.projectOnPlane(haut).normalize().multiplyScalar(14));
-        transmettre(perte > 0 ? `Impact. ${perte} cristal${perte > 1 ? 'x' : ''} d'Éther perdu${perte > 1 ? 's' : ''} dans le sable.` : 'Impact. Combinaison endommagée, rien de perdu.', { titre: 'Alerte combinaison', duree: 6000 });
+        etat.vR = 9; etat.auSol = false;
+        const recul = plat.projectOnPlane(haut);
+        if (recul.lengthSq() < 0.01) recul.copy(etat.verAvant).negate();
+        etat.vT.copy(recul.normalize().multiplyScalar(14));
+        const texte = perte > 0 ? `Impact. ${perte} ${perte > 1 ? 'cristaux' : 'cristal'} d'Éther perdu${perte > 1 ? 's' : ''} dans le sable.` : 'Impact. Combinaison endommagée, rien de perdu.';
+        transmettre(texte, { titre: 'Alerte combinaison', duree: 6000 });
         son.note([90, 60], 1.2, 0.3, 'square');
       }
     }
-    // débris
-    const attr = debris.points.geometry.attributes.position;
-    const haut = etat.verPoint.clone().normalize();
-    for (let i = 0; i < debris.pos.length; i++) {
-      debris.vit[i].addScaledVector(haut, -GRAVITE * 0.7 * dt);
-      debris.pos[i].addScaledVector(debris.vit[i], dt);
-      attr.setXYZ(i, debris.pos[i].x, debris.pos[i].y, debris.pos[i].z);
-    }
-    attr.needsUpdate = true;
-    debris.points.material.opacity = Math.max(0, 0.9 - s * 0.9);
     if (s >= 1) {
-      etat.verPhase = 'repos'; ver.groupe.visible = false; debris.points.visible = false;
-      etat.bruit = 35; etat.recharge = 6; etat.tremblement = 0;
+      etat.verPhase = 'repos'; ver.groupe.visible = false; etat.gerbeFaite = false;
+      etat.bruit = Math.min(etat.bruit, 35); etat.recharge = 6; etat.tremblement = 0;
       if (!etat.journal.some((e) => e.titre === 'La Ruche des Sables')) noterJournal('echo', 'La Ruche des Sables', 'Quelque chose vit sous le sable et chasse au son. Il frappe là où le bruit était, pas là où vous êtes.');
     }
   }
+}
+// Les cristaux perdus retournent à leurs gisements : la mission reste toujours faisable
+function rendreCristaux(n) {
+  for (const c of cristaux) { if (n <= 0) break; if (c.recolte) { etatCristal(c, false); n--; } }
 }
 
 function majTemps(dt) {
@@ -1354,8 +1832,8 @@ function majTemps(dt) {
   const distB = etat.pos.distanceTo(bulleB.mesh.position);
   etat.dansA = lisse(bulleA.rayonActuel + 1.5, bulleA.rayonActuel - 1.5, distA) * etat.bulleAForce;
   etat.dansB = lisse(bulleB.rayon + 1.5, bulleB.rayon - 1.5, distB);
-  if (distA < 45) bulleA.decouverte = true;
-  if (distB < 40) bulleB.decouverte = true;
+  if (distA < 55) bulleA.decouverte = true;
+  if (distB < 50) bulleB.decouverte = true;
 
   let facteur = F_BASE / mix(1, 20, etat.dansA);
   facteur *= mix(1, 4, etat.dansB);
@@ -1368,7 +1846,6 @@ function majTemps(dt) {
   etat.angleCiel += (dt * Math.PI * 2 / DUREE_JOUR) * vitesseCiel;
   etat.tJeu += dt * vitesseCiel;
 
-  // Transmissions
   while (etat.transmission < TRANSMISSIONS.length && etat.tVaisseau >= TRANSMISSIONS[etat.transmission].j * 86400) {
     const m = TRANSMISSIONS[etat.transmission];
     const titre = `${m.perso ? 'Message personnel' : 'Transmission impériale'} · émise ${horodatageVaisseau(m.j * 86400)}`;
@@ -1382,10 +1859,11 @@ function majBruit(dt, mouvement, course, silence, recolte) {
   let taux = -16;
   if (mouvement) taux = silence ? -9 : course ? 26 : 4;
   if (recolte) taux = Math.max(taux, 0) + 20;
+  const pic = etat.bruit;   // un bruit ponctuel (saut, scanner, chute) compte avant la décroissance
   etat.bruit = clamp(etat.bruit + taux * dt, 0, 100);
-  etat.bruitMax = Math.max(etat.bruitMax, etat.bruit);
+  etat.bruitMax = Math.max(etat.bruitMax, pic, etat.bruit);
   if (etat.recharge > 0) etat.recharge -= dt;
-  if (etat.bruit >= 100 && etat.verPhase === 'repos' && etat.recharge <= 0) declencherVer();
+  if (Math.max(pic, etat.bruit) >= 100 && etat.verPhase === 'repos' && etat.recharge <= 0) declencherVer();
   const b = etat.bruit;
   const barre = $('#bruit-barre');
   barre.style.width = `${b}%`;
@@ -1397,8 +1875,7 @@ function majBruit(dt, mouvement, course, silence, recolte) {
 function majInteraction(dt) {
   let invite = null, prog = 0;
   const tient = touches.has('KeyE');
-  // cristal le plus proche
-  let proche = null, dmin = 3.6;
+  let proche = null, dmin = 3.8;
   for (const c of cristaux) {
     if (c.recolte) continue;
     const d = c.groupe.position.distanceTo(etat.pos);
@@ -1409,14 +1886,11 @@ function majInteraction(dt) {
     if (tient) {
       proche.progression += dt / 2.2; recolte = true;
       if (proche.progression >= 1) {
-        proche.recolte = true; etat.ether++;
-        proche.pieces.forEach((p) => { p.material = matCristalVide; });
-        proche.lueur.visible = false;
-        proche.groupe.scale.setScalar(0.6);
+        etatCristal(proche, true); etat.ether++;
         afficherEcho(proche.echo);
         noterJournal('echo', 'Écho d\'un cristal', proche.echo);
         son.note([587, 880, 1319], 2.2, 0.06);
-        if (etat.ether === QUOTA && !etat.baliseActive) {
+        if (etat.ether >= QUOTA && !etat.baliseActive) {
           etat.baliseActive = true; balise.visible = true;
           transmettre('Quota atteint. Gloire à vous ! Rejoignez la balise d\'extraction, l\'Empire attend sa livraison.', { titre: 'Bureau du Quota', duree: 9000 });
         }
@@ -1424,12 +1898,11 @@ function majInteraction(dt) {
     } else proche.progression = Math.max(0, proche.progression - dt);
     invite = 'Maintenir E · récolter l\'Éther'; prog = proche.progression;
   }
-  // monolithe
   const dMono = monolithe.position.distanceTo(etat.pos);
   if (!proche && !etat.monolithe && dMono < 6) {
     if (etat.dansA > 0.6) {
       invite = 'Maintenir E · poser la main sur le monolithe';
-      if (tient) { etat.monolitheProg += dt / 3; }
+      if (tient) etat.monolitheProg += dt / 3;
       else etat.monolitheProg = Math.max(0, etat.monolitheProg - dt);
       prog = etat.monolitheProg;
       if (etat.monolitheProg >= 1) activerMonolithe();
@@ -1454,13 +1927,117 @@ function activerMonolithe() {
 }
 
 // =====================================================================
+// Navette : largage au début, extraction à la fin
+// =====================================================================
+const easeInOut = (t) => t * t * (3 - 2 * t);
+const qNav = new THREE.Quaternion();
+function placerNavette(centre, haut, avant, inclinaison = 0) {
+  navette.position.copy(centre);
+  const droite = new V3().crossVectors(haut, avant).normalize();
+  const av = new V3().crossVectors(droite, haut).normalize();
+  const m = new THREE.Matrix4().makeBasis(droite, haut, av.clone().negate());
+  qNav.setFromRotationMatrix(m);
+  navette.quaternion.copy(qNav);
+  navette.rotateX(inclinaison);
+}
+function poussee(intensite) {
+  flammes.forEach((f, i) => { f.scale.setScalar((4 + Math.random() * 1.5) * intensite); f.material.opacity = intensite; });
+  jet.material.uniforms.uForce.value = 0.6 * intensite * (0.85 + Math.random() * 0.3);
+  jet.scale.set(1, 0.6 + intensite * 0.6, 1);
+  lumReacteur.intensity = 400 * intensite;
+  etat.pousseeSon = intensite;
+}
+// Repère local au point d'atterrissage
+function repere(dir) {
+  const haut = dir.clone().normalize();
+  const avant = new V3(0, 0, -1).applyQuaternion(new THREE.Quaternion().setFromUnitVectors(Y, haut));
+  return { haut, avant };
+}
+const LARGAGE_ARRIVEE = 6, LARGAGE_SAUT = 7.2, LARGAGE_FIN = 13;
+function majLargage(dt) {
+  etat.navT += dt;
+  const t = etat.navT;
+  const { haut, avant } = repere(LIEUX.depart);
+  const solDepart = sol(LIEUX.depart);
+  const survol = solDepart.clone().addScaledVector(haut, 9);
+  let p;
+  if (t < LARGAGE_ARRIVEE) {
+    const k = easeInOut(t / LARGAGE_ARRIVEE);
+    const debut = solDepart.clone().addScaledVector(haut, 170).addScaledVector(avant, 220);
+    p = debut.lerp(survol, k);
+    placerNavette(p, haut, avant.clone().negate(), (1 - k) * 0.35);
+    poussee(0.6 + k * 0.6);
+  } else if (t < LARGAGE_SAUT) {
+    p = survol.clone().addScaledVector(haut, Math.sin(t * 2) * 0.3);
+    placerNavette(p, haut, avant.clone().negate(), 0);
+    poussee(1.2);
+  } else {
+    const k = (t - LARGAGE_SAUT) / (LARGAGE_FIN - LARGAGE_SAUT);
+    p = survol.clone().addScaledVector(haut, k * k * 260).addScaledVector(avant, -k * k * 320);
+    placerNavette(p, haut, avant.clone().negate(), -k * 0.5);
+    poussee(1.3);
+  }
+  navette.visible = t < LARGAGE_FIN + 2;
+  if (t >= LARGAGE_FIN + 2) { navette.visible = false; poussee(0); }
+  // L'Arpenteur saute de la navette
+  if (!etat.joueurLargue && t >= LARGAGE_ARRIVEE + 0.4) {
+    etat.joueurLargue = true;
+    etat.pos.copy(survol).addScaledVector(haut, -1.5);
+    etat.vR = 0; etat.auSol = false; etat.vT.set(0, 0, 0);
+  }
+  return t;
+}
+function passerLargage() {
+  if (etat.mode !== 'largage') return;
+  etat.navT = Math.max(etat.navT, LARGAGE_SAUT + 0.5);
+  etat.joueurLargue = true;
+  etat.pos.copy(sol(LIEUX.depart)); etat.vR = 0; etat.auSol = true;
+  commencerJeu();
+}
+function commencerJeu() {
+  etat.mode = 'jeu';
+  $('#passer').hidden = true;
+  $('#hud').hidden = false;
+  if (etat.journal.length === 0) setTimeout(() => { if (etat.mode === 'jeu') afficherEcho("Le sable est tiède. Au-dessus de vous, la lumière tourne autour de rien."); }, 1200);
+}
+
+function majExtraction(dt) {
+  etat.extractionT += dt;
+  const t = etat.extractionT;
+  const { haut, avant } = repere(LIEUX.balise);
+  const sb = balise.position.clone();
+  const survol = sb.clone().addScaledVector(haut, 16);
+  navette.visible = true;
+  if (t < 4) {
+    const k = easeInOut(t / 4);
+    const debut = sb.clone().addScaledVector(haut, 200).addScaledVector(avant, -240);
+    placerNavette(debut.lerp(survol, k), haut, avant, (1 - k) * 0.35);
+    poussee(0.7 + k * 0.5);
+  } else if (t < 7) {
+    placerNavette(survol, haut, avant, 0);
+    poussee(1.1);
+    faisceauTracteur.material.uniforms.uForce.value = 1;
+    faisceauTracteur.scale.set(1, 15, 1); faisceauTracteur.position.y = -8;
+    const k = easeInOut((t - 4) / 3);
+    etat.pos.copy(sb).addScaledVector(haut, mix(0, 14, k));
+  } else {
+    faisceauTracteur.material.uniforms.uForce.value = 0;
+    const k = (t - 7);
+    placerNavette(survol.clone().addScaledVector(haut, k * k * 40).addScaledVector(avant, k * k * 30), haut, avant, -0.3 * Math.min(1, k));
+    poussee(1.4);
+    modele.visible = false;
+  }
+  etat.blanc = lisse(8, 10, t);
+  if (t > 10.2) terminer();
+}
+
+// =====================================================================
 // Joueur et caméra
 // =====================================================================
 const qTmp = new THREE.Quaternion(), qLacet = new THREE.Quaternion(), qCam = new THREE.Quaternion();
 const eulerCam = new THREE.Euler(0, 0, 0, 'YXZ');
 function majJoueur(dt, actif) {
   const haut = etat.pos.clone().normalize();
-  // transport du repère local (le « haut » suit la gravité)
   qTmp.setFromUnitVectors(new V3(0, 1, 0).applyQuaternion(etat.cadre), haut);
   etat.cadre.premultiply(qTmp).normalize();
   qLacet.setFromAxisAngle(Y, etat.lacet).premultiply(etat.cadre);
@@ -1472,7 +2049,7 @@ function majJoueur(dt, actif) {
     ix = axe(['KeyD', 'ArrowRight'], ['KeyA', 'ArrowLeft']);
     iy = axe(['KeyW', 'ArrowUp'], ['KeyS', 'ArrowDown']);
   }
-  const silence = actif && (touches.has('KeyC') || touches.has('ControlLeft'));
+  const silence = actif && touches.has('KeyC');
   const course = actif && !silence && (touches.has('ShiftLeft') || touches.has('ShiftRight'));
   const bouge = ix !== 0 || iy !== 0;
   const vitesse = silence ? 3.2 : course ? 13 : 7;
@@ -1492,8 +2069,16 @@ function majJoueur(dt, actif) {
   const dirN = nouvelle.clone().normalize();
   const solApres = R + hauteurDir(dirN);
   const pasH = etat.vT.length() * dt;
-  if (etat.auSol && pasH > 1e-5 && (solApres - solAvant) / pasH > 1.7) {
-    nouvelle.copy(etat.pos); etat.vT.multiplyScalar(0.2);   // falaise : bloqué
+  const pieds = etat.auSol ? solAvant : etat.pos.length();
+  if (pasH > 1e-5 && (solApres - pieds) / pasH > 1.7) {
+    nouvelle.copy(etat.pos); etat.vT.multiplyScalar(0.2);   // falaise : bloqué, même en sautant
+  }
+  for (const o of obstacles) {   // rochers solides
+    const ecart = vTmp.subVectors(nouvelle, o.pos);
+    if (ecart.lengthSq() > (o.rayon + 3) ** 2) continue;
+    ecart.projectOnPlane(haut);
+    const l = ecart.length(), mini = o.rayon + 0.45;
+    if (l < mini && l > 1e-4) nouvelle.addScaledVector(ecart.normalize(), mini - l);
   }
   nouvelle.addScaledVector(haut, etat.vR * dt);
   const d2 = nouvelle.clone().normalize();
@@ -1501,20 +2086,21 @@ function majJoueur(dt, actif) {
   const rr = nouvelle.length();
   const etaitAuSol = etat.auSol;
   if (rr <= solIci || (etaitAuSol && etat.vR <= 0 && rr - solIci < 0.7)) {
-    if (!etaitAuSol && etat.vR < -11) etat.bruit = Math.min(100, etat.bruit + 10);
+    if (!etaitAuSol && etat.vR < -11) {
+      etat.bruit = Math.min(100, etat.bruit + 10);
+      if (etat.mode !== 'accueil') gerbe(d2.clone().multiplyScalar(solIci), 0.25);
+    }
     nouvelle.copy(d2).multiplyScalar(solIci);
     etat.vR = 0; etat.auSol = true;
   } else etat.auSol = false;
-  // garder la vitesse tangente au nouveau plan
   const m = etat.vT.length();
   etat.vT.projectOnPlane(d2);
   if (etat.vT.lengthSq() > 1e-8) etat.vT.setLength(m);
   etat.pos.copy(nouvelle);
 
-  // orientation du modèle
   if (bouge) {
     const cible = etat.lacet + Math.atan2(-ix, iy);
-    let delta = ((cible - etat.orientation + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+    const delta = ((cible - etat.orientation + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
     etat.orientation += delta * (1 - Math.exp(-dt * 12));
   }
   modele.position.copy(etat.pos);
@@ -1527,7 +2113,6 @@ function majJoueur(dt, actif) {
   u.jambeD.rotation.x = -Math.sin(etat.pas) * amp;
   u.brasG.rotation.x = -Math.sin(etat.pas) * amp * 0.8;
   u.brasD.rotation.x = Math.sin(etat.pas) * amp * 0.8;
-  u.antenne.material.emissiveIntensity = 1.5 + Math.sin(etat.tJeu * 4) * 1.5;
   return { bouge, course, silence, vitesse: v };
 }
 
@@ -1537,14 +2122,37 @@ function majCamera(dt, distance = 6) {
   qCam.setFromEuler(eulerCam).premultiply(etat.cadre);
   const regard = new V3(0, 0, -1).applyQuaternion(qCam);
   const pivot = etat.pos.clone().addScaledVector(haut, 1.75);
-  const pos = pivot.clone().addScaledVector(regard, -distance);
-  const dirCam = pos.clone().normalize();
-  const mini = R + hauteurDir(dirCam) + 0.9;
+  // la caméra se rapproche si du relief se trouve entre elle et l'Arpenteur
+  let l = distance;
+  const p = new V3();
+  for (let k = 1; k <= 10; k++) {
+    const t = (k / 10) * distance;
+    p.copy(pivot).addScaledVector(regard, -t);
+    const d = vTmp.copy(p).normalize();
+    if (p.length() < R + hauteurDir(d) + 0.6) { l = Math.max(0.7, t - distance / 10); break; }
+  }
+  const pos = pivot.clone().addScaledVector(regard, -l);
+  const dirCam = vTmp.copy(pos).normalize();
+  const mini = R + hauteurDir(dirCam) + 0.6;
   if (pos.length() < mini) pos.copy(dirCam).multiplyScalar(mini);
-  const secousse = (etat.tremblement * 0.35 + etat.coup * 0.25) * (MOUVEMENT_REDUIT ? 0.2 : 1);
+  const secousse = (etat.mode === 'jeu' ? etat.tremblement * 0.35 + etat.coup * 0.25 : 0) * (MOUVEMENT_REDUIT ? 0.2 : 1);
   if (secousse > 0) pos.add(new V3((Math.random() - 0.5) * secousse, (Math.random() - 0.5) * secousse, (Math.random() - 0.5) * secousse));
   camera.position.copy(pos);
   camera.quaternion.copy(qCam);
+  camera.updateMatrixWorld();
+}
+// Caméra de cinéma pendant le largage : depuis le sol, elle suit la navette
+function cameraLargage() {
+  const { haut, avant } = repere(LIEUX.depart);
+  const droite = new V3().crossVectors(avant, haut).normalize();
+  const pos = sol(LIEUX.depart).addScaledVector(avant, -16).addScaledVector(droite, 6).addScaledVector(haut, 2.2);
+  const dCam = pos.clone().normalize();
+  const mini = R + hauteurDir(dCam) + 1.2;
+  if (pos.length() < mini) pos.copy(dCam).multiplyScalar(mini);
+  camera.position.copy(pos);
+  camera.up.copy(haut);
+  const cible = etat.joueurLargue ? etat.pos.clone().lerp(navette.position, 0.35) : navette.position.clone();
+  camera.lookAt(cible);
   camera.updateMatrixWorld();
 }
 
@@ -1555,30 +2163,53 @@ const bhMonde = new V3();
 const soleilDir = new V3();
 let precedent = performance.now();
 let tempsTotal = 0;
+// Résolution adaptative : si l'ordinateur peine, on rend moins de pixels plutôt que de saccader
+const perf = { cumul: 0, images: 0, ratio: Math.min(window.devicePixelRatio || 1, 1.5) };
+function adapterResolution(dtReel) {
+  perf.cumul += dtReel; perf.images++;
+  if (perf.cumul < 2) return;
+  const ms = (perf.cumul / perf.images) * 1000;
+  perf.cumul = 0; perf.images = 0;
+  let r = perf.ratio;
+  if (ms > 24 && r > 0.6) r = Math.max(0.6, r - 0.2);
+  else if (ms < 12 && r < Math.min(window.devicePixelRatio || 1, 1.5)) r = Math.min(window.devicePixelRatio || 1, 1.5, r + 0.1);
+  if (r !== perf.ratio) { perf.ratio = r; renderer.setPixelRatio(r); redimensionner(); }
+}
 
 function image(maintenant) {
   requestAnimationFrame(image);
-  const dt = Math.min(0.05, Math.max(0, (maintenant - precedent) / 1000));
+  const dtReel = Math.max(0, (maintenant - precedent) / 1000);
+  const dt = Math.min(0.05, dtReel);
   precedent = maintenant;
+  if (dtReel < 1) adapterResolution(dtReel);
+  maj(dt);
+  rendre();
+}
+
+function maj(dt) {
   tempsTotal += dt;
 
   const enJeu = etat.mode === 'jeu';
   const enAccueil = etat.mode === 'accueil';
   const enExtraction = etat.mode === 'extraction';
+  const enLargage = etat.mode === 'largage';
 
-  if (enJeu || enExtraction) {
-    majTemps(dt);
-  } else if (enAccueil) {
-    etat.angleCiel += dt * Math.PI * 2 / DUREE_JOUR * 0.6;
-    etat.tJeu += dt;
-  }
+  if (enJeu || enExtraction || enLargage) majTemps(dt);
+  else if (enAccueil) { etat.angleCiel += dt * Math.PI * 2 / DUREE_JOUR * 0.6; etat.tJeu += dt; }
 
   // Ciel
   groupeCiel.quaternion.setFromAxisAngle(AXE_CIEL, etat.angleCiel);
-  groupeCiel.position.set(0, 0, 0);
   groupeCiel.updateMatrixWorld();
   bhMonde.copy(bhLocal).applyMatrix4(groupeCiel.matrixWorld);
   soleilDir.copy(bhMonde).normalize();
+  // vaisseau-mère : lente orbite haute
+  {
+    const a = tempsTotal * 0.006;
+    const dir = DIR_MERE.clone().applyAxisAngle(AXE_MERE, a);
+    vaisseauMere.position.copy(dir).multiplyScalar(2600);
+    vaisseauMere.lookAt(groupeCiel.localToWorld(DIR_MERE.clone().applyAxisAngle(AXE_MERE, a + 0.01).multiplyScalar(2600)));
+    feuxMere.forEach((f, i) => { f.material.opacity = (Math.sin(tempsTotal * 3 + i * 2) > 0.6) ? 1 : 0.15; });
+  }
 
   let mouvement = { bouge: false, course: false, silence: false, vitesse: 0 };
   if (enJeu) {
@@ -1588,38 +2219,60 @@ function image(maintenant) {
     majVer(dt);
     if (etat.scanRecharge > 0) etat.scanRecharge -= dt;
     if (etat.revele > 0) etat.revele -= dt;
-    // Extraction
-    if (etat.baliseActive && etat.pos.distanceTo(balise.position) < 4.5) {
+    if (!etat.campVu && etat.pos.distanceTo(centreCamp) < 13) {
+      etat.campVu = true;
+      const texte = "Un campement d'Arpenteur, ensablé depuis longtemps, et l'épave d'un vaisseau mineur. Sur la combinaison vide, le matricule est le vôtre. La date de mission est celle d'après-demain.";
+      afficherEcho(texte, 10000);
+      noterJournal('echo', 'Le campement', texte);
+      son.note([220, 277, 330], 3, 0.05, 'triangle');
+    }
+    // la navette du largage s'éloigne encore quelques secondes
+    if (etat.navT > 0 && etat.navT < LARGAGE_FIN + 2) majLargage(dt);
+    else if (navette.visible) { navette.visible = false; poussee(0); }
+    // Extraction : seulement avec le quota
+    if (etat.baliseActive && etat.ether >= QUOTA && etat.pos.distanceTo(balise.position) < 5) {
       etat.mode = 'extraction'; etat.extractionT = 0;
+      annulerVer();
       $('#invite').hidden = true;
-      transmettre('Signal capté. Remontée en cours.', { titre: 'Vaisseau-mère', duree: 4000 });
+      transmettre('Signal capté. La navette descend.', { titre: 'Vaisseau-mère', duree: 4000 });
       son.note([262, 330, 392, 523], 3.5, 0.06, 'triangle');
     }
+  } else if (enLargage) {
+    const t = majLargage(dt);
+    if (etat.joueurLargue) majJoueur(dt, false);
+    if (t >= LARGAGE_SAUT + 1.2 && etat.auSol) commencerJeu();
   } else if (enExtraction) {
-    etat.extractionT += dt;
-    const haut = etat.pos.clone().normalize();
-    etat.pos.addScaledVector(haut, dt * (4 + etat.extractionT * 6));
+    majExtraction(dt);
     modele.position.copy(etat.pos);
-    etat.blanc = lisse(1.8, 3.6, etat.extractionT);
-    if (etat.extractionT > 3.8) terminer();
   } else if (enAccueil) {
     etat.lacet = Math.sin(tempsTotal * 0.07) * 0.5;
     etat.tangage = 0.3 + Math.sin(tempsTotal * 0.05) * 0.06;
     majJoueur(dt, false);
   }
+  majGerbe(dt);
 
   etat.coup = Math.max(0, etat.coup - dt * 1.2);
   if (!enExtraction) etat.blanc = Math.max(0, etat.blanc - dt);
-  majCamera(dt, enAccueil ? 7.5 : 6);
+  if (enLargage) cameraLargage();
+  else majCamera(dt, enAccueil ? 7.5 : 6);
+  if (enLargage) modele.visible = etat.joueurLargue;
+  else if (enAccueil) modele.visible = false;            // l'Arpenteur n'a pas encore atterri
+  else if (!enExtraction && etat.mode !== 'pause') modele.visible = true;
+
+  // Terrain : plus de détail près de la caméra
+  majTerrain(camera.position, 4);
 
   // Lumière et atmosphère
   const haut = etat.pos.clone().normalize();
   const jour = clamp(haut.dot(soleilDir) * 1.5 + 0.2, 0, 1);
-  lumiere.position.copy(etat.pos).addScaledVector(soleilDir, 120);
+  lumiere.position.copy(etat.pos).addScaledVector(soleilDir, 180);
   lumiere.target.position.copy(etat.pos);
   lumiere.target.updateMatrixWorld();
   lumiere.intensity = 3.4 * lisse(-0.12, 0.15, haut.dot(soleilDir));
-  hemi.intensity = 0.22 + 0.5 * jour;
+  hemi.intensity = 0.3 + 0.5 * jour;
+  appoint.position.copy(camera.position);
+  appoint.target.position.copy(etat.pos);
+  appoint.target.updateMatrixWorld();
   scMonde.fog.color.setRGB(mix(0.03, 0.17, jour), mix(0.035, 0.11, jour), mix(0.06, 0.08, jour));
   matAtmo.uniforms.uCam.value.copy(camera.position);
   matAtmo.uniforms.uSoleil.value.copy(soleilDir);
@@ -1627,15 +2280,14 @@ function image(maintenant) {
   // Animations du monde
   for (const c of cristaux) {
     if (c.recolte) continue;
-    const pulsation = 2.2 + Math.sin(tempsTotal * 2 + c.dir.x * 10) * 0.6 + c.progression * 4;
-    c.mat.emissiveIntensity = pulsation;
+    c.mat.emissiveIntensity = 2.2 + Math.sin(tempsTotal * 2 + c.dir.x * 10) * 0.6 + c.progression * 4;
     c.lueur.material.opacity = 0.55 + Math.sin(tempsTotal * 2 + c.dir.x * 10) * 0.2 + c.progression * 0.4;
   }
   for (const b of [bulleA, bulleB]) { b.mat.uniforms.uCam.value.copy(camera.position); b.mat.uniforms.uTemps.value = tempsTotal; }
   matMonolithe.emissiveIntensity = etat.monolithe ? 3.5 + Math.sin(tempsTotal * 1.3) * 1.2 : 0.05 + etat.dansA * 0.6 + etat.monolitheProg * 3;
   anneaux.forEach((a, i) => { a.rotation.set(tempsTotal * (0.2 + i * 0.13), tempsTotal * (0.31 - i * 0.07), i); });
 
-  // Écho d'Arpenteur dans la bulle B (il marche en rond, plus vite que vous)
+  // Écho d'Arpenteur dans la bulle B (il marche en rond)
   {
     etat.fantomeT += dt * 1.6;
     const centre = bulleB.mesh.position;
@@ -1658,9 +2310,8 @@ function image(maintenant) {
       if (!etat.journal.some((e) => e.titre === 'Une silhouette')) noterJournal('echo', 'Une silhouette', texte);
       son.note([311, 466], 2.5, 0.05, 'sine');
     }
-    const cible = etat.fantomeAbsent > 0 ? 0 : 1;
-    etat.fantomeFondu = mix(etat.fantomeFondu, cible, 1 - Math.exp(-dt * 2));
-    fantome.children.forEach((c) => { if (c.material) c.material.opacity = 0.22 * etat.fantomeFondu; });
+    etat.fantomeFondu = mix(etat.fantomeFondu, etat.fantomeAbsent > 0 ? 0 : 1, 1 - Math.exp(-dt * 2));
+    matFantome.opacity = 0.22 * etat.fantomeFondu;
     fantome.visible = etat.fantomeFondu > 0.02;
   }
 
@@ -1669,7 +2320,7 @@ function image(maintenant) {
     etat.scanT += dt;
     scan.visible = true;
     scan.position.copy(etat.scanOrigine);
-    scan.scale.setScalar(2 + etat.scanT * 95);
+    scan.scale.setScalar(2 + etat.scanT * 120);
     matScan.uniforms.uFondu.value = Math.max(0, 1 - etat.scanT / 1.8) * 1.6;
     matScan.uniforms.uCam.value.copy(camera.position);
   } else scan.visible = false;
@@ -1705,17 +2356,14 @@ function image(maintenant) {
   lent.uCentre.value.set(ndc.x * 0.5 + 0.5, ndc.y * 0.5 + 0.5);
   lent.uRayon.value = Math.tan(Math.asin(Math.min(1, BH_OMBRE / dist))) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 0.5;
 
-  // HUD
-  if (enJeu || enExtraction) majHUD(mouvement);
-  son.maj(mouvement.vitesse, etat.tremblement, etat.dansA);
+  if (enJeu || enExtraction) majHUD();
+  son.maj(mouvement.vitesse, enJeu ? etat.tremblement : 0, etat.dansA);
 
-  // Post-traitement
   matFinal.uniforms.uTemps.value = tempsTotal;
   matFinal.uniforms.uBulle.value = etat.dansA * (MOUVEMENT_REDUIT ? 0.5 : 1);
   matFinal.uniforms.uChaud.value = etat.dansB;
   matFinal.uniforms.uCoup.value = etat.coup;
   matFinal.uniforms.uBlanc.value = etat.blanc;
-  rendre();
 }
 
 function majHUD() {
@@ -1725,7 +2373,6 @@ function majHUD() {
   ratio.textContent = `1 h ici = ${formatDuree(3600 / etat.facteur, true)} là-haut`;
   ratio.classList.toggle('dilate', etat.dansA > 0.3);
   majObjectifs();
-  // marqueurs
   const revele = etat.revele > 0;
   cristaux.forEach((c, i) => {
     const m = marqueur('c' + i, '', '◆');
@@ -1734,6 +2381,7 @@ function majHUD() {
   placerMarqueur(marqueur('a', 'bulle', '◯'), bulleA.mesh.position, bulleA.decouverte && !etat.monolithe && (revele || etat.pos.distanceTo(bulleA.mesh.position) > 20));
   placerMarqueur(marqueur('b', 'bulle', '◯'), bulleB.mesh.position, bulleB.decouverte && revele);
   placerMarqueur(marqueur('x', 'balise', '⇡'), balise.position.clone().addScaledVector(LIEUX.balise, 3), etat.baliseActive);
+  placerMarqueur(marqueur('k', 'monolithe', '⌂'), centreCamp.clone().addScaledVector(LIEUX.camp, 3), etat.campDecouvert && !etat.campVu && revele);
 }
 
 function rendre() {
@@ -1756,26 +2404,50 @@ function rendre() {
   passe(matFinal, null);
 }
 
+function redimensionner() {
+  const l = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(l, h, false);
+  camera.aspect = l / h;
+  camera.updateProjectionMatrix();
+  const taille = renderer.getDrawingBufferSize(new THREE.Vector2());
+  const w = Math.max(1, Math.floor(taille.x)), hh = Math.max(1, Math.floor(taille.y));
+  for (const rt of [rtCiel, rtMonde, rtLentille, rtCompo]) rt.setSize(w, hh);
+  const wq = Math.max(1, Math.floor(w / 4)), hq = Math.max(1, Math.floor(hh / 4));
+  rtFlouA.setSize(wq, hq); rtFlouB.setSize(wq, hq);
+  matFinal.uniforms.uRes.value.set(w, hh);
+  matLentille.uniforms.uAspect.value = w / hh;
+  for (const pts of [poussiere, debris.points]) pts.material.uniforms.uEchelle.value = hh / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+}
+window.addEventListener('resize', redimensionner);
+
 // =====================================================================
 // Déroulé de partie
 // =====================================================================
 function demarrer() {
-  if (etat.mode === 'accueil') {
-    etat.pos.copy(sol(LIEUX.depart)); etat.vT.set(0, 0, 0); etat.vR = 0;
-    etat.lacet = 0; etat.tangage = 0.22;
+  if (etat.mode === 'pause') {           // reprise
+    etat.mode = etat.modeAvantPause;
+    $('#pause').hidden = true;
+    son.demarrer();
+    demanderVerrou();
+    canvas.focus();
+    return;
   }
-  etat.mode = 'jeu';
+  // nouveau largage : la navette dépose l'Arpenteur
+  etat.mode = 'largage';
+  etat.navT = 0; etat.joueurLargue = false;
+  etat.pos.copy(sol(LIEUX.depart)); etat.vT.set(0, 0, 0); etat.vR = 0;
+  etat.lacet = 0; etat.tangage = 0.22; etat.orientation = 0;
+  modele.visible = false; navette.visible = true;
   $('#accueil').hidden = true; $('#pause').hidden = true; $('#fin').hidden = true;
-  $('#hud').hidden = false;
+  $('#hud').hidden = true; $('#passer').hidden = false;
   son.demarrer();
+  son.note([110, 82], 4, 0.08, 'sawtooth');
   demanderVerrou();
   canvas.focus();
-  if (etat.transmission === 0 && etat.journal.length === 0) {
-    setTimeout(() => afficherEcho("Le sable est tiède. Au-dessus de vous, la lumière tourne autour de rien."), 1200);
-  }
 }
 function mettrePause() {
-  if (etat.mode !== 'jeu') return;
+  if (etat.mode !== 'jeu' && etat.mode !== 'largage') return;
+  etat.modeAvantPause = etat.mode;
   etat.mode = 'pause';
   touches.clear();
   $('#pause').hidden = false;
@@ -1789,7 +2461,7 @@ function terminer() {
   $('#fin-vaisseau').textContent = formatDuree(etat.tVaisseau);
   $('#fin-ether').textContent = `${etat.ether} / ${QUOTA}`;
   $('#fin-trans').textContent = `${etat.transmission} / ${TRANSMISSIONS.length}`;
-  $('#fin-temps').textContent = `Vous avez vécu ${formatDuree(etat.tVecu)} sur la planète. Sur le vaisseau-mère, ${formatDuree(etat.tVaisseau)} se sont écoulés.`;
+  $('#fin-temps').textContent = `Vous avez vécu ${formatDuree(etat.tVecu)} sur la planète. Sur le vaisseau-mère, il s'est écoulé ${formatDuree(etat.tVaisseau)}.`;
   $('#fin-verite').textContent = etat.monolithe
     ? "Le Bureau du Quota vous félicite. Vous, vous savez maintenant ce que vous avez livré."
     : "Le Bureau du Quota vous félicite. Quelque part, sous une bulle de temps lent, un monolithe attend toujours.";
@@ -1798,7 +2470,7 @@ function terminer() {
 }
 function recommencer() {
   etatInitial();
-  etat.mode = 'accueil';
+  modele.visible = true;
   demarrer();
 }
 
@@ -1812,21 +2484,24 @@ function instantane() {
   return {
     ether: etat.ether, recoltes: cristaux.map((c) => c.recolte), tVecu: etat.tVecu, tVaisseau: etat.tVaisseau,
     transmission: etat.transmission, monolithe: etat.monolithe, journal: etat.journal,
-    pos: etat.pos.toArray(), angleCiel: etat.angleCiel, enPartie: etat.mode !== 'accueil',
+    pos: etat.pos.toArray(), angleCiel: etat.angleCiel, enPartie: etat.mode !== 'accueil' && etat.mode !== 'fin',
   };
 }
 function demarrage(donnees) {
+  chargerModeles().then(integrerModeles).catch((e) => console.warn('Décor simplifié :', e?.message || e));
   etatInitial();
   redimensionner();
+  // terrain initial complet autour du point de départ
+  const oeil = sol(LIEUX.depart).addScaledVector(LIEUX.depart, 4);
+  for (let i = 0; i < 8; i++) majTerrain(oeil, 400);
+  $('#chargement').textContent = 'Planète prête.';
   const d = donnees || {};
   if (d.enPartie) {
     etat.ether = d.ether || 0; etat.tVecu = d.tVecu || 0; etat.tVaisseau = d.tVaisseau || 0;
     etat.transmission = d.transmission || 0; etat.journal = Array.isArray(d.journal) ? d.journal : [];
     etat.angleCiel = d.angleCiel || 0;
     if (Array.isArray(d.pos)) etat.pos.fromArray(d.pos);
-    (d.recoltes || []).forEach((r, i) => {
-      if (r && cristaux[i]) { const c = cristaux[i]; c.recolte = true; c.pieces.forEach((p) => { p.material = matCristalVide; }); c.lueur.visible = false; c.groupe.scale.setScalar(0.6); }
-    });
+    (d.recoltes || []).forEach((r, i) => { if (r && cristaux[i]) etatCristal(cristaux[i], true); });
     if (d.monolithe) { etat.monolithe = true; anneaux.forEach((a) => { a.visible = true; }); }
     if (etat.ether >= QUOTA) { etat.baliseActive = true; balise.visible = true; }
     majJournal();
@@ -1834,7 +2509,12 @@ function demarrage(donnees) {
   requestAnimationFrame((t) => { precedent = t; image(t); });
 }
 // Accès de test : ouvrir la page avec #debug
-if (location.hash === '#debug') window.__echos = { etat, cristaux, bulleA, bulleB, monolithe, balise, LIEUX, sol, declencherVer, lancerScan, THREE };
+if (location.hash === '#debug') {
+  window.__echos = {
+    etat, cristaux, bulleA, bulleB, monolithe, balise, LIEUX, sol, declencherVer, lancerScan, THREE, navette, racines, touches,
+    avancer(secondes) { for (let t = 0; t < secondes; t += 0.05) maj(0.05); },   // fait avancer la logique sans dessiner
+  };
+}
 const chaud = window.claude?.hot;
 chaud?.snapshot?.(instantane);
 if (chaud?.ready) chaud.ready(demarrage); else demarrage(chaud?.data ?? {});
