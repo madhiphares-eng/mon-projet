@@ -94,6 +94,10 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
 #temps .ligne { display: flex; justify-content: space-between; gap: 18px; font-variant-numeric: tabular-nums; }
 #temps .valeur { font-size: 15px; font-weight: 500; }
 #temps .vaisseau .valeur { color: var(--ambre); }
+#instruments { top: calc(max(14px, env(safe-area-inset-top, 0px)) + 108px); left: max(14px, env(safe-area-inset-left, 0px)); display: grid; gap: 6px; min-width: 15rem; max-width: 19rem; }
+#instruments .ligne { display: flex; justify-content: space-between; gap: 18px; font-variant-numeric: tabular-nums; }
+#instruments .valeur { font-size: 15px; font-weight: 500; color: var(--ether); }
+#instruments .aide-vol { font-size: 11px; line-height: 1.45; color: var(--brume); border-top: 1px solid var(--filet); padding-top: 6px; }
 #ratio { font-size: 11px; color: var(--brume); border-top: 1px solid var(--filet); padding-top: 6px; }
 #ratio.dilate { color: var(--ether); }
 #objectifs { top: max(14px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); display: grid; gap: 6px; max-width: 19rem; }
@@ -189,6 +193,11 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
     <div class="ligne vaisseau"><span class="etiquette">Vaisseau-mère</span><span class="valeur" id="t-vaisseau">J+0 · 00 h 00</span></div>
     <div id="ratio">1 h ici = 3 j là-haut</div>
   </section>
+  <section id="instruments" class="panneau" aria-label="Pilotage" hidden>
+    <div class="ligne"><span class="etiquette">Altitude</span><span class="valeur" id="v-alt">0 m</span></div>
+    <div class="ligne"><span class="etiquette">Vitesse</span><span class="valeur" id="v-vit">0 km/h</span></div>
+    <div class="aide-vol">Souris : orienter · Z/S : poussée · Q/D : latéral · Espace/C : monter/descendre · Maj : boost · E : se poser</div>
+  </section>
   <section id="objectifs" class="panneau" aria-label="Objectifs">
     <span class="etiquette">Ordres de mission</span>
     <ul id="liste-objectifs"></ul>
@@ -230,6 +239,7 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
       <li><kbd>E</kbd><span>maintenir pour récolter, toucher</span></li>
       <li><kbd>F</kbd><span>scanner, bruyant</span></li>
       <li><kbd>J</kbd><span>journal de bord</span></li>
+      <li><kbd>E</kbd><span>près de la navette : monter à bord et la piloter</span></li>
     </ul>
     <div class="actions">
       <button class="principal" id="btn-atterrir" type="button">Atterrir</button>
@@ -1551,13 +1561,15 @@ function etatInitial() {
     tremblement: 0, verPhase: 'repos', verT: 0, verPoint: new V3(), verAvant: new V3(1, 0, 0), verTouche: false, recharge: 0,
     coup: 0, blanc: 0, scanT: -99, scanRecharge: 0, scanOrigine: new V3(), revele: 0, gerbeT: 99,
     fantomeT: 0, fantomeFondu: 1, fantomeAbsent: 0, bulleAForce: 1, cycleA: 0,
-    navT: 0, joueurLargue: false, pousseeSon: 0, gerbeFaite: false,
+    navT: 0, joueurLargue: false, pousseeSon: 0, gerbeFaite: false, extractionVaisseau: false,
+    nav: { etat: 'aucun', pos: new V3(), vel: new V3(), cadre: new THREE.Quaternion(), lacet: 0, tangage: 0, roulis: 0, alt: 0 },
     extractionT: 0, baliseActive: false, dansA: 0, dansB: 0, campVu: false, campDecouvert: false,
   });
   for (const c of cristaux) { etatCristal(c, false); c.vu = false; }
   bulleA.decouverte = false; bulleB.decouverte = false;
   matMonolithe.emissiveIntensity = 0.05; anneaux.forEach((a) => { a.visible = false; });
   balise.visible = false; ver.groupe.visible = false; debris.points.visible = false; navette.visible = false;
+  retirerObstacleNavette(); $('#instruments').hidden = true;
   $('#transmissions').replaceChildren();
   $('#journal').hidden = true; $('#alerte').hidden = true; $('#invite').hidden = true; $('#passer').hidden = true;
   clearTimeout(echoMinuteur); $('#echo').classList.remove('visible');
@@ -1576,6 +1588,14 @@ window.addEventListener('keydown', (e) => {
   if (e.repeat) { touches.add(e.code); return; }
   touches.add(e.code);
   if (etat.mode === 'largage' && (e.code === 'Space' || e.code === 'KeyE' || e.code === 'Enter')) passerLargage();
+  if (etat.mode === 'jeu' && e.code === 'KeyE' && navettePresDuJoueur() && !cristalProche()) monterABord();
+  else if (etat.mode === 'vol' && e.code === 'KeyE') actionVol();
+  if (etat.mode === 'vol') {
+    if (e.code === 'KeyF') lancerScan();
+    if (e.code === 'KeyJ') basculerJournal();
+    if (estToucheM(e)) son.basculer();
+    if (e.code === 'Escape' && !verrou) mettrePause();
+  }
   if (etat.mode === 'jeu') {
     if (e.code === 'KeyF') lancerScan();
     if (e.code === 'KeyJ') basculerJournal();
@@ -1585,25 +1605,31 @@ window.addEventListener('keydown', (e) => {
   else if (etat.mode === 'largage' && e.code === 'Escape' && !verrou) mettrePause();
 });
 window.addEventListener('keyup', (e) => touches.delete(e.code));
-window.addEventListener('blur', () => { touches.clear(); if ((etat.mode === 'jeu' || etat.mode === 'largage') && !verrou) mettrePause(); });
+const MODES_ACTIFS = ['jeu', 'largage', 'vol'];
+window.addEventListener('blur', () => { touches.clear(); if (MODES_ACTIFS.includes(etat.mode) && !verrou) mettrePause(); });
 canvas.addEventListener('mousemove', (e) => {
-  if (etat.mode !== 'jeu') return;
+  if (etat.mode !== 'jeu' && etat.mode !== 'vol') return;
   if (!verrou && !(modeGlisser && (e.buttons & 1))) return;
   if (performance.now() < ignorerSourisJusqua) return;
   const sens = 0.0024;
   const dx = clamp(e.movementX, -80, 80), dy = clamp(e.movementY, -80, 80);
+  if (etat.mode === 'vol') {
+    etat.nav.lacet -= dx * sens * 0.8;
+    etat.nav.tangage = clamp(etat.nav.tangage - dy * sens * 0.8, -0.85, 0.85);
+    return;
+  }
   etat.lacet -= dx * sens;
   etat.tangage = clamp(etat.tangage - dy * sens, -1.1, 1.15);
 });
 canvas.addEventListener('click', () => {
   if (etat.mode === 'largage') passerLargage();
-  if ((etat.mode === 'jeu' || etat.mode === 'largage') && !verrou) demanderVerrou();
+  if (MODES_ACTIFS.includes(etat.mode) && !verrou) demanderVerrou();
 });
 document.addEventListener('pointerlockchange', () => {
   const avant = verrou;
   verrou = document.pointerLockElement === canvas;
   ignorerSourisJusqua = performance.now() + 200;
-  if (avant && !verrou && (etat.mode === 'jeu' || etat.mode === 'largage')) mettrePause();
+  if (avant && !verrou && MODES_ACTIFS.includes(etat.mode)) mettrePause();
 });
 document.addEventListener('pointerlockerror', () => { modeGlisser = true; });
 function demanderVerrou() {
@@ -1953,7 +1979,8 @@ function repere(dir) {
   const avant = new V3(0, 0, -1).applyQuaternion(new THREE.Quaternion().setFromUnitVectors(Y, haut));
   return { haut, avant };
 }
-const LARGAGE_ARRIVEE = 6, LARGAGE_SAUT = 7.2, LARGAGE_FIN = 13;
+const LARGAGE_ARRIVEE = 6, LARGAGE_SAUT = 7.2, LARGAGE_FIN = 11.5;
+const PARKING = versDir(LIEUX.depart, 11, 7);   // la navette se pose ici après le largage
 function majLargage(dt) {
   etat.navT += dt;
   const t = etat.navT;
@@ -1972,13 +1999,15 @@ function majLargage(dt) {
     placerNavette(p, haut, avant.clone().negate(), 0);
     poussee(1.2);
   } else {
-    const k = (t - LARGAGE_SAUT) / (LARGAGE_FIN - LARGAGE_SAUT);
-    p = survol.clone().addScaledVector(haut, k * k * 260).addScaledVector(avant, -k * k * 320);
-    placerNavette(p, haut, avant.clone().negate(), -k * 0.5);
-    poussee(1.3);
+    const k = clamp((t - LARGAGE_SAUT) / (LARGAGE_FIN - LARGAGE_SAUT), 0, 1), ke = easeInOut(k);
+    const hautP = PARKING.clone();
+    const cible = sol(PARKING).addScaledVector(hautP, 0.3);
+    p = survol.clone().lerp(cible, ke).addScaledVector(haut, Math.sin(ke * Math.PI) * 5);
+    placerNavette(p, haut.clone().lerp(hautP, ke).normalize(), avant.clone().negate(), 0);
+    poussee(mix(1.2, 0.15, ke));
+    if (k >= 1) garerNavette();
   }
-  navette.visible = t < LARGAGE_FIN + 2;
-  if (t >= LARGAGE_FIN + 2) { navette.visible = false; poussee(0); }
+  navette.visible = true;
   // L'Arpenteur saute de la navette
   if (!etat.joueurLargue && t >= LARGAGE_ARRIVEE + 0.4) {
     etat.joueurLargue = true;
@@ -1987,6 +2016,129 @@ function majLargage(dt) {
   }
   return t;
 }
+// --- Pilotage de la navette ---
+let obstacleNavette = null;
+function retirerObstacleNavette() {
+  if (obstacleNavette) { const i = obstacles.indexOf(obstacleNavette); if (i >= 0) obstacles.splice(i, 1); obstacleNavette = null; }
+}
+function garerNavette() {
+  const n = etat.nav;
+  if (n.etat === 'garee') return;
+  n.etat = 'garee'; n.vel.set(0, 0, 0);
+  n.pos.copy(navette.position);
+  poussee(0);
+  retirerObstacleNavette();
+  obstacleNavette = { pos: navette.position.clone(), rayon: 5.5 };
+  obstacles.push(obstacleNavette);
+}
+const navettePresDuJoueur = () => etat.nav.etat === 'garee' && navette.position.distanceTo(etat.pos) < 9;
+const cristalProche = () => cristaux.some((c) => !c.recolte && c.groupe.position.distanceTo(etat.pos) < 3.8);
+function monterABord() {
+  const n = etat.nav;
+  n.etat = 'vol'; n.vel.set(0, 0, 0);
+  n.pos.copy(navette.position).addScaledVector(navette.position.clone().normalize(), 1.5);
+  n.cadre.copy(etat.cadre); n.lacet = etat.lacet; n.tangage = 0; n.roulis = 0;
+  retirerObstacleNavette();
+  annulerVer();
+  etat.mode = 'vol';
+  modele.visible = false;
+  $('#invite').hidden = true; $('#instruments').hidden = false;
+  son.note([196, 294, 392], 1.5, 0.06, 'triangle');
+  if (!etat.journal.some((e) => e.titre === 'Navette')) {
+    transmettre('Navette déverrouillée. Souris pour orienter, Z/S pour la poussée, Espace/C pour monter ou descendre, E pour se poser.', { titre: 'Navette', duree: 9000 });
+    noterJournal('transmission', 'Navette', 'Pilotage : souris pour orienter, Z/S poussée, Q/D latéral, Espace/C monter/descendre, Maj boost, E se poser près du sol à vitesse réduite.');
+  }
+}
+function pretePourExtraction() { return etat.baliseActive && etat.ether >= QUOTA && etat.nav.pos.distanceTo(balise.position) < 45; }
+function actionVol() {
+  const n = etat.nav;
+  if (pretePourExtraction()) {
+    etat.mode = 'extraction'; etat.extractionT = 0; etat.extractionVaisseau = true;
+    $('#instruments').hidden = true; $('#invite').hidden = true;
+    transmettre('Arrimage à la balise. Remontée vers le vaisseau-mère.', { titre: 'Vaisseau-mère', duree: 4000 });
+    son.note([262, 330, 392, 523], 3.5, 0.06, 'triangle');
+    return;
+  }
+  if (n.alt > 9 || n.vel.length() > 12) {
+    transmettre('Trop haut ou trop vite pour se poser. Descendez près du sol et ralentissez.', { titre: 'Navette', duree: 3500 });
+    return;
+  }
+  // atterrissage
+  const d = n.pos.clone().normalize();
+  navette.position.copy(sol(d)).addScaledVector(d, 0.3);
+  navette.quaternion.setFromAxisAngle(Y, n.lacet).premultiply(n.cadre);   // posée à plat
+  n.pos.copy(navette.position);
+  const droite = new V3(1, 0, 0).applyQuaternion(navette.quaternion);
+  const dirJoueur = navette.position.clone().addScaledVector(droite, 7.5).normalize();
+  etat.pos.copy(sol(dirJoueur)); etat.vT.set(0, 0, 0); etat.vR = 0; etat.auSol = true;
+  etat.cadre.copy(n.cadre); etat.lacet = n.lacet; etat.tangage = 0.2;
+  n.etat = 'aucun'; garerNavette();
+  etat.bruit = Math.min(100, etat.bruit + 30);
+  gerbe(navette.position.clone(), 0.6);
+  etat.mode = 'jeu';
+  modele.visible = true;
+  $('#instruments').hidden = true;
+}
+const qVol = new THREE.Quaternion(), eulerVol = new THREE.Euler(0, 0, 0, 'YXZ');
+function majVol(dt) {
+  const n = etat.nav;
+  const haut = n.pos.clone().normalize();
+  qTmp.setFromUnitVectors(new V3(0, 1, 0).applyQuaternion(n.cadre), haut);
+  n.cadre.premultiply(qTmp).normalize();
+  eulerVol.set(n.tangage, n.lacet, 0, 'YXZ');
+  qVol.setFromEuler(eulerVol).premultiply(n.cadre);
+  const avant = new V3(0, 0, -1).applyQuaternion(qVol);
+  const droite = new V3(1, 0, 0).applyQuaternion(qVol);
+  const ix = axe(['KeyD', 'ArrowRight'], ['KeyA', 'ArrowLeft']);
+  const iy = axe(['KeyW', 'ArrowUp'], ['KeyS', 'ArrowDown']);
+  const montee = (touches.has('Space') ? 1 : 0) - (touches.has('KeyC') ? 1 : 0);
+  const boost = touches.has('ShiftLeft') || touches.has('ShiftRight');
+  const acc = new V3().addScaledVector(avant, iy * (boost ? 75 : 32)).addScaledVector(droite, ix * 20).addScaledVector(haut, montee * 24);
+  n.vel.addScaledVector(acc, dt);
+  n.vel.multiplyScalar(Math.exp(-dt * 0.9));     // amortissement (la gravité est compensée par les réacteurs)
+  n.pos.addScaledVector(n.vel, dt);
+  const d = n.pos.clone().normalize();
+  const solR = R + hauteurDir(d);
+  n.alt = n.pos.length() - solR;
+  if (n.alt < 2.2) {
+    n.pos.copy(d).multiplyScalar(solR + 2.2);
+    const vr = n.vel.dot(d);
+    if (vr < 0) n.vel.addScaledVector(d, -vr);
+    n.alt = 2.2;
+  }
+  if (n.alt > 900) n.vel.addScaledVector(d, -(n.alt - 900) * dt * 2);   // plafond
+  n.roulis = mix(n.roulis, -ix * 0.45, 1 - Math.exp(-dt * 4));
+  navette.position.copy(n.pos);
+  navette.quaternion.copy(qVol);
+  navette.rotateZ(n.roulis);
+  navette.visible = true;
+  poussee(0.35 + Math.abs(iy) * 0.6 + (boost && iy ? 0.4 : 0) + Math.abs(montee) * 0.25);
+  // l'Arpenteur voyage dans la navette : bulles, campement et marqueurs suivent sa position
+  etat.pos.copy(n.pos);
+  majBruit(dt, false, false, false, false);   // en vol, le bruit retombe (le ver ne peut pas atteindre la navette)
+  // invite
+  let invite = null;
+  if (pretePourExtraction()) invite = 'Appuyer sur E · s\'arrimer à la balise et rentrer';
+  else if (n.alt < 9 && n.vel.length() < 12) invite = 'Appuyer sur E · se poser ici';
+  $('#invite').hidden = !invite;
+  if (invite) { $('#invite-texte').textContent = invite; $('#invite-barre').style.width = '0%'; }
+  return { vitesse: n.vel.length() };
+}
+function cameraVol() {
+  const n = etat.nav;
+  const haut = n.pos.clone().normalize();
+  eulerVol.set(n.tangage * 0.55, n.lacet, 0, 'YXZ');
+  const qc = new THREE.Quaternion().setFromEuler(eulerVol).premultiply(n.cadre);
+  const pos = n.pos.clone().add(new V3(0, 6.5, 24).applyQuaternion(qc));
+  const d = pos.clone().normalize();
+  const mini = R + hauteurDir(d) + 1.5;
+  if (pos.length() < mini) pos.copy(d).multiplyScalar(mini);
+  camera.position.copy(pos);
+  camera.up.copy(haut);
+  camera.lookAt(n.pos.clone().addScaledVector(new V3(0, 0, -1).applyQuaternion(qc), 14).addScaledVector(haut, 2));
+  camera.updateMatrixWorld();
+}
+
 function passerLargage() {
   if (etat.mode !== 'largage') return;
   etat.navT = Math.max(etat.navT, LARGAGE_SAUT + 0.5);
@@ -2004,14 +2156,25 @@ function commencerJeu() {
 function majExtraction(dt) {
   etat.extractionT += dt;
   const t = etat.extractionT;
+  if (etat.extractionVaisseau) {           // déjà à bord : la navette remonte vers le vaisseau-mère
+    const n = etat.nav, haut = n.pos.clone().normalize();
+    n.pos.addScaledVector(haut, dt * (6 + t * t * 14));
+    navette.position.copy(n.pos);
+    poussee(1.4);
+    etat.pos.copy(n.pos);
+    etat.blanc = lisse(2.5, 4.5, t);
+    if (t > 4.8) terminer();
+    return;
+  }
+  if (t < dt * 1.5) { etat.navDepart = etat.nav.etat === 'garee' ? navette.position.clone() : null; retirerObstacleNavette(); etat.nav.etat = 'aucun'; }
   const { haut, avant } = repere(LIEUX.balise);
   const sb = balise.position.clone();
   const survol = sb.clone().addScaledVector(haut, 16);
   navette.visible = true;
   if (t < 4) {
     const k = easeInOut(t / 4);
-    const debut = sb.clone().addScaledVector(haut, 200).addScaledVector(avant, -240);
-    placerNavette(debut.lerp(survol, k), haut, avant, (1 - k) * 0.35);
+    const debut = etat.navDepart || sb.clone().addScaledVector(haut, 200);
+    placerNavette(debut.clone().lerp(survol, k).addScaledVector(haut, Math.sin(k * Math.PI) * 60), haut, avant, (1 - k) * 0.35);
     poussee(0.7 + k * 0.5);
   } else if (t < 7) {
     placerNavette(survol, haut, avant, 0);
@@ -2193,8 +2356,9 @@ function maj(dt) {
   const enAccueil = etat.mode === 'accueil';
   const enExtraction = etat.mode === 'extraction';
   const enLargage = etat.mode === 'largage';
+  const enVol = etat.mode === 'vol';
 
-  if (enJeu || enExtraction || enLargage) majTemps(dt);
+  if (enJeu || enExtraction || enLargage || enVol) majTemps(dt);
   else if (enAccueil) { etat.angleCiel += dt * Math.PI * 2 / DUREE_JOUR * 0.6; etat.tJeu += dt; }
 
   // Ciel
@@ -2226,9 +2390,13 @@ function maj(dt) {
       noterJournal('echo', 'Le campement', texte);
       son.note([220, 277, 330], 3, 0.05, 'triangle');
     }
-    // la navette du largage s'éloigne encore quelques secondes
-    if (etat.navT > 0 && etat.navT < LARGAGE_FIN + 2) majLargage(dt);
-    else if (navette.visible) { navette.visible = false; poussee(0); }
+    // la navette du largage finit de se poser
+    if (etat.nav.etat === 'aucun' && etat.navT > 0 && etat.navT <= LARGAGE_FIN) majLargage(dt);
+    if (navettePresDuJoueur() && !cristalProche() && $('#invite').hidden) {
+      $('#invite').hidden = false;
+      $('#invite-texte').textContent = 'Appuyer sur E · monter à bord de la navette';
+      $('#invite-barre').style.width = '0%';
+    }
     // Extraction : seulement avec le quota
     if (etat.baliseActive && etat.ether >= QUOTA && etat.pos.distanceTo(balise.position) < 5) {
       etat.mode = 'extraction'; etat.extractionT = 0;
@@ -2241,9 +2409,14 @@ function maj(dt) {
     const t = majLargage(dt);
     if (etat.joueurLargue) majJoueur(dt, false);
     if (t >= LARGAGE_SAUT + 1.2 && etat.auSol) commencerJeu();
+  } else if (enVol) {
+    mouvement = majVol(dt);
+    if (etat.scanRecharge > 0) etat.scanRecharge -= dt;
+    if (etat.revele > 0) etat.revele -= dt;
   } else if (enExtraction) {
     majExtraction(dt);
     modele.position.copy(etat.pos);
+    if (etat.extractionVaisseau) modele.visible = false;
   } else if (enAccueil) {
     etat.lacet = Math.sin(tempsTotal * 0.07) * 0.5;
     etat.tangage = 0.3 + Math.sin(tempsTotal * 0.05) * 0.06;
@@ -2254,10 +2427,12 @@ function maj(dt) {
   etat.coup = Math.max(0, etat.coup - dt * 1.2);
   if (!enExtraction) etat.blanc = Math.max(0, etat.blanc - dt);
   if (enLargage) cameraLargage();
+  else if (enVol || (enExtraction && etat.extractionVaisseau) || (etat.mode === 'pause' && etat.modeAvantPause === 'vol')) cameraVol();
   else majCamera(dt, enAccueil ? 7.5 : 6);
   if (enLargage) modele.visible = etat.joueurLargue;
+  else if (enVol || etat.extractionVaisseau) modele.visible = false;
   else if (enAccueil) modele.visible = false;            // l'Arpenteur n'a pas encore atterri
-  else if (!enExtraction && etat.mode !== 'pause') modele.visible = true;
+  else if (!enExtraction && etat.mode !== 'pause' && etat.mode !== 'fin') modele.visible = true;
 
   // Terrain : plus de détail près de la caméra
   majTerrain(camera.position, 4);
@@ -2356,7 +2531,9 @@ function maj(dt) {
   lent.uCentre.value.set(ndc.x * 0.5 + 0.5, ndc.y * 0.5 + 0.5);
   lent.uRayon.value = Math.tan(Math.asin(Math.min(1, BH_OMBRE / dist))) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 0.5;
 
-  if (enJeu || enExtraction) majHUD();
+  if (enJeu || enExtraction || enVol) majHUD();
+  // brume plus légère en altitude : on voit la courbure de la planète
+  scMonde.fog.density = 0.0034 * clamp(1 - (camera.position.length() - R) / 450, 0.1, 1);
   son.maj(mouvement.vitesse, enJeu ? etat.tremblement : 0, etat.dansA);
 
   matFinal.uniforms.uTemps.value = tempsTotal;
@@ -2367,6 +2544,10 @@ function maj(dt) {
 }
 
 function majHUD() {
+  if (etat.mode === 'vol') {
+    $('#v-alt').textContent = `${Math.round(etat.nav.alt)} m`;
+    $('#v-vit').textContent = `${Math.round(etat.nav.vel.length() * 3.6)} km/h`;
+  }
   $('#t-vecu').textContent = horloge(etat.tVecu);
   $('#t-vaisseau').textContent = horodatageVaisseau(etat.tVaisseau);
   const ratio = $('#ratio');
@@ -2435,6 +2616,7 @@ function demarrer() {
   // nouveau largage : la navette dépose l'Arpenteur
   etat.mode = 'largage';
   etat.navT = 0; etat.joueurLargue = false;
+  etat.nav.etat = 'aucun'; retirerObstacleNavette();
   etat.pos.copy(sol(LIEUX.depart)); etat.vT.set(0, 0, 0); etat.vR = 0;
   etat.lacet = 0; etat.tangage = 0.22; etat.orientation = 0;
   modele.visible = false; navette.visible = true;
@@ -2446,7 +2628,7 @@ function demarrer() {
   canvas.focus();
 }
 function mettrePause() {
-  if (etat.mode !== 'jeu' && etat.mode !== 'largage') return;
+  if (!MODES_ACTIFS.includes(etat.mode)) return;
   etat.modeAvantPause = etat.mode;
   etat.mode = 'pause';
   touches.clear();
@@ -2505,6 +2687,11 @@ function demarrage(donnees) {
     if (d.monolithe) { etat.monolithe = true; anneaux.forEach((a) => { a.visible = true; }); }
     if (etat.ether >= QUOTA) { etat.baliseActive = true; balise.visible = true; }
     majJournal();
+    // la navette attend au point de stationnement
+    const hP = PARKING.clone();
+    placerNavette(sol(PARKING).addScaledVector(hP, 0.3), hP, repere(PARKING).avant, 0);
+    navette.visible = true; etat.navT = LARGAGE_FIN + 1; garerNavette();
+    etat.mode = 'accueil';
   }
   requestAnimationFrame((t) => { precedent = t; image(t); });
 }
