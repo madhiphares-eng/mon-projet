@@ -3,6 +3,11 @@
 Jeu coop en monde ouvert, axé sur l'émerveillement et le mystère. Voir [`docs/GDD.md`](docs/GDD.md).
 
 Assets 3D, textures, ciels et sons gratuits et réalistes (liens vérifiés, licences, crédits) : [`docs/ASSETS.md`](docs/ASSETS.md).
+Pour les télécharger directement dans le projet (Unity fermé) :
+
+```powershell
+irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/telecharger-assets.ps1 | iex
+```
 
 ## Installation rapide (PC Windows)
 

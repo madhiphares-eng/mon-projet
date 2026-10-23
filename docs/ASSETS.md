@@ -30,13 +30,28 @@ Exclu d'office : licences NC (pas d'usage commercial), ND (pas de modification),
 
 ## Téléchargement automatique
 
-Les assets Poly Haven de base (rochers et falaises du désert, sable, roche) s'installent dans le projet en une commande PowerShell :
+Tous les assets gratuits qui peuvent se télécharger automatiquement s'installent dans le projet avec une commande PowerShell. **Fermer Unity avant de la lancer** :
 
 ```powershell
 irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/telecharger-assets.ps1 | iex
 ```
 
-Les autres se téléchargent à la main depuis leur page (bouton *Download*). Formats conseillés : **FBX** ou **glTF** pour les modèles, textures **2K** (4K pour les gros plans), HDRI en **EXR 4K à 8K**.
+Le script propose 6 groupes au choix (Entrée = tout, de 10 à 15 Go en tout) :
+
+| Groupe | Contenu | Taille |
+|---|---|---:|
+| 1. Poly Haven | 98 rochers, falaises, textures et ciels HDRI (CC0) | ~2,4 Go |
+| 2. ambientCG | 43 textures de sol, de roche et de métal, 5 ciels (CC0) | ~1,2 Go |
+| 3. Sketchfab | 172 modèles : personnages, créatures, vaisseaux, ruines | 5 à 10 Go |
+| 4. NASA | 16 modèles réels : combinaisons, rovers, modules, ISS | ~0,5 Go |
+| 5. Espace | cartes d'étoiles, planètes, relief de la Lune, catalogue HYG, images de référence | ~0,6 Go |
+| 6. Sons Kenney | bruitages sci-fi, impacts, interface, jingles (CC0) | ~10 Mo |
+
+- **Sketchfab** demande un token API gratuit : créer un compte, puis copier le token depuis [les paramètres du compte](https://sketchfab.com/settings/password) (section *API Token*). Le script relit la licence de chaque modèle juste avant de le télécharger et ignore ceux qui ne sont plus en CC0, CC BY ou CC BY-SA.
+- Le package **glTFast** (import des fichiers `.glb`) est ajouté au projet automatiquement.
+- Le script écrit `CREDITS-ASSETS.txt` (crédits à citer) et `A-TELECHARGER-A-LA-MAIN.txt` à la racine du projet. Ce second fichier liste ce qui ne peut pas se télécharger tout seul : Unity Asset Store, Quaternius, sons Sonniss et Freesound, cartes de relief géantes.
+- Les images de référence (Hubble, Webb, trous noirs) vont dans `References/`, hors du dossier Unity.
+- On peut relancer le script sans risque : ce qui est déjà téléchargé est sauté.
 
 <a id="terrain"></a>
 
