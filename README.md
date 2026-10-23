@@ -2,6 +2,8 @@
 
 Jeu coop en monde ouvert, axé sur l'émerveillement et le mystère. Voir [`docs/GDD.md`](docs/GDD.md).
 
+Assets 3D, textures, ciels et sons gratuits et réalistes (liens vérifiés, licences, crédits) : [`docs/ASSETS.md`](docs/ASSETS.md).
+
 ## Installation rapide (PC Windows)
 
 Dans PowerShell, lancer **deux fois** (avant et après avoir créé le projet HDRP `EchosEther` dans `C:\Projets` avec Unity Hub) :
