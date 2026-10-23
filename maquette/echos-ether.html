@@ -171,6 +171,65 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
 #fin .verite { font-family: var(--f-echo); font-style: italic; font-size: 1.3rem; line-height: 1.4; margin: 0; }
 #passer { position: absolute; right: max(14px, env(safe-area-inset-right, 0px)); top: max(14px, env(safe-area-inset-top, 0px)); color: var(--brume); font-size: 12px; background: var(--voile); border: 1px solid var(--filet); padding: 6px 10px; }
 #erreur { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: var(--encre); text-align: center; }
+
+/* ---------- Menus ---------- */
+.menu { display: grid; gap: 10px; max-width: 26rem; }
+.menu > button { display: grid; gap: 3px; text-align: left; }
+.menu small { font-family: var(--f-data); font-weight: 400; font-size: 11px; letter-spacing: .04em; text-transform: none; opacity: .8; }
+button.tertiaire {
+  font-family: var(--f-data); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  background: transparent; color: var(--brume); border: 1px solid var(--filet); border-radius: 2px; padding: 9px 16px; cursor: pointer;
+}
+button.tertiaire:hover { color: var(--os); border-color: var(--os); }
+.champ { display: grid; gap: 6px; }
+.champ input[type=text], .champ select {
+  font: 500 15px var(--f-data); color: var(--os); background: rgba(236,230,216,.06);
+  border: 1px solid var(--filet); border-radius: 2px; padding: 9px 11px; min-width: 0;
+}
+.champ input[type=text]:focus, .champ select:focus { outline: 2px solid var(--ether); outline-offset: 1px; }
+.champ select option { background: var(--encre); }
+.reglage { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; }
+.reglage input[type=range] { grid-column: 1 / -1; accent-color: var(--ether); width: 100%; }
+.reglage output { font-variant-numeric: tabular-nums; color: var(--ether); }
+.case { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+.case input { accent-color: var(--ether); width: 16px; height: 16px; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 8px; }
+legend { padding: 0; margin-bottom: 8px; }
+.specialites { gap: 8px; }
+.spec { position: relative; display: grid; gap: 3px; padding: 10px 12px 10px 38px; border: 1px solid var(--filet); background: rgba(236,230,216,.03); cursor: pointer; }
+.spec input { position: absolute; left: 12px; top: 13px; accent-color: var(--empire); width: 15px; height: 15px; margin: 0; }
+.spec:has(input:checked) { border-color: var(--empire); background: rgba(217,73,58,.10); }
+.spec:has(input:focus-visible) { outline: 2px solid var(--ether); outline-offset: 2px; }
+.spec-nom { font-family: var(--f-titre); font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: 1.15rem; }
+.spec-atout { line-height: 1.45; }
+.spec-bureau { font-family: var(--f-echo); font-style: italic; font-size: 1.02rem; color: var(--brume); line-height: 1.3; }
+.nuancier .pastilles { display: flex; flex-wrap: wrap; gap: 8px; }
+.pastille { position: relative; display: grid; justify-items: center; gap: 4px; cursor: pointer; font-size: 10px; color: var(--brume); width: 3.6rem; }
+.pastille input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.pastille i { display: block; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--filet); box-shadow: inset 0 -6px 10px rgba(0,0,0,.35); }
+.pastille:has(input:checked) i { border-color: var(--os); outline: 2px solid var(--empire); outline-offset: 2px; }
+.pastille:has(input:checked) { color: var(--os); }
+.pastille:has(input:focus-visible) i { outline: 2px solid var(--ether); outline-offset: 2px; }
+#enrolement { pointer-events: none; background: linear-gradient(90deg, rgba(6,7,12,.94) 0%, rgba(6,7,12,.8) 34%, rgba(6,7,12,0) 58%); }
+#enrolement .carte { pointer-events: auto; margin-top: 0; max-width: 31rem; }
+#enrolement .indice { position: fixed; right: max(18px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); pointer-events: none; }
+.liste-credits { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.liste-credits li { display: grid; gap: 2px; line-height: 1.45; border-top: 1px solid var(--filet); padding-top: 8px; }
+.liste-credits b { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--brume); font-weight: 500; }
+details.commandes summary { cursor: pointer; color: var(--brume); letter-spacing: .12em; text-transform: uppercase; font-size: 11px; }
+details.commandes[open] summary { margin-bottom: 10px; }
+
+/* ---------- Didacticiel ---------- */
+#tuto { top: max(14px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); width: min(22rem, calc(100vw - 28px)); display: grid; gap: 7px; border-left: 3px solid var(--ether); }
+#tuto .tete { display: flex; justify-content: space-between; gap: 12px; }
+#tuto h3 { margin: 0; font-family: var(--f-titre); font-weight: 800; text-transform: uppercase; font-size: 1.45rem; letter-spacing: .04em; line-height: 1; }
+#tuto p { margin: 0; line-height: 1.5; }
+#tuto.valide { border-left-color: var(--ambre); }
+#tuto.valide h3::after { content: " ✓"; color: var(--ambre); }
+.marqueur.tuto { color: var(--ambre); }
+.marqueur.tuto .icone { font-size: 18px; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: scale(1.25); } }
+@media (prefers-reduced-motion: reduce) { .marqueur.tuto .icone { animation: none; } }
 @keyframes entree { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (max-width: 1000px) {
   #aide { bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 66px); }
@@ -179,6 +238,8 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
   #invite { top: 46%; }
   #temps { min-width: 0; }
   #objectifs { top: auto; bottom: 84px; right: max(14px, env(safe-area-inset-right, 0px)); max-width: 13rem; }
+  #tuto { top: auto; bottom: 84px; }
+  #enrolement { background: rgba(6,7,12,.86); }
   #transmissions { bottom: 170px; }
   #aide { display: none; }
 }
@@ -201,6 +262,12 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
   <section id="objectifs" class="panneau" aria-label="Objectifs">
     <span class="etiquette">Ordres de mission</span>
     <ul id="liste-objectifs"></ul>
+  </section>
+  <section id="tuto" class="panneau" aria-label="Formation" aria-live="polite" hidden>
+    <div class="tete"><span class="etiquette" id="tuto-etape">Formation</span><span class="etiquette"><kbd>N</kbd> passer</span></div>
+    <h3 id="tuto-titre"></h3>
+    <p id="tuto-texte"></p>
+    <div class="jauge"><i id="tuto-barre"></i></div>
   </section>
   <section id="bruit" class="panneau" aria-label="Bruit">
     <div class="tete"><span class="etiquette">Bruit</span><span id="bruit-etat">Silencieux</span></div>
@@ -227,27 +294,89 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
     <h1>Échos<br>d'<span>Éther</span></h1>
     <div class="ordre">
       <b>Ordre de l'Empire n° 7-204</b>
-      <p>Arpenteur ! Vous êtes largué sur un monde au bord d'un trou noir. Récoltez cinq cristaux d'Éther, puis rejoignez la balise d'extraction. Le Bureau du Quota vous remercie de ne pas poser de questions.</p>
+      <p>Arpenteur ! L'Empire a besoin d'Éther, et vous êtes volontaire. Vous serez largué sur un monde au bord d'un trou noir. Le Bureau du Quota vous remercie de ne pas poser de questions.</p>
     </div>
     <p class="echo-intro">Ici, une heure vaut trois jours là-haut. Faites peu de bruit : quelque chose écoute sous le sable.</p>
-    <ul class="touches">
-      <li><kbd>Z Q S D</kbd><span>se déplacer (ou W A S D, flèches)</span></li>
-      <li><kbd>Souris</kbd><span>regarder</span></li>
-      <li><kbd>Maj</kbd><span>courir, bruyant</span></li>
-      <li><kbd>C</kbd><span>marcher en silence</span></li>
-      <li><kbd>Espace</kbd><span>sauter</span></li>
-      <li><kbd>E</kbd><span>maintenir pour récolter, toucher</span></li>
-      <li><kbd>F</kbd><span>scanner, bruyant</span></li>
-      <li><kbd>J</kbd><span>journal de bord</span></li>
-      <li><kbd>E</kbd><span>près de la navette : monter à bord et la piloter</span></li>
-    </ul>
-    <div class="actions">
-      <button class="principal" id="btn-atterrir" type="button">Atterrir</button>
-      <span class="note">Clavier et souris. Son au démarrage (<kbd>M</kbd> pour couper).</span>
-    </div>
+    <nav class="menu" aria-label="Menu principal">
+      <button class="principal" id="btn-didacticiel" type="button">Didacticiel <small>Formation de l'Arpenteur, une dizaine de minutes</small></button>
+      <button class="secondaire" id="btn-mission" type="button">Mission <small>Cinq cristaux d'Éther, une balise, un monolithe</small></button>
+      <div class="actions">
+        <button class="tertiaire" id="btn-options" type="button">Options</button>
+        <button class="tertiaire" id="btn-credits" type="button">Crédits</button>
+      </div>
+    </nav>
+    <p class="note" id="profil-resume" hidden></p>
     <p class="note" id="chargement">Génération de la planète…</p>
-    <p class="note">Modèles 3D : Space Kit de Kenney. Textures : Poly Haven. Licence CC0.</p>
+    <p class="note">Clavier et souris. Son au démarrage (<kbd>M</kbd> pour couper).</p>
     <p class="note note-tactile">Cette maquette se joue au clavier et à la souris, sur ordinateur.</p>
+  </div>
+</div>
+
+<div id="enrolement" class="ecran" hidden>
+  <form class="carte" id="form-enrolement" novalidate>
+    <p class="surtitre">Formulaire 27-B · Enrôlement volontaire obligatoire</p>
+    <h2>Votre Arpenteur</h2>
+    <label class="champ"><span class="etiquette">Nom</span><input type="text" id="nom" maxlength="18" autocomplete="off" spellcheck="false"></label>
+    <p class="note">Matricule attribué : <b id="matricule"></b></p>
+    <fieldset class="specialites" id="specialites"><legend class="etiquette">Spécialité</legend></fieldset>
+    <fieldset class="nuancier"><legend class="etiquette">Combinaison</legend><div class="pastilles" id="pastilles-combi"></div></fieldset>
+    <fieldset class="nuancier"><legend class="etiquette">Visière</legend><div class="pastilles" id="pastilles-visiere"></div></fieldset>
+    <div class="actions">
+      <button class="principal" type="submit" id="btn-embarquer">Embarquer</button>
+      <button class="secondaire" type="button" id="btn-retour-enrolement">Retour</button>
+    </div>
+    <p class="note">Le Bureau rappelle que l'enrôlement est volontaire et obligatoire.</p>
+  </form>
+  <p class="note indice">Glisser sur l'Arpenteur pour le faire tourner</p>
+</div>
+
+<div id="options" class="ecran centre" hidden>
+  <div class="carte">
+    <p class="surtitre">Réglages</p>
+    <h2>Options</h2>
+    <label class="champ reglage"><span class="etiquette">Sensibilité de la souris</span><output id="opt-sens-val" for="opt-sens"></output><input type="range" id="opt-sens" min="0.4" max="2" step="0.1"></label>
+    <label class="case"><input type="checkbox" id="opt-inverser"> Inverser l'axe vertical de la souris</label>
+    <label class="champ"><span class="etiquette">Qualité d'image</span>
+      <select id="opt-qualite">
+        <option value="auto">Automatique (s'adapte à l'ordinateur)</option>
+        <option value="perf">Performance</option>
+        <option value="haute">Haute définition</option>
+      </select>
+    </label>
+    <label class="case"><input type="checkbox" id="opt-son"> Son activé</label>
+    <details class="commandes">
+      <summary>Commandes</summary>
+      <ul class="touches">
+        <li><kbd>Z Q S D</kbd><span>se déplacer (ou W A S D, flèches)</span></li>
+        <li><kbd>Souris</kbd><span>regarder</span></li>
+        <li><kbd>Maj</kbd><span>courir, bruyant</span></li>
+        <li><kbd>C</kbd><span>marcher en silence</span></li>
+        <li><kbd>Espace</kbd><span>sauter</span></li>
+        <li><kbd>E</kbd><span>maintenir pour récolter, toucher</span></li>
+        <li><kbd>F</kbd><span>scanner, bruyant</span></li>
+        <li><kbd>J</kbd><span>journal de bord</span></li>
+        <li><kbd>E</kbd><span>près de la navette : monter à bord et la piloter</span></li>
+        <li><kbd>M</kbd><span>couper ou remettre le son</span></li>
+        <li><kbd>Échap</kbd><span>pause</span></li>
+      </ul>
+    </details>
+    <div class="actions"><button class="principal" id="btn-retour-options" type="button">Retour</button></div>
+  </div>
+</div>
+
+<div id="credits" class="ecran centre" hidden>
+  <div class="carte">
+    <p class="surtitre">Crédits</p>
+    <h2>Échos d'Éther</h2>
+    <p class="note">Maquette jouable de la Phase 1, qui prépare la version Unity du jeu.</p>
+    <ul class="liste-credits">
+      <li><b>Modèles 3D</b>Space Kit de Kenney (kenney.nl), licence CC0</li>
+      <li><b>Textures du sol</b>Poly Haven (polyhaven.com) : aerial_sand, cliff_side, cracked_red_ground, licence CC0</li>
+      <li><b>Moteur 3D</b>three.js, licence MIT</li>
+      <li><b>Polices</b>Big Shoulders Display, Cormorant Garamond, IBM Plex Mono, licence SIL Open Font</li>
+      <li><b>Sons</b>Synthétisés en direct dans le navigateur (Web Audio)</li>
+    </ul>
+    <div class="actions"><button class="principal" id="btn-retour-credits" type="button">Retour</button></div>
   </div>
 </div>
 
@@ -260,22 +389,29 @@ button:focus-visible { outline: 2px solid var(--ether); outline-offset: 3px; }
       <button class="principal" id="btn-reprendre" type="button">Reprendre</button>
       <button class="secondaire" id="btn-recommencer" type="button">Nouveau largage</button>
     </div>
+    <div class="actions">
+      <button class="tertiaire" id="btn-options-pause" type="button">Options</button>
+      <button class="tertiaire" id="btn-menu-pause" type="button">Menu principal</button>
+    </div>
   </div>
 </div>
 
 <div id="fin" class="ecran centre" hidden>
   <div class="carte">
-    <p class="surtitre">Extraction réussie</p>
+    <p class="surtitre" id="fin-surtitre">Extraction réussie</p>
     <h2 id="fin-titre">Retour au vaisseau</h2>
     <p class="echo-intro" id="fin-temps"></p>
     <dl class="chiffres">
       <div><dt>Temps vécu</dt><dd id="fin-vecu"></dd></div>
       <div><dt>Écoulé là-haut</dt><dd id="fin-vaisseau"></dd></div>
       <div><dt>Éther livré</dt><dd id="fin-ether"></dd></div>
-      <div><dt>Transmissions</dt><dd id="fin-trans"></dd></div>
+      <div><dt id="fin-trans-titre">Transmissions</dt><dd id="fin-trans"></dd></div>
     </dl>
     <p class="verite" id="fin-verite"></p>
-    <div class="actions"><button class="principal" id="btn-rejouer" type="button">Nouveau largage</button></div>
+    <div class="actions">
+      <button class="principal" id="btn-rejouer" type="button">Nouveau largage</button>
+      <button class="secondaire" id="btn-menu-fin" type="button">Menu principal</button>
+    </div>
   </div>
 </div>
 
@@ -299,6 +435,47 @@ const mix = (a, b, t) => a + (b - a) * t;
 const lisse = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const MOUVEMENT_REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const Y = new V3(0, 1, 0);
+
+// =====================================================================
+// Profil de l'Arpenteur et réglages (gardés dans ce navigateur seulement)
+// =====================================================================
+function lireStockage(cle) { try { return JSON.parse(localStorage.getItem(cle) || 'null'); } catch { return null; } }
+function ecrireStockage(cle, valeur) { try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch { /* stockage indisponible */ } }
+
+// Chaque spécialité change une règle du jeu, avec un commentaire du Bureau
+const SPECIALITES = {
+  eclaireur: {
+    nom: 'Éclaireur', atout: 'Pas feutrés : vos déplacements, sauts et atterrissages font 45 % de bruit en moins.',
+    bureau: '« Le silence est une vertu. Le Bureau l\'apprécie aussi dans vos réclamations. »',
+    bruitPas: 0.55, recolte: 1, bruitRecolte: 1, portee: 1, revele: 1, bruitScan: 1,
+  },
+  foreur: {
+    nom: 'Foreur', atout: 'Foreuse lourde : récolte deux fois plus rapide, mais nettement plus bruyante.',
+    bureau: '« Le quota n\'attend pas. La faune locale non plus. »',
+    bruitPas: 1, recolte: 2, bruitRecolte: 1.6, portee: 1, revele: 1, bruitScan: 1,
+  },
+  chronologue: {
+    nom: 'Chronologue', atout: 'Sens du temps : scanner à longue portée (×1,6), plus discret, et repères visibles plus longtemps.',
+    bureau: '« Le Bureau décline toute responsabilité pour les souvenirs que vous n\'avez pas encore vécus. »',
+    bruitPas: 1, recolte: 1, bruitRecolte: 1, portee: 1.6, revele: 1.7, bruitScan: 0.6,
+  },
+};
+const COMBINAISONS = [['reglementaire', 'Réglementaire', '#d9dee6'], ['ocre', 'Ocre', '#c8a06a'], ['acier', 'Acier', '#8a95a3'], ['nuit', 'Nuit', '#3d4c6b'], ['rouille', 'Rouille', '#a9573f']];
+const VISIERES = [['ambre', 'Ambre', '#f2a24b'], ['ether', 'Éther', '#5ff0de'], ['aurore', 'Aurore', '#ff6fae'], ['lune', 'Lune', '#cfd8ff']];
+const NOMS_SUGGERES = ['Vega', 'Orsa', 'Kael', 'Ilyan', 'Sorel', 'Maëlle', 'Téo', 'Nadir', 'Isha', 'Bram'];
+
+const profil = Object.assign({
+  nom: NOMS_SUGGERES[Math.floor(Math.random() * NOMS_SUGGERES.length)],
+  matricule: `AR-${String(1000 + Math.floor(Math.random() * 9000))}-${'ABCDEFGHJKLMNPRSTUVWXZ'[Math.floor(Math.random() * 22)]}`,
+  spec: 'eclaireur', combinaison: 'reglementaire', visiere: 'ambre', enrole: false,
+}, lireStockage('echos-arpenteur') || {});
+if (!SPECIALITES[profil.spec]) profil.spec = 'eclaireur';
+const reglages = Object.assign({ sensibilite: 1, inverserY: false, qualite: 'auto', son: true }, lireStockage('echos-reglages') || {});
+const spec = () => SPECIALITES[profil.spec];
+const couleurDe = (liste, cle) => (liste.find((c) => c[0] === cle) || liste[0])[2];
+const nomArpenteur = () => profil.nom.trim() || profil.matricule;
+// Les textes du jeu peuvent citer l'Arpenteur : {nom} et {matricule}
+const personnaliser = (t) => t.replaceAll('{nom}', nomArpenteur()).replaceAll('{matricule}', profil.matricule);
 
 function mulberry32(a) {
   return function () {
@@ -372,8 +549,8 @@ const LIEUX = {
   balise: dirDist(340, 200),   // extraction
 };
 const ZONES_PLATES = [
-  { d: LIEUX.depart, r: 24 / R }, { d: LIEUX.camp, r: 20 / R }, { d: LIEUX.bulleA, r: 26 / R },
-  { d: LIEUX.bulleB, r: 20 / R }, { d: LIEUX.balise, r: 18 / R },
+  { d: LIEUX.depart, r: 24 / R }, { d: LIEUX.camp, r: 20 / R }, { d: LIEUX.bulleA, r: 40 / R },   // bulles et balise :
+  { d: LIEUX.bulleB, r: 34 / R }, { d: LIEUX.balise, r: 30 / R },                                   // de quoi poser la navette
 ];
 const CRISTAUX_DEF = [
   [26, -90], [70, -20], [95, -135], [130, 40], [170, 172], [205, -104], [240, 12], [300, 128], [380, -32],
@@ -472,7 +649,12 @@ try {
   $('#accueil').hidden = true;
   throw e;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+// Netteté maximale selon le réglage de qualité (la résolution baisse toute seule si l'ordinateur peine)
+function ratioMax() {
+  const d = window.devicePixelRatio || 1;
+  return reglages.qualite === 'perf' ? Math.min(d, 0.75) : reglages.qualite === 'haute' ? Math.min(d, 2) : Math.min(d, 1.5);
+}
+renderer.setPixelRatio(ratioMax());
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.autoClear = false;
@@ -1090,10 +1272,18 @@ function creerArpenteur(fantome = false) {
   g.userData = {
     jambeG: membre(-0.15, 0.66, 0.64, 0.17), jambeD: membre(0.15, 0.66, 0.64, 0.17),
     brasG: membre(-0.46, 1.4, 0.58, 0.13), brasD: membre(0.46, 1.4, 0.58, 0.13),
+    combi: fantome ? [] : [matCombi], visiere: fantome ? [] : [matVisiere],
   };
   return g;
 }
+// Couleurs choisies à l'enrôlement (seulement sur l'Arpenteur du joueur)
+function appliquerApparence(cible) {
+  const combi = couleurDe(COMBINAISONS, profil.combinaison), visiere = couleurDe(VISIERES, profil.visiere);
+  for (const m of cible.userData.combi || []) m.color.set(combi);
+  for (const m of cible.userData.visiere || []) m.emissive.set(visiere);
+}
 const modele = creerArpenteur();
+appliquerApparence(modele);
 scMonde.add(modele);
 
 // =====================================================================
@@ -1352,9 +1542,18 @@ function habiller(cible, estFantome) {
   if (estFantome) a.traverse((o) => { if (o.isMesh) { o.material = matFantome; o.castShadow = false; o.receiveShadow = false; } });
   const membres = { jambeG: a.getObjectByName('legLeft'), jambeD: a.getObjectByName('legRight'), brasG: a.getObjectByName('armLeft'), brasD: a.getObjectByName('armRight') };
   if (!membres.jambeG || !membres.jambeD || !membres.brasG || !membres.brasD) return;
+  // matériaux propres au joueur : sa combinaison ne recolore pas celle du campement
+  const combi = [], visiere = [];
+  if (!estFantome) a.traverse((o) => {
+    const n = o.isMesh && o.material?.name;
+    if (n !== 'metal' && n !== 'rockTrack') return;
+    o.material = o.material.clone();
+    (n === 'metal' ? combi : visiere).push(o.material);
+  });
   cible.clear();
   cible.add(a);
-  cible.userData = membres;
+  cible.userData = { ...membres, combi, visiere };
+  if (!estFantome) appliquerApparence(cible);
 }
 
 function integrerModeles() {
@@ -1530,7 +1729,7 @@ const son = {
 // Transmissions impériales (envoyées en temps du vaisseau)
 // =====================================================================
 const TRANSMISSIONS = [
-  { j: 0.3, t: "Arpenteur ! Le Bureau du Quota vous rappelle : cinq cristaux d'Éther, ni plus ni moins. Toute curiosité sera déduite de votre solde." },
+  { j: 0.3, t: "Arpenteur {nom} ! Le Bureau du Quota vous rappelle : cinq cristaux d'Éther, ni plus ni moins. Toute curiosité sera déduite de votre solde." },
   { j: 1.5, t: "Rappel amical : le bruit attire la faune locale. La faune locale n'est pas couverte par votre assurance." },
   { j: 3, t: "Félicitations ! Votre unité a été élue « Arpenteur du mois ». Votre prime sera versée à votre retour, ou à vos héritiers." },
   { j: 6, t: "Le Bureau constate un retard. Nous vous rappelons que le temps de l'Empire est précieux. Le vôtre l'est moins." },
@@ -1577,6 +1776,120 @@ function etatInitial() {
 }
 
 // =====================================================================
+// Didacticiel : formation guidée par l'officière Vesna, du Ministère de l'Enthousiasme
+// =====================================================================
+let typePartie = 'mission';              // 'mission' ou 'didacticiel'
+const tuto = {
+  actif: false, etape: 0, attente: 0, regard: 0, distance: 0, course: 0, silence: 0, sauts: 0, scans: 0,
+  poses: 0, dansBulle: 0, verFini: false, verTouche: false, passees: 0,
+};
+const TITRE_VESNA = 'Officière Vesna · Formation';
+const kb = (t) => `<kbd>${t}</kbd>`;
+const ETAPES = [
+  { id: 'regarder', titre: 'Regarder', texte: `Bougez la ${kb('Souris')} pour regarder autour de vous. Si le curseur reste visible, cliquez d'abord sur la scène.`,
+    progres: () => tuto.regard / 2.4, bravo: "Voilà le ciel de votre lieu d'affectation. Ce qui tourne là-haut est un trou noir. Ne le fixez pas trop, il vous le rend." },
+  { id: 'bouger', titre: 'Se déplacer', texte: `Marchez une dizaine de mètres avec ${kb('Z')} ${kb('Q')} ${kb('S')} ${kb('D')} (ou ${kb('W')} ${kb('A')} ${kb('S')} ${kb('D')}, ou les flèches).`,
+    progres: () => tuto.distance / 12, bravo: 'Excellent. Chaque pas que vous faites ici est un pas pour l\'Empire, et une facture pour vous.' },
+  { id: 'courir', titre: 'Courir', texte: `Maintenez ${kb('Maj')} en avançant pour courir. Regardez la jauge de bruit, en bas : courir s'entend de loin.`,
+    progres: () => tuto.course / 2.5, bravo: 'Rapide ! Et bruyant. Sous le sable, quelque chose a tourné la tête.' },
+  { id: 'silence', titre: 'Marcher en silence', texte: `Maintenez ${kb('C')} en avançant. Vous êtes lent, mais le bruit retombe pendant que vous marchez.`,
+    progres: () => tuto.silence / 3, bravo: 'Parfait. La discrétion est la politesse des Arpenteurs vivants.' },
+  { id: 'sauter', titre: 'Sauter', texte: `Appuyez sur ${kb('Espace')} pour sauter. La gravité est forte, et chaque atterrissage fait un peu de bruit.`,
+    test: () => tuto.sauts >= 1 && etat.auSol, bravo: 'La gravité locale vous salue. Elle salue tout le monde, très fort, vers le bas.' },
+  { id: 'scanner', titre: 'Scanner', texte: `Appuyez sur ${kb('F')}. L'onde révèle les cristaux d'Éther proches (◆) et les phénomènes. Le scanner aussi fait du bruit.`,
+    test: () => tuto.scans >= 1, bravo: 'Le scanner a trouvé un gisement à deux pas. Le Bureau adore les gisements à deux pas.' },
+  { id: 'recolter', titre: 'Récolter l\'Éther', texte: `Rejoignez le cristal signalé (◆) et maintenez ${kb('E')} jusqu'au bout de la barre. Récolter est bruyant.`,
+    cible: () => (cristaux.find((c) => !c.recolte) || cristaux[0]).groupe.position, test: () => etat.ether >= 1,
+    bravo: 'Premier cristal ! Ne prêtez pas attention aux voix. Les cristaux ne parlent pas, c\'est officiel.' },
+  { id: 'ver', titre: 'La Ruche écoute', texte: `Faites du bruit exprès (courez, sautez, scannez) jusqu'à remplir la jauge. Quand le sol tremble, éloignez-vous du point, vite : la Ruche frappe là où était le bruit.`,
+    test: () => tuto.verFini, bravo: () => (tuto.verTouche
+      ? 'Touché. Les cristaux perdus retournent à leur gisement. Retenez la leçon : le bruit vous trahit, la Ruche frappe où vous étiez.'
+      : 'Esquive réglementaire ! La Ruche frappe où vous étiez, jamais où vous êtes. Restez toujours en mouvement.') },
+  { id: 'navette', titre: 'Monter à bord', texte: `Retournez à la navette (◎) et appuyez sur ${kb('E')} à côté d'elle.`,
+    cible: () => navette.position, test: () => etat.mode === 'vol', bravo: 'Navette déverrouillée. Elle est assurée. Vous, moins.' },
+  { id: 'voler', titre: 'Piloter', texte: `${kb('Souris')} pour orienter, ${kb('Z')}/${kb('S')} pour la poussée, ${kb('Espace')}/${kb('C')} pour monter et descendre, ${kb('Maj')} pour accélérer. Volez jusqu'à la bulle de temps (◎).`,
+    cible: () => bulleA.mesh.position, test: () => etat.mode === 'vol' && etat.nav.pos.distanceTo(bulleA.mesh.position) < 70,
+    bravo: 'Belle trajectoire. Cette bulle brillante est une anomalie temporelle. Le Bureau la qualifie de « décorative ».' },
+  { id: 'poser', titre: 'Se poser', texte: `Descendez près du sol, ralentissez, puis appuyez sur ${kb('E')} pour vous poser à côté de la bulle.`,
+    test: () => etat.mode === 'jeu' && tuto.poses >= 1, bravo: 'Atterrissage validé. Le sol est intact, ce qui est rare.' },
+  { id: 'bulle', titre: 'Le temps ralentit', texte: 'Entrez dans la bulle (◎). Regardez les deux horloges en haut à gauche : ici, le temps s\'étire, pendant que là-haut, sur le vaisseau-mère, les jours défilent. La bulle respire : si elle se dégonfle, attendez qu\'elle revienne.',
+    cible: () => bulleA.mesh.position, progres: () => tuto.dansBulle / 4,
+    bravo: 'Vous venez de vieillir moins vite que l\'Empire. Le Bureau ne rembourse pas le temps perdu là-haut. Et le monolithe ? Ne le touchez pas. Officiellement.' },
+  { id: 'decoller', titre: 'Décoller', texte: `Remontez dans la navette (${kb('E')}) et prenez de l'altitude : au-dessus de 80 m, votre formation est terminée.`,
+    cible: () => navette.position, test: () => etat.mode === 'vol' && etat.nav.alt > 80,
+    bravo: 'Formation terminée. Bienvenue parmi les Arpenteurs. Votre espérance de vie a été mise à jour.' },
+];
+
+function initTuto() {
+  Object.assign(tuto, { actif: typePartie === 'didacticiel', etape: 0, attente: 0, passees: 0 });
+  remiseCompteurs();
+  $('#tuto').hidden = !tuto.actif;
+  $('#objectifs').hidden = tuto.actif;
+  if (tuto.actif) majPanneauTuto();
+}
+function remiseCompteurs() {
+  Object.assign(tuto, { regard: 0, distance: 0, course: 0, silence: 0, sauts: 0, scans: 0, poses: 0, dansBulle: 0, verFini: false, verTouche: false });
+}
+function majPanneauTuto() {
+  const e = ETAPES[tuto.etape];
+  if (!e) return;
+  $('#tuto-etape').textContent = `Formation · étape ${tuto.etape + 1} / ${ETAPES.length}`;
+  $('#tuto-titre').textContent = e.titre;
+  $('#tuto-texte').innerHTML = e.texte;      // textes fixes du jeu (pas de saisie du joueur)
+  $('#tuto').classList.remove('valide');
+  $('#tuto-barre').style.width = '0%';
+}
+function etapeValidee(e) {
+  const p = e.progres ? e.progres() >= 1 : false;
+  return p || (e.test ? e.test() : false);
+}
+// avecBravo = false quand le joueur passe l'étape avec N
+function etapeSuivante(avecBravo = true) {
+  const e = ETAPES[tuto.etape];
+  if (!e || tuto.attente > 0) return;
+  if (avecBravo) {
+    const texte = typeof e.bravo === 'function' ? e.bravo() : e.bravo;
+    transmettre(texte, { titre: TITRE_VESNA, duree: 9000 });
+    noterJournal('transmission', TITRE_VESNA, texte);
+    $('#tuto').classList.add('valide');
+    $('#tuto-barre').style.width = '100%';
+    son.note([659, 880], 0.7, 0.05, 'triangle');
+    tuto.attente = 1.6;
+  } else {
+    tuto.passees++;
+    tuto.attente = 0.01;
+  }
+  if (e.id === 'recolter') etat.recharge = 0;     // la Ruche peut venir à l'étape suivante
+}
+function majTuto(dt, mouvement) {
+  if (!tuto.actif) return;
+  if (etat.mode === 'jeu') {
+    if (mouvement.bouge) tuto.distance += mouvement.vitesse * dt;
+    if (mouvement.bouge && mouvement.course) tuto.course += dt;
+    if (mouvement.bouge && mouvement.silence) tuto.silence += dt;
+    if (etat.dansA > 0.3) tuto.dansBulle += dt;
+  }
+  if (tuto.attente > 0) {
+    tuto.attente -= dt;
+    if (tuto.attente <= 0) {
+      tuto.etape++;
+      remiseCompteurs();
+      if (tuto.etape >= ETAPES.length) { finFormation(); return; }
+      majPanneauTuto();
+    }
+    return;
+  }
+  const e = ETAPES[tuto.etape];
+  if (!e) return;
+  if (e.progres) $('#tuto-barre').style.width = `${Math.round(clamp(e.progres(), 0, 1) * 100)}%`;
+  if (etapeValidee(e)) etapeSuivante(true);
+}
+function cibleTuto() {
+  const e = tuto.actif && tuto.attente <= 0 ? ETAPES[tuto.etape] : null;
+  return e && e.cible ? e.cible() : null;
+}
+
+// =====================================================================
 // Entrées
 // =====================================================================
 let verrou = false;
@@ -1584,9 +1897,14 @@ let modeGlisser = false;
 let ignorerSourisJusqua = 0;   // le verrouillage du pointeur envoie parfois un grand saut de souris
 const estToucheM = (e) => e.code === 'KeyM' || (e.key && e.key.toLowerCase() === 'm');
 window.addEventListener('keydown', (e) => {
+  const menuOuvert = ['perso', 'accueil'].includes(etat.mode) || !$('#options').hidden || !$('#credits').hidden;
+  if (menuOuvert && e.code === 'Escape') { retourMenu(); return; }
+  if (menuOuvert || e.target.closest?.('input, select, textarea')) return;   // menus, saisie du nom, réglages
   if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
   if (e.repeat) { touches.add(e.code); return; }
   touches.add(e.code);
+  if (tuto.actif && e.code === 'KeyN' && (etat.mode === 'jeu' || etat.mode === 'vol')) etapeSuivante(false);
+  if (estToucheM(e)) setTimeout(memoriserSon, 0);
   if (etat.mode === 'largage' && (e.code === 'Space' || e.code === 'KeyE' || e.code === 'Enter')) passerLargage();
   if (etat.mode === 'jeu' && e.code === 'KeyE' && navettePresDuJoueur() && !cristalProche()) monterABord();
   else if (etat.mode === 'vol' && e.code === 'KeyE') actionVol();
@@ -1608,11 +1926,16 @@ window.addEventListener('keyup', (e) => touches.delete(e.code));
 const MODES_ACTIFS = ['jeu', 'largage', 'vol'];
 window.addEventListener('blur', () => { touches.clear(); if (MODES_ACTIFS.includes(etat.mode) && !verrou) mettrePause(); });
 canvas.addEventListener('mousemove', (e) => {
+  if (etat.mode === 'perso') {             // aperçu de l'enrôlement : glisser pour tourner l'Arpenteur
+    if (e.buttons & 1) { etat.orientation += clamp(e.movementX, -80, 80) * 0.012; etat.persoGlisse = 2.5; }
+    return;
+  }
   if (etat.mode !== 'jeu' && etat.mode !== 'vol') return;
   if (!verrou && !(modeGlisser && (e.buttons & 1))) return;
   if (performance.now() < ignorerSourisJusqua) return;
-  const sens = 0.0024;
-  const dx = clamp(e.movementX, -80, 80), dy = clamp(e.movementY, -80, 80);
+  const sens = 0.0024 * reglages.sensibilite;
+  const dx = clamp(e.movementX, -80, 80), dy = clamp(e.movementY, -80, 80) * (reglages.inverserY ? -1 : 1);
+  if (tuto.actif) tuto.regard += (Math.abs(dx) + Math.abs(dy)) * sens;
   if (etat.mode === 'vol') {
     etat.nav.lacet -= dx * sens * 0.8;
     etat.nav.tangage = clamp(etat.nav.tangage - dy * sens * 0.8, -0.85, 0.85);
@@ -1746,13 +2069,15 @@ function placerMarqueur(m, monde, visible) {
 // =====================================================================
 function lancerScan() {
   if (etat.scanRecharge > 0) return;
-  etat.scanT = 0; etat.scanRecharge = 6; etat.scanOrigine.copy(etat.pos);
-  etat.bruit = Math.min(100, etat.bruit + 18);
-  etat.revele = 9;
+  const s = spec(), portee = 220 * s.portee;
+  etat.scanT = 0; etat.scanRecharge = 6; etat.scanOrigine.copy(etat.pos); etat.scanPortee = portee;
+  etat.bruit = Math.min(100, etat.bruit + 18 * s.bruitScan);
+  etat.revele = 9 * s.revele;
+  tuto.scans++;
   son.note([392, 784, 1175], 1.4, 0.05, 'sine');
-  for (const c of cristaux) if (!c.recolte && c.groupe.position.distanceTo(etat.pos) < 220) c.vu = true;
-  for (const b of [bulleA, bulleB]) if (b.mesh.position.distanceTo(etat.pos) < 220) b.decouverte = true;
-  if (centreCamp.distanceTo(etat.pos) < 220) etat.campDecouvert = true;
+  for (const c of cristaux) if (!c.recolte && c.groupe.position.distanceTo(etat.pos) < portee) c.vu = true;
+  for (const b of [bulleA, bulleB]) if (b.mesh.position.distanceTo(etat.pos) < portee) b.decouverte = true;
+  if (centreCamp.distanceTo(etat.pos) < portee) etat.campDecouvert = true;
 }
 
 function declencherVer() {
@@ -1836,6 +2161,7 @@ function majVer(dt) {
     if (s >= 1) {
       etat.verPhase = 'repos'; ver.groupe.visible = false; etat.gerbeFaite = false;
       etat.bruit = Math.min(etat.bruit, 35); etat.recharge = 6; etat.tremblement = 0;
+      tuto.verFini = true; tuto.verTouche = etat.verTouche;
       if (!etat.journal.some((e) => e.titre === 'La Ruche des Sables')) noterJournal('echo', 'La Ruche des Sables', 'Quelque chose vit sous le sable et chasse au son. Il frappe là où le bruit était, pas là où vous êtes.');
     }
   }
@@ -1872,24 +2198,28 @@ function majTemps(dt) {
   etat.angleCiel += (dt * Math.PI * 2 / DUREE_JOUR) * vitesseCiel;
   etat.tJeu += dt * vitesseCiel;
 
-  while (etat.transmission < TRANSMISSIONS.length && etat.tVaisseau >= TRANSMISSIONS[etat.transmission].j * 86400) {
+  // pendant la formation, seule l'instructrice parle
+  while (!tuto.actif && etat.transmission < TRANSMISSIONS.length && etat.tVaisseau >= TRANSMISSIONS[etat.transmission].j * 86400) {
     const m = TRANSMISSIONS[etat.transmission];
     const titre = `${m.perso ? 'Message personnel' : 'Transmission impériale'} · émise ${horodatageVaisseau(m.j * 86400)}`;
-    transmettre(m.t, { titre, perso: !!m.perso });
-    noterJournal('transmission', titre, m.t);
+    transmettre(personnaliser(m.t), { titre, perso: !!m.perso });
+    noterJournal('transmission', titre, personnaliser(m.t));
     etat.transmission++;
   }
 }
 
 function majBruit(dt, mouvement, course, silence, recolte) {
+  const s = spec();
   let taux = -16;
-  if (mouvement) taux = silence ? -9 : course ? 26 : 4;
-  if (recolte) taux = Math.max(taux, 0) + 20;
+  if (mouvement) taux = silence ? -9 : (course ? 26 : 4) * s.bruitPas;
+  if (recolte) taux = Math.max(taux, 0) + 20 * s.bruitRecolte;
   const pic = etat.bruit;   // un bruit ponctuel (saut, scanner, chute) compte avant la décroissance
   etat.bruit = clamp(etat.bruit + taux * dt, 0, 100);
   etat.bruitMax = Math.max(etat.bruitMax, pic, etat.bruit);
   if (etat.recharge > 0) etat.recharge -= dt;
-  if (Math.max(pic, etat.bruit) >= 100 && etat.verPhase === 'repos' && etat.recharge <= 0) declencherVer();
+  // pendant la formation, la Ruche ne vient qu'à l'étape prévue
+  const verPermis = !tuto.actif || ETAPES[tuto.etape]?.id === 'ver';
+  if (Math.max(pic, etat.bruit) >= 100 && etat.verPhase === 'repos' && etat.recharge <= 0 && verPermis) declencherVer();
   const b = etat.bruit;
   const barre = $('#bruit-barre');
   barre.style.width = `${b}%`;
@@ -1910,7 +2240,7 @@ function majInteraction(dt) {
   let recolte = false;
   if (proche) {
     if (tient) {
-      proche.progression += dt / 2.2; recolte = true;
+      proche.progression += dt * spec().recolte / 2.2; recolte = true;
       if (proche.progression >= 1) {
         etatCristal(proche, true); etat.ether++;
         afficherEcho(proche.echo);
@@ -2050,6 +2380,19 @@ function monterABord() {
   }
 }
 function pretePourExtraction() { return etat.baliseActive && etat.ether >= QUOTA && etat.nav.pos.distanceTo(balise.position) < 45; }
+// Dénivelé maximal autour d'un point (m) : on ne pose pas une navette sur une pente
+function denivele(dir, rayon) {
+  const base = hauteurDir(dir);
+  const e1 = new V3(1, 0, 0).projectOnPlane(dir).normalize(), e2 = new V3().crossVectors(dir, e1);
+  let max = 0;
+  for (let k = 0; k < 8; k++) {
+    const a = k * Math.PI / 4;
+    const p = vTmp.copy(dir).multiplyScalar(R).addScaledVector(e1, Math.cos(a) * rayon).addScaledVector(e2, Math.sin(a) * rayon).normalize();
+    max = Math.max(max, Math.abs(hauteurDir(p) - base));
+  }
+  return max;
+}
+const DENIVELE_MAX = 4;
 function actionVol() {
   const n = etat.nav;
   if (pretePourExtraction()) {
@@ -2063,16 +2406,28 @@ function actionVol() {
     transmettre('Trop haut ou trop vite pour se poser. Descendez près du sol et ralentissez.', { titre: 'Navette', duree: 3500 });
     return;
   }
-  // atterrissage
   const d = n.pos.clone().normalize();
+  if (denivele(d, 6) > DENIVELE_MAX) {
+    transmettre('Terrain trop accidenté pour se poser. Cherchez une zone plate.', { titre: 'Navette', duree: 3500 });
+    return;
+  }
+  // atterrissage
   navette.position.copy(sol(d)).addScaledVector(d, 0.3);
   navette.quaternion.setFromAxisAngle(Y, n.lacet).premultiply(n.cadre);   // posée à plat
   n.pos.copy(navette.position);
-  const droite = new V3(1, 0, 0).applyQuaternion(navette.quaternion);
-  const dirJoueur = navette.position.clone().addScaledVector(droite, 7.5).normalize();
+  // l'Arpenteur descend du côté le plus plat de la navette
+  const hNav = hauteurDir(d);
+  let dirJoueur = null, ecart = Infinity;
+  for (let k = 0; k < 8; k++) {
+    const cote = new V3(Math.cos(k * Math.PI / 4), 0, Math.sin(k * Math.PI / 4)).applyQuaternion(navette.quaternion);
+    const dir = navette.position.clone().addScaledVector(cote, 7.5).normalize();
+    const e = Math.abs(hauteurDir(dir) - hNav) + k * 0.01;     // à égalité, le côté droit
+    if (e < ecart) { ecart = e; dirJoueur = dir; }
+  }
   etat.pos.copy(sol(dirJoueur)); etat.vT.set(0, 0, 0); etat.vR = 0; etat.auSol = true;
   etat.cadre.copy(n.cadre); etat.lacet = n.lacet; etat.tangage = 0.2;
   n.etat = 'aucun'; garerNavette();
+  tuto.poses++;
   etat.bruit = Math.min(100, etat.bruit + 30);
   gerbe(navette.position.clone(), 0.6);
   etat.mode = 'jeu';
@@ -2119,7 +2474,7 @@ function majVol(dt) {
   // invite
   let invite = null;
   if (pretePourExtraction()) invite = 'Appuyer sur E · s\'arrimer à la balise et rentrer';
-  else if (n.alt < 9 && n.vel.length() < 12) invite = 'Appuyer sur E · se poser ici';
+  else if (n.alt < 9 && n.vel.length() < 12) invite = denivele(n.pos.clone().normalize(), 6) > DENIVELE_MAX ? 'Terrain trop accidenté pour se poser' : 'Appuyer sur E · se poser ici';
   $('#invite').hidden = !invite;
   if (invite) { $('#invite-texte').textContent = invite; $('#invite-barre').style.width = '0%'; }
   return { vitesse: n.vel.length() };
@@ -2150,6 +2505,14 @@ function commencerJeu() {
   etat.mode = 'jeu';
   $('#passer').hidden = true;
   $('#hud').hidden = false;
+  $('#tuto').hidden = !tuto.actif;
+  $('#objectifs').hidden = tuto.actif;
+  if (tuto.actif) {
+    majPanneauTuto();
+    const accueil = personnaliser("Bienvenue, recrue {nom}. Ici l'officière Vesna, du Ministère de l'Enthousiasme. Formation accélérée : treize étapes, zéro question. Suivez le panneau en haut à droite.");
+    setTimeout(() => { if (tuto.actif && etat.mode === 'jeu') transmettre(accueil, { titre: TITRE_VESNA, duree: 10000 }); }, 600);
+    return;
+  }
   if (etat.journal.length === 0) setTimeout(() => { if (etat.mode === 'jeu') afficherEcho("Le sable est tiède. Au-dessus de vous, la lumière tourne autour de rien."); }, 1200);
 }
 
@@ -2223,7 +2586,8 @@ function majJoueur(dt, actif) {
 
   if (actif && etat.auSol && touches.has('Space')) {
     etat.vR = 8.5; etat.auSol = false;
-    etat.bruit = Math.min(100, etat.bruit + 9);
+    etat.bruit = Math.min(100, etat.bruit + 9 * spec().bruitPas);
+    tuto.sauts++;
   }
   etat.vR -= GRAVITE * dt;
 
@@ -2250,7 +2614,7 @@ function majJoueur(dt, actif) {
   const etaitAuSol = etat.auSol;
   if (rr <= solIci || (etaitAuSol && etat.vR <= 0 && rr - solIci < 0.7)) {
     if (!etaitAuSol && etat.vR < -11) {
-      etat.bruit = Math.min(100, etat.bruit + 10);
+      etat.bruit = Math.min(100, etat.bruit + 10 * spec().bruitPas);
       if (etat.mode !== 'accueil') gerbe(d2.clone().multiplyScalar(solIci), 0.25);
     }
     nouvelle.copy(d2).multiplyScalar(solIci);
@@ -2318,6 +2682,18 @@ function cameraLargage() {
   camera.lookAt(cible);
   camera.updateMatrixWorld();
 }
+// Caméra de l'enrôlement : l'Arpenteur à droite de l'écran, le formulaire à gauche
+function cameraPerso() {
+  const haut = etat.pos.clone().normalize();
+  const q = new THREE.Quaternion().setFromAxisAngle(Y, 0.5).premultiply(etat.cadre);
+  const avant = new V3(0, 0, -1).applyQuaternion(q), droite = new V3(1, 0, 0).applyQuaternion(q);
+  const centre = etat.pos.clone().addScaledVector(haut, 1.0);
+  const large = window.innerWidth / Math.max(1, window.innerHeight) > 1.15;
+  camera.position.copy(centre).addScaledVector(avant, -3.9).addScaledVector(haut, 0.45);
+  camera.up.copy(haut);
+  camera.lookAt(centre.addScaledVector(droite, large ? -1.25 : 0));
+  camera.updateMatrixWorld();
+}
 
 // =====================================================================
 // Boucle
@@ -2327,15 +2703,17 @@ const soleilDir = new V3();
 let precedent = performance.now();
 let tempsTotal = 0;
 // Résolution adaptative : si l'ordinateur peine, on rend moins de pixels plutôt que de saccader
-const perf = { cumul: 0, images: 0, ratio: Math.min(window.devicePixelRatio || 1, 1.5) };
+const perf = { cumul: 0, images: 0, ratio: ratioMax() };
 function adapterResolution(dtReel) {
   perf.cumul += dtReel; perf.images++;
   if (perf.cumul < 2) return;
   const ms = (perf.cumul / perf.images) * 1000;
   perf.cumul = 0; perf.images = 0;
   let r = perf.ratio;
+  const max = ratioMax();
   if (ms > 24 && r > 0.6) r = Math.max(0.6, r - 0.2);
-  else if (ms < 12 && r < Math.min(window.devicePixelRatio || 1, 1.5)) r = Math.min(window.devicePixelRatio || 1, 1.5, r + 0.1);
+  else if (ms < 12 && r < max) r = Math.min(max, r + 0.1);
+  if (r > max) r = max;
   if (r !== perf.ratio) { perf.ratio = r; renderer.setPixelRatio(r); redimensionner(); }
 }
 
@@ -2357,9 +2735,10 @@ function maj(dt) {
   const enExtraction = etat.mode === 'extraction';
   const enLargage = etat.mode === 'largage';
   const enVol = etat.mode === 'vol';
+  const enPerso = etat.mode === 'perso';
 
   if (enJeu || enExtraction || enLargage || enVol) majTemps(dt);
-  else if (enAccueil) { etat.angleCiel += dt * Math.PI * 2 / DUREE_JOUR * 0.6; etat.tJeu += dt; }
+  else if (enAccueil || enPerso) { etat.angleCiel += dt * Math.PI * 2 / DUREE_JOUR * 0.6; etat.tJeu += dt; }
 
   // Ciel
   groupeCiel.quaternion.setFromAxisAngle(AXE_CIEL, etat.angleCiel);
@@ -2385,7 +2764,7 @@ function maj(dt) {
     if (etat.revele > 0) etat.revele -= dt;
     if (!etat.campVu && etat.pos.distanceTo(centreCamp) < 13) {
       etat.campVu = true;
-      const texte = "Un campement d'Arpenteur, ensablé depuis longtemps, et l'épave d'un vaisseau mineur. Sur la combinaison vide, le matricule est le vôtre. La date de mission est celle d'après-demain.";
+      const texte = personnaliser("Un campement d'Arpenteur, ensablé depuis longtemps, et l'épave d'un vaisseau mineur. Sur la combinaison vide, le matricule est le vôtre : {matricule}. La date de mission est celle d'après-demain.");
       afficherEcho(texte, 10000);
       noterJournal('echo', 'Le campement', texte);
       son.note([220, 277, 330], 3, 0.05, 'triangle');
@@ -2421,13 +2800,18 @@ function maj(dt) {
     etat.lacet = Math.sin(tempsTotal * 0.07) * 0.5;
     etat.tangage = 0.3 + Math.sin(tempsTotal * 0.05) * 0.06;
     majJoueur(dt, false);
+  } else if (enPerso) {                    // l'Arpenteur pose pour sa photo d'identité
+    if (etat.persoGlisse > 0) etat.persoGlisse -= dt; else etat.orientation += dt * 0.45;
+    majJoueur(dt, false);
   }
+  if (enJeu || enVol) majTuto(dt, mouvement);
   majGerbe(dt);
 
   etat.coup = Math.max(0, etat.coup - dt * 1.2);
   if (!enExtraction) etat.blanc = Math.max(0, etat.blanc - dt);
   if (enLargage) cameraLargage();
   else if (enVol || (enExtraction && etat.extractionVaisseau) || (etat.mode === 'pause' && etat.modeAvantPause === 'vol')) cameraVol();
+  else if (enPerso) cameraPerso();
   else majCamera(dt, enAccueil ? 7.5 : 6);
   if (enLargage) modele.visible = etat.joueurLargue;
   else if (enVol || etat.extractionVaisseau) modele.visible = false;
@@ -2495,7 +2879,7 @@ function maj(dt) {
     etat.scanT += dt;
     scan.visible = true;
     scan.position.copy(etat.scanOrigine);
-    scan.scale.setScalar(2 + etat.scanT * 120);
+    scan.scale.setScalar(2 + etat.scanT * 120 * (etat.scanPortee || 220) / 220);
     matScan.uniforms.uFondu.value = Math.max(0, 1 - etat.scanT / 1.8) * 1.6;
     matScan.uniforms.uCam.value.copy(camera.position);
   } else scan.visible = false;
@@ -2563,6 +2947,8 @@ function majHUD() {
   placerMarqueur(marqueur('b', 'bulle', '◯'), bulleB.mesh.position, bulleB.decouverte && revele);
   placerMarqueur(marqueur('x', 'balise', '⇡'), balise.position.clone().addScaledVector(LIEUX.balise, 3), etat.baliseActive);
   placerMarqueur(marqueur('k', 'monolithe', '⌂'), centreCamp.clone().addScaledVector(LIEUX.camp, 3), etat.campDecouvert && !etat.campVu && revele);
+  const cible = cibleTuto();
+  placerMarqueur(marqueur('t', 'tuto', '◎'), cible ? cible.clone().addScaledVector(cible.clone().normalize(), 3.5) : etat.pos, !!cible);
 }
 
 function rendre() {
@@ -2604,6 +2990,9 @@ window.addEventListener('resize', redimensionner);
 // =====================================================================
 // Déroulé de partie
 // =====================================================================
+const ECRANS = ['accueil', 'enrolement', 'options', 'credits', 'pause', 'fin'];
+function montrer(id) { for (const e of ECRANS) $('#' + e).hidden = e !== id; }
+
 function demarrer() {
   if (etat.mode === 'pause') {           // reprise
     etat.mode = etat.modeAvantPause;
@@ -2620,7 +3009,7 @@ function demarrer() {
   etat.pos.copy(sol(LIEUX.depart)); etat.vT.set(0, 0, 0); etat.vR = 0;
   etat.lacet = 0; etat.tangage = 0.22; etat.orientation = 0;
   modele.visible = false; navette.visible = true;
-  $('#accueil').hidden = true; $('#pause').hidden = true; $('#fin').hidden = true;
+  montrer(null);
   $('#hud').hidden = true; $('#passer').hidden = false;
   son.demarrer();
   son.note([110, 82], 4, 0.08, 'sawtooth');
@@ -2632,34 +3021,180 @@ function mettrePause() {
   etat.modeAvantPause = etat.mode;
   etat.mode = 'pause';
   touches.clear();
-  $('#pause').hidden = false;
+  $('#btn-recommencer').textContent = tuto.actif ? 'Recommencer la formation' : 'Nouveau largage';
+  montrer('pause');
   $('#btn-reprendre').focus();
 }
-function terminer() {
+function afficherFin({ surtitre, titre, temps, verite, ligne4, valeur4, bouton }) {
   etat.mode = 'fin';
   if (document.pointerLockElement) document.exitPointerLock?.();
   $('#hud').hidden = true;
+  $('#fin-surtitre').textContent = surtitre;
+  $('#fin-titre').textContent = titre;
   $('#fin-vecu').textContent = formatDuree(etat.tVecu);
   $('#fin-vaisseau').textContent = formatDuree(etat.tVaisseau);
   $('#fin-ether').textContent = `${etat.ether} / ${QUOTA}`;
-  $('#fin-trans').textContent = `${etat.transmission} / ${TRANSMISSIONS.length}`;
-  $('#fin-temps').textContent = `Vous avez vécu ${formatDuree(etat.tVecu)} sur la planète. Sur le vaisseau-mère, il s'est écoulé ${formatDuree(etat.tVaisseau)}.`;
-  $('#fin-verite').textContent = etat.monolithe
-    ? "Le Bureau du Quota vous félicite. Vous, vous savez maintenant ce que vous avez livré."
-    : "Le Bureau du Quota vous félicite. Quelque part, sous une bulle de temps lent, un monolithe attend toujours.";
-  $('#fin').hidden = false;
+  $('#fin-trans-titre').textContent = ligne4;
+  $('#fin-trans').textContent = valeur4;
+  $('#fin-temps').textContent = temps;
+  $('#fin-verite').textContent = verite;
+  $('#btn-rejouer').textContent = bouton;
+  montrer('fin');
   $('#btn-rejouer').focus();
+}
+function terminer() {
+  if (tuto.actif) { finFormation(); return; }
+  afficherFin({
+    surtitre: 'Extraction réussie', titre: 'Retour au vaisseau', bouton: 'Nouveau largage',
+    ligne4: 'Transmissions', valeur4: `${etat.transmission} / ${TRANSMISSIONS.length}`,
+    temps: `Vous avez vécu ${formatDuree(etat.tVecu)} sur la planète. Sur le vaisseau-mère, il s'est écoulé ${formatDuree(etat.tVaisseau)}.`,
+    verite: personnaliser(etat.monolithe
+      ? "Le Bureau du Quota félicite l'Arpenteur {nom}. Vous, vous savez maintenant ce que vous avez livré."
+      : "Le Bureau du Quota félicite l'Arpenteur {nom}. Quelque part, sous une bulle de temps lent, un monolithe attend toujours."),
+  });
+}
+function finFormation() {
+  const reussies = ETAPES.length - tuto.passees;
+  tuto.actif = false;
+  afficherFin({
+    surtitre: 'Formation terminée', titre: `Arpenteur ${nomArpenteur()}, certifié`, bouton: 'Lancer la mission',
+    ligne4: 'Étapes réussies', valeur4: `${reussies} / ${ETAPES.length}`,
+    temps: `Pendant votre formation, vous avez vécu ${formatDuree(etat.tVecu)}. Là-haut, sur le vaisseau-mère, il s'est écoulé ${formatDuree(etat.tVaisseau)}.`,
+    verite: "Le Ministère de l'Enthousiasme vous déclare apte. Votre première mission vous attend : cinq cristaux, une balise, et surtout aucune question.",
+  });
 }
 function recommencer() {
   etatInitial();
+  initTuto();
   modele.visible = true;
   demarrer();
 }
+function menuPrincipal() {
+  tuto.actif = false; typePartie = 'mission';
+  if (document.pointerLockElement) document.exitPointerLock?.();
+  etatInitial();
+  $('#hud').hidden = true; $('#tuto').hidden = true; $('#objectifs').hidden = false;
+  majResumeProfil();
+  montrer('accueil');
+  $('#btn-didacticiel').focus();
+}
 
-$('#btn-atterrir').addEventListener('click', demarrer);
+// --- Enrôlement : nom, spécialité, couleurs, aperçu en 3D ---
+function construireEnrolement() {
+  const etiquette = (classe, texte) => { const s = document.createElement('span'); s.className = classe; s.textContent = texte; return s; };
+  const radio = (nom, valeur) => { const i = document.createElement('input'); i.type = 'radio'; i.name = nom; i.value = valeur; return i; };
+  for (const [cle, s] of Object.entries(SPECIALITES)) {
+    const l = document.createElement('label'); l.className = 'spec';
+    l.append(radio('spec', cle), etiquette('spec-nom', s.nom), etiquette('spec-atout', s.atout), etiquette('spec-bureau', s.bureau));
+    $('#specialites').append(l);
+  }
+  for (const [conteneur, liste, nom, lueur] of [['#pastilles-combi', COMBINAISONS, 'combinaison', false], ['#pastilles-visiere', VISIERES, 'visiere', true]]) {
+    for (const [cle, libelle, hex] of liste) {
+      const l = document.createElement('label'); l.className = 'pastille';
+      const rond = document.createElement('i');
+      rond.style.background = lueur ? `radial-gradient(circle at 50% 42%, ${hex} 0 38%, #1a120a 78%)` : hex;
+      l.append(radio(nom, cle), rond, document.createTextNode(libelle));
+      $(conteneur).append(l);
+    }
+  }
+  $('#form-enrolement').addEventListener('change', lireEnrolement);
+  $('#nom').addEventListener('input', lireEnrolement);
+  $('#form-enrolement').addEventListener('submit', (e) => { e.preventDefault(); embarquer(); });
+}
+function remplirEnrolement() {
+  $('#nom').value = profil.nom;
+  $('#matricule').textContent = profil.matricule;
+  const f = $('#form-enrolement');
+  for (const [nom, valeur] of [['spec', profil.spec], ['combinaison', profil.combinaison], ['visiere', profil.visiere]]) {
+    const i = f.querySelector(`input[name="${nom}"][value="${valeur}"]`) || f.querySelector(`input[name="${nom}"]`);
+    i.checked = true;
+  }
+}
+function lireEnrolement() {
+  const f = $('#form-enrolement');
+  const valeur = (nom) => f.querySelector(`input[name="${nom}"]:checked`)?.value;
+  profil.spec = valeur('spec') || profil.spec;
+  profil.combinaison = valeur('combinaison') || profil.combinaison;
+  profil.visiere = valeur('visiere') || profil.visiere;
+  profil.nom = $('#nom').value.replace(/\s+/g, ' ').trim().slice(0, 18);
+  appliquerApparence(modele);
+}
+function ouvrirEnrolement(suite) {
+  typePartie = suite;
+  etat.mode = 'perso';
+  etat.pos.copy(sol(LIEUX.depart)); etat.vT.set(0, 0, 0); etat.vR = 0; etat.auSol = true;
+  etat.orientation = Math.PI + 0.5; etat.persoGlisse = 0;     // face à la caméra
+  remplirEnrolement();
+  $('#btn-embarquer').textContent = suite === 'didacticiel' ? 'Commencer la formation' : 'Embarquer';
+  montrer('enrolement');
+  $('#nom').focus({ preventScroll: true });
+}
+function embarquer() {
+  lireEnrolement();
+  if (!profil.nom) profil.nom = '';
+  profil.enrole = true;
+  ecrireStockage('echos-arpenteur', profil);
+  etatInitial();
+  initTuto();
+  demarrer();
+}
+function majResumeProfil() {
+  const el = $('#profil-resume');
+  el.hidden = !profil.enrole;
+  if (profil.enrole) el.textContent = `Arpenteur enrôlé : ${nomArpenteur()} (${profil.matricule}) · ${spec().nom}`;
+}
+
+// --- Options ---
+let optionsDepuis = 'accueil';
+function ouvrirOptions(depuis) {
+  optionsDepuis = depuis;
+  $('#opt-sens').value = reglages.sensibilite;
+  $('#opt-sens-val').textContent = `×${reglages.sensibilite.toFixed(1).replace('.', ',')}`;
+  $('#opt-inverser').checked = reglages.inverserY;
+  $('#opt-qualite').value = reglages.qualite;
+  $('#opt-son').checked = !son.coupe;
+  montrer('options');
+  $('#opt-sens').focus();
+}
+function fermerOptions() {
+  ecrireStockage('echos-reglages', reglages);
+  montrer(optionsDepuis);
+  (optionsDepuis === 'pause' ? $('#btn-reprendre') : $('#btn-options')).focus();
+}
+function memoriserSon() { reglages.son = !son.coupe; ecrireStockage('echos-reglages', reglages); }
+$('#opt-sens').addEventListener('input', (e) => {
+  reglages.sensibilite = Number(e.target.value);
+  $('#opt-sens-val').textContent = `×${reglages.sensibilite.toFixed(1).replace('.', ',')}`;
+});
+$('#opt-inverser').addEventListener('change', (e) => { reglages.inverserY = e.target.checked; });
+$('#opt-qualite').addEventListener('change', (e) => {
+  reglages.qualite = e.target.value;
+  perf.ratio = ratioMax(); renderer.setPixelRatio(perf.ratio); redimensionner();
+});
+$('#opt-son').addEventListener('change', (e) => { if (son.coupe === e.target.checked) son.basculer(); memoriserSon(); });
+
+function retourMenu() {
+  if (!$('#options').hidden) { fermerOptions(); return; }
+  if (!$('#credits').hidden) { montrer('accueil'); $('#btn-credits').focus(); return; }
+  if (etat.mode === 'perso') { etat.mode = 'accueil'; majResumeProfil(); montrer('accueil'); $('#btn-didacticiel').focus(); }
+}
+
+$('#btn-didacticiel').addEventListener('click', () => ouvrirEnrolement('didacticiel'));
+$('#btn-mission').addEventListener('click', () => ouvrirEnrolement('mission'));
+$('#btn-options').addEventListener('click', () => ouvrirOptions('accueil'));
+$('#btn-credits').addEventListener('click', () => { montrer('credits'); $('#btn-retour-credits').focus(); });
+$('#btn-retour-credits').addEventListener('click', retourMenu);
+$('#btn-retour-options').addEventListener('click', fermerOptions);
+$('#btn-retour-enrolement').addEventListener('click', retourMenu);
 $('#btn-reprendre').addEventListener('click', demarrer);
 $('#btn-recommencer').addEventListener('click', recommencer);
-$('#btn-rejouer').addEventListener('click', recommencer);
+$('#btn-options-pause').addEventListener('click', () => ouvrirOptions('pause'));
+$('#btn-menu-pause').addEventListener('click', menuPrincipal);
+$('#btn-rejouer').addEventListener('click', () => { typePartie = 'mission'; recommencer(); });
+$('#btn-menu-fin').addEventListener('click', menuPrincipal);
+construireEnrolement();
+son.coupe = !reglages.son;
+majResumeProfil();
 
 // Mise à jour à chaud du visualiseur : on garde la partie en cours
 function instantane() {
@@ -2699,6 +3234,7 @@ function demarrage(donnees) {
 if (location.hash === '#debug') {
   window.__echos = {
     etat, cristaux, bulleA, bulleB, monolithe, balise, LIEUX, sol, declencherVer, lancerScan, THREE, navette, racines, touches,
+    tuto, ETAPES, profil, reglages, modele, etapeSuivante, menuPrincipal, ouvrirEnrolement, spec, denivele, hauteurDir, R,
     avancer(secondes) { for (let t = 0; t < secondes; t += 0.05) maj(0.05); },   // fait avancer la logique sans dessiner
   };
 }
