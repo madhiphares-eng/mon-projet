@@ -17,6 +17,10 @@ namespace EchosEther.Joueur
         public float tangageMin = -40f;
         public float tangageMax = 75f;
 
+        /// <summary>Réglages du joueur (menu Options) : multiplicateur de sensibilité et axe vertical inversé.</summary>
+        public static float MultiplicateurSensibilite = 1f;
+        public static bool InverserY;
+
         CorpsGravitationnel graviteCible;
         Quaternion repere = Quaternion.identity;
         float lacet;
@@ -38,8 +42,9 @@ namespace EchosEther.Joueur
             if (Cursor.lockState == CursorLockMode.Locked)
             {
                 Vector2 souris = Entrees.Regard();
-                lacet += souris.x * sensibilite;
-                tangage = Mathf.Clamp(tangage - souris.y * sensibilite, tangageMin, tangageMax);
+                float s = sensibilite * MultiplicateurSensibilite;
+                lacet += souris.x * s;
+                tangage = Mathf.Clamp(tangage - souris.y * s * (InverserY ? -1f : 1f), tangageMin, tangageMax);
             }
 
             // Le repère suit le "haut" local sans rotation parasite autour de lui.

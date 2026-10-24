@@ -1,0 +1,142 @@
+/* Interface d'Échos d'Éther : le casque d'un Arpenteur.
+   Propagande impériale en capitales, échos en italique, mesures en clair, sur la scène plein écran.
+   Résolution de référence : 1920 x 1080. */
+
+.racine { flex-grow: 1; color: rgb(236, 230, 216); font-size: 21px; }
+
+/* ---------- couleurs ---------- */
+.ether { color: rgb(134, 239, 230); }
+.ambre { color: rgb(242, 178, 107); }
+.empire { color: rgb(217, 73, 58); }
+.brume { color: rgb(167, 163, 180); }
+
+/* ---------- écrans ---------- */
+.ecran { position: absolute; left: 0; top: 0; right: 0; bottom: 0; padding: 48px 56px; }
+.ecran.gauche { align-items: flex-start; justify-content: flex-end; background-color: rgba(6, 7, 12, 0.35); }
+.ecran.centre { align-items: center; justify-content: center; background-color: rgba(6, 7, 12, 0.72); }
+.ecran.sans-voile { background-color: rgba(0, 0, 0, 0); }
+.carte { width: 820px; max-width: 90%; background-color: rgba(6, 7, 12, 0.78); padding: 34px 38px; border-left-width: 1px; border-left-color: rgba(236, 230, 216, 0.16); }
+.carte.etroite { width: 700px; }
+.carte > * { margin-bottom: 18px; }
+.defilement { flex-shrink: 1; max-height: 100%; }
+
+.surtitre { font-size: 16px; letter-spacing: 3px; color: rgb(167, 163, 180); }
+.titre { font-size: 120px; -unity-font-style: bold; letter-spacing: 1px; margin-bottom: 0; }
+.titre-ligne { flex-direction: row; }
+.titre-2 { font-size: 58px; -unity-font-style: bold; letter-spacing: 1px; white-space: normal; }
+.ordre { border-left-width: 6px; border-left-color: rgb(217, 73, 58); background-color: rgba(217, 73, 58, 0.12); padding: 16px 22px; }
+.ordre-titre { -unity-font-style: bold; font-size: 24px; letter-spacing: 2px; color: rgb(217, 73, 58); margin-bottom: 6px; }
+.texte { white-space: normal; font-size: 21px; }
+.echo-texte { white-space: normal; -unity-font-style: italic; font-size: 27px; color: rgb(167, 163, 180); }
+.note { white-space: normal; font-size: 17px; color: rgb(167, 163, 180); }
+
+/* ---------- boutons ---------- */
+.bouton {
+    background-color: rgba(0, 0, 0, 0); border-width: 2px; border-color: rgba(236, 230, 216, 0.25); border-radius: 2px;
+    color: rgb(236, 230, 216); padding: 14px 26px; margin: 0 12px 12px 0; -unity-font-style: bold; font-size: 25px;
+    letter-spacing: 2px; -unity-text-align: middle-left;
+    transition-property: background-color, border-color; transition-duration: 0.15s;
+}
+.bouton:hover { border-color: rgb(236, 230, 216); background-color: rgba(236, 230, 216, 0.06); }
+.bouton:focus { border-color: rgb(134, 239, 230); }
+.bouton.principal { background-color: rgb(217, 73, 58); border-color: rgb(217, 73, 58); }
+.bouton.principal:hover { background-color: rgb(232, 90, 74); border-color: rgb(232, 90, 74); }
+.bouton.tertiaire { font-size: 17px; letter-spacing: 3px; padding: 10px 18px; -unity-font-style: normal; color: rgb(167, 163, 180); }
+.bouton-menu { flex-direction: column; align-items: flex-start; width: 560px; }
+.bouton-menu .sous { font-size: 15px; -unity-font-style: normal; letter-spacing: 0; opacity: 0.85; margin-top: 4px; }
+.rangee { flex-direction: row; flex-wrap: wrap; align-items: center; }
+
+/* ---------- enrôlement ---------- */
+.champ-nom .unity-base-text-field__input { background-color: rgba(236, 230, 216, 0.06); border-color: rgba(236, 230, 216, 0.2); color: rgb(236, 230, 216); font-size: 24px; padding: 8px 12px; }
+.champ-nom .unity-label, .options .unity-label { color: rgb(167, 163, 180); font-size: 16px; min-width: 260px; }
+.spec { border-width: 1px; border-color: rgba(236, 230, 216, 0.16); background-color: rgba(236, 230, 216, 0.03); padding: 12px 16px; margin: 0 0 10px 0; flex-direction: column; align-items: stretch; -unity-text-align: upper-left; border-radius: 0; }
+.spec:hover { border-color: rgba(236, 230, 216, 0.45); }
+.spec.choisi { border-color: rgb(217, 73, 58); background-color: rgba(217, 73, 58, 0.12); }
+.spec-nom { -unity-font-style: bold; font-size: 24px; letter-spacing: 2px; }
+.spec-atout { white-space: normal; font-size: 18px; }
+.spec-bureau { white-space: normal; -unity-font-style: italic; font-size: 18px; color: rgb(167, 163, 180); }
+.pastille { width: 92px; align-items: center; background-color: rgba(0, 0, 0, 0); border-width: 0; margin: 0 6px 0 0; padding: 4px; }
+.pastille-rond { width: 42px; height: 42px; border-radius: 21px; border-width: 2px; border-color: rgba(236, 230, 216, 0.2); margin-bottom: 4px; }
+.pastille-nom { font-size: 14px; color: rgb(167, 163, 180); }
+.pastille.choisi .pastille-rond { border-color: rgb(236, 230, 216); border-width: 4px; }
+.pastille.choisi .pastille-nom { color: rgb(236, 230, 216); }
+.indice-apercu { position: absolute; right: 48px; bottom: 40px; font-size: 16px; color: rgb(167, 163, 180); }
+
+/* ---------- options ---------- */
+.options .unity-base-field { margin: 4px 0 14px 0; }
+.options .unity-toggle__checkmark { border-color: rgba(236, 230, 216, 0.5); background-color: rgba(236, 230, 216, 0.08); }
+.commandes-liste { margin-top: 6px; }
+.commande { flex-direction: row; margin-bottom: 4px; }
+.touche { min-width: 130px; color: rgb(134, 239, 230); -unity-font-style: bold; font-size: 18px; }
+.commande-texte { font-size: 18px; color: rgb(167, 163, 180); white-space: normal; flex-shrink: 1; }
+.credit { border-top-width: 1px; border-top-color: rgba(236, 230, 216, 0.16); padding-top: 10px; margin-bottom: 10px; }
+.credit-titre { font-size: 14px; letter-spacing: 3px; color: rgb(167, 163, 180); }
+
+/* ---------- fin ---------- */
+.chiffres { flex-direction: row; flex-wrap: wrap; }
+.chiffre { width: 25%; min-width: 170px; margin-bottom: 10px; }
+.chiffre-titre { font-size: 14px; letter-spacing: 3px; color: rgb(167, 163, 180); }
+.chiffre-valeur { font-size: 32px; }
+.verite { white-space: normal; -unity-font-style: italic; font-size: 26px; }
+
+/* ---------- HUD ---------- */
+.hud { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.panneau { position: absolute; background-color: rgba(8, 10, 18, 0.7); border-width: 1px; border-color: rgba(236, 230, 216, 0.16); padding: 12px 16px; }
+.etiquette { font-size: 14px; letter-spacing: 3px; color: rgb(167, 163, 180); }
+.ligne { flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.valeur { font-size: 23px; margin-left: 24px; }
+.temps { left: 22px; top: 22px; width: 380px; }
+.ratio { font-size: 16px; color: rgb(167, 163, 180); border-top-width: 1px; border-top-color: rgba(236, 230, 216, 0.16); padding-top: 6px; margin-top: 4px; }
+.ratio.dilate { color: rgb(134, 239, 230); }
+.instruments { left: 22px; top: 190px; width: 380px; }
+.aide-vol { white-space: normal; font-size: 15px; color: rgb(167, 163, 180); border-top-width: 1px; border-top-color: rgba(236, 230, 216, 0.16); padding-top: 6px; margin-top: 4px; }
+.objectifs { right: 22px; top: 22px; width: 440px; }
+.objectif { white-space: normal; font-size: 19px; margin-top: 6px; padding-left: 10px; border-left-width: 3px; border-left-color: rgba(236, 230, 216, 0.3); }
+.objectif.fait { color: rgb(167, 163, 180); border-left-color: rgb(134, 239, 230); }
+.objectif.secret { border-left-color: rgb(134, 239, 230); }
+.tuto { right: 22px; top: 22px; width: 500px; border-left-width: 4px; border-left-color: rgb(134, 239, 230); }
+.tuto.valide { border-left-color: rgb(242, 178, 107); }
+.tuto-titre { font-size: 34px; -unity-font-style: bold; letter-spacing: 1px; margin: 4px 0 6px 0; }
+.tuto-texte { white-space: normal; font-size: 20px; margin-bottom: 10px; }
+.jauge { height: 10px; background-color: rgba(236, 230, 216, 0.08); border-width: 1px; border-color: rgba(236, 230, 216, 0.16); }
+.jauge-barre { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background-color: rgb(134, 239, 230); }
+.seuil { position: absolute; top: -5px; bottom: -5px; width: 1px; background-color: rgb(167, 163, 180); opacity: 0.6; }
+.bas-centre { position: absolute; left: 0; right: 0; bottom: 24px; align-items: center; }
+.bruit { position: relative; width: 560px; }
+.bruit-etat { font-size: 15px; letter-spacing: 3px; }
+.invite { position: absolute; left: 0; right: 0; top: 62%; align-items: center; }
+.invite-texte { background-color: rgba(8, 10, 18, 0.75); border-width: 1px; border-color: rgba(236, 230, 216, 0.16); padding: 8px 16px; font-size: 21px; }
+.invite-jauge { width: 260px; height: 4px; margin-top: 8px; background-color: rgba(236, 230, 216, 0.15); }
+.invite-barre { height: 100%; width: 0; background-color: rgb(134, 239, 230); }
+.alerte { position: absolute; left: 0; right: 0; top: 20%; align-items: center; }
+.alerte-titre { font-size: 62px; -unity-font-style: bold; letter-spacing: 4px; color: rgb(217, 73, 58); text-shadow: 0 0 18px rgba(217, 73, 58, 0.6); }
+.alerte-sous { font-size: 22px; letter-spacing: 3px; margin-top: 6px; }
+.transmissions { position: absolute; left: 22px; bottom: 120px; width: 560px; flex-direction: column-reverse; }
+.transmission { background-color: rgba(6, 7, 12, 0.88); border-left-width: 4px; border-left-color: rgb(217, 73, 58); padding: 10px 14px; margin-top: 8px; }
+.transmission .etiquette { color: rgb(217, 73, 58); margin-bottom: 4px; }
+.transmission.perso { border-left-color: rgb(242, 178, 107); }
+.transmission.perso .etiquette { color: rgb(242, 178, 107); }
+.transmission-texte { white-space: normal; font-size: 19px; }
+.echo { position: absolute; left: 20%; right: 20%; bottom: 150px; -unity-text-align: middle-center; white-space: normal; -unity-font-style: italic; font-size: 32px; text-shadow: 0 0 16px rgba(134, 239, 230, 0.35); opacity: 0; transition-property: opacity; transition-duration: 1.2s; }
+.echo.visible { opacity: 1; }
+.aide { position: absolute; right: 22px; bottom: 24px; flex-direction: row; }
+.aide-item { font-size: 15px; color: rgb(167, 163, 180); margin-left: 16px; }
+.marqueurs { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.marqueur { position: absolute; align-items: center; width: 90px; margin-left: -45px; margin-top: -20px; }
+.marqueur-icone { width: 16px; height: 16px; border-width: 2px; border-color: rgb(134, 239, 230); }
+.marqueur-distance { font-size: 15px; color: rgb(134, 239, 230); margin-top: 4px; text-shadow: 0 0 4px rgb(0, 0, 0); }
+.marqueur.cristal .marqueur-icone { rotate: 45deg; background-color: rgba(134, 239, 230, 0.35); }
+.marqueur.bulle .marqueur-icone { width: 20px; height: 20px; border-radius: 10px; border-color: rgb(159, 196, 255); }
+.marqueur.bulle .marqueur-distance { color: rgb(159, 196, 255); }
+.marqueur.balise .marqueur-icone { width: 6px; height: 26px; border-width: 0; background-color: rgb(242, 178, 107); }
+.marqueur.balise .marqueur-distance { color: rgb(242, 178, 107); }
+.marqueur.tuto .marqueur-icone { width: 26px; height: 26px; border-radius: 13px; border-width: 3px; border-color: rgb(242, 178, 107); }
+.marqueur.tuto .marqueur-distance { color: rgb(242, 178, 107); }
+.journal { position: absolute; left: 25%; right: 25%; top: 12%; bottom: 12%; background-color: rgba(6, 7, 12, 0.92); border-width: 1px; border-color: rgba(236, 230, 216, 0.16); padding: 24px 28px; }
+.journal-entree { border-top-width: 1px; border-top-color: rgba(236, 230, 216, 0.16); padding-top: 10px; margin-bottom: 12px; }
+.journal-texte { white-space: normal; font-size: 19px; }
+.journal-entree.echo .journal-texte { -unity-font-style: italic; font-size: 22px; }
+.fondu { position: absolute; left: 0; top: 0; right: 0; bottom: 0; opacity: 0; }
+.impact { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(217, 73, 58, 0.35); opacity: 0; transition-property: opacity; transition-duration: 0.8s; }
+.impact.actif { opacity: 1; transition-duration: 0.05s; }
+.cache { display: none; }

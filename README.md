@@ -62,6 +62,32 @@ Fichiers : `Assets/_Projet/Shaders/LentilleGravitationnelle.shader` + `Assets/_P
 Limite connue du prototype : la déformation ne peut montrer que ce qui est déjà à l'écran (pas ce qui est derrière la caméra).
 Prochaine étape : le **disque d'accrétion** (anneau de matière lumineuse), qui deviendra aussi la source de lumière de la planète.
 
+## Le jeu dans Unity : menus, enrôlement, didacticiel, mission
+
+1. Récupérer le code : relancer la commande d'installation rapide (`installer.ps1`). Un fichier modifié sur le PC est d'abord sauvegardé dans `Sauvegardes\<date>`.
+2. Ouvrir la scène du jeu (par exemple `Assets/_Projet/Scenes/LisiereHorizon.unity`, créée par *Echos d'Ether > Créer la scène Lisière de l'Horizon*).
+3. Menu **Echos d'Ether > Installer le jeu dans la scène (menus, didacticiel, mission)**. Il ajoute :
+   - sur l'Arpenteur : `EtatArpenteur`, `JaugeBruit`, `Scanner`, `ApparenceArpenteur` ;
+   - sur la caméra : `CameraNavette`, `CameraSecousse` ;
+   - un objet **Systemes de jeu** : `GestionnaireJeu`, `InterfaceJeu` (UI Toolkit), `Horloges`, `Transmissions`, `Mission`, `Ruche`, `Didacticiel`, `BanqueSons` ;
+   - un objet **Lieux de jeu** posé sur la planète autour du joueur : 9 cristaux d'Éther, une bulle lente avec le monolithe, une bulle rapide, la balise d'extraction et la navette.
+   - Il utilise les modèles téléchargés par `telecharger-assets.ps1` s'ils sont là : navette Sketchfab (dossier `Externes/Sketchfab/Vaisseaux`), ver des sables (`Externes/Sketchfab/Personnages`), sons Kenney (`Externes/Sons`).
+4. **Play** : menu principal, enrôlement (nom, spécialité, couleurs, aperçu 3D), didacticiel en 13 étapes ou mission complète.
+
+Relancer le menu complète l'installation sans rien déplacer. *Replacer les lieux de jeu autour du joueur* les repose à neuf.
+*Effacer le profil et les réglages enregistrés* remet l'enrôlement à zéro.
+
+| Dossier | Contenu |
+|---|---|
+| `Scripts/Jeu` | `GestionnaireJeu` (états de partie), `Didacticiel`, `Mission`, `JaugeBruit`, `CristalEther`, `Scanner`, `Ruche`, `BulleTemporelle`, `Monolithe`, `Navette`, `BaliseExtraction`, `Horloges`, `Transmissions`, `BanqueSons`, `ProfilArpenteur`, `Specialites`, `Reglages`, `Planete`, `Formes`, `Invite` |
+| `Scripts/Joueur` | `EtatArpenteur`, `ApparenceArpenteur`, `EntreesJeu`, `CameraNavette`, `CameraSecousse` (plus les scripts existants) |
+| `Scripts/Interface` | `InterfaceJeu` : HUD et écrans en UI Toolkit, construits par le code |
+| `Resources` | `EchosEtherUI.uss` (styles), `EchosEtherTheme.tss` (thème), `Lueur.shader` (lueurs HDRP des bulles, de l'onde du scanner et des faisceaux) |
+| `Editor` | `InstallateurJeu` (menu d'installation), `ImportExternes` (réglage des textures), `ConstructeurScene` |
+
+Commandes : Z Q S D se déplacer, souris regarder, Maj courir, C marcher en silence, Espace sauter, E récolter / interagir / navette,
+F scanner, J journal, M son, N passer une étape du didacticiel, Échap pause. Le code marche avec le nouvel Input System et l'ancien Input Manager.
+
 ## Maquette jouable (navigateur)
 
 `maquette/echos-ether.html` : prototype WebGL (Three.js) de la Phase 1, publié comme Artifact claude.ai.
