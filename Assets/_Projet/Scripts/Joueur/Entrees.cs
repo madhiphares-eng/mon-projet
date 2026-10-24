@@ -8,18 +8,26 @@ namespace EchosEther.Joueur
     /// <summary>
     /// Lecture clavier/souris compatible avec le nouveau Input System et l'ancien Input Manager.
     /// Avec le nouveau système, les touches suivent leur position physique :
-    /// ZQSD sur clavier AZERTY = WASD sur clavier QWERTY.
+    /// ZQSD sur clavier AZERTY = WASD sur clavier QWERTY. La manette marche aussi (nouveau système) :
+    /// stick gauche pour avancer, stick droit pour regarder, A pour sauter, gâchette droite ou L3 pour courir.
     /// </summary>
     public static class Entrees
     {
+        /// <summary>Vitesse du regard au stick droit poussé à fond (unités de <see cref="Regard"/> par seconde).</summary>
+        public static float VitesseRegardManette = 80f;
+
         public static Vector2 Deplacement()
         {
 #if ENABLE_INPUT_SYSTEM
+            Vector2 v = Vector2.zero;
             var k = Keyboard.current;
-            if (k == null) return Vector2.zero;
-            float x = (k.dKey.isPressed || k.rightArrowKey.isPressed ? 1f : 0f) - (k.aKey.isPressed || k.leftArrowKey.isPressed ? 1f : 0f);
-            float y = (k.wKey.isPressed || k.upArrowKey.isPressed ? 1f : 0f) - (k.sKey.isPressed || k.downArrowKey.isPressed ? 1f : 0f);
-            return Vector2.ClampMagnitude(new Vector2(x, y), 1f);
+            if (k != null)
+            {
+                v.x = (k.dKey.isPressed || k.rightArrowKey.isPressed ? 1f : 0f) - (k.aKey.isPressed || k.leftArrowKey.isPressed ? 1f : 0f);
+                v.y = (k.wKey.isPressed || k.upArrowKey.isPressed ? 1f : 0f) - (k.sKey.isPressed || k.downArrowKey.isPressed ? 1f : 0f);
+            }
+            if (Gamepad.current != null) v += Gamepad.current.leftStick.ReadValue();
+            return Vector2.ClampMagnitude(v, 1f);
 #else
             return Vector2.ClampMagnitude(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")), 1f);
 #endif
@@ -29,7 +37,9 @@ namespace EchosEther.Joueur
         public static Vector2 Regard()
         {
 #if ENABLE_INPUT_SYSTEM
-            return Mouse.current != null ? Mouse.current.delta.ReadValue() * 0.1f : Vector2.zero;
+            Vector2 r = Mouse.current != null ? Mouse.current.delta.ReadValue() * 0.1f : Vector2.zero;
+            if (Gamepad.current != null) r += Gamepad.current.rightStick.ReadValue() * (VitesseRegardManette * Time.deltaTime);
+            return r;
 #else
             return new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 #endif
@@ -38,7 +48,8 @@ namespace EchosEther.Joueur
         public static bool Saut()
         {
 #if ENABLE_INPUT_SYSTEM
-            return Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+            return (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+                || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame);
 #else
             return Input.GetKeyDown(KeyCode.Space);
 #endif
@@ -47,7 +58,8 @@ namespace EchosEther.Joueur
         public static bool Course()
         {
 #if ENABLE_INPUT_SYSTEM
-            return Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
+            return (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed)
+                || (Gamepad.current != null && (Gamepad.current.rightTrigger.isPressed || Gamepad.current.leftStickButton.isPressed));
 #else
             return Input.GetKey(KeyCode.LeftShift);
 #endif

@@ -90,6 +90,10 @@ Relancer le menu complète l'installation sans rien déplacer. *Replacer les lie
 Commandes : Z Q S D se déplacer, souris regarder, Maj courir, C marcher en silence, Espace sauter, E récolter / interagir / navette,
 F scanner, J journal, M son, N passer une étape du didacticiel, Échap pause, Espace passer l'arrivée en navette. Le code marche avec le nouvel Input System et l'ancien Input Manager.
 
+Manette (avec le nouvel Input System) : stick gauche avancer, stick droit regarder, A sauter, gâchette droite ou L3 courir, B marcher en silence,
+X récolter / interagir, Y scanner, Select journal, Start pause, croix droite passer une étape. En navette : A ou RB monter, B ou LB descendre, gâchette droite boost.
+Les menus se règlent à la souris.
+
 ## Maquette jouable (navigateur)
 
 `maquette/echos-ether.html` : prototype WebGL (Three.js) de la Phase 1, publié comme Artifact claude.ai.
