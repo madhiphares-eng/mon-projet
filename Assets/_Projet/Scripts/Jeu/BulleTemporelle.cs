@@ -21,6 +21,8 @@ namespace EchosEther.Jeu
         [ColorUsage(false, true)] public Color couleur = new Color(0.45f, 0.75f, 1.4f);
         [Tooltip("Distance à laquelle l'Arpenteur remarque la bulle sans scanner.")]
         public float distanceDecouverte = 55f;
+        [Tooltip("Bulle créée par une compétence : sans repère, ignorée par le didacticiel et le monolithe.")]
+        public bool ephemere;
 
         public bool Decouverte { get; set; }
         public float RayonActuel { get; private set; }
@@ -55,7 +57,7 @@ namespace EchosEther.Jeu
             if (materiau != null) materiau.SetFloat("_Intensite", 0.35f + 0.65f * force);
 
             var jeu = GestionnaireJeu.Instance;
-            if (jeu != null && Vector3.Distance(jeu.PositionObservateur, transform.position) < distanceDecouverte) Decouverte = true;
+            if (!ephemere && jeu != null && Vector3.Distance(jeu.PositionObservateur, transform.position) < distanceDecouverte) Decouverte = true;
         }
 
         /// <summary>0 hors de la bulle, 1 au cœur (tient compte de la respiration).</summary>
@@ -83,6 +85,27 @@ namespace EchosEther.Jeu
             float p = 0f;
             foreach (var b in Toutes) if (b.EstLente) p = Mathf.Max(p, b.Presence(position));
             return p;
+        }
+
+        /// <summary>Présence dans une vraie bulle lente du décor (sans les bulles de stase des compétences).</summary>
+        public static float PresenceLenteNaturelle(Vector3 position)
+        {
+            float p = 0f;
+            foreach (var b in Toutes) if (b.EstLente && !b.ephemere) p = Mathf.Max(p, b.Presence(position));
+            return p;
+        }
+
+        /// <summary>Facteur d'écoulement du temps local pour les créatures et projectiles (1 = normal).</summary>
+        public static float Ecoulement(Vector3 position)
+        {
+            float m = 1f;
+            foreach (var b in Toutes)
+            {
+                if (!b.EstLente) continue;
+                float p = b.Presence(position);
+                if (p > 0f) m = Mathf.Min(m, Mathf.Lerp(1f, Mathf.Max(0.12f, b.rapport), p));
+            }
+            return m;
         }
     }
 }

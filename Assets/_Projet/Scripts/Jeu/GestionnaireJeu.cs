@@ -155,6 +155,11 @@ namespace EchosEther.Jeu
                 if (corpsJoueur != null) { corpsJoueur.linearVelocity = Vector3.zero; corpsJoueur.position = departPosition; }
             }
             if (jauge != null) jauge.Reinitialiser();
+            if (joueur != null)
+            {
+                joueur.GetComponent<Combat.VieArpenteur>()?.Reinitialiser();
+                joueur.GetComponent<Combat.Arsenal>()?.RemplirTout();
+            }
             horloges?.Reinitialiser();
             if (horloges != null) horloges.EnMarche = true;
             transmissions?.Demarrer(type == TypePartie.Mission);
@@ -327,10 +332,12 @@ namespace EchosEther.Jeu
                 case EtatJeu.Vol:
                     if (EntreesJeu.Pause()) { Pause(); return; }
                     if (EntreesJeu.Journal()) interfaceJeu?.BasculerJournal();
+                    if (EntreesJeu.Talents() && Etat == EtatJeu.Jeu) { Pause(); interfaceJeu?.MontrerTalents(true); return; }
                     if (EntreesJeu.Son()) { Reglages.Son = !Reglages.Son; Reglages.Appliquer(); Reglages.Sauver(); }
                     if (Cursor.lockState != CursorLockMode.Locked && Etat == EtatJeu.Vol && Entrees.CapturerCurseur()) CapturerCurseur();
                     break;
                 case EtatJeu.Pause:
+                    if (interfaceJeu != null && interfaceJeu.TalentsOuverts && (EntreesJeu.Pause() || EntreesJeu.Talents())) { interfaceJeu.FermerTalents(); break; }
                     if (EntreesJeu.Pause() && interfaceJeu != null && !interfaceJeu.SousEcranOuvert) Reprendre();
                     break;
                 case EtatJeu.Extraction:

@@ -9,7 +9,7 @@ namespace EchosEther.Joueur
     /// Lecture clavier/souris compatible avec le nouveau Input System et l'ancien Input Manager.
     /// Avec le nouveau système, les touches suivent leur position physique :
     /// ZQSD sur clavier AZERTY = WASD sur clavier QWERTY. La manette marche aussi (nouveau système) :
-    /// stick gauche pour avancer, stick droit pour regarder, A pour sauter, gâchette droite ou L3 pour courir.
+    /// stick gauche pour avancer, stick droit pour regarder, A pour sauter, L3 pour courir.
     /// </summary>
     public static class Entrees
     {
@@ -59,7 +59,7 @@ namespace EchosEther.Joueur
         {
 #if ENABLE_INPUT_SYSTEM
             return (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed)
-                || (Gamepad.current != null && (Gamepad.current.rightTrigger.isPressed || Gamepad.current.leftStickButton.isPressed));
+                || (Gamepad.current != null && Gamepad.current.leftStickButton.isPressed);
 #else
             return Input.GetKey(KeyCode.LeftShift);
 #endif

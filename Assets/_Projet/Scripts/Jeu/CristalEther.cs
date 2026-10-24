@@ -108,7 +108,7 @@ namespace EchosEther.Jeu
             var s = ProfilArpenteur.Actuel.Donnees;
             if (EntreesJeu.InteragirMaintenu())
             {
-                Progression += Time.deltaTime * s.vitesseRecolte / dureeRecolte;
+                Progression += Time.deltaTime * s.vitesseRecolte * (ProfilArpenteur.Actuel.A(Talent.RecolteurExpert) ? 1.4f : 1f) / dureeRecolte;
                 if (jeu.jauge != null) jeu.jauge.SignalerRecolte();
                 if (Progression >= 1f) Recolter();
             }

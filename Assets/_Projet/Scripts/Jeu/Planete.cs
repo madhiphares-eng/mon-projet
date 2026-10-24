@@ -28,6 +28,10 @@ namespace EchosEther.Jeu
         public static Vector3 Centre => Principale != null ? Principale.transform.position : Vector3.down * 1e6f;
         public static float Rayon => Principale != null ? Principale.rayonSurface : 500f;
 
+        /// <summary>Accélération de la pesanteur en un point (vers le centre de la planète).</summary>
+        public static Vector3 Gravite(Vector3 position) =>
+            Principale != null ? Principale.Acceleration(position) : Vector3.down * 9.81f;
+
         /// <summary>Verticale locale (opposée à la gravité de la planète).</summary>
         public static Vector3 Haut(Vector3 position)
         {
@@ -37,7 +41,7 @@ namespace EchosEther.Jeu
         }
 
         /// <summary>
-        /// Sol sous un point (rayon vers le centre de la planète). Ignore les déclencheurs, le joueur
+        /// Sol sous un point (rayon vers le centre de la planète). Ignore les déclencheurs, le joueur, les créatures
         /// et, si fourni, l'objet <paramref name="ignorer"/> et ses enfants.
         /// </summary>
         public static bool Sol(Vector3 depuis, out RaycastHit sol, Transform ignorer = null, float hauteurDepart = 60f, float portee = 400f)
@@ -53,6 +57,7 @@ namespace EchosEther.Jeu
                 if (meilleur >= 0 && t.distance >= touches[meilleur].distance) continue;
                 if (ignorer != null && t.transform.IsChildOf(ignorer)) continue;
                 if (t.collider.GetComponentInParent<ControleurArpenteur>() != null) continue;
+                if (t.collider.GetComponentInParent<Combat.ICible>() != null) continue;   // créatures : pas du sol
                 meilleur = i;
             }
             sol = meilleur >= 0 ? touches[meilleur] : default;

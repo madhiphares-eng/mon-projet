@@ -18,6 +18,9 @@ namespace EchosEther.Joueur
         [Tooltip("Vitesse de chute minimale (m/s) pour qu'un atterrissage compte.")]
         public float chuteMinimale = 2f;
 
+        /// <summary>Multiplicateur de vitesse (talent Pied léger).</summary>
+        public static float MultiplicateurVitesse = 1f;
+
         public bool Actif => controleur != null && controleur.enabled;
         public bool Bouge { get; private set; }
         public bool Course { get; private set; }
@@ -61,8 +64,8 @@ namespace EchosEther.Joueur
             Course = actif && !Silence && Entrees.Course();
             Bouge = deplacement.sqrMagnitude > 0.01f;
 
-            controleur.vitesseMarche = Silence ? vitesseSilence : marcheBase;
-            controleur.vitesseCourse = Silence ? vitesseSilence : courseBase;
+            controleur.vitesseMarche = (Silence ? vitesseSilence : marcheBase) * MultiplicateurVitesse;
+            controleur.vitesseCourse = (Silence ? vitesseSilence : courseBase) * MultiplicateurVitesse;
 
             Vector3 haut = Haut;
             Vector3 v = corps.linearVelocity;

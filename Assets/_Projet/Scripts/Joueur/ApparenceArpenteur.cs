@@ -24,6 +24,8 @@ namespace EchosEther.Joueur
         public float intensiteVisiere = 6f;
 
         static readonly int IdBase = Shader.PropertyToID("_BaseColor");
+        static readonly int IdBaseGltf = Shader.PropertyToID("baseColorFactor");      // matériaux importés par glTFast
+        static readonly int IdEmissionGltf = Shader.PropertyToID("emissiveFactor");
         static readonly int IdCouleur = Shader.PropertyToID("_Color");
         static readonly int IdEmission = Shader.PropertyToID("_EmissiveColor");
         static readonly int IdEmissionBuiltin = Shader.PropertyToID("_EmissionColor");
@@ -51,7 +53,8 @@ namespace EchosEther.Joueur
                     else
                     {
                         combinaison.Add(m);
-                        couleursOrigine[m] = m.HasProperty(IdBase) ? m.GetColor(IdBase) : m.HasProperty(IdCouleur) ? m.GetColor(IdCouleur) : Color.white;
+                        couleursOrigine[m] = m.HasProperty(IdBase) ? m.GetColor(IdBase) : m.HasProperty(IdBaseGltf) ? m.GetColor(IdBaseGltf)
+                            : m.HasProperty(IdCouleur) ? m.GetColor(IdCouleur) : Color.white;
                     }
                 }
             }
@@ -68,12 +71,14 @@ namespace EchosEther.Joueur
                 Color c = couleursOrigine[m] * teinte;
                 c.a = couleursOrigine[m].a;
                 if (m.HasProperty(IdBase)) m.SetColor(IdBase, c);
+                else if (m.HasProperty(IdBaseGltf)) m.SetColor(IdBaseGltf, c);
                 else if (m.HasProperty(IdCouleur)) m.SetColor(IdCouleur, c);
             }
             Color lueur = profil.CouleurVisiere * intensiteVisiere;
             foreach (var m in visiere)
             {
                 if (m.HasProperty(IdEmission)) m.SetColor(IdEmission, lueur);
+                else if (m.HasProperty(IdEmissionGltf)) m.SetColor(IdEmissionGltf, lueur);
                 else if (m.HasProperty(IdEmissionBuiltin)) { m.EnableKeyword("_EMISSION"); m.SetColor(IdEmissionBuiltin, lueur); }
             }
         }

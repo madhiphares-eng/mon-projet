@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using EchosEther.Combat;
 using EchosEther.Interface;
 using EchosEther.Jeu;
 using EchosEther.Joueur;
@@ -58,6 +59,10 @@ namespace EchosEther.Editeur
             var jauge = Ajouter<JaugeBruit>(joueur.gameObject);
             Ajouter<Scanner>(joueur.gameObject);
             var apparence = Ajouter<ApparenceArpenteur>(joueur.gameObject);
+            Ajouter<VieArpenteur>(joueur.gameObject);
+            var arsenal = Ajouter<Arsenal>(joueur.gameObject);
+            Ajouter<CompetencesArpenteur>(joueur.gameObject);
+            Ajouter<AnimateurArpenteur>(joueur.gameObject);
             var cameraNavette = Ajouter<CameraNavette>(camera.gameObject);
             Ajouter<CameraSecousse>(camera.gameObject);
             var provisoire = Object.FindFirstObjectByType<AffichageTemps>();
@@ -74,6 +79,7 @@ namespace EchosEther.Editeur
             var didacticiel = Ajouter<Didacticiel>(systemes);
             var sons = Ajouter<BanqueSons>(systemes);
             var largage = Ajouter<Largage>(systemes);
+            Ajouter<Essaim>(systemes);
             Ajouter<AmbianceSonore>(Enfant(systemes.transform, "Ambiance sonore").gameObject);   // sa propre source audio
             horloges.dilatation = Object.FindFirstObjectByType<DilatationTemporelle>();
 
@@ -167,6 +173,44 @@ namespace EchosEther.Editeur
             sons.atterrissageNavette = Son("impactMetal_heavy_");
             sons.monolithe = Son("forceField_004");
             sons.pas = Sons("footstep_snow_");
+            // combat
+            sons.tirPistolet = Son("laserSmall_");
+            sons.tirCarabine = Son("laserRetro_");
+            sons.tirEclats = Son("laserLarge_");
+            sons.tirSablier = Son("laserLarge_002") ?? Son("laserLarge_");
+            sons.chargeSablier = Son("forceField_002") ?? Son("forceField_");
+            sons.rechargement = Son("impactMetal_light_");
+            sons.rechargementFin = Son("switch_");
+            sons.changementArme = Son("select_");
+            sons.vide = Son("tick_");
+            sons.balayage = Son("maximize_");
+            sons.impactMelee = Son("impactPunch_medium_");
+            sons.impactArme = Son("impactGeneric_light_");
+            sons.explosion = Son("explosionCrunch_002") ?? Son("explosionCrunch_");
+            sons.rebond = Son("impactPlate_light_");
+            sons.blessure = Son("impactPunch_heavy_002") ?? Son("impactPunch_heavy_");
+            sons.ramassage = Son("pluck_");
+            sons.cri = Son("slime_") ?? Son("forceField_003");
+            sons.crachat = Son("slime_001") ?? Son("laserSmall_004");
+            sons.morsure = Son("impactGlass_light_");
+            sons.toucheCreature = Son("impactGlass_medium_");
+            sons.mortCreature = Son("impactGlass_heavy_");
+            sons.competence = Son("forceField_003") ?? Son("forceField_");
+            sons.niveau = Son("jingles_PIZZI0") ?? Son("confirmation_");
+
+            // --- les armes (Kenney Blaster Kit, outils/telecharger-assets.ps1 groupe 6)
+            int armes = 0;
+            for (int i = 0; i < Catalogue.Armes.Length; i++)
+            {
+                var d = Catalogue.Armes[i];
+                if (arsenal.modeles == null || arsenal.modeles.Length != Catalogue.Armes.Length) arsenal.modeles = new GameObject[Catalogue.Armes.Length];
+                if (string.IsNullOrEmpty(d.modeleKenney)) continue;
+                var m = ModeleExact(d.modeleKenney);
+                if (m != null) { arsenal.modeles[i] = m; armes++; }
+            }
+            rapport.Add(armes > 0 ? $"Armes : {armes} modèles Kenney Blaster Kit branchés." : "Armes : Blaster Kit absent, armes en formes générées (telecharger-assets.ps1, groupe 6).");
+            var squelette = joueur.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length > 0;
+            rapport.Add(squelette ? "Animation : modèle à squelette trouvé sous l'Arpenteur (clips ou animation des os)." : "Animation : pas de modèle à squelette sous l'Arpenteur, le corps entier sera animé. Ajouter une combinaison riggée comme enfant de l'Arpenteur.");
             int nbSons = new Object[] { sons.clic, sons.transmission, sons.scanner, sons.cristal, sons.moteurNavette }.Count(s => s != null);
             rapport.Add(nbSons > 0 ? $"Sons Kenney branchés ({nbSons}/5 principaux, {sons.pas.Length} pas)." : "Sons : pack Kenney absent (lancer outils/telecharger-assets.ps1, groupe 6).");
 
@@ -256,6 +300,18 @@ namespace EchosEther.Editeur
             Vector3 point = Planete.PointSurface(direction, t);
             t.position = point;
             t.rotation = Planete.Debout(point, avant);
+        }
+
+        /// <summary>Modèle des Externes dont le nom de fichier est exactement <paramref name="nom"/> (sans extension).</summary>
+        static GameObject ModeleExact(string nom)
+        {
+            if (!AssetDatabase.IsValidFolder(Externes)) return null;
+            foreach (var g in AssetDatabase.FindAssets(nom + " t:GameObject", new[] { Externes }))
+            {
+                string chemin = AssetDatabase.GUIDToAssetPath(g);
+                if (System.IO.Path.GetFileNameWithoutExtension(chemin).ToLowerInvariant() == nom) return AssetDatabase.LoadAssetAtPath<GameObject>(chemin);
+            }
+            return null;
         }
 
         static GameObject TrouverModele(string dossier, params string[] mots)

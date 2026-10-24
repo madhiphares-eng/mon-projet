@@ -27,7 +27,7 @@ namespace EchosEther.Interface
         bool glisse;
 
         /// <summary>Options ou journal ouverts par-dessus la pause.</summary>
-        public bool SousEcranOuvert => Visible(ecranOptions) || Visible(journal);
+        public bool SousEcranOuvert => Visible(ecranOptions) || Visible(journal) || Visible(ecranTalents);
 
         static bool Visible(VisualElement e) => e != null && e.style.display.value != DisplayStyle.None;
 
@@ -45,7 +45,7 @@ namespace EchosEther.Interface
 
         void CacherTout()
         {
-            foreach (var e in new[] { ecranMenu, ecranEnrolement, ecranOptions, ecranCredits, ecranPause, ecranFin, journal, ecranLargage }) Afficher(e, false);
+            foreach (var e in new[] { ecranMenu, ecranEnrolement, ecranOptions, ecranCredits, ecranPause, ecranFin, journal, ecranLargage, ecranTalents }) Afficher(e, false);
             Afficher(hud, false);
         }
 
@@ -118,6 +118,7 @@ namespace EchosEther.Interface
                 Texte(b, d.bureau, "spec-bureau").pickingMode = PickingMode.Ignore;
                 boutonsSpecialite.Add((b, s));
             }
+            ConstruireChoixEnrolement(carte);
 
             Texte(carte, "COMBINAISON", "etiquette");
             var combis = Boite(carte, "rangee");
@@ -197,6 +198,7 @@ namespace EchosEther.Interface
             foreach (var (b, s) in boutonsSpecialite) b.EnableInClassList("choisi", s == p.specialite);
             foreach (var (b, cle) in pastillesCombi) b.EnableInClassList("choisi", cle == p.combinaison);
             foreach (var (b, cle) in pastillesVisiere) b.EnableInClassList("choisi", cle == p.visiere);
+            MajChoixEnrolement();
             if (Jeu != null && Jeu.apparence != null) Jeu.apparence.Appliquer();
         }
 
@@ -273,6 +275,7 @@ namespace EchosEther.Interface
             boutonReprendre = Bouton(r1, "REPRENDRE", () => Jeu.Reprendre(), "principal");
             boutonRecommencer = Bouton(r1, "NOUVEAU LARGAGE", () => Jeu.Recommencer());
             var r2 = Boite(carte, "rangee");
+            Bouton(r2, "COMPÉTENCES", () => MontrerTalents(false), "tertiaire");
             Bouton(r2, "OPTIONS", () => OuvrirOptions(ecranPause), "tertiaire");
             Bouton(r2, "MENU PRINCIPAL", () => Jeu.MenuPrincipal(), "tertiaire");
         }
@@ -311,6 +314,10 @@ namespace EchosEther.Interface
                 ("C", "marcher en silence"), ("Espace", "sauter"), ("E", "maintenir pour récolter, toucher"),
                 ("F", "scanner, bruyant"), ("E", "près de la navette : monter à bord et piloter"), ("J", "journal de bord"),
                 ("M", "couper ou remettre le son"), ("N", "didacticiel : passer l'étape"), ("Échap", "pause"),
+                ("Clic gauche", "tirer (Sablier : tenir pour charger)"), ("Clic droit", "viser par-dessus l'épaule"), ("R", "recharger"),
+                ("1 à 6, molette", "changer d'arme"), ("G", "grenade leurre Écho"), ("V", "coup de crosse ou de pic"),
+                (EntreesJeu.NomTouche("competence"), "compétence active"), ("K", "talents et compétence"),
+                ("Manette", "gâchettes : viser et tirer · LB grenade · RB compétence · R3 coup · croix : armes et recharger"),
             })
             {
                 var ligne = Boite(liste, "commande");
@@ -419,7 +426,8 @@ namespace EchosEther.Interface
             bool monolithe = Mission.Instance != null && Mission.Instance.MonolitheActive;
             int recues = Jeu != null && Jeu.transmissions != null ? Jeu.transmissions.Recues : 0;
             RemplirFin("EXTRACTION RÉUSSIE", "RETOUR AU VAISSEAU",
-                h != null ? $"Vous avez vécu {Horloges.FormatDuree(h.TempsVecu)} sur la planète. Sur le vaisseau-mère, il s'est écoulé {Horloges.FormatDuree(h.TempsVaisseau)}." : "",
+                (h != null ? $"Vous avez vécu {Horloges.FormatDuree(h.TempsVecu)} sur la planète. Sur le vaisseau-mère, il s'est écoulé {Horloges.FormatDuree(h.TempsVaisseau)}." : "")
+                    + $" Échardes neutralisées : {Tuees}. Arpenteur de niveau {p.niveau}.",
                 "TRANSMISSIONS", $"{recues} / {Transmissions.NombreEmpire}",
                 p.Personnaliser(monolithe
                     ? "Le Bureau du Quota félicite l'Arpenteur {nom}. Vous, vous savez maintenant ce que vous avez livré."

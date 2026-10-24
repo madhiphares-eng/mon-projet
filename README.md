@@ -72,6 +72,8 @@ Prochaine étape : le **disque d'accrétion** (anneau de matière lumineuse), qu
    - un objet **Systemes de jeu** : `GestionnaireJeu`, `InterfaceJeu` (UI Toolkit), `Horloges`, `Transmissions`, `Mission`, `Ruche`, `Didacticiel`, `BanqueSons`, `Largage` (arrivée en navette), `AmbianceSonore` (vent, nappe grave et grondement générés en direct) ;
    - un objet **Lieux de jeu** posé sur la planète autour du joueur : 9 cristaux d'Éther, une bulle lente avec le monolithe, une bulle rapide, la balise d'extraction et la navette.
    - Il utilise les modèles téléchargés par `telecharger-assets.ps1` s'ils sont là : navette Sketchfab (dossier `Externes/Sketchfab/Vaisseaux`), ver des sables (`Externes/Sketchfab/Personnages`), sons Kenney (`Externes/Sons`).
+   - armes, créatures et compétences : `Arsenal`, `VieArpenteur`, `CompetencesArpenteur`, `AnimateurArpenteur` sur l'Arpenteur, `Essaim` dans les systèmes ;
+     les armes du Kenney Blaster Kit (groupe 6 de `telecharger-assets.ps1`) sont branchées si elles sont là, sinon des formes générées les remplacent.
 4. Menu **Echos d'Ether > Vérifier l'installation** : contrôle HDRP, glTFast, ressources, assets téléchargés, sons branchés et composants de la scène.
    Le rapport est copié dans le presse-papiers (Ctrl+V pour le coller dans une conversation).
 5. **Play** : menu principal, enrôlement (nom, spécialité, couleurs, aperçu 3D), arrivée en navette (Espace pour passer), didacticiel en 13 étapes ou mission complète.
@@ -81,17 +83,42 @@ Relancer le menu complète l'installation sans rien déplacer. *Replacer les lie
 
 | Dossier | Contenu |
 |---|---|
-| `Scripts/Jeu` | `GestionnaireJeu` (états de partie), `Largage` (arrivée), `AmbianceSonore`, `Didacticiel`, `Mission`, `JaugeBruit`, `CristalEther`, `Scanner`, `Ruche`, `BulleTemporelle`, `Monolithe`, `Navette`, `BaliseExtraction`, `Horloges`, `Transmissions`, `BanqueSons`, `ProfilArpenteur`, `Specialites`, `Reglages`, `Planete`, `Formes`, `Invite` |
-| `Scripts/Joueur` | `EtatArpenteur`, `ApparenceArpenteur`, `EntreesJeu`, `CameraNavette`, `CameraSecousse` (plus les scripts existants) |
+| `Scripts/Jeu` | `GestionnaireJeu` (états de partie), `Largage` (arrivée), `AmbianceSonore`, `Competences` et `CompetencesArpenteur`, `Didacticiel`, `Mission`, `JaugeBruit`, `CristalEther`, `Scanner`, `Ruche`, `BulleTemporelle`, `Monolithe`, `Navette`, `BaliseExtraction`, `Horloges`, `Transmissions`, `BanqueSons`, `ProfilArpenteur`, `Specialites`, `Reglages`, `Planete`, `Formes`, `Invite` |
+| `Scripts/Joueur` | `EtatArpenteur`, `ApparenceArpenteur`, `AnimateurArpenteur`, `EntreesJeu`, `CameraNavette`, `CameraSecousse` (plus les scripts existants) |
+| `Scripts/Combat` | `Arsenal` et `Armes` (catalogue), `VueArme` (arme tenue et ses animations), `Projectiles` (éclairs, grenade), `EffetsCombat`, `Degats`, `VieArpenteur`, `Echarde` (créatures), `Essaim` |
 | `Scripts/Interface` | `InterfaceJeu` : HUD et écrans en UI Toolkit, construits par le code |
 | `Resources` | `EchosEtherUI.uss` (styles), `EchosEtherTheme.tss` (thème), `Lueur.shader` (lueurs HDRP des bulles, de l'onde du scanner et des faisceaux) |
 | `Editor` | `InstallateurJeu` (menu d'installation), `Diagnostic` (vérification), `ImportExternes` (réglage des textures), `ConstructeurScene` |
 
-Commandes : Z Q S D se déplacer, souris regarder, Maj courir, C marcher en silence, Espace sauter, E récolter / interagir / navette,
-F scanner, J journal, M son, N passer une étape du didacticiel, Échap pause, Espace passer l'arrivée en navette. Le code marche avec le nouvel Input System et l'ancien Input Manager.
+### Armes, créatures, compétences, animations
 
-Manette (avec le nouvel Input System) : stick gauche avancer, stick droit regarder, A sauter, gâchette droite ou L3 courir, B marcher en silence,
+| Arme (touche) | Mode | Particularité |
+|---|---|---|
+| 1 Pic d'arpentage | corps à corps | silencieux |
+| 2 Pistolet Ardent | coup par coup, éclairs visibles | précis |
+| 3 Carabine Faucheuse | rafale, traçantes | la dispersion s'ouvre en tirant |
+| 4 Fusil Grêle | 9 éclats | dévastateur de près, très bruyant |
+| 5 Fusil Sablier | se charge détente tenue | traverse 3 cibles, les ralentit, presque silencieux |
+| 6 Grenade leurre Écho | lancer (ou G à tout moment) | explose et appelle la Ruche à cet endroit |
+
+- **Bruit** : chaque tir s'ajoute à la jauge ; la Ruche et les créatures l'entendent.
+- **Échardes** (créatures de cristal générées et animées par le code, six pattes qui marchent en trépied) : rôdeuse (bond et morsure),
+  cracheuse (éclats à distance), colosse (charge, garde la balise une fois le quota atteint). Elles gardent les gisements, tendent embuscade,
+  sont ralenties dans les bulles de temps lent, et le ver les avale. Elles lâchent des cellules d'énergie (munitions, intégrité).
+- **Intégrité de la combinaison** : se répare seule ; à zéro, rapatriement d'urgence près de la navette (la moitié de l'Éther est perdue). Munitions rechargées près de la navette.
+- **Compétences** : une compétence active au choix (bond propulsé, voile de silence, bulle de stase, leurre holographique, onde de choc, bouclier d'Éther),
+  14 talents passifs ; un talent de départ à l'enrôlement, puis un par niveau (expérience : cristaux, créatures, esquives, monolithe). Écran **K** ou menu pause.
+- **Animations** : `AnimateurArpenteur` joue les clips du modèle (Animation ou Animator), sinon anime le squelette par le code (foulées, course, accroupi,
+  saut, atterrissage, regard) en trouvant les os par leur nom ou par l'avatar Humanoid, sinon anime le corps entier. Le corps se tourne vers la visée,
+  et les bras tiennent l'arme par cinématique inverse. L'arme a ses propres animations : recul, balancement, rechargement (le chargeur sort), changement, coups, lancer.
+
+Commandes : Z Q S D se déplacer, souris regarder, Maj courir, C marcher en silence, Espace sauter, E récolter / interagir / navette,
+F scanner, J journal, M son, N passer une étape du didacticiel, Échap pause, Espace passer l'arrivée en navette.
+Combat : clic gauche tirer, clic droit viser, R recharger, 1 à 6 ou molette changer d'arme, G grenade, V coup, A (Q en QWERTY) compétence, K talents. Le code marche avec le nouvel Input System et l'ancien Input Manager.
+
+Manette (avec le nouvel Input System) : stick gauche avancer, stick droit regarder, A sauter, L3 courir, B marcher en silence,
 X récolter / interagir, Y scanner, Select journal, Start pause, croix droite passer une étape. En navette : A ou RB monter, B ou LB descendre, gâchette droite boost.
+Combat à la manette : gâchette droite tirer, gâchette gauche viser, croix gauche recharger, croix haut/bas changer d'arme, LB grenade, RB compétence, R3 coup.
 Les menus se règlent à la souris.
 
 ## Maquette jouable (navigateur)

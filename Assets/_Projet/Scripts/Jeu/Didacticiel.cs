@@ -7,8 +7,9 @@ namespace EchosEther.Jeu
 {
     /// <summary>
     /// Formation guidée de l'Arpenteur par l'officière Vesna, du Ministère de l'Enthousiasme :
-    /// treize étapes qui enseignent les commandes et les mécaniques (bruit, scanner, récolte, Ruche,
-    /// navette, bulle temporelle). N passe une étape. Les étapes de navette sont sautées s'il n'y en a pas.
+    /// dix-sept étapes qui enseignent les commandes et les mécaniques (bruit, scanner, récolte, armes,
+    /// créatures, compétence, Ruche, navette, bulle temporelle). N passe une étape.
+    /// Les étapes de navette sont sautées s'il n'y en a pas, celles des armes sans arsenal.
     /// </summary>
     public class Didacticiel : MonoBehaviour
     {
@@ -23,6 +24,8 @@ namespace EchosEther.Jeu
             public Func<string> bravo;
             public bool navette;                 // nécessite une navette
             public bool bulle;                   // nécessite une bulle lente
+            public bool armes;                   // nécessite l'arsenal de l'Arpenteur
+            public Action debut;                 // au moment où l'étape s'affiche
         }
 
         public bool Actif { get; private set; }
@@ -36,8 +39,9 @@ namespace EchosEther.Jeu
 
         // compteurs remis à zéro à chaque étape
         float regard, distance, course, silence, dansBulle;
-        int sauts, scans, poses;
+        int sauts, scans, poses, tirs, morts, competences;
         bool verFini, verTouche;
+        readonly HashSet<string> armesEssayees = new HashSet<string>();
 
         GestionnaireJeu jeu;
 
@@ -48,6 +52,10 @@ namespace EchosEther.Jeu
             Scanner.Utilise += SurScan;
             Ruche.AttaqueTerminee += SurAttaque;
             Navette.Posee += SurPose;
+            Combat.Arsenal.Tir += SurTir;
+            Combat.Arsenal.Changement += SurChangement;
+            Combat.Echarde.Morte += SurMort;
+            CompetencesArpenteur.Utilisee += SurCompetence;
         }
 
         void OnDisable()
@@ -55,6 +63,10 @@ namespace EchosEther.Jeu
             Scanner.Utilise -= SurScan;
             Ruche.AttaqueTerminee -= SurAttaque;
             Navette.Posee -= SurPose;
+            Combat.Arsenal.Tir -= SurTir;
+            Combat.Arsenal.Changement -= SurChangement;
+            Combat.Echarde.Morte -= SurMort;
+            CompetencesArpenteur.Utilisee -= SurCompetence;
             if (jeu != null && jeu.etatJoueur != null) jeu.etatJoueur.Saut -= SurSaut;
         }
 
@@ -62,6 +74,10 @@ namespace EchosEther.Jeu
         void SurSaut() => sauts++;
         void SurPose() => poses++;
         void SurAttaque(bool touche) { verFini = true; verTouche = touche; }
+        void SurTir(Combat.DefinitionArme d) { if (d.mode != Combat.ModeTir.Lancer) tirs++; }
+        void SurChangement(Combat.DefinitionArme d) { if (d.id != "ardent") armesEssayees.Add(d.id); }
+        void SurMort(Combat.Echarde e, bool parJoueur) => morts++;
+        void SurCompetence(CompetenceActive c) => competences++;
 
         public void Demarrer()
         {
@@ -76,7 +92,7 @@ namespace EchosEther.Jeu
             SauterEtapesImpossibles();
             Afficher();
             string accueil = ProfilArpenteur.Actuel.Personnaliser(
-                "Bienvenue, recrue {nom}. Ici l'officière Vesna, du Ministère de l'Enthousiasme. Formation accélérée : treize étapes, zéro question. Suivez le panneau en haut à droite.");
+                $"Bienvenue, recrue {{nom}}. Ici l'officière Vesna, du Ministère de l'Enthousiasme. Formation accélérée : {etapes.Count} étapes, zéro question. Suivez le panneau en haut à droite.");
             Transmissions.Envoyer(TitreVesna, accueil, duree: 10f);
         }
 
@@ -113,7 +129,20 @@ namespace EchosEther.Jeu
             Ajouter(new Etape { id = "recolter", titre = "Récolter l'Éther", texte = $"Rejoignez le cristal signalé par le repère orange et maintenez {T("E")} jusqu'au bout de la barre. Récolter est bruyant.",
                 cible = cristal, test = () => Mission.Instance != null && Mission.Instance.Ether >= 1,
                 bravo = () => "Premier cristal ! Ne prêtez pas attention aux voix. Les cristaux ne parlent pas, c'est officiel." });
-            Ajouter(new Etape { id = "ver", titre = "La Ruche écoute", texte = "Faites du bruit exprès (courez, sautez, scannez) jusqu'à remplir la jauge. Quand le sol tremble, éloignez-vous du point, vite : la Ruche frappe là où était le bruit.",
+            Ajouter(new Etape { id = "armes", titre = "Tirer", armes = true,
+                texte = $"Votre pistolet {T("Ardent")} est prêt. {T("Clic gauche")} pour tirer, {T("clic droit")} pour viser par-dessus l'épaule, {T(EntreesJeu.NomTouche("recharger"))} pour recharger. Tirez cinq fois : chaque tir s'entend.",
+                progres = () => tirs / 5f, bravo = () => "Joli groupement. Le Bureau rappelle que chaque munition est facturée à l'Arpenteur." });
+            Ajouter(new Etape { id = "arsenal", titre = "L'arsenal", armes = true,
+                texte = $"Les touches {T("1")} à {T("6")} ou la molette changent d'arme : pic, Ardent, Faucheuse, Grêle, Sablier (se charge détente tenue) et grenade Écho. Essayez deux autres armes.",
+                progres = () => armesEssayees.Count / 2f, bravo = () => "Vous voilà équipé comme un ministère entier. Rangez ce sourire." });
+            Ajouter(new Etape { id = "combat", titre = "Les Échardes", armes = true,
+                texte = $"Deux Échardes rôdeuses sortent du sable devant vous. Éliminez-les. Elles bondissent et mordent : reculez en tirant, ou frappez au pic ({T(EntreesJeu.NomTouche("melee"))}). Leurs cellules d'énergie rechargent vos armes.",
+                debut = FaireEchardes, cible = Echarde, test = () => morts >= 2,
+                bravo = () => "Deux de moins. Officiellement, ces créatures n'existent pas. Officieusement, elles mordent." });
+            Ajouter(new Etape { id = "competence", titre = "Votre compétence", armes = true,
+                texte = $"Appuyez sur {T(EntreesJeu.NomTouche("competence"))} : {Competences.Info(ProfilArpenteur.Actuel.competence).nom}. {Competences.Info(ProfilArpenteur.Actuel.competence).description} Les talents se choisissent avec {T(EntreesJeu.NomTouche("talents"))}.",
+                test = () => competences >= 1, bravo = () => "Impressionnant. Le Bureau a noté votre compétence, et la facturera aussi." });
+            Ajouter(new Etape { id = "ver", titre = "La Ruche écoute", texte = $"Faites du bruit exprès (courez, sautez, scannez) jusqu'à remplir la jauge. Quand le sol tremble, éloignez-vous du point, vite : la Ruche frappe là où était le bruit. Astuce : une grenade Écho ({T(EntreesJeu.NomTouche("grenade"))}) l'attire ailleurs.",
                 test = () => verFini, bravo = () => verTouche
                     ? "Touché. Les cristaux perdus retournent à leur gisement. Retenez la leçon : le bruit vous trahit, la Ruche frappe où vous étiez."
                     : "Esquive réglementaire ! La Ruche frappe où vous étiez, jamais où vous êtes. Restez toujours en mouvement." });
@@ -137,11 +166,36 @@ namespace EchosEther.Jeu
 
         static BulleTemporelle BulleLente()
         {
-            foreach (var b in BulleTemporelle.Toutes) if (b.EstLente) return b;
+            foreach (var b in BulleTemporelle.Toutes) if (b.EstLente && !b.ephemere) return b;
             return null;
         }
 
-        bool Possible(Etape e) => (!e.navette || jeu.navette != null) && (!e.bulle || BulleLente() != null);
+        bool Possible(Etape e) => (!e.navette || jeu.navette != null) && (!e.bulle || BulleLente() != null)
+            && (!e.armes || (jeu.joueur != null && jeu.joueur.GetComponent<Combat.Arsenal>() != null));
+
+        void FaireEchardes()
+        {
+            if (jeu.joueur == null) return;
+            Vector3 p = jeu.joueur.transform.position;
+            Vector3 haut = Planete.Haut(p);
+            Vector3 avant = Camera.main != null ? Vector3.ProjectOnPlane(Camera.main.transform.forward, haut).normalized : jeu.joueur.transform.forward;
+            Vector3 droite = Vector3.Cross(haut, avant);
+            Combat.Essaim.Faire(Combat.TypeEcharde.Rodeuse, p + avant * 17f + droite * 4f, p + avant * 17f);
+            Combat.Essaim.Faire(Combat.TypeEcharde.Rodeuse, p + avant * 19f - droite * 5f, p + avant * 17f);
+        }
+
+        Vector3? Echarde()
+        {
+            Combat.Echarde proche = null;
+            float d = float.MaxValue;
+            foreach (var e in Combat.Echarde.Toutes)
+            {
+                if (!e.Vivante) continue;
+                float de = Vector3.Distance(e.Centre, jeu.PositionObservateur);
+                if (de < d) { d = de; proche = e; }
+            }
+            return proche != null ? proche.Centre : (Vector3?)null;
+        }
 
         void SauterEtapesImpossibles()
         {
@@ -151,8 +205,9 @@ namespace EchosEther.Jeu
         void Remettre()
         {
             regard = distance = course = silence = dansBulle = 0f;
-            sauts = scans = poses = 0;
+            sauts = scans = poses = tirs = morts = competences = 0;
             verFini = verTouche = false;
+            armesEssayees.Clear();
         }
 
         void Afficher()
@@ -161,6 +216,7 @@ namespace EchosEther.Jeu
             var e = etapes[Index];
             if (jeu.jauge != null) jeu.jauge.RucheAutorisee = e.id == "ver";
             jeu.interfaceJeu?.MontrerEtape(Index + 1, etapes.Count, e.titre, e.texte);
+            e.debut?.Invoke();
         }
 
         /// <summary>Repère de l'étape en cours (null si aucun).</summary>
@@ -176,6 +232,7 @@ namespace EchosEther.Jeu
                 Transmissions.Envoyer(TitreVesna, texte, duree: 9f);
                 BanqueSons.Jouer(BanqueSons.Instance?.etapeValidee, 0.8f);
                 jeu.interfaceJeu?.EtapeValidee();
+                CompetencesArpenteur.Instance?.Experience(10, "Formation");
                 attente = Index == etapes.Count - 1 ? 4.5f : 1.6f;   // le dernier mot de Vesna avant l'écran de fin
             }
             else
@@ -199,7 +256,7 @@ namespace EchosEther.Jeu
                 if (j.Bouge) distance += j.Vitesse * dt;
                 if (j.Bouge && j.Course) course += dt;
                 if (j.Bouge && j.Silence) silence += dt;
-                if (BulleTemporelle.PresenceLente(jeu.PositionObservateur) > 0.3f) dansBulle += dt;
+                if (BulleTemporelle.PresenceLenteNaturelle(jeu.PositionObservateur) > 0.3f) dansBulle += dt;
             }
 
             if (EntreesJeu.PasserEtape()) Valider(false);

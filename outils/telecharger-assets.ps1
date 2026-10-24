@@ -37,7 +37,7 @@
         @('3', 'Sketchfab    : 172 modeles (persos, creatures, vaisseaux, ruines)  ~5 a 10 Go, token gratuit requis'),
         @('4', 'NASA         : 16 modeles 3D reels (combinaisons, rovers, ISS)  ~0,5 Go'),
         @('5', 'Espace       : 34 cartes d''etoiles, planetes, Lune, images de reference  ~0,6 Go'),
-        @('6', 'Sons Kenney  : bruitages sci-fi, impacts, interface, jingles (CC0)  ~10 Mo')
+        @('6', 'Kenney       : bruitages sci-fi, impacts, interface, jingles, armes Blaster Kit (CC0)  ~12 Mo')
     )
 
     # Poly Haven (CC0)
@@ -656,6 +656,25 @@
                 if (-not $m.Success) { throw "lien du zip introuvable sur https://kenney.nl/assets/$p" }
                 $zip = Join-Path $Tmp "$p.zip"
                 if (Telecharger $m.Value $zip) { Extraire $zip $d; Remove-Item -LiteralPath $zip -Force }
+            }
+        }
+        # Armes du jeu : Kenney Blaster Kit, seulement les .glb et leur texture (pas de FBX/OBJ en double)
+        Etape '[+] armes : blaster-kit' {
+            $d = Join-Path $Ext 'Modeles\Kenney\blaster-kit'
+            if (Test-Path -LiteralPath $d) { return }
+            $page = Invoke-WebRequest -Uri 'https://kenney.nl/assets/blaster-kit' -UseBasicParsing
+            $m = [regex]::Match($page.Content, 'https://kenney\.nl/media/pages/assets/[^"''\s]+\.zip')
+            if (-not $m.Success) { throw 'lien du zip introuvable sur https://kenney.nl/assets/blaster-kit' }
+            $zip = Join-Path $Tmp 'blaster-kit.zip'
+            $tmpd = Join-Path $Tmp 'blaster-kit'
+            if (Telecharger $m.Value $zip) {
+                Extraire $zip $tmpd
+                New-Item -ItemType Directory -Force -Path $d | Out-Null
+                Copy-Item -Path (Join-Path $tmpd 'Models\GLB format\*') -Destination $d -Recurse -Force
+                $lic = Join-Path $tmpd 'License.txt'
+                if (Test-Path -LiteralPath $lic) { Copy-Item -LiteralPath $lic -Destination (Join-Path $d 'LICENCE.txt') -Force }
+                Remove-Item -LiteralPath $tmpd -Recurse -Force
+                Remove-Item -LiteralPath $zip -Force
             }
         }
     }

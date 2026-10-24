@@ -44,7 +44,7 @@ namespace EchosEther.Jeu
         public void Lancer()
         {
             var s = ProfilArpenteur.Actuel.Donnees;
-            portee = porteeBase * s.porteeScanner;
+            portee = porteeBase * s.porteeScanner * (ProfilArpenteur.Actuel.A(Talent.EchoProfond) ? 1.5f : 1f);
             prochain = Time.time + recharge;
             origine = transform.position;
             tOnde = 0f;
@@ -52,7 +52,11 @@ namespace EchosEther.Jeu
             foreach (var c in CristalEther.Tous)
                 if (!c.EstRecolte && Vector3.Distance(c.transform.position, origine) < portee) c.Reveler(revelationBase * s.dureeRevele);
             foreach (var b in BulleTemporelle.Toutes)
-                if (Vector3.Distance(b.transform.position, origine) < portee) b.Decouverte = true;
+                if (!b.ephemere && Vector3.Distance(b.transform.position, origine) < portee) b.Decouverte = true;
+            // talent Écho profond : l'onde montre aussi les créatures
+            if (ProfilArpenteur.Actuel.A(Talent.EchoProfond))
+                foreach (var e in Combat.Echarde.Toutes)
+                    if (e.Vivante && Vector3.Distance(e.Centre, origine) < portee) e.Revele = revelationBase * s.dureeRevele;
             BanqueSons.Jouer(BanqueSons.Instance?.scanner, 0.7f);
             Utilise?.Invoke();
         }

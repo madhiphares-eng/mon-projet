@@ -31,6 +31,35 @@ namespace EchosEther.Jeu
         public AudioClip monolithe;
         public AudioClip[] pas;
 
+        [Header("Combat")]
+        public AudioClip tirPistolet;
+        public AudioClip tirCarabine;
+        public AudioClip tirEclats;
+        public AudioClip tirSablier;
+        public AudioClip chargeSablier;
+        public AudioClip rechargement;
+        public AudioClip rechargementFin;
+        public AudioClip changementArme;
+        public AudioClip vide;
+        public AudioClip balayage;
+        public AudioClip impactMelee;
+        public AudioClip impactArme;
+        public AudioClip explosion;
+        public AudioClip rebond;
+        public AudioClip blessure;
+        public AudioClip ramassage;
+
+        [Header("Créatures")]
+        public AudioClip cri;
+        public AudioClip crachat;
+        public AudioClip morsure;
+        public AudioClip toucheCreature;
+        public AudioClip mortCreature;
+
+        [Header("Compétences")]
+        public AudioClip competence;
+        public AudioClip niveau;
+
         [Header("Pas")]
         [Tooltip("Distance parcourue entre deux bruits de pas (marche).")]
         public float foulee = 1.9f;

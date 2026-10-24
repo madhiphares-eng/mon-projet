@@ -30,13 +30,15 @@ namespace EchosEther.Jeu
 
         /// <summary>Fin d'attaque : true si l'Arpenteur a été touché.</summary>
         public static event Action<bool> AttaqueTerminee;
+        /// <summary>Le ver a englouti des créatures (nombre).</summary>
+        public static event Action<int> CreaturesAvalees;
 
         enum Phase { Repos, Tremblement, Attaque }
         Phase phase = Phase.Repos;
         public bool EnCours => phase != Phase.Repos;
 
         float t, sortie;
-        bool touche, gerbe;
+        bool touche, gerbe, creaturesFrappees;
         Vector3 point, haut, avant;
         readonly List<Transform> segments = new List<Transform>();
         Transform tete, instanceModele;
@@ -89,6 +91,7 @@ namespace EchosEther.Jeu
             t = 0f;
             touche = false;
             gerbe = false;
+            creaturesFrappees = false;
             point = position;
             haut = Planete.Haut(position);
             avant = Vector3.ProjectOnPlane(UnityEngine.Random.onUnitSphere, haut).normalized;
@@ -164,6 +167,13 @@ namespace EchosEther.Jeu
 
         void VerifierImpact()
         {
+            // le ver avale tout ce qui se trouve sur son passage, créatures comprises
+            if (!creaturesFrappees)
+            {
+                creaturesFrappees = true;
+                int n = Combat.Combat.Zone(point, rayonImpact, 500f, 10f, false);
+                if (n > 0) CreaturesAvalees?.Invoke(n);
+            }
             var jeu = GestionnaireJeu.Instance;
             if (jeu == null || jeu.Etat != EtatJeu.Jeu) return;
             Vector3 ecart = Vector3.ProjectOnPlane(jeu.joueur.transform.position - point, haut);
@@ -175,8 +185,10 @@ namespace EchosEther.Jeu
             {
                 Vector3 recul = ecart.sqrMagnitude > 0.01f ? ecart.normalized : -avant;
                 corps.linearVelocity = Vector3.zero;
-                corps.AddForce(haut * 9f + recul * 14f, ForceMode.VelocityChange);
+                jeu.joueur.Propulser(haut * 9f + recul * 14f);
             }
+            var vie = jeu.joueur.GetComponent<Combat.VieArpenteur>();
+            if (vie != null) vie.Subir(new Combat.Degats(25f, point, ecart.sqrMagnitude > 0.01f ? ecart.normalized : -avant, 0f, false));
             CameraSecousse.Choc(1f);
             BanqueSons.Jouer(BanqueSons.Instance?.impact);
             string texte = perte > 0

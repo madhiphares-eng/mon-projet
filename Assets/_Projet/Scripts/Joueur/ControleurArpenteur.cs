@@ -25,6 +25,18 @@ namespace EchosEther.Joueur
         Rigidbody corps;
         CorpsGravitationnel gravite;
         bool sautDemande;
+        Vector3 elan;
+
+        /// <summary>
+        /// Poussée extérieure (bond propulsé, recul d'un coup, ver) : la part horizontale s'ajoute à la marche
+        /// et s'amortit, au lieu d'être effacée par le contrôle à l'image suivante.
+        /// </summary>
+        public void Propulser(Vector3 impulsion)
+        {
+            Vector3 haut = gravite != null ? gravite.Haut : Vector3.up;
+            elan += Vector3.ProjectOnPlane(impulsion, haut);
+            if (corps != null) corps.AddForce(Vector3.Project(impulsion, haut), ForceMode.VelocityChange);
+        }
 
         void Awake()
         {
@@ -50,9 +62,11 @@ namespace EchosEther.Joueur
             float vitesse = Entrees.Course() ? vitesseCourse : vitesseMarche;
             Vector3 horizontale = (avant * entree.y + droite * entree.x) * vitesse;
             Vector3 verticale = Vector3.Project(corps.linearVelocity, haut);
-            corps.linearVelocity = horizontale + verticale;
+            bool auSol = AuSol(haut);
+            elan = Vector3.ProjectOnPlane(elan, haut) * Mathf.Exp(-Time.fixedDeltaTime * (auSol ? 5f : 0.8f));
+            corps.linearVelocity = horizontale + elan + verticale;
 
-            if (sautDemande && AuSol(haut))
+            if (sautDemande && auSol)
                 corps.AddForce(haut * impulsionSaut, ForceMode.VelocityChange);
             sautDemande = false;
         }

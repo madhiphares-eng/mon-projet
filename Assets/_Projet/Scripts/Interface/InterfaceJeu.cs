@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using EchosEther.Jeu;
+using EchosEther.Joueur;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -40,6 +41,7 @@ namespace EchosEther.Interface
             Transmissions.MessageRecu += AjouterMessage;
             Transmissions.EchoRecu += MontrerEcho;
             Transmissions.JournalModifie += MajJournal;
+            AbonnerCombat();
         }
 
         void OnDisable()
@@ -47,6 +49,7 @@ namespace EchosEther.Interface
             Transmissions.MessageRecu -= AjouterMessage;
             Transmissions.EchoRecu -= MontrerEcho;
             Transmissions.JournalModifie -= MajJournal;
+            DesabonnerCombat();
         }
 
         // ------------------------------------------------------------------ construction
@@ -70,6 +73,7 @@ namespace EchosEther.Interface
 
             ConstruireHud();
             ConstruireEcrans();
+            ConstruireCombat();
             CacherTout();
         }
 
@@ -164,7 +168,8 @@ namespace EchosEther.Interface
             couche = Boite(hud, "marqueurs");
 
             aide = Boite(hud, "aide");
-            foreach (var t in new[] { "F : scanner", "J : journal", "M : son", "Échap : pause" }) Texte(aide, t, "aide-item");
+            foreach (var t in new[] { "Clic : tirer", "Clic droit : viser", "1-6 : armes", $"{EntreesJeu.NomTouche("competence")} : compétence",
+                         "F : scanner", $"{EntreesJeu.NomTouche("talents")} : talents", "Échap : pause" }) Texte(aide, t, "aide-item");
 
             impact = Boite(racine, "impact");
             fondu = Boite(racine, "fondu");
@@ -268,6 +273,7 @@ namespace EchosEther.Interface
                 MajInvite(jeu);
                 if (!modeDidacticiel) MajObjectifs();
                 if (jeu.Etat == EtatJeu.Jeu || jeu.Etat == EtatJeu.Vol) MajMarqueurs(jeu);
+                MajCombat(jeu);
             }
             for (int i = marqueursUtilises; i < marqueurs.Count; i++) Afficher(marqueurs[i], false);
         }
@@ -345,11 +351,12 @@ namespace EchosEther.Interface
             foreach (var c in CristalEther.Tous)
                 if (!c.EstRecolte && c.Revele > 0f) Marqueur(c.transform.position + Planete.Haut(c.transform.position) * 2.5f, "cristal", cam, observateur);
             foreach (var b in BulleTemporelle.Toutes)
-                if (b.Decouverte && Vector3.Distance(observateur, b.transform.position) > b.rayon + 5f) Marqueur(b.transform.position, "bulle", cam, observateur);
+                if (b.Decouverte && !b.ephemere && Vector3.Distance(observateur, b.transform.position) > b.rayon + 5f) Marqueur(b.transform.position, "bulle", cam, observateur);
             var balise = Mission.Instance != null ? Mission.Instance.balise : null;
             if (balise != null && balise.Active) Marqueur(balise.transform.position + Planete.Haut(balise.transform.position) * 3f, "balise", cam, observateur);
             var cible = jeu.didacticiel != null ? jeu.didacticiel.Cible : null;
             if (cible.HasValue) Marqueur(cible.Value + Planete.Haut(cible.Value) * 3.5f, "tuto", cam, observateur);
+            MarqueursCreatures(cam, observateur);
             // la navette garée, pour la retrouver de loin
             var navette = jeu.navette;
             if (navette != null && jeu.NavetteEnVol == null && navette.Etat == Navette.EtatNavette.Garee && !navette.EnManoeuvre
@@ -357,7 +364,7 @@ namespace EchosEther.Interface
                 Marqueur(navette.transform.position + Planete.Haut(navette.transform.position) * 6f, "navette", cam, observateur);
         }
 
-        static readonly string[] ClassesMarqueur = { "cristal", "bulle", "balise", "tuto", "navette" };
+        static readonly string[] ClassesMarqueur = { "cristal", "bulle", "balise", "tuto", "navette", "menace" };
 
         void Marqueur(Vector3 monde, string classe, Camera cam, Vector3 observateur)
         {

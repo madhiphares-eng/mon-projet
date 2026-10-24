@@ -95,7 +95,7 @@ namespace EchosEther.Jeu
         void Update()
         {
             var jeu = GestionnaireJeu.Instance;
-            float presence = BulleTemporelle.PresenceLente(transform.position);
+            float presence = BulleTemporelle.PresenceLenteNaturelle(transform.position);
             if (anneaux != null && Actif)
                 for (int i = 0; i < anneaux.Length; i++)
                     anneaux[i].transform.localRotation = Quaternion.Euler(Time.time * (12f + i * 7f), Time.time * (18f - i * 4f), i * 60f);
@@ -108,7 +108,7 @@ namespace EchosEther.Jeu
 
             float d = Vector3.Distance(jeu.joueur.transform.position, transform.position);
             if (d > distanceInteraction) { progression = 0f; return; }
-            if (BulleTemporelle.PresenceLente(jeu.joueur.transform.position) < presenceRequise)
+            if (BulleTemporelle.PresenceLenteNaturelle(jeu.joueur.transform.position) < presenceRequise)
             {
                 progression = 0f;
                 Invite.Proposer("Le monolithe reste inerte. Le temps n'est pas assez lent ici.", -1f, 1f);

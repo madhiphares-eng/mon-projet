@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using EchosEther.Combat;
 using EchosEther.Interface;
 using EchosEther.Jeu;
 using EchosEther.Joueur;
@@ -193,6 +194,11 @@ namespace EchosEther.Editeur
             if (jeu.sequenceLargage == null) manquants.Add("arrivée en navette");
             if (Trouver<AmbianceSonore>() == null) manquants.Add("ambiance sonore");
             if (Trouver<Ruche>() == null) manquants.Add("Ruche");
+            if (Trouver<Essaim>() == null) manquants.Add("essaim des Échardes");
+            if (Trouver<Arsenal>() == null) manquants.Add("armes");
+            if (Trouver<VieArpenteur>() == null) manquants.Add("intégrité");
+            if (Trouver<CompetencesArpenteur>() == null) manquants.Add("compétences");
+            if (Trouver<AnimateurArpenteur>() == null) manquants.Add("animation de l'Arpenteur");
             if (manquants.Count > 0) Attention("Jeu installé mais incomplet (" + string.Join(", ", manquants) + ") : relancer Installer le jeu dans la scène");
             else Ok("Jeu installé : menus, enrôlement, arrivée, didacticiel, mission, ambiance");
 
@@ -212,6 +218,19 @@ namespace EchosEther.Editeur
                 if (decors.Count > 0)
                     Attention("Vaisseau de décor en plus de la navette du jeu (" + string.Join(", ", decors) + ") : le supprimer, ou l'éloigner pour éviter deux navettes au même endroit");
             }
+            var arsenal = Trouver<Arsenal>();
+            if (arsenal != null)
+            {
+                int modeles = arsenal.modeles != null ? arsenal.modeles.Count(m => m != null) : 0;
+                if (modeles > 0) Ok($"Armes : {modeles} modèles Kenney Blaster Kit");
+                else Attention("Armes en formes générées : télécharger le Blaster Kit (telecharger-assets.ps1, groupe 6), puis relancer Installer le jeu");
+            }
+            if (joueur != null)
+            {
+                if (joueur.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length > 0) Ok("Modèle de l'Arpenteur à squelette : animations des os ou clips");
+                else Attention("Pas de modèle à squelette sous l'Arpenteur : seul le corps entier est animé (ajouter une combinaison riggée en enfant)");
+            }
+
             var ruche = Trouver<Ruche>();
             if (ruche != null)
             {
