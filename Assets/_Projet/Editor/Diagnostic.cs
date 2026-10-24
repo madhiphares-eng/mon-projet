@@ -140,6 +140,12 @@ namespace EchosEther.Editeur
 
         // ------------------------------------------------------------------ scène ouverte
 
+        static bool EstVaisseau(string nom)
+        {
+            nom = nom.ToLowerInvariant();
+            return nom.Contains("dropship") || nom.Contains("drop-ship") || nom.Contains("navette") || nom.Contains("shuttle") || nom.Contains("spaceship");
+        }
+
         static T Trouver<T>() where T : Object => Object.FindFirstObjectByType<T>(FindObjectsInactive.Include);
         static int Nombre<T>() where T : Object => Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
 
@@ -199,6 +205,12 @@ namespace EchosEther.Editeur
             {
                 if (jeu.navette.transform.Find("Modele") != null) Ok("Navette : modèle téléchargé");
                 else Attention("Navette : silhouette simple (aucun modèle dans Externes/Sketchfab/Vaisseaux)");
+                // un vaisseau posé à la main comme décor (par exemple par Claude en local) fait doublon avec celle du jeu
+                var decors = Object.FindObjectsByType<Transform>(FindObjectsSortMode.None)
+                    .Where(t => EstVaisseau(t.name) && !t.IsChildOf(jeu.navette.transform) && (t.parent == null || !EstVaisseau(t.parent.name)))
+                    .Select(t => t.name).Distinct().Take(3).ToList();
+                if (decors.Count > 0)
+                    Attention("Vaisseau de décor en plus de la navette du jeu (" + string.Join(", ", decors) + ") : le supprimer, ou l'éloigner pour éviter deux navettes au même endroit");
             }
             var ruche = Trouver<Ruche>();
             if (ruche != null)

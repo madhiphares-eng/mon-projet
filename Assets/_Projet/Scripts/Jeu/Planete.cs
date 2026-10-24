@@ -44,18 +44,22 @@ namespace EchosEther.Jeu
         {
             Vector3 haut = Haut(depuis);
             Vector3 origine = depuis + haut * hauteurDepart;
-            var touches = Physics.RaycastAll(origine, -haut, hauteurDepart + portee, ~0, QueryTriggerInteraction.Ignore);
-            System.Array.Sort(touches, (a, b) => a.distance.CompareTo(b.distance));
-            foreach (var t in touches)
+            // appelé plusieurs fois par image : tampon réutilisé, pas d'allocation
+            int n = Physics.RaycastNonAlloc(origine, -haut, touches, hauteurDepart + portee, ~0, QueryTriggerInteraction.Ignore);
+            int meilleur = -1;
+            for (int i = 0; i < n; i++)
             {
+                var t = touches[i];
+                if (meilleur >= 0 && t.distance >= touches[meilleur].distance) continue;
                 if (ignorer != null && t.transform.IsChildOf(ignorer)) continue;
                 if (t.collider.GetComponentInParent<ControleurArpenteur>() != null) continue;
-                sol = t;
-                return true;
+                meilleur = i;
             }
-            sol = default;
-            return false;
+            sol = meilleur >= 0 ? touches[meilleur] : default;
+            return meilleur >= 0;
         }
+
+        static readonly RaycastHit[] touches = new RaycastHit[32];
 
         /// <summary>Point du sol dans une direction donnée depuis le centre de la planète.</summary>
         public static Vector3 PointSurface(Vector3 direction, Transform ignorer = null)

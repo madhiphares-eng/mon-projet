@@ -350,9 +350,14 @@ namespace EchosEther.Interface
             if (balise != null && balise.Active) Marqueur(balise.transform.position + Planete.Haut(balise.transform.position) * 3f, "balise", cam, observateur);
             var cible = jeu.didacticiel != null ? jeu.didacticiel.Cible : null;
             if (cible.HasValue) Marqueur(cible.Value + Planete.Haut(cible.Value) * 3.5f, "tuto", cam, observateur);
+            // la navette garée, pour la retrouver de loin
+            var navette = jeu.navette;
+            if (navette != null && jeu.NavetteEnVol == null && navette.Etat == Navette.EtatNavette.Garee && !navette.EnManoeuvre
+                && Vector3.Distance(observateur, navette.transform.position) > 40f)
+                Marqueur(navette.transform.position + Planete.Haut(navette.transform.position) * 6f, "navette", cam, observateur);
         }
 
-        static readonly string[] ClassesMarqueur = { "cristal", "bulle", "balise", "tuto" };
+        static readonly string[] ClassesMarqueur = { "cristal", "bulle", "balise", "tuto", "navette" };
 
         void Marqueur(Vector3 monde, string classe, Camera cam, Vector3 observateur)
         {
