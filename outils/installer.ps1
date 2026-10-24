@@ -13,8 +13,8 @@
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     $Racine = 'C:\Projets'
-    $Projet = Join-Path $Racine 'EchosEther'
-    if ($env:ECHOS_PROJET) { $Projet = $env:ECHOS_PROJET; $Racine = Split-Path $Projet }
+    $Projet = 'C:\Projets\EchosEther'
+    if ($env:ECHOS_PROJET) { $Projet = $env:ECHOS_PROJET; $Racine = Split-Path $Projet }   # pour les tests
     $UrlZip = 'https://github.com/madhiphares-eng/mon-projet/archive/refs/heads/echos-ether.zip'
     $Temp   = Join-Path ([IO.Path]::GetTempPath()) 'EchosEther-install'
 
