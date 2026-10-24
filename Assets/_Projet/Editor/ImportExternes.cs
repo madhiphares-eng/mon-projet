@@ -15,7 +15,7 @@ namespace EchosEther.Editeur
         const string Dossier = "Assets/_Projet/Externes";
 
         // Poly Haven : roche_nor_gl_2k.jpg ; ambientCG : Rock029_2K-JPG_NormalGL.jpg
-        static readonly Regex Normale = new Regex(@"(_nor_gl_\d+k|_NormalGL)$", RegexOptions.IgnoreCase);
+        internal static readonly Regex Normale = new Regex(@"(_nor_gl_\d+k|_NormalGL)$", RegexOptions.IgnoreCase);
         static readonly Regex Lineaire = new Regex(
             @"(_(rough|ao|disp|metal|arm)_\d+k|_(Roughness|AmbientOcclusion|Displacement|Metalness|Opacity))$",
             RegexOptions.IgnoreCase);

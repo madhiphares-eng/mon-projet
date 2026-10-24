@@ -79,5 +79,6 @@
     Write-Host ''
     Write-Host 'Retourne dans Unity : il importe les fichiers tout seul (quelques secondes).'
     Write-Host "Puis menu Echos d'Ether > Installer le jeu dans la scene, et Play."
+    Write-Host "En cas de souci : menu Echos d'Ether > Verifier l'installation (le rapport est copie, Ctrl+V pour le coller)."
     if ($env:OS -eq 'Windows_NT') { explorer (Join-Path $Projet 'Assets\_Projet') }
 }

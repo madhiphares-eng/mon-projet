@@ -73,6 +73,8 @@ namespace EchosEther.Editeur
             var ruche = Ajouter<Ruche>(systemes);
             var didacticiel = Ajouter<Didacticiel>(systemes);
             var sons = Ajouter<BanqueSons>(systemes);
+            var largage = Ajouter<Largage>(systemes);
+            Ajouter<AmbianceSonore>(Enfant(systemes.transform, "Ambiance sonore").gameObject);   // sa propre source audio
             horloges.dilatation = Object.FindFirstObjectByType<DilatationTemporelle>();
 
             // --- les lieux, posés sur la planète autour du point de départ
@@ -181,6 +183,7 @@ namespace EchosEther.Editeur
             gestionnaire.mission = mission;
             gestionnaire.didacticiel = didacticiel;
             gestionnaire.navette = navette;
+            gestionnaire.sequenceLargage = largage;
             var tn = Object.FindFirstObjectByType<TrouNoir>();
             if (tn != null) gestionnaire.trouNoir = tn.transform;
 

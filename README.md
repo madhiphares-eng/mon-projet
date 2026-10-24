@@ -69,24 +69,26 @@ Prochaine étape : le **disque d'accrétion** (anneau de matière lumineuse), qu
 3. Menu **Echos d'Ether > Installer le jeu dans la scène (menus, didacticiel, mission)**. Il ajoute :
    - sur l'Arpenteur : `EtatArpenteur`, `JaugeBruit`, `Scanner`, `ApparenceArpenteur` ;
    - sur la caméra : `CameraNavette`, `CameraSecousse` ;
-   - un objet **Systemes de jeu** : `GestionnaireJeu`, `InterfaceJeu` (UI Toolkit), `Horloges`, `Transmissions`, `Mission`, `Ruche`, `Didacticiel`, `BanqueSons` ;
+   - un objet **Systemes de jeu** : `GestionnaireJeu`, `InterfaceJeu` (UI Toolkit), `Horloges`, `Transmissions`, `Mission`, `Ruche`, `Didacticiel`, `BanqueSons`, `Largage` (arrivée en navette), `AmbianceSonore` (vent, nappe grave et grondement générés en direct) ;
    - un objet **Lieux de jeu** posé sur la planète autour du joueur : 9 cristaux d'Éther, une bulle lente avec le monolithe, une bulle rapide, la balise d'extraction et la navette.
    - Il utilise les modèles téléchargés par `telecharger-assets.ps1` s'ils sont là : navette Sketchfab (dossier `Externes/Sketchfab/Vaisseaux`), ver des sables (`Externes/Sketchfab/Personnages`), sons Kenney (`Externes/Sons`).
-4. **Play** : menu principal, enrôlement (nom, spécialité, couleurs, aperçu 3D), didacticiel en 13 étapes ou mission complète.
+4. Menu **Echos d'Ether > Vérifier l'installation** : contrôle HDRP, glTFast, ressources, assets téléchargés, sons branchés et composants de la scène.
+   Le rapport est copié dans le presse-papiers (Ctrl+V pour le coller dans une conversation).
+5. **Play** : menu principal, enrôlement (nom, spécialité, couleurs, aperçu 3D), arrivée en navette (Espace pour passer), didacticiel en 13 étapes ou mission complète.
 
 Relancer le menu complète l'installation sans rien déplacer. *Replacer les lieux de jeu autour du joueur* les repose à neuf.
 *Effacer le profil et les réglages enregistrés* remet l'enrôlement à zéro.
 
 | Dossier | Contenu |
 |---|---|
-| `Scripts/Jeu` | `GestionnaireJeu` (états de partie), `Didacticiel`, `Mission`, `JaugeBruit`, `CristalEther`, `Scanner`, `Ruche`, `BulleTemporelle`, `Monolithe`, `Navette`, `BaliseExtraction`, `Horloges`, `Transmissions`, `BanqueSons`, `ProfilArpenteur`, `Specialites`, `Reglages`, `Planete`, `Formes`, `Invite` |
+| `Scripts/Jeu` | `GestionnaireJeu` (états de partie), `Largage` (arrivée), `AmbianceSonore`, `Didacticiel`, `Mission`, `JaugeBruit`, `CristalEther`, `Scanner`, `Ruche`, `BulleTemporelle`, `Monolithe`, `Navette`, `BaliseExtraction`, `Horloges`, `Transmissions`, `BanqueSons`, `ProfilArpenteur`, `Specialites`, `Reglages`, `Planete`, `Formes`, `Invite` |
 | `Scripts/Joueur` | `EtatArpenteur`, `ApparenceArpenteur`, `EntreesJeu`, `CameraNavette`, `CameraSecousse` (plus les scripts existants) |
 | `Scripts/Interface` | `InterfaceJeu` : HUD et écrans en UI Toolkit, construits par le code |
 | `Resources` | `EchosEtherUI.uss` (styles), `EchosEtherTheme.tss` (thème), `Lueur.shader` (lueurs HDRP des bulles, de l'onde du scanner et des faisceaux) |
-| `Editor` | `InstallateurJeu` (menu d'installation), `ImportExternes` (réglage des textures), `ConstructeurScene` |
+| `Editor` | `InstallateurJeu` (menu d'installation), `Diagnostic` (vérification), `ImportExternes` (réglage des textures), `ConstructeurScene` |
 
 Commandes : Z Q S D se déplacer, souris regarder, Maj courir, C marcher en silence, Espace sauter, E récolter / interagir / navette,
-F scanner, J journal, M son, N passer une étape du didacticiel, Échap pause. Le code marche avec le nouvel Input System et l'ancien Input Manager.
+F scanner, J journal, M son, N passer une étape du didacticiel, Échap pause, Espace passer l'arrivée en navette. Le code marche avec le nouvel Input System et l'ancien Input Manager.
 
 ## Maquette jouable (navigateur)
 

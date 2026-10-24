@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace EchosEther.Interface
 {
-    /// <summary>Écrans de l'interface : menu principal, enrôlement, options, crédits, pause, fin, journal.</summary>
+    /// <summary>Écrans de l'interface : menu principal, enrôlement, arrivée, options, crédits, pause, fin, journal.</summary>
     public partial class InterfaceJeu
     {
         VisualElement ecranMenu, ecranEnrolement, ecranOptions, ecranCredits, ecranPause, ecranFin, journal, listeJournal;
@@ -20,7 +20,8 @@ namespace EchosEther.Interface
         Slider curseurSensibilite, curseurVolume;
         Toggle caseInverser, caseSon;
         DropdownField listeQualite;
-        VisualElement retourOptions;
+        VisualElement retourOptions, ecranLargage, largageTitre;
+        Label largageSous, largageReplique;
         TypePartie typeEnrolement;
         float glissement, dernierGlissement = -10f;
         bool glisse;
@@ -39,11 +40,12 @@ namespace EchosEther.Interface
             ConstruirePause();
             ConstruireFin();
             ConstruireJournal();
+            ConstruireLargage();
         }
 
         void CacherTout()
         {
-            foreach (var e in new[] { ecranMenu, ecranEnrolement, ecranOptions, ecranCredits, ecranPause, ecranFin, journal }) Afficher(e, false);
+            foreach (var e in new[] { ecranMenu, ecranEnrolement, ecranOptions, ecranCredits, ecranPause, ecranFin, journal, ecranLargage }) Afficher(e, false);
             Afficher(hud, false);
         }
 
@@ -217,6 +219,39 @@ namespace EchosEther.Interface
             Afficher(objectifs, !modeDidacticiel);
             ModeVol(Jeu != null && Jeu.Etat == EtatJeu.Vol);
             Fondu(Color.black, 0f);
+        }
+
+        // ------------------------------------------------------------------ arrivée en navette
+
+        void ConstruireLargage()
+        {
+            ecranLargage = Boite(racine, "largage");
+            Boite(ecranLargage, "bande", "haut");
+            Boite(ecranLargage, "bande", "bas");
+            largageTitre = Boite(ecranLargage, "largage-titre");
+            Texte(largageTitre, "LISIÈRE DE L'HORIZON", "largage-lieu");
+            largageSous = Texte(largageTitre, "", "largage-sous");
+            largageReplique = Texte(ecranLargage, "", "largage-replique");
+            Texte(ecranLargage, "Espace : passer l'arrivée", "largage-passer");
+            ecranLargage.pickingMode = PickingMode.Ignore;
+            ecranLargage.Query<VisualElement>().ForEach(e => e.pickingMode = PickingMode.Ignore);
+        }
+
+        /// <summary>Bandes de cinéma, nom du lieu et répliques du pilote pendant l'arrivée.</summary>
+        public void MontrerLargage(TypePartie type)
+        {
+            CacherTout();
+            largageSous.text = (type == TypePartie.Didacticiel ? "FORMATION · ARPENTEUR " : "MISSION · ARPENTEUR ") + ProfilArpenteur.Actuel.NomAffiche.ToUpperInvariant();
+            largageReplique.text = "";
+            largageTitre.RemoveFromClassList("visible");
+            Afficher(ecranLargage, true);
+            largageTitre.schedule.Execute(() => largageTitre.AddToClassList("visible")).StartingIn(900);
+            largageTitre.schedule.Execute(() => largageTitre.RemoveFromClassList("visible")).StartingIn(4600);
+        }
+
+        public void RepliqueLargage(string texte)
+        {
+            if (largageReplique != null) largageReplique.text = texte;
         }
 
         public void MontrerPause(bool didacticiel)

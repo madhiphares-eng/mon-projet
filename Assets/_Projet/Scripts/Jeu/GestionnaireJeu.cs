@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 
 namespace EchosEther.Jeu
 {
-    public enum EtatJeu { Menu, Enrolement, Jeu, Vol, Pause, Extraction, Fin }
+    public enum EtatJeu { Menu, Enrolement, Jeu, Vol, Pause, Extraction, Fin, Largage }
     public enum TypePartie { Mission, Didacticiel }
 
     /// <summary>
-    /// Déroulé d'une partie : menu principal, enrôlement (aperçu de l'Arpenteur), jeu à pied, vol en navette,
+    /// Déroulé d'une partie : menu principal, enrôlement (aperçu de l'Arpenteur), arrivée en navette, jeu à pied, vol en navette,
     /// pause, extraction et écran de fin. Active ou coupe le contrôle du joueur et les caméras.
     /// Recommencer ou revenir au menu recharge la scène : tout repart proprement.
     /// </summary>
@@ -38,6 +38,11 @@ namespace EchosEther.Jeu
         public Navette navette;
         [Tooltip("Trou noir visé par la caméra du menu principal.")]
         public Transform trouNoir;
+
+        [Header("Arrivée")]
+        [Tooltip("Arrivée en navette (largage) au début de chaque partie. Sans navette, la partie commence directement.")]
+        public bool largage = true;
+        public Largage sequenceLargage;
 
         [Header("Extraction")]
         public float dureeExtraction = 3.5f;
@@ -75,6 +80,8 @@ namespace EchosEther.Jeu
             }
             if (cameraOrbitale == null) cameraOrbitale = FindFirstObjectByType<CameraOrbitale>();
             if (cameraNavette == null && cameraOrbitale != null) cameraNavette = cameraOrbitale.GetComponent<CameraNavette>();
+            if (sequenceLargage == null) sequenceLargage = GetComponent<Largage>();
+            if (navette == null) navette = FindFirstObjectByType<Navette>();
             cam = cameraOrbitale != null ? cameraOrbitale.GetComponent<Camera>() : Camera.main;
             if (trouNoir == null)
             {
@@ -152,13 +159,29 @@ namespace EchosEther.Jeu
             if (horloges != null) horloges.EnMarche = true;
             transmissions?.Demarrer(type == TypePartie.Mission);
 
+            Controle(false);
+            if (cameraOrbitale != null) cameraOrbitale.enabled = false;
+            CapturerCurseur();
+            if (largage && sequenceLargage != null && navette != null)
+            {
+                Etat = EtatJeu.Largage;
+                interfaceJeu?.MontrerLargage(type);
+                if (sequenceLargage.Demarrer(this, navette, departPosition, departRotation, Commencer)) return;
+            }
+            Commencer();
+        }
+
+        /// <summary>L'Arpenteur est au sol : il prend la main.</summary>
+        void Commencer()
+        {
             Etat = EtatJeu.Jeu;
+            if (joueur != null && !joueur.gameObject.activeSelf) joueur.gameObject.SetActive(true);
             Controle(true);
             if (cameraOrbitale != null) cameraOrbitale.enabled = true;
             CapturerCurseur();
-            interfaceJeu?.MontrerJeu(type);
+            interfaceJeu?.MontrerJeu(Type);
 
-            if (type == TypePartie.Didacticiel && didacticiel != null) didacticiel.Demarrer();
+            if (Type == TypePartie.Didacticiel && didacticiel != null) didacticiel.Demarrer();
             else Invoke(nameof(PremierEcho), 1.5f);
         }
 

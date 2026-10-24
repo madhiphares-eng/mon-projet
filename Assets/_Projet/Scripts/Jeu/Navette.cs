@@ -43,6 +43,8 @@ namespace EchosEther.Jeu
         public EtatNavette Etat { get; private set; } = EtatNavette.Garee;
         public float Altitude { get; private set; }
         public float Vitesse => vitesse.magnitude;
+        /// <summary>Pilotée par un script (largage) : on ne peut pas monter à bord.</summary>
+        public bool EnManoeuvre { get; set; }
 
         Vector3 vitesse;
         float lacet, tangage, roulis;
@@ -68,10 +70,11 @@ namespace EchosEther.Jeu
             moteur.spatialBlend = 0.8f;
             moteur.playOnAwake = false;
             if (BanqueSons.Instance != null) moteur.clip = BanqueSons.Instance.moteurNavette;
-            Poussee(0f);
+            Reacteurs(0f);
         }
 
-        void Poussee(float intensite)
+        /// <summary>Flammes, lumière et son des réacteurs (0 = éteints). Utilisé aussi par la séquence de largage.</summary>
+        public void Reacteurs(float intensite)
         {
             if (reacteurs != null)
                 foreach (var r in reacteurs) r.localScale = Vector3.one * (0.8f + Random.value * 0.25f) * 2.2f * intensite;
@@ -92,7 +95,7 @@ namespace EchosEther.Jeu
             if (jeu == null) return;
             if (Etat == EtatNavette.Garee)
             {
-                if (jeu.Etat != EtatJeu.Jeu) return;
+                if (jeu.Etat != EtatJeu.Jeu || EnManoeuvre || jeu.joueur == null) return;
                 if (Vector3.Distance(jeu.joueur.transform.position, transform.position) > distanceEmbarquement) return;
                 Invite.Proposer("Appuyer sur E · monter à bord de la navette", -1f, 5f);
                 if (EntreesJeu.Interagir()) Embarquer();
@@ -155,13 +158,13 @@ namespace EchosEther.Jeu
 
             roulis = Mathf.Lerp(roulis, -d.x * 25f, 1f - Mathf.Exp(-dt * 4f));
             transform.SetPositionAndRotation(position, orientation * Quaternion.Euler(0f, 0f, roulis));
-            Poussee(0.35f + Mathf.Abs(d.y) * 0.6f + (boost && d.y != 0f ? 0.4f : 0f) + Mathf.Abs(m) * 0.25f);
+            Reacteurs(0.35f + Mathf.Abs(d.y) * 0.6f + (boost && d.y != 0f ? 0.4f : 0f) + Mathf.Abs(m) * 0.25f);
 
             var balise = Mission.Instance != null ? Mission.Instance.balise : null;
             if (balise != null && balise.AccessibleDepuis(transform.position))
             {
                 Invite.Proposer("Appuyer sur E · s'arrimer à la balise et rentrer", -1f, 6f);
-                if (EntreesJeu.Interagir()) { Poussee(1.4f); GestionnaireJeu.Instance.Extraction(); }
+                if (EntreesJeu.Interagir()) { Reacteurs(1.4f); GestionnaireJeu.Instance.Extraction(); }
                 return;
             }
             if (Altitude < altitudeAtterrissage && Vitesse < vitesseAtterrissage)
@@ -182,7 +185,7 @@ namespace EchosEther.Jeu
             transform.SetPositionAndRotation(sol.point + haut * hauteurPosee, posee);
             Etat = EtatNavette.Garee;
             vitesse = Vector3.zero;
-            Poussee(0f);
+            Reacteurs(0f);
             CameraSecousse.Choc(0.35f);
             BanqueSons.JouerA(BanqueSons.Instance?.atterrissageNavette, transform.position);
 

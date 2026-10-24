@@ -140,3 +140,15 @@
 .impact { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(217, 73, 58, 0.35); opacity: 0; transition-property: opacity; transition-duration: 0.8s; }
 .impact.actif { opacity: 1; transition-duration: 0.05s; }
 .cache { display: none; }
+
+/* ---------- arrivée en navette ---------- */
+.largage { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.bande { position: absolute; left: 0; right: 0; height: 11%; background-color: rgb(0, 0, 0); }
+.bande.haut { top: 0; }
+.bande.bas { bottom: 0; }
+.largage-titre { position: absolute; left: 0; right: 0; top: 36%; align-items: center; opacity: 0; transition-property: opacity; transition-duration: 1.6s; }
+.largage-titre.visible { opacity: 1; }
+.largage-lieu { font-size: 56px; letter-spacing: 16px; -unity-font-style: bold; color: rgb(236, 230, 216); text-shadow: 0 0 24px rgba(0, 0, 0, 0.85); }
+.largage-sous { font-size: 20px; letter-spacing: 6px; color: rgb(134, 239, 230); margin-top: 12px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.85); }
+.largage-replique { position: absolute; left: 15%; right: 15%; bottom: 13%; -unity-text-align: middle-center; white-space: normal; font-size: 25px; color: rgb(236, 230, 216); text-shadow: 0 0 6px rgb(0, 0, 0); }
+.largage-passer { position: absolute; right: 28px; bottom: 3.5%; font-size: 15px; letter-spacing: 2px; color: rgb(167, 163, 180); }
