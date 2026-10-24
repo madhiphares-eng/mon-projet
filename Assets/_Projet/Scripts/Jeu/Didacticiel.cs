@@ -176,7 +176,7 @@ namespace EchosEther.Jeu
                 Transmissions.Envoyer(TitreVesna, texte, duree: 9f);
                 BanqueSons.Jouer(BanqueSons.Instance?.etapeValidee, 0.8f);
                 jeu.interfaceJeu?.EtapeValidee();
-                attente = 1.6f;
+                attente = Index == etapes.Count - 1 ? 4.5f : 1.6f;   // le dernier mot de Vesna avant l'écran de fin
             }
             else
             {
