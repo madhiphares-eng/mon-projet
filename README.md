@@ -76,7 +76,12 @@ Prochaine étape : le **disque d'accrétion** (anneau de matière lumineuse), qu
      les armes du Kenney Blaster Kit (groupe 6 de `telecharger-assets.ps1`) sont branchées si elles sont là, sinon des formes générées les remplacent.
 4. Menu **Echos d'Ether > Vérifier l'installation** : contrôle HDRP, glTFast, ressources, assets téléchargés, sons branchés et composants de la scène.
    Le rapport est copié dans le presse-papiers (Ctrl+V pour le coller dans une conversation).
-5. **Play** : menu principal, enrôlement (nom, spécialité, couleurs, aperçu 3D), arrivée en navette (Espace pour passer), didacticiel en 13 étapes ou mission complète.
+5. Menu **Echos d'Ether > Test automatique (rapport dans docs)** : le jeu se joue tout seul pendant environ une minute (arrivée, armes, créatures,
+   compétences, dégâts, talents, navette, extraction) et écrit `docs/RAPPORT-TEST.md` avec les erreurs de la Console, plus des captures dans `docs/captures/`.
+6. Pour donner un corps à l'Arpenteur : sélectionner la combinaison dans la fenêtre Project, puis **Echos d'Ether > Utiliser le modèle sélectionné comme corps de l'Arpenteur**.
+7. **Play** : menu principal, enrôlement (nom, spécialité, couleurs, aperçu 3D), arrivée en navette (Espace pour passer), didacticiel en 13 étapes ou mission complète.
+
+Claude en local (MCP for Unity) a son guide : [`docs/CLAUDE-LOCAL.md`](docs/CLAUDE-LOCAL.md).
 
 Relancer le menu complète l'installation sans rien déplacer. *Replacer les lieux de jeu autour du joueur* les repose à neuf.
 *Effacer le profil et les réglages enregistrés* remet l'enrôlement à zéro.

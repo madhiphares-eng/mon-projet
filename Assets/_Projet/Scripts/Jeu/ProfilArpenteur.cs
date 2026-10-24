@@ -30,6 +30,9 @@ namespace EchosEther.Jeu
 
         static ProfilArpenteur actuel;
 
+        /// <summary>Oublie le profil en mémoire : il sera relu des PlayerPrefs (après un test automatique).</summary>
+        public static void Oublier() => actuel = null;
+
         public static ProfilArpenteur Actuel => actuel ??= Charger();
 
         public DonneesSpecialite Donnees => DonneesSpecialite.De(specialite);

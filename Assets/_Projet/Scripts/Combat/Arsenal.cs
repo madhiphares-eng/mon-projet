@@ -469,6 +469,22 @@ namespace EchosEther.Combat
 
         void ReprendrePistolet() => Changer(Catalogue.Index("ardent"));
 
+        /// <summary>Utilise l'arme en main sans passer par les touches (test automatique).</summary>
+        public void TirerPourTest()
+        {
+            var d = Arme;
+            if (Occupe || EnRechargement) return;
+            switch (d.mode)
+            {
+                case ModeTir.Melee: CoupDePic(d); break;
+                case ModeTir.Lancer: LancerGrenade(true); break;
+                default:
+                    if (Chargeur > 0) Tirer(d, 1f);
+                    else Recharger();
+                    break;
+            }
+        }
+
         public void Changer(int i)
         {
             if (i == Index && tChangement < 0f) return;
