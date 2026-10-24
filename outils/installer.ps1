@@ -48,9 +48,12 @@
     $Sauvegarde = Join-Path $Projet ('Sauvegardes\' + (Get-Date -Format 'yyyy-MM-dd_HH-mm'))
     $Etat = @{ Sauves = 0; Copies = 0 }
     $RacineSource = $Source.FullName
-    $Fichiers = @(Get-ChildItem -LiteralPath (Join-Path $RacineSource 'Assets\_Projet') -Recurse -File)
-    $Fichiers += @(Get-ChildItem -LiteralPath (Join-Path $RacineSource 'docs') -Recurse -File)
-    foreach ($f in 'README.md', '.gitignore', '.gitattributes') { $Fichiers += Get-Item -LiteralPath (Join-Path $RacineSource $f) }
+    $Fichiers = @(Get-ChildItem -LiteralPath (Join-Path $RacineSource 'Assets\_Projet') -Recurse -File -Force)
+    $Fichiers += @(Get-ChildItem -LiteralPath (Join-Path $RacineSource 'docs') -Recurse -File -Force)
+    foreach ($f in 'README.md', '.gitignore', '.gitattributes') {
+        $Chemin = Join-Path $RacineSource $f
+        if (Test-Path -LiteralPath $Chemin) { $Fichiers += Get-Item -LiteralPath $Chemin -Force }
+    }
     foreach ($f in $Fichiers) {
         $Relatif = $f.FullName.Substring($RacineSource.Length).TrimStart('\', '/')
         $Cible = Join-Path $Projet $Relatif
