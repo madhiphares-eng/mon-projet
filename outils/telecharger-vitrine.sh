@@ -261,7 +261,7 @@ ambientcg Lava004 largage "Braises et lave refroidie"
 direct "$NASA/apollo-lunar-module/Apollo%20Lunar%20Module.glb" largage nasa module-lunaire.glb "Capsule d'atterrissage (a la place de la capsule)" modele 7 "Domaine public" "$NASA_CREDIT"
 direct "$NASA/viking-lander/Viking%20Lander.glb" largage nasa atterrisseur-viking.glb "Sonde posee, epave" modele 3 "Domaine public" "$NASA_CREDIT"
 polyhaven_modele gothic_statue largage "Statue geante dans la brume (a agrandir)" 25
-polyhaven_ciel the_sky_is_on_fire largage "Ciel rougeoyant (naine rouge)"
+polyhaven_ciel belfast_sunset_puresky largage "Lumiere de couchant (naine rouge), ciel seul sans decor"
 sketchfab 9a55af34f7654097bd72f0642d83ccce capsule-habitat largage "Capsule de largage" 5
 sketchfab 709a1916c0cc4cbebe197e7ef26964cb navette-largage largage "Navette de largage" 14
 sketchfab e21e8e13aab64a17b92c6ec4daca7d39 statue-fragment largage "Statue colossale (fragment)" 20

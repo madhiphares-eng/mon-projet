@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vitrine Échos d'Éther</title>
+<style>
+  :root { --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --fond: rgba(6, 7, 12, 0.72); }
+  html, body { margin: 0; height: 100%; background: #000; color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #titre { position: fixed; left: 16px; top: 14px; max-width: min(520px, calc(100vw - 32px)); pointer-events: none; text-shadow: 0 0 12px #000;
+    background: linear-gradient(90deg, rgba(4, 5, 10, 0.62), rgba(4, 5, 10, 0.35) 75%, rgba(4, 5, 10, 0)); padding: 10px 28px 12px 10px; }
+  #titre .surtitre { font-size: 12px; letter-spacing: 3px; color: var(--brume); text-transform: uppercase; }
+  #titre h1 { margin: 4px 0 6px; font-size: 34px; letter-spacing: 1px; }
+  #titre p { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ivoire); opacity: 0.9; }
+  #onglets { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 32px); }
+  #onglets button, #btnCredits { background: var(--fond); color: var(--ivoire); border: 1px solid rgba(236, 230, 216, 0.2); padding: 9px 14px; font: inherit; font-size: 14px; letter-spacing: 1px; cursor: pointer; }
+  #onglets button.actif { border-color: var(--ambre); color: var(--ambre); }
+  #onglets button:hover, #btnCredits:hover { border-color: var(--ivoire); }
+  #btnCredits { position: fixed; right: 18px; bottom: 18px; }
+  #credits { position: fixed; right: 18px; bottom: 64px; width: min(560px, calc(100vw - 36px)); max-height: 60vh; overflow: auto; background: rgba(6, 7, 12, 0.92); border: 1px solid rgba(236, 230, 216, 0.2); padding: 14px 16px; font-size: 13px; }
+  #credits pre { white-space: pre-wrap; margin: 0; font-family: inherit; color: var(--brume); }
+  #chargement { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: rgba(0, 0, 0, 0.55); font-size: 14px; letter-spacing: 2px; transition: opacity 0.4s; }
+  #chargement.cache { opacity: 0; pointer-events: none; }
+  #chargement .barre { width: 280px; height: 3px; background: rgba(236, 230, 216, 0.15); }
+  #chargement .barre i { display: block; height: 100%; width: 0; background: var(--ether); transition: width 0.2s; }
+  #notes { position: fixed; left: 24px; bottom: 70px; max-width: min(460px, calc(100vw - 48px)); font-size: 12px; color: var(--brume); text-shadow: 0 0 8px #000; }
+  #aide { position: fixed; right: 18px; top: 18px; font-size: 12px; color: var(--ivoire); background: rgba(6, 7, 12, 0.55); padding: 6px 10px; text-align: right; }
+  #erreur { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 32px; text-align: center; background: #05060b; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="titre"><div class="surtitre">Échos d'Éther · vitrine</div><h1></h1><p></p></div>
+<div id="aide">Glisser : tourner · molette : zoom · touches 1 à 4 : lieux</div>
+<nav id="onglets"></nav>
+<button id="btnCredits">Crédits</button>
+<div id="credits" hidden><pre>Chargement des crédits…</pre></div>
+<div id="notes"></div>
+<div id="chargement"><span>CHARGEMENT</span><div class="barre"><i></i></div></div>
+<div id="erreur"></div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+// Dossier des modèles : ./models/ à côté de cette page (outils/telecharger-vitrine.sh), ou ?models=chemin
+const RACINE = new URL((new URLSearchParams(location.search).get('models') || 'models').replace(/\/?$/, '/'), location.href);
+const V3 = THREE.Vector3;
+const $ = s => document.querySelector(s);
+
+if (location.protocol === 'file:') {
+  const e = $('#erreur');
+  e.style.display = 'flex';
+  e.innerHTML = 'Cette page doit être servie par un petit serveur local (le navigateur bloque les fichiers ouverts directement).<br>' +
+    'Dans le Terminal, dans le dossier de la vitrine : <b>python3 -m http.server 8765</b><br>puis ouvrir <b>http://localhost:8765/vitrine-modeles.html</b>';
+  throw new Error('file://');
+}
+
+// ------------------------------------------------------------------ rendu
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const pmrem = new THREE.PMREMGenerator(renderer);
+
+const composer = new EffectComposer(renderer);
+const passeRendu = new RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera());
+composer.addPass(passeRendu);
+
+// Lentille gravitationnelle (reprise de la maquette) : le ciel se tord autour de l'ombre du trou noir
+const passeLentille = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uCentre: { value: new THREE.Vector2(0.5, 0.5) }, uRayon: { value: 0.05 }, uAspect: { value: 1 }, uForce: { value: 1.35 }, uAnneau: { value: 5 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform vec2 uCentre; uniform float uRayon, uAspect, uForce, uAnneau; varying vec2 vUv;
+    void main(){
+      vec2 d = vUv - uCentre; d.x *= uAspect;
+      float r = max(length(d), 1e-5);
+      vec2 dir = d / r;
+      float defl = uForce * uRayon * uRayon / r;
+      defl *= 1.0 - smoothstep(6.0 * uRayon, 12.0 * uRayon, r);
+      vec2 s = dir * (r - defl); s.x /= uAspect;
+      vec3 c = texture2D(tDiffuse, clamp(uCentre + s, vec2(0.001), vec2(0.999))).rgb;
+      float e = (r - uRayon * 1.035) / (uRayon * 0.028);
+      c += vec3(1.0, 0.8, 0.55) * uAnneau * exp(-e * e);
+      float e2 = (r - uRayon * 1.1) / (uRayon * 0.09);
+      c += vec3(1.0, 0.6, 0.3) * uAnneau * 0.12 * exp(-e2 * e2);
+      c *= smoothstep(uRayon * 0.985, uRayon * 1.006, r);
+      gl_FragColor = vec4(c, 1.0);
+    }`,
+});
+composer.addPass(passeLentille);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.7, 0.55, 0.85);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ------------------------------------------------------------------ chargement des fichiers
+
+const manager = new THREE.LoadingManager();
+manager.onProgress = (url, faits, total) => { $('#chargement .barre i').style.width = `${Math.round(faits / Math.max(1, total) * 100)}%`; };
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const gltfLoader = new GLTFLoader(manager).setDRACOLoader(draco);
+const texLoader = new THREE.TextureLoader(manager);
+const hdrLoader = new RGBELoader(manager);
+const absents = new Set();
+const url = chemin => new URL(chemin, RACINE).href;
+
+async function existe(chemin) {
+  try { const r = await fetch(url(chemin), { method: 'HEAD' }); return r.ok; } catch { return false; }
+}
+
+const cacheGltf = new Map();
+function chargerGltf(chemin) {
+  if (!cacheGltf.has(chemin))
+    cacheGltf.set(chemin, gltfLoader.loadAsync(url(chemin)).catch(e => { absents.add(chemin); console.warn('Modèle absent :', chemin, e.message); return null; }));
+  return cacheGltf.get(chemin);
+}
+
+/**
+ * Charge un modèle, le met à la taille voulue (hauteur ou plus grande dimension, en mètres),
+ * le centre et le pose sur y = 0. debout : modèle exporté avec Z vers le haut.
+ */
+async function modele(chemin, { taille = 1, mesure = 'hauteur', debout = false, ombres = true } = {}) {
+  const g = await chargerGltf(chemin);
+  if (!g) return null;
+  const obj = SkeletonUtils.clone(g.scene);
+  if (debout) obj.rotation.x = debout === 'moinsZ' ? Math.PI / 2 : -Math.PI / 2;
+  const racine = new THREE.Group();
+  racine.add(obj);
+  const t = new THREE.Box3().setFromObject(obj).getSize(new V3());
+  const ref = mesure === 'hauteur' ? t.y : Math.max(t.x, t.y, t.z);
+  obj.scale.multiplyScalar(taille / Math.max(ref, 1e-4));
+  const b = new THREE.Box3().setFromObject(obj);
+  const c = b.getCenter(new V3());
+  obj.position.x -= c.x; obj.position.z -= c.z; obj.position.y -= b.min.y;
+  racine.traverse(o => { if (o.isMesh) { o.castShadow = ombres; o.receiveShadow = true; } });
+  racine.userData.animations = g.animations;
+  return racine;
+}
+
+/** Matériau Poly Haven (couleur, normale GL, ARM = occlusion / rugosité / métal) répété sur le sol. */
+function materiauPH(dossier, id, repetition, res = '2k', options = {}) {
+  const tex = (suffixe, srgb) => {
+    const t = texLoader.load(url(`${dossier}/${id}/${id}_${suffixe}_${res}.jpg`), undefined, undefined, () => absents.add(`${dossier}/${id}`));
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(repetition, repetition);
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  };
+  const arm = tex('arm');
+  return new THREE.MeshStandardMaterial({ map: tex('diff', true), normalMap: tex('nor_gl'), roughnessMap: arm, aoMap: arm, metalness: 0, ...options });
+}
+
+function texture(chemin, srgb = true) {
+  const t = texLoader.load(url(chemin), undefined, undefined, () => absents.add(chemin));
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** Ciel HDR : éclairage de la scène (env, 1 = tel quel) et, si fond, ciel visible. */
+async function cielHdr(scene, chemin, intensite = 1, fond = true, env = 1) {
+  try {
+    const hdr = await hdrLoader.loadAsync(url(chemin));
+    hdr.mapping = THREE.EquirectangularReflectionMapping;
+    if (env !== 1) {   // r160 n'a pas scene.environmentIntensity : on atténue les pixels (demi-flottants) avant le PMREM
+      const d = hdr.image.data, H = THREE.DataUtils;
+      for (let i = 0; i < d.length; i++) if ((i & 3) !== 3) d[i] = H.toHalfFloat(H.fromHalfFloat(d[i]) * env);
+    }
+    scene.environment = pmrem.fromEquirectangular(hdr).texture;
+    if (fond) { scene.background = hdr; scene.backgroundIntensity = intensite; }
+  } catch (e) { absents.add(chemin); }
+}
+
+/** Dôme de ciel en dégradé (haut, horizon) avec une lueur vers le soleil. */
+function domeCiel(horizon, haut, lueur) {
+  const m = new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false, fog: false,
+    uniforms: { uHorizon: { value: new THREE.Color(horizon) }, uHaut: { value: new THREE.Color(haut) }, uLueur: { value: new THREE.Color(lueur) }, uSoleil: { value: new V3(0.7, 0.13, -1).normalize() } },
+    vertexShader: `varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform vec3 uHorizon, uHaut, uLueur, uSoleil; varying vec3 vD;
+      void main(){ float y = clamp(vD.y, -0.2, 1.0); vec3 c = mix(uHorizon, uHaut, smoothstep(0.0, 0.55, y));
+        c += uLueur * pow(max(dot(vD, uSoleil), 0.0), 6.0) * 0.6; gl_FragColor = vec4(c, 1.0); }`,
+  });
+  const d = new THREE.Mesh(new THREE.SphereGeometry(1500, 48, 24), m);
+  d.renderOrder = -10;
+  return d;
+}
+
+/** Grande sphère d'étoiles (texture équirectangulaire de la Voie lactée). */
+function voieLactee(rayon, intensite) {
+  const m = new THREE.MeshBasicMaterial({ map: texture('commun/ciel/etoiles_voie_lactee_8k.jpg'), side: THREE.BackSide, fog: false, depthWrite: false });
+  m.color.setScalar(intensite);
+  const s = new THREE.Mesh(new THREE.SphereGeometry(rayon, 64, 32), m);
+  s.renderOrder = -10;
+  return s;
+}
+
+// ------------------------------------------------------------------ bruit et relief
+
+const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); };
+function bruit(x, y) {
+  const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
+  const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+  const a = hash(ix, iy), b = hash(ix + 1, iy), c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y, octaves = 5) { let s = 0, a = 0.5; for (let i = 0; i < octaves; i++) { s += a * bruit(x, y); x *= 2.03; y *= 2.03; a *= 0.5; } return s; }
+
+/** Terrain carré dont la hauteur est donnée par f(x, z). */
+function terrain(taille, segments, f, materiau) {
+  const g = new THREE.PlaneGeometry(taille, taille, segments, segments);
+  g.rotateX(-Math.PI / 2);
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setY(i, f(p.getX(i), p.getZ(i)));
+  g.computeVertexNormals();
+  if (materiau.map) sansRepetition(materiau);
+  const m = new THREE.Mesh(g, materiau);
+  m.receiveShadow = true;
+  return m;
+}
+
+/** Casse la répétition visible d'une texture de sol : deux échelles mêlées par un bruit, et des variations de teinte. */
+function sansRepetition(m) {
+  const chunk = (nom, avant, apres) => THREE.ShaderChunk[nom].replace(avant, apres);
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>
+        float bruitSol(vec2 p) {
+          vec2 i = floor(p), f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          float a = fract(sin(dot(i, vec2(127.1, 311.7))) * 43758.5453);
+          float b = fract(sin(dot(i + vec2(1.0, 0.0), vec2(127.1, 311.7))) * 43758.5453);
+          float c = fract(sin(dot(i + vec2(0.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
+          float d = fract(sin(dot(i + vec2(1.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
+          return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+        }
+        vec4 solMelange(sampler2D t, vec2 uv) {
+          float k = smoothstep(0.25, 0.75, bruitSol(uv * 0.33));
+          return mix(texture2D(t, uv), texture2D(t, uv * 0.41 + vec2(0.37, 0.61)), k);
+        }`)
+      .replace('#include <map_fragment>', chunk('map_fragment', 'texture2D( map, vMapUv )',
+        'solMelange( map, vMapUv ) * vec4(vec3(0.84 + 0.32 * bruitSol(vMapUv * 0.07 + 5.3)), 1.0)'))
+      .replace('#include <normal_fragment_maps>', chunk('normal_fragment_maps', 'vec3 mapN = texture2D( normalMap, vNormalMapUv )', 'vec3 mapN = solMelange( normalMap, vNormalMapUv )'))
+      .replace('#include <roughnessmap_fragment>', chunk('roughnessmap_fragment', 'texture2D( roughnessMap, vRoughnessMapUv )', 'solMelange( roughnessMap, vRoughnessMapUv )'))
+      .replace('#include <aomap_fragment>', chunk('aomap_fragment', 'texture2D( aoMap, vAoMapUv )', 'solMelange( aoMap, vAoMapUv )'));
+  };
+  m.customProgramCacheKey = () => 'sansRepetition';
+}
+
+const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+const entre = (a, b) => a + (b - a) * rnd();
+
+function soleil(couleur, taille) {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d');
+  const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.18, 'rgba(255,255,255,0.95)'); g.addColorStop(0.35, 'rgba(255,255,255,0.25)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), color: couleur, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  s.scale.setScalar(taille);
+  return s;
+}
+
+function lumiereSoleil(couleur, intensite, direction, ombres, etendue = 60) {
+  const l = new THREE.DirectionalLight(couleur, intensite);
+  l.position.copy(direction).normalize().multiplyScalar(150);
+  if (ombres) {
+    l.castShadow = true;
+    l.shadow.mapSize.set(2048, 2048);
+    Object.assign(l.shadow.camera, { left: -etendue, right: etendue, top: etendue, bottom: -etendue, near: 1, far: 400 });
+    l.shadow.bias = -0.0004;
+    l.shadow.normalBias = 0.06;
+  }
+  return l;
+}
+
+// ------------------------------------------------------------------ lieux
+
+const LIEUX = [
+  { id: 'horizon', nom: "L'Horizon", sous: "Bord de l'Abîme",
+    texte: "Un Arpenteur seul sur un plateau de basalte, face à un trou noir. La lumière des étoiles se tord autour de l'ombre ; des rochers flottent au rythme des marées gravitationnelles.",
+    vue: [7, 3.2, -30], cible: [0, 8, -70], exposition: 1.0, bloom: 0.8, construire: horizon },
+  { id: 'dunes', nom: 'Le Tombeau et le Léviathan', sous: "Dunes d'Ocre",
+    texte: "Une escouade sur une crête, sous deux soleils. Le monolithe pulse de glyphes bleus. Toutes les trente secondes, le ver jaillit du sable et replonge.",
+    vue: [10, 14, 26], cible: [0, 8, -40], exposition: 0.75, bloom: 0.45, construire: dunes },
+  { id: 'largage', nom: 'Site de largage', sous: 'Mondes de Cendre',
+    texte: "La capsule fume encore dans son cratère. Au loin, le faisceau d'une balise, une naine rouge, et des statues géantes dans la brume.",
+    vue: [22, 9, 24], cible: [0, 3, 0], exposition: 0.85, bloom: 0.75, construire: largage },
+  { id: 'anneaux', nom: "Champ d'anneaux", sous: 'Couronne Brisée',
+    texte: "Une géante gazeuse et ses anneaux, des astéroïdes à perte de vue, un avant-poste et son antenne. L'Arpenteur saute lentement, sous 0,3 g.",
+    vue: [24, 10, 26], cible: [0, 4, 0], exposition: 1.0, bloom: 0.6, construire: anneaux },
+];
+
+// ---- 1. L'Horizon
+
+async function horizon(L) {
+  const s = L.scene;
+  s.fog = new THREE.FogExp2(0x05060b, 0.004);
+  s.add(voieLactee(2500, 0.6));
+  s.add(new THREE.HemisphereLight(0x5c6cff, 0x0c0b0e, 0.45));
+
+  // trou noir : ombre, disque d'accrétion (Doppler : un côté plus brillant), lentille en post-traitement
+  const R = 80, BH = new V3(-160, 300, -1100);
+  const ombre = new THREE.Mesh(new THREE.SphereGeometry(R, 48, 32), new THREE.MeshBasicMaterial({ color: 0x000000, fog: false }));
+  ombre.position.copy(BH);
+  s.add(ombre);
+  const disque = new THREE.Mesh(new THREE.RingGeometry(R * 1.25, R * 4.2, 220, 8), materiauDisque(R * 1.25, R * 4.2));
+  disque.position.copy(BH);
+  disque.rotation.set(-Math.PI / 2 + 0.2, 0.3, 0);
+  s.add(disque);
+  L.trouNoir = { pos: BH, rayon: R };
+  const cle = lumiereSoleil(0xffb27a, 1.9, BH.clone().normalize(), true, 70);
+  const appoint = lumiereSoleil(0x7f95ff, 0.7, new V3(0.3, 0.6, 1), false);
+  s.add(cle, cle.target, appoint, appoint.target);
+  L.animer.push((t) => {
+    const u = disque.material.uniforms;
+    u.uTemps.value = t;
+    u.uCam.value.copy(L.camera.position);
+    u.uCentre.value.copy(BH);
+    u.uNormale.value.set(0, 0, 1).applyQuaternion(disque.quaternion);
+  });
+
+  // plateau qui s'arrête net au-dessus du vide (côté trou noir)
+  const bord = (x, z) => 62 + fbm(x * 0.03 + 9, z * 0.03) * 16;
+  const h = (x, z) => {
+    let y = (fbm(x * 0.035, z * 0.035) - 0.5) * 3.2 + (fbm(x * 0.2, z * 0.2, 3) - 0.5) * 0.5;
+    const d = Math.hypot(x, z);
+    const b = bord(x, z);
+    if (d > b) y -= Math.pow(d - b, 1.5) * 1.1;
+    return y;
+  };
+  L.hauteur = h;
+  s.add(terrain(320, 260, h, materiauPH('horizon/textures', 'dark_rock_02', 30, '2k', { color: 0x6c6c78 })));
+
+  // falaises au bord
+  for (const [a, sz] of [[-0.25, 16], [0.3, 13], [0.8, 18], [-0.85, 15]]) {
+    const f = await modele('horizon/polyhaven/coastal_cliff_01/coastal_cliff_01_1k.gltf', { taille: sz, mesure: 'max' });
+    if (!f) break;
+    const dir = new V3(Math.sin(a), 0, -Math.cos(a));
+    const p = dir.clone().multiplyScalar(bord(dir.x * 60, dir.z * 60) + 2);
+    f.position.set(p.x, h(p.x * 0.97, p.z * 0.97) - sz * 0.55, p.z);
+    f.rotation.y = -a + Math.PI;
+    s.add(f);
+  }
+
+  // rochers flottants
+  const rochers = ['moon_rock_01', 'moon_rock_02', 'moon_rock_03', 'moon_rock_04', 'moon_rock_05'];
+  for (let i = 0; i < 16; i++) {
+    const id = rochers[i % rochers.length];
+    const r = await modele(`horizon/polyhaven/${id}/${id}_1k.gltf`, { taille: entre(1.2, i < 4 ? 9 : 5), mesure: 'max' });
+    if (!r) continue;
+    const a = entre(-1.1, 1.1), d = entre(66, 150);
+    r.position.set(Math.sin(a) * d, entre(4, 34), -Math.cos(a) * d);
+    r.rotation.set(entre(0, 6), entre(0, 6), entre(0, 6));
+    const y0 = r.position.y, phase = entre(0, 6), vitesse = entre(0.15, 0.4), spin = new V3(entre(-0.1, 0.1), entre(-0.15, 0.15), entre(-0.1, 0.1));
+    L.animer.push((t, dt) => {
+      r.position.y = y0 + Math.sin(t * vitesse + phase) * 1.6;
+      r.rotation.x += spin.x * dt; r.rotation.y += spin.y * dt; r.rotation.z += spin.z * dt;
+    });
+    s.add(r);
+  }
+
+  // l'Arpenteur, face au trou noir
+  const a = await arpenteur();
+  if (a) {
+    a.position.set(1.5, h(1.5, -52), -52);
+    a.lookAt(BH.x, a.position.y, BH.z);
+    s.add(a);
+  }
+}
+
+function materiauDisque(rin, rout) {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, fog: false,
+    uniforms: { uTemps: { value: 0 }, uRin: { value: rin }, uRout: { value: rout }, uCam: { value: new V3() }, uCentre: { value: new V3() }, uNormale: { value: new V3(0, 0, 1) }, uIntensite: { value: 4.5 } },
+    vertexShader: `varying vec3 vLoc; varying vec3 vMonde;
+      void main(){ vLoc = position; vMonde = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * viewMatrix * vec4(vMonde, 1.0); }`,
+    fragmentShader: `
+      float hash3(vec3 p){ p = fract(p*0.3183099 + 0.1); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+      float bruit(vec3 x){ vec3 i = floor(x); vec3 f = fract(x); f = f*f*(3.0-2.0*f);
+        return mix(mix(mix(hash3(i+vec3(0,0,0)), hash3(i+vec3(1,0,0)), f.x), mix(hash3(i+vec3(0,1,0)), hash3(i+vec3(1,1,0)), f.x), f.y),
+                   mix(mix(hash3(i+vec3(0,0,1)), hash3(i+vec3(1,0,1)), f.x), mix(hash3(i+vec3(0,1,1)), hash3(i+vec3(1,1,1)), f.x), f.y), f.z); }
+      float fbm(vec3 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++){ s += a*bruit(p); p *= 2.02; a *= 0.5; } return s; }
+      uniform float uTemps, uRin, uRout, uIntensite; uniform vec3 uCam, uCentre, uNormale;
+      varying vec3 vLoc; varying vec3 vMonde;
+      void main(){
+        float r = length(vLoc.xy);
+        float t = (r - uRin) / (uRout - uRin);
+        if (t < 0.0 || t > 1.0) discard;
+        float ang = atan(vLoc.y, vLoc.x);
+        float omega = pow(uRin / r, 1.5);
+        float a2 = ang + uTemps * omega * 0.35;
+        float n = fbm(vec3(cos(a2) * 2.6, sin(a2) * 2.6, r / uRin * 2.2));
+        float stries = fbm(vec3(cos(a2) * 1.2, sin(a2) * 1.2, r / uRin * 11.0));
+        float profil = pow(1.0 - t, 2.1) * smoothstep(0.0, 0.06, t);
+        vec3 c = mix(vec3(1.0, 0.94, 0.84), vec3(1.0, 0.56, 0.2), smoothstep(0.0, 0.35, t));
+        c = mix(c, vec3(0.55, 0.13, 0.04), smoothstep(0.35, 1.0, t));
+        vec3 radial = normalize(vMonde - uCentre);
+        vec3 tangente = normalize(cross(uNormale, radial));
+        vec3 versCam = normalize(uCam - vMonde);
+        float beta = 0.55 * sqrt(uRin / r);
+        float dop = 1.0 + beta * dot(tangente, versCam);
+        float gain = pow(dop, 3.5);
+        c = mix(c, c * vec3(0.78, 0.92, 1.25), clamp((dop - 1.0) * 2.0, 0.0, 1.0));
+        c = mix(c, c * vec3(1.15, 0.7, 0.5), clamp((1.0 - dop) * 2.0, 0.0, 1.0));
+        float lum = profil * (0.45 + 1.0 * n) * (0.55 + 0.9 * stries) * gain * uIntensite;
+        gl_FragColor = vec4(c * lum, 1.0);
+      }`,
+  });
+}
+
+/** L'Arpenteur : combinaison Z2 de la NASA (déjà debout dans son fichier), à défaut l'astronaute NASA. */
+async function arpenteur() {
+  return (await modele('commun/nasa/combinaison-z2.glb', { taille: 1.8 }))
+    || (await modele('commun/nasa/astronaute.glb', { taille: 1.8 }));
+}
+
+// ---- 2. Le Tombeau et le Léviathan
+
+async function dunes(L) {
+  const s = L.scene;
+  await cielHdr(s, 'dunes/ciel/industrial_sunset_puresky_2k.hdr', 0.55);
+  s.fog = new THREE.Fog(0xc9925e, 90, 700);
+  const dir1 = new V3(0.55, 0.34, -1), dir2 = new V3(-0.7, 0.4, -1);
+  const s1 = soleil(0xffc890, 90), s2 = soleil(0xfff2d8, 55);
+  s1.position.copy(dir1).normalize().multiplyScalar(1200);
+  s2.position.copy(dir2).normalize().multiplyScalar(1200);
+  s.add(s1, s2);
+  const l1 = lumiereSoleil(0xffb070, 2.6, dir1, true, 70), l2 = lumiereSoleil(0xfff0d0, 1.0, dir2, false);
+  s.add(l1, l1.target, l2, l2.target);
+
+  // dunes et crête où se tient l'escouade
+  const h = (x, z) => 4 * Math.sin(x * 0.017 + Math.sin(z * 0.011) * 2.2 + fbm(x * 0.006, z * 0.006) * 4) * Math.cos(z * 0.012 + 0.6)
+    + 9 * Math.exp(-Math.pow((z - 2) / 22, 2)) * (0.85 + 0.15 * Math.sin(x * 0.03))
+    + (fbm(x * 0.012, z * 0.012) - 0.5) * 8 + (fbm(x * 0.25, z * 0.25, 2) - 0.5) * 0.25;
+  L.hauteur = h;
+  s.add(terrain(900, 300, h, materiauPH('dunes/textures', 'aerial_sand', 70, '2k', { color: 0xf1c79a })));
+
+  // rochers, affleurement, arbre mort
+  const pierres = ['sand_rocks_small_01', 'namaqualand_boulder_02', 'namaqualand_boulder_04'];
+  for (let i = 0; i < 26; i++) {
+    const id = pierres[i % 3];
+    const r = await modele(`dunes/polyhaven/${id}/${id}_1k.gltf`, { taille: entre(0.8, i % 3 ? 4.5 : 2), mesure: 'max' });
+    if (!r) continue;
+    const x = entre(-140, 140), z = entre(-200, 60);
+    if (Math.abs(x) < 12 && Math.abs(z) < 12) continue;
+    r.position.set(x, h(x, z) - 0.3, z);
+    r.rotation.y = entre(0, 6.3);
+    s.add(r);
+  }
+  const falaise = await modele('dunes/polyhaven/namaqualand_cliff_01/namaqualand_cliff_01_1k.gltf', { taille: 28, mesure: 'max' });
+  if (falaise) { falaise.position.set(-75, h(-75, -60) - 3, -60); falaise.rotation.y = 0.8; s.add(falaise); }
+  const arbre = await modele('dunes/polyhaven/dead_quiver_trunk/dead_quiver_trunk_1k.gltf', { taille: 4.5 });
+  if (arbre) { arbre.position.set(16, h(16, 12) - 0.2, 12); s.add(arbre); }
+
+  // le monolithe du Tombeau : pierre gravée, glyphes bleus qui pulsent, fragments en orbite
+  const M = new V3(0, 0, -78);
+  M.y = h(M.x, M.z) - 1;
+  const pierre = new THREE.Mesh(new THREE.BoxGeometry(4, 24, 1.6), materiauPH('dunes/textures', 'red_sandstone_wall', 1, '2k', { color: 0x7a6a62 }));
+  for (const k of ['map', 'normalMap', 'roughnessMap']) pierre.material[k].repeat.set(0.6, 3.2);
+  pierre.position.set(M.x, M.y + 12, M.z);
+  pierre.castShadow = true;
+  s.add(pierre);
+  const glyphes = new THREE.Mesh(new THREE.BoxGeometry(4.05, 24.05, 1.65), new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uTemps: { value: 0 } },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform float uTemps; varying vec2 vUv;
+      float h(vec2 p){ return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5); }
+      void main(){
+        vec2 g = vec2(vUv.x * 6.0, vUv.y * 36.0);
+        vec2 c = floor(g), f = fract(g);
+        float r = h(c);
+        float trait = r < 0.33 ? step(abs(f.x - 0.5), 0.08) : r < 0.66 ? step(abs(f.y - 0.5), 0.08) : step(abs(f.x - f.y), 0.09);
+        trait *= step(0.25, h(c + 7.0)) * step(0.12, f.x) * step(f.x, 0.88) * step(0.12, f.y) * step(f.y, 0.88);
+        float onde = 0.5 + 0.5 * sin(uTemps * 1.6 - vUv.y * 9.0);
+        gl_FragColor = vec4(vec3(0.35, 0.75, 1.6) * trait * (0.25 + 1.4 * pow(onde, 6.0)), 1.0);
+      }`,
+  }));
+  glyphes.position.copy(pierre.position);
+  s.add(glyphes);
+  const lumMono = new THREE.PointLight(0x7fc4ff, 30, 40, 1.6);
+  lumMono.position.set(M.x, M.y + 10, M.z + 3);
+  s.add(lumMono);
+  const fragments = [];
+  for (let i = 0; i < 10; i++) {
+    const f = await modele('dunes/polyhaven/sand_rocks_small_01/sand_rocks_small_01_1k.gltf', { taille: entre(0.5, 1.4), mesure: 'max' });
+    if (!f) break;
+    f.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.emissive = new THREE.Color(0x2a6cff); o.material.emissiveIntensity = 0.6; } });
+    s.add(f);
+    fragments.push({ f, r: entre(5, 9), a: entre(0, 6.3), y: entre(6, 22), v: entre(0.15, 0.35) });
+  }
+  L.animer.push((t) => {
+    glyphes.material.uniforms.uTemps.value = t;
+    lumMono.intensity = 18 + 22 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.6), 4);
+    for (const o of fragments) {
+      const a = o.a + t * o.v;
+      o.f.position.set(M.x + Math.cos(a) * o.r, M.y + o.y + Math.sin(t * 0.7 + o.a) * 0.6, M.z + Math.sin(a) * o.r);
+      o.f.rotation.y = t * 0.5 + o.a;
+    }
+  });
+
+  // l'escouade sur la crête
+  for (const [x, dz, ry] of [[-2.4, 0.6, 0.15], [0, -0.4, 0], [2.6, 0.8, -0.2]]) {
+    const a = await arpenteur();
+    if (!a) break;
+    a.position.set(x, h(x, 2 + dz), 2 + dz);
+    a.lookAt(M.x + x * 3, a.position.y, M.z);
+    a.rotation.y += ry;
+    s.add(a);
+  }
+
+  await leviathan(L, h);
+}
+
+/** Le ver : modèle Sketchfab s'il a été téléchargé (token), sinon un ver de segments. Il jaillit en arc toutes les 30 s. */
+async function leviathan(L, h) {
+  const s = L.scene;
+  const debut = new V3(48, 0, -40), fin = new V3(-42, 0, -120);
+  const hauteurArc = 38, periode = 30, duree = 5.2;
+  const chemin = (k) => {
+    const p = debut.clone().lerp(fin, k);
+    p.y = h(p.x, p.z) + Math.sin(k * Math.PI) * hauteurArc - 6;
+    return p;
+  };
+  let ver = null, mixer = null;
+  if (await existe('dunes/sketchfab/ver-des-sables.glb')) {
+    ver = await modele('dunes/sketchfab/ver-des-sables.glb', { taille: 34, mesure: 'max' });
+    if (ver && ver.userData.animations?.length) {
+      mixer = new THREE.AnimationMixer(ver);
+      const clip = ver.userData.animations.find(c => /attack|spawn/i.test(c.name)) || ver.userData.animations[0];
+      mixer.clipAction(clip).play();
+    }
+  } else note('Ver des sables : version générée (le modèle animé de Sketchfab demande un token, voir le script).');
+  // ver généré : un corps continu (anneaux et sillons) qui suit l'arc, gueule ronde à deux rangées de dents
+  const longueur = 0.5;                 // part du chemin occupée par le corps
+  const NA = 72, NR = 20, R = 3.4;      // anneaux le long du corps, sommets par anneau, rayon
+  let corps = null, tete = null;
+  const rayons = [];
+  if (!ver) {
+    const geo = new THREE.BufferGeometry();
+    const sommets = new Float32Array(NA * (NR + 1) * 3), couleurs = new Float32Array(NA * (NR + 1) * 3);
+    const indices = [];
+    for (let j = 0; j < NA - 1; j++) for (let i = 0; i < NR; i++) {
+      const a = j * (NR + 1) + i, b = a + NR + 1;
+      indices.push(a, a + 1, b, b, a + 1, b + 1);
+    }
+    for (let j = 0; j < NA; j++) {
+      const u = j / (NA - 1);
+      const profil = (u < 0.05 ? 0.92 + 1.6 * u : 1 - 0.7 * Math.pow((u - 0.05) / 0.95, 1.5)) * Math.min(1, (1 - u) * 14);
+      const sillon = j % 3 === 0;
+      rayons.push(R * profil * (sillon ? 0.92 : 1));
+      for (let i = 0; i <= NR; i++) {
+        const v = sillon ? 0.55 : 0.85 + 0.15 * Math.sin(i * 1.7 + j);
+        couleurs.set([0.13 * v, 0.075 * v, 0.04 * v], (j * (NR + 1) + i) * 3);
+      }
+    }
+    geo.setIndex(indices);
+    geo.setAttribute('position', new THREE.BufferAttribute(sommets, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(couleurs, 3));
+    corps = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide }));
+    corps.castShadow = true;
+    corps.frustumCulled = false;
+
+    tete = new THREE.Group();
+    const gorge = new THREE.Mesh(new THREE.CircleGeometry(R * 0.86, 24), new THREE.MeshBasicMaterial({ color: 0x0a0503 }));
+    gorge.position.z = -0.6;
+    const levre = new THREE.Mesh(new THREE.TorusGeometry(R * 0.93, 0.45, 10, 32), new THREE.MeshStandardMaterial({ color: 0x2a1610, roughness: 1 }));
+    tete.add(gorge, levre);
+    const geoDent = new THREE.ConeGeometry(0.22, 1.5, 6).rotateX(Math.PI / 2);   // pointe vers +Z
+    const matDent = new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.5 });
+    for (let rang = 0; rang < 2; rang++) for (let i = 0; i < 18; i++) {
+      const a = (i / 18 + rang * 0.028) * Math.PI * 2, r = R * (0.8 - rang * 0.22);
+      const dent = new THREE.Mesh(geoDent, matDent);
+      dent.position.set(Math.cos(a) * r, Math.sin(a) * r, -0.2 - rang * 0.8);
+      dent.lookAt(Math.cos(a) * r * 0.3, Math.sin(a) * r * 0.3, 1.2);   // vers l'intérieur et l'avant
+      tete.add(dent);
+    }
+    ver = new THREE.Group();
+    ver.add(corps, tete);
+  }
+  ver.visible = false;
+  s.add(ver);
+
+  // gerbe de sable à l'entrée et à la sortie
+  const N = 500;
+  const pos = new Float32Array(N * 3), vit = new Float32Array(N * 3);
+  const gSable = new THREE.BufferGeometry();
+  gSable.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const rond = document.createElement('canvas'); rond.width = rond.height = 64;
+  const cx = rond.getContext('2d'), gr = cx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.6)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  cx.fillStyle = gr; cx.fillRect(0, 0, 64, 64);
+  const sable = new THREE.Points(gSable, new THREE.PointsMaterial({ color: 0xc89a66, size: 1.1, map: new THREE.CanvasTexture(rond), transparent: true, opacity: 0.8, depthWrite: false }));
+  sable.frustumCulled = false;
+  s.add(sable);
+  let iSable = 0;
+  const gerbe = (p, n) => {
+    for (let k = 0; k < n; k++) {
+      const i = (iSable++ % N) * 3;
+      pos[i] = p.x + entre(-4, 4); pos[i + 1] = p.y + entre(0, 2); pos[i + 2] = p.z + entre(-4, 4);
+      vit[i] = entre(-6, 6); vit[i + 1] = entre(8, 22); vit[i + 2] = entre(-6, 6);
+    }
+  };
+  // trous de sortie et d'entrée : là où l'arc traverse le sol
+  const auSol = (k) => { const p = chemin(k); p.y = h(p.x, p.z); return p; };
+  const trouSortie = auSol(0.05), trouEntree = auSol(0.95);
+  const finVisible = corps ? 1 + longueur + 0.05 : 1.15;
+  const p = new V3(), T = new V3(), N1 = new V3(), N2 = new V3(), haut = new V3(0, 1, 0);
+  let sortieFaite = false, entreeFaite = false;
+  L.animer.push((t, dt) => {
+    const c = (t - L.ouvert + periode - 10) % periode;   // première sortie 10 s après l'arrivée
+    const k = c / duree;
+    if (mixer) mixer.update(dt);
+    ver.visible = k < finVisible;
+    if (k < 0.02) { sortieFaite = false; entreeFaite = false; }
+    if (ver.visible) {
+      if (corps) {
+        const sommets = corps.geometry.attributes.position.array;
+        for (let j = 0; j < NA; j++) {
+          const kj = THREE.MathUtils.clamp(k - j * longueur / (NA - 1), 0, 1);
+          p.copy(chemin(kj));
+          T.copy(chemin(Math.min(1, kj + 0.004))).sub(chemin(Math.max(0, kj - 0.004))).normalize();
+          N1.crossVectors(T, haut).normalize();
+          N2.crossVectors(N1, T);
+          p.addScaledVector(N1, Math.sin(j * 0.25 - t * 3) * 0.7 * j / NA);   // le corps ondule
+          for (let i = 0; i <= NR; i++) {
+            const a = i / NR * Math.PI * 2, ca = Math.cos(a) * rayons[j], sa = Math.sin(a) * rayons[j];
+            const o = (j * (NR + 1) + i) * 3;
+            sommets[o] = p.x + N1.x * ca + N2.x * sa;
+            sommets[o + 1] = p.y + N1.y * ca + N2.y * sa;
+            sommets[o + 2] = p.z + N1.z * ca + N2.z * sa;
+          }
+          if (j === 0) { tete.position.copy(p); tete.lookAt(p.x + T.x, p.y + T.y, p.z + T.z); }
+        }
+        corps.geometry.attributes.position.needsUpdate = true;
+        corps.geometry.computeVertexNormals();
+      } else {
+        const kk = Math.min(1, k);
+        ver.position.copy(chemin(kk));
+        ver.lookAt(chemin(Math.min(1, kk + 0.01)));
+      }
+      if (!sortieFaite && k > 0.05) { sortieFaite = true; gerbe(trouSortie, 220); }
+      if (!entreeFaite && k > 0.95) { entreeFaite = true; gerbe(trouEntree, 220); }
+      // le sable coule tant que le corps passe dans les trous
+      if (k > 0.05 && k < 0.05 + longueur) gerbe(trouSortie, Math.ceil(dt * 90));
+      if (k > 0.95 && k < 0.95 + longueur) gerbe(trouEntree, Math.ceil(dt * 90));
+    }
+    for (let i = 0; i < N * 3; i += 3) {
+      vit[i + 1] -= 18 * dt;
+      pos[i] += vit[i] * dt; pos[i + 1] += vit[i + 1] * dt; pos[i + 2] += vit[i + 2] * dt;
+      const sol = h(pos[i], pos[i + 2]);
+      if (pos[i + 1] < sol) { pos[i + 1] = sol - 50; vit[i] = vit[i + 1] = vit[i + 2] = 0; }
+    }
+    gSable.attributes.position.needsUpdate = true;
+  });
+}
+
+// ---- 3. Site de largage
+
+async function largage(L) {
+  const s = L.scene;
+  // le ciel HDR n'éclaire que la scène ; le ciel visible est un dôme de cendre rougeoyant
+  if (await existe('largage/ciel/belfast_sunset_puresky_2k.hdr')) await cielHdr(s, 'largage/ciel/belfast_sunset_puresky_2k.hdr', 1, false, 0.35);
+  else await cielHdr(s, 'largage/ciel/the_sky_is_on_fire_2k.hdr', 1, false, 0.35);
+  s.add(domeCiel(0x5a2418, 0x120607, 0xff6a3a));
+  s.fog = new THREE.FogExp2(0x3b2622, 0.0115);
+  const dirNaine = new V3(0.7, 0.13, -1);
+  const naine = soleil(0xff5a2a, 260);
+  naine.position.copy(dirNaine).normalize().multiplyScalar(900);
+  s.add(naine);
+  const l = lumiereSoleil(0xff7a4a, 1.6, dirNaine, true, 50);
+  s.add(l, l.target, new THREE.HemisphereLight(0x6a4a44, 0x140a08, 0.35));
+
+  // cratère d'impact
+  const h = (x, z) => {
+    const d = Math.hypot(x, z);
+    return (fbm(x * 0.03, z * 0.03) - 0.5) * 4 - 4.5 * Math.exp(-Math.pow(d / 9, 2)) + 1.8 * Math.exp(-Math.pow((d - 13) / 4, 2)) + (fbm(x * 0.3, z * 0.3, 2) - 0.5) * 0.35;
+  };
+  L.hauteur = h;
+  s.add(terrain(500, 240, h, materiauPH('largage/textures', 'burned_ground_01', 45, '2k', { color: 0x8a7e78 })));
+
+  // braises au fond du cratère
+  const lave = new THREE.MeshStandardMaterial({
+    map: texture('largage/textures/Lava004/Lava004_1K-JPG_Color.jpg'), emissiveMap: texture('largage/textures/Lava004/Lava004_1K-JPG_Emission.jpg'),
+    emissive: new THREE.Color(0xff5a1e), emissiveIntensity: 2.2, roughness: 0.9, transparent: true, opacity: 0.95,
+  });
+  const fond = new THREE.Mesh(new THREE.CircleGeometry(6.5, 48), lave);
+  fond.rotation.x = -Math.PI / 2;
+  fond.position.y = h(0, 0) + 0.25;
+  s.add(fond);
+  const lumLave = new THREE.PointLight(0xff6a2a, 7, 22, 1.8);
+  lumLave.position.set(-1.5, h(0, 0) + 0.5, 3.5);
+  s.add(lumLave);
+
+  // la capsule (module lunaire NASA), encore brûlante, penchée
+  const capsule = await modele('largage/nasa/module-lunaire.glb', { taille: 7 });
+  if (capsule) {
+    capsule.position.set(0.5, h(0, 0) - 0.6, -0.5);
+    capsule.rotation.set(0.1, 0.6, -0.14);
+    capsule.traverse(o => { if (o.isMesh && o.material) { o.material = o.material.clone(); o.material.emissive = new THREE.Color(0x1a0602); } });
+    s.add(capsule);
+  }
+  const epave = await modele('largage/nasa/atterrisseur-viking.glb', { taille: 3.2, mesure: 'max' });
+  if (epave) { epave.position.set(-9, h(-9, 12) - 0.4, 12); epave.rotation.set(0.25, 2.2, 0.18); s.add(epave); }
+
+  // balise d'extraction : faisceau cyan
+  const B = new V3(-38, 0, -26);
+  B.y = h(B.x, B.z);
+  const faisceau = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.9, 500, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0x66e8ff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  faisceau.position.set(B.x, B.y + 250, B.z);
+  const socle = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.2, 1.4, 12), new THREE.MeshStandardMaterial({ color: 0x3a3d44, metalness: 0.7, roughness: 0.4 }));
+  socle.position.set(B.x, B.y + 0.7, B.z);
+  const lumBalise = new THREE.PointLight(0x66e8ff, 40, 25, 1.6);
+  lumBalise.position.set(B.x, B.y + 2, B.z);
+  s.add(faisceau, socle, lumBalise);
+
+  // statues géantes dans la brume
+  for (const [a, d, t] of [[-0.6, 95, 30], [0.25, 120, 36], [1.1, 85, 26]]) {
+    const st = await modele('largage/polyhaven/gothic_statue/gothic_statue_1k.gltf', { taille: t });
+    if (!st) break;
+    const x = Math.sin(a) * d, z = -Math.cos(a) * d;
+    st.position.set(x, h(x, z) - 1.5, z);
+    st.lookAt(0, st.position.y, 0);
+    s.add(st);
+  }
+
+  // braises qui montent et fumée
+  const N = 700;
+  const pos = new Float32Array(N * 3), vit = new Float32Array(N);
+  for (let i = 0; i < N; i++) { pos[i * 3] = entre(-7, 7); pos[i * 3 + 1] = h(0, 0) + entre(0, 30); pos[i * 3 + 2] = entre(-7, 7); vit[i] = entre(1, 4); }
+  const gBraises = new THREE.BufferGeometry();
+  gBraises.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const braises = new THREE.Points(gBraises, new THREE.PointsMaterial({ color: 0xff8a3a, size: 0.18, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  s.add(braises);
+  const fumee = [];
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x2 = c.getContext('2d'), g = x2.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(255,255,255,0.5)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  x2.fillStyle = g; x2.fillRect(0, 0, 128, 128);
+  const texFumee = new THREE.CanvasTexture(c);
+  for (let i = 0; i < 28; i++) {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: texFumee, color: 0x4a403c, transparent: true, opacity: 0.5, depthWrite: false }));
+    s.add(sp);
+    fumee.push({ sp, t: i / 28 });
+  }
+  L.animer.push((t, dt) => {
+    for (let i = 0; i < N; i++) {
+      pos[i * 3 + 1] += vit[i] * dt;
+      pos[i * 3] += Math.sin(t * 0.7 + i) * dt * 0.6;
+      if (pos[i * 3 + 1] > h(0, 0) + 34) { pos[i * 3] = entre(-6, 6); pos[i * 3 + 1] = h(0, 0); pos[i * 3 + 2] = entre(-6, 6); }
+    }
+    gBraises.attributes.position.needsUpdate = true;
+    for (const f of fumee) {
+      f.t = (f.t + dt * 0.04) % 1;
+      f.sp.position.set(Math.sin(f.t * 5 + f.t * 40) * 2 + f.t * 8, h(0, 0) + 2 + f.t * 26, Math.cos(f.t * 31) * 2 - f.t * 4);
+      f.sp.scale.setScalar(3 + f.t * 16);
+      f.sp.material.opacity = 0.45 * Math.sin(f.t * Math.PI);
+    }
+    lave.emissiveIntensity = 1.8 + 0.6 * Math.sin(t * 2.3) + 0.3 * Math.sin(t * 5.1);
+    lumLave.intensity = 6 + 2 * Math.sin(t * 2.3);
+    faisceau.material.opacity = 0.4 + 0.2 * Math.sin(t * 3);
+  });
+
+  const a = await arpenteur();
+  if (a) { a.position.set(11, h(11, 6), 6); a.lookAt(0, a.position.y, 0); s.add(a); }
+}
+
+// ---- 4. Champ d'anneaux
+
+async function anneaux(L) {
+  const s = L.scene;
+  s.add(voieLactee(4000, 0.75));
+  const dirSoleil = new V3(1, 0.45, 0.35);
+  const sol = lumiereSoleil(0xfff4e6, 3.2, dirSoleil, true, 45);
+  s.add(sol, sol.target, new THREE.HemisphereLight(0xffb27a, 0x101624, 0.35));
+  const astre = soleil(0xfff2dc, 160);
+  astre.position.copy(dirSoleil).normalize().multiplyScalar(3000);
+  s.add(astre);
+
+  // géante gazeuse, atmosphère et anneaux
+  const P = new V3(-700, 180, -1800), R = 480;
+  const planete = new THREE.Mesh(new THREE.SphereGeometry(R, 128, 64), new THREE.MeshStandardMaterial({ map: texture('anneaux/planetes/geante_gazeuse_8k.jpg'), roughness: 1, metalness: 0, fog: false }));
+  planete.position.copy(P);
+  planete.rotation.z = 0.35;
+  s.add(planete);
+  const atmo = new THREE.Mesh(new THREE.SphereGeometry(R * 1.035, 96, 48), new THREE.ShaderMaterial({
+    transparent: true, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false,
+    uniforms: { uSoleil: { value: dirSoleil.clone().normalize() } },
+    vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 m = modelMatrix * vec4(position, 1.0); vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - m.xyz); gl_Position = projectionMatrix * viewMatrix * m; }`,
+    fragmentShader: `uniform vec3 uSoleil; varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1.0 - abs(dot(vN, vV)), 5.0); float j = clamp(dot(-vN, uSoleil) * 0.7 + 0.3, 0.0, 1.0); gl_FragColor = vec4(vec3(1.0, 0.75, 0.5) * f * j * 0.7, 1.0); }`,
+  }));
+  atmo.position.copy(P);
+  s.add(atmo);
+  const gAnneaux = new THREE.RingGeometry(R * 1.25, R * 2.3, 256, 1);
+  const p = gAnneaux.attributes.position, uv = gAnneaux.attributes.uv;
+  for (let i = 0; i < p.count; i++) {
+    const r = Math.hypot(p.getX(i), p.getY(i));
+    uv.setXY(i, (r - R * 1.25) / (R * 1.05), 0.5);
+  }
+  const matAnneaux = new THREE.MeshStandardMaterial({ map: texture('anneaux/planetes/anneaux_alpha_8k.png'), side: THREE.DoubleSide, transparent: true, roughness: 1, metalness: 0, fog: false, depthWrite: false });
+  const disque = new THREE.Mesh(gAnneaux, matAnneaux);
+  disque.position.copy(P);
+  disque.rotation.set(-Math.PI / 2 + 0.32, 0, 0.35);
+  s.add(disque);
+  L.animer.push((t) => { planete.rotation.y = t * 0.01; });
+
+  // plateforme : un gros astéroïde aplati, l'avant-poste dessus
+  const h = (x, z) => {
+    const d = Math.hypot(x, z);
+    return (fbm(x * 0.06, z * 0.06) - 0.5) * 1.6 - Math.pow(Math.max(0, d - 32 - fbm(x * 0.05, z * 0.05) * 10), 1.3) * 1.2;
+  };
+  L.hauteur = h;
+  s.add(terrain(110, 160, h, materiauPH('horizon/textures', 'dark_rock_02', 10, '2k', { color: 0x8c8a90 })));
+  const dessous = await modele('anneaux/polyhaven/moon_rock_06/moon_rock_06_1k.gltf', { taille: 110, mesure: 'max' });
+  if (dessous) { dessous.position.set(0, -52, 0); dessous.rotation.x = Math.PI; s.add(dessous); }
+
+  const habitat = await modele('anneaux/nasa/habitat.glb', { taille: 10, mesure: 'max' });
+  if (habitat) { habitat.position.set(-8, h(-8, -6) - 0.2, -6); habitat.rotation.y = 0.5; s.add(habitat); }
+  const antenne = await modele('anneaux/nasa/antenne-parabolique.glb', { taille: 16 });
+  if (antenne) { antenne.position.set(10, h(10, -14) - 0.3, -14); antenne.rotation.y = -0.9; s.add(antenne); }
+  const feu = new THREE.PointLight(0xff3020, 0, 20, 1.6);
+  feu.position.set(10, h(10, -14) + 16.5, -14);
+  s.add(feu);
+  L.animer.push((t) => { feu.intensity = (t % 1.6) < 0.15 ? 60 : 0; });
+
+  // champ d'astéroïdes
+  const ids = ['moon_rock_06', 'moon_rock_07'];
+  for (let i = 0; i < 90; i++) {
+    const id = ids[i % 2];
+    const r = await modele(`anneaux/polyhaven/${id}/${id}_1k.gltf`, { taille: entre(1, i < 10 ? 22 : 9), mesure: 'max', ombres: false });
+    if (!r) continue;
+    const a = entre(0, Math.PI * 2), d = entre(60, 520);
+    r.position.set(Math.cos(a) * d, entre(-60, 90), Math.sin(a) * d);
+    r.rotation.set(entre(0, 6), entre(0, 6), entre(0, 6));
+    const spin = new V3(entre(-0.08, 0.08), entre(-0.08, 0.08), entre(-0.08, 0.08)), orbite = entre(0.002, 0.008), a0 = a, d0 = d, y0 = r.position.y;
+    L.animer.push((t, dt) => {
+      r.rotation.x += spin.x * dt; r.rotation.y += spin.y * dt; r.rotation.z += spin.z * dt;
+      const aa = a0 + t * orbite;
+      r.position.set(Math.cos(aa) * d0, y0, Math.sin(aa) * d0);
+    });
+    s.add(r);
+  }
+
+  // l'Arpenteur saute lentement (0,3 g)
+  const a = await arpenteur();
+  if (a) {
+    const base = new V3(4, h(4, 6), 6);
+    a.position.copy(base);
+    a.rotation.y = -0.6;
+    s.add(a);
+    const g = 0.3 * 9.81, v0 = 3.4, vol = 2 * v0 / g, cycle = vol + 1.4;
+    L.animer.push((t) => {
+      const c = t % cycle;
+      const z = c < vol ? v0 * c - 0.5 * g * c * c : 0;
+      const avance = Math.min(c, vol) / vol;
+      a.position.set(base.x, base.y + z, base.z);
+      a.rotation.x = c < vol ? -0.12 * Math.sin(avance * Math.PI) : 0;
+    });
+  }
+}
+
+// ------------------------------------------------------------------ interface et boucle
+
+// chaque lieu garde ses propres notes ; seules celles du lieu affiché sont visibles
+const notes = new Map();
+let enConstruction = null;
+function note(texte) {
+  const L = enConstruction || actif;
+  if (!notes.has(L)) notes.set(L, new Set());
+  notes.get(L).add(texte);
+  afficherNotes();
+}
+function afficherNotes() {
+  const liste = [...(notes.get(actif) || [])];
+  if (absents.size) liste.push(`Fichiers absents (relancer telecharger-vitrine.sh) : ${[...absents].slice(0, 4).join(', ')}${absents.size > 4 ? '…' : ''}`);
+  $('#notes').innerHTML = liste.map(t => `<div>${t}</div>`).join('');
+}
+
+let actif = null;
+const horloge = new THREE.Clock();
+
+async function ouvrir(i) {
+  const L = LIEUX[i];
+  document.querySelectorAll('#onglets button').forEach((b, k) => b.classList.toggle('actif', k === i));
+  $('#titre h1').textContent = L.nom;
+  $('#titre .surtitre').textContent = `Échos d'Éther · ${L.sous}`;
+  $('#titre p').textContent = L.texte;
+  if (actif) actif.controles.enabled = false;
+  if (!L.scene) {
+    $('#chargement').classList.remove('cache');
+    $('#chargement .barre i').style.width = '0%';
+    L.scene = new THREE.Scene();
+    L.animer = [];
+    L.camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 8000);
+    L.camera.position.set(...L.vue);
+    L.controles = new OrbitControls(L.camera, renderer.domElement);
+    L.controles.target.set(...L.cible);
+    L.controles.enableDamping = true;
+    L.controles.maxDistance = 400;
+    L.controles.minDistance = 2;
+    L.controles.maxPolarAngle = Math.PI * 0.53;
+    L.controles.enabled = false;
+    enConstruction = L;
+    try { await L.construire(L); }
+    catch (e) { console.error(e); note(`Erreur dans « ${L.nom} » : ${e.message}`); }
+    enConstruction = null;
+    L.controles.update();
+  }
+  actif = L;
+  L.ouvert = horloge.elapsedTime;
+  L.controles.enabled = true;
+  passeRendu.scene = L.scene;
+  passeRendu.camera = L.camera;
+  renderer.toneMappingExposure = L.exposition;
+  bloom.strength = L.bloom;
+  passeLentille.enabled = !!L.trouNoir;
+  afficherNotes();
+  $('#chargement').classList.add('cache');
+}
+
+LIEUX.forEach((L, i) => {
+  const b = document.createElement('button');
+  b.textContent = `${i + 1} · ${L.nom}`;
+  b.onclick = () => ouvrir(i);
+  $('#onglets').append(b);
+});
+addEventListener('keydown', e => { const n = Number(e.key); if (n >= 1 && n <= LIEUX.length) ouvrir(n - 1); });
+
+$('#btnCredits').onclick = async () => {
+  const c = $('#credits');
+  c.hidden = !c.hidden;
+  if (!c.hidden && !c.dataset.charge) {
+    c.dataset.charge = '1';
+    let texte = '';
+    try { const r = await fetch(url('CREDITS.txt')); texte = r.ok ? await r.text() : ''; } catch { }
+    c.querySelector('pre').textContent = (texte || 'CREDITS.txt introuvable : relancer outils/telecharger-vitrine.sh.') +
+      '\n\nRendu : Three.js (licence MIT). Trou noir et lentille gravitationnelle : maquette d\'Échos d\'Éther.';
+  }
+};
+
+addEventListener('resize', () => {
+  for (const L of LIEUX) if (L.camera) { L.camera.aspect = innerWidth / innerHeight; L.camera.updateProjectionMatrix(); }
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+const tmp = new V3();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(horloge.getDelta(), 0.05), t = horloge.elapsedTime;
+  if (!actif) return;
+  for (const f of actif.animer) f(t, dt);
+  actif.controles.update();
+  if (actif.trouNoir) {
+    const cam = actif.camera;
+    tmp.copy(actif.trouNoir.pos).project(cam);
+    const devant = tmp.z < 1 && tmp.z > -1;
+    const d = cam.position.distanceTo(actif.trouNoir.pos);
+    const u = passeLentille.uniforms;
+    u.uCentre.value.set(tmp.x * 0.5 + 0.5, tmp.y * 0.5 + 0.5);
+    u.uRayon.value = devant ? (actif.trouNoir.rayon / d) / (2 * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2)) : 0.0001;
+    u.uAspect.value = cam.aspect;
+    passeLentille.enabled = devant;
+  }
+  composer.render();
+});
+
+ouvrir(0);
+</script>
+</body>
+</html>

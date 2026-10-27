@@ -139,6 +139,18 @@ curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-et
 Avec un token Sketchfab gratuit (`SKETCHFAB_TOKEN=... ` devant `bash`), il ajoute le ver des sables animé, un astronaute animé, des capsules, une statue, des astéroïdes et une antenne.
 Les modèles Kenney (CC0) sont aussi rangés dans `maquette/modeles/` : le script s'en sert si le site de Kenney refuse le téléchargement.
 
+`vitrine/vitrine-modeles.html` montre ces modèles dans les 4 lieux de la vitrine : L'Horizon, Le Tombeau et le Léviathan, Site de largage, Champ d'anneaux.
+Elle les charge avec GLTFLoader (et DRACOLoader pour l'astronaute compressé), éclaire chaque lieu avec son ciel .hdr (RGBELoader) et affiche `CREDITS.txt`.
+Pose-la à côté du dossier `models`, puis sers le dossier :
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/vitrine-modeles.html -o ~/jeu/vitrine/vitrine-modeles.html
+cd ~/jeu/vitrine && python3 -m http.server 8765
+```
+
+Ouvre ensuite `http://localhost:8765/vitrine-modeles.html`. Les touches 1 à 4 changent de lieu. Pour lire un autre dossier de modèles, ajoute `?models=autre/dossier/` à l'adresse.
+S'il manque des fichiers, la vitrine s'affiche quand même et les liste en bas à gauche. Sans token Sketchfab, le ver des sables est généré par le code.
+
 ## Maquette jouable (navigateur)
 
 `maquette/echos-ether.html` : prototype WebGL (Three.js) de la Phase 1, publié comme Artifact claude.ai.
