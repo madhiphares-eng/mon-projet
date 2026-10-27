@@ -126,6 +126,19 @@ X récolter / interagir, Y scanner, Select journal, Start pause, croix droite pa
 Combat à la manette : gâchette droite tirer, gâchette gauche viser, croix gauche recharger, croix haut/bas changer d'arme, LB grenade, RB compétence, R3 coup.
 Les menus se règlent à la souris.
 
+## Modèles 3D pour une vitrine web (Mac ou Linux)
+
+`outils/telecharger-vitrine.sh` télécharge un pack léger (environ 175 Mo, sans rien installer) de modèles, textures et ciels libres,
+au format web (.glb, .gltf, .jpg, .hdr), rangés par lieu : `commun`, `horizon`, `dunes`, `largage`, `anneaux`.
+Le fichier `modeles.json` décrit chaque fichier (lieu, rôle, taille conseillée, licence) et `CREDITS.txt` liste les crédits.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/telecharger-vitrine.sh | bash -s -- ~/jeu/vitrine/models
+```
+
+Avec un token Sketchfab gratuit (`SKETCHFAB_TOKEN=... ` devant `bash`), il ajoute le ver des sables animé, un astronaute animé, des capsules, une statue, des astéroïdes et une antenne.
+Les modèles Kenney (CC0) sont aussi rangés dans `maquette/modeles/` : le script s'en sert si le site de Kenney refuse le téléchargement.
+
 ## Maquette jouable (navigateur)
 
 `maquette/echos-ether.html` : prototype WebGL (Three.js) de la Phase 1, publié comme Artifact claude.ai.

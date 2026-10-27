@@ -662,12 +662,25 @@
         Etape '[+] armes : blaster-kit' {
             $d = Join-Path $Ext 'Modeles\Kenney\blaster-kit'
             if (Test-Path -LiteralPath $d) { return }
-            $page = Invoke-WebRequest -Uri 'https://kenney.nl/assets/blaster-kit' -UseBasicParsing
-            $m = [regex]::Match($page.Content, 'https://kenney\.nl/media/pages/assets/[^"''\s]+\.zip')
-            if (-not $m.Success) { throw 'lien du zip introuvable sur https://kenney.nl/assets/blaster-kit' }
             $zip = Join-Path $Tmp 'blaster-kit.zip'
             $tmpd = Join-Path $Tmp 'blaster-kit'
-            if (Telecharger $m.Value $zip) {
+            $lien = $null
+            try {
+                $page = Invoke-WebRequest -Uri 'https://kenney.nl/assets/blaster-kit' -UseBasicParsing
+                $m = [regex]::Match($page.Content, 'https://kenney\.nl/media/pages/assets/[^"''\s]+\.zip')
+                if ($m.Success) { $lien = $m.Value }
+            } catch { }
+            if (-not $lien -or -not (Telecharger $lien $zip)) {
+                # repli : copies CC0 rangees dans le depot du jeu (Kenney autorise la redistribution)
+                Write-Host '    site Kenney indisponible : copies du depot du jeu'
+                $depot = 'https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/maquette/modeles/kenney-blaster-kit'
+                foreach ($f in 'blaster-a.glb', 'blaster-d.glb', 'blaster-e.glb', 'blaster-l.glb', 'grenade-a.glb', 'grenade-b.glb', 'LICENCE.txt') {
+                    [void](Telecharger "$depot/$f" (Join-Path $d $f))
+                }
+                [void](Telecharger 'https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/maquette/modeles/kenney-blaster-kit/Textures/colormap.png' (Join-Path $d 'Textures\colormap.png'))
+                return
+            }
+            if (Test-Path -LiteralPath $zip) {
                 Extraire $zip $tmpd
                 New-Item -ItemType Directory -Force -Path $d | Out-Null
                 Copy-Item -Path (Join-Path $tmpd 'Models\GLB format\*') -Destination $d -Recurse -Force
