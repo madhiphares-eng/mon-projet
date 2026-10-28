@@ -56,6 +56,59 @@ Puis ouvrir http://localhost:8766/galerie-prologue.html (flèches ← → pour p
 Chaque modèle a son `LICENCE.txt`. Les crédits à citer dans le jeu sont regroupés dans `CREDITS-PROLOGUE.txt`, à la racine du projet.
 On peut relancer le script sans risque : ce qui est déjà téléchargé est sauté.
 
+## Autres sites gratuits, en complément
+
+Sketchfab n'est pas la seule source. Voici les autres sites gratuits utilisables dans un jeu vendu, vérifiés le 28 octobre 2026 :
+
+| Site | Ce qu'il apporte | Licence | Comment récupérer |
+|---|---|---|---|
+| [BlenderKit](https://www.blenderkit.com) | Plus de 50 000 modèles gratuits, beaucoup réalistes : humains scannés, coursives, cockpits | CC0 ou *Royalty Free* : jeu vendu permis, sans revendre les fichiers | Compte gratuit, module BlenderKit dans Blender, puis export en .glb ou .fbx (le Claude du PC peut le faire avec Blender MCP) |
+| [Fab](https://www.fab.com) (Epic) | 3 packs offerts toutes les deux semaines, gardés pour toujours | Fab Standard : n'importe quel moteur, jeu vendu permis | Compte Epic gratuit ; vérifier que le pack a une version Unity ou FBX |
+| [Mixamo](https://www.mixamo.com) | Personnages avec squelette et des centaines d'animations | Gratuit, usage commercial permis | Compte Adobe gratuit |
+| [KitBash3D, Mission to Minerva](https://kitbash3d.com) | 90 pièces sci-fi à assembler (bâtiments, machines, véhicules), versions Unity | Gratuit, usage commercial permis pour un particulier | Compte gratuit |
+| [Smithsonian 3D](https://3d.si.edu) | Scans d'objets réels, dont du matériel spatial | CC0 | Téléchargement direct (filtre *Open Access*) |
+| CGTrader, TurboSquid (modèles gratuits) | Beaucoup de choix | **Variable selon le modèle** : lire la licence de chacun | Compte gratuit |
+
+Le Unity Asset Store a peu d'intérieurs HDRP gratuits : les bons packs de vaisseau sont payants.
+
+### Les meilleures trouvailles sur BlenderKit pour le prologue
+
+Gratuites, classées « réalistes » par BlenderKit. Les franchises (Star Wars, Marvel) ont été écartées. Leurs aperçus ne s'affichent pas depuis mon serveur : regarde-les sur le site avant de les prendre.
+
+**Le héros, version réaliste (à habiller en détenu dans Blender)**
+- [Andrew](https://www.blenderkit.com/asset-gallery-detail/16e03125-959b-4312-8e8a-a7cb23bf3a1c/) par Kyb3r Project · Royalty Free · 353 303 faces · 92.8 Mo
+- [John](https://www.blenderkit.com/asset-gallery-detail/5b9f74d4-b81c-436c-a68d-535c197b6d9f/) par Kyb3r Project · Royalty Free · 310 231 faces · 87.9 Mo
+- [Luke](https://www.blenderkit.com/asset-gallery-detail/4bea31a4-e972-4bb9-a62b-4d1b9093d66e/) par Kyb3r Project · Royalty Free · 127 695 faces · 42.6 Mo
+
+**Détenus réalistes**
+- [Wenceslavus](https://www.blenderkit.com/asset-gallery-detail/07e5514f-012e-4989-a9c6-04a977531679/) par Kyb3r Project · Royalty Free · 155 017 faces · 59.3 Mo
+- [Koky](https://www.blenderkit.com/asset-gallery-detail/62993eba-1768-46e1-9a7d-712e0ef109fb/) par Kyb3r Project · Royalty Free · 331 804 faces · 83.4 Mo
+- [Male base mesh](https://www.blenderkit.com/asset-gallery-detail/77c9f1c3-07e5-4b8f-952b-a417eac763c2/) par Texture Wizard · CC0 · 57 232 faces · 17.7 Mo
+
+**Coursives et portes**
+- [Sci-Fi airlock corridor](https://www.blenderkit.com/asset-gallery-detail/ecded75f-d5d7-4d40-bbc8-2d20e7f97fc4/) par diaverx miky · Royalty Free · 873 faces · 20.9 Mo
+- [Sci-Fi Passage](https://www.blenderkit.com/asset-gallery-detail/fb12097b-20cf-4b55-b899-5713d9e78ecf/) par diaverx miky · Royalty Free · 2 337 faces · 106.0 Mo
+- [Scifi Corridor](https://www.blenderkit.com/asset-gallery-detail/8ece883c-0a0c-4dd8-9137-af8d50a76041/) par ibotpl · Royalty Free · 2 115 faces · 30.4 Mo
+- [Sci fi Corridor](https://www.blenderkit.com/asset-gallery-detail/afd8ea41-5b70-47c2-8bfd-1043e41aa9ef/) par Yasin Gohary · Royalty Free · 9 529 faces · 37.3 Mo
+- [Scifi tunnel](https://www.blenderkit.com/asset-gallery-detail/262165f9-1790-43de-9841-76b21eb055d7/) par diaverx miky · Royalty Free · 13 878 faces · 386.0 Mo
+- [Sci-Fi Doors for Research Lab](https://www.blenderkit.com/asset-gallery-detail/2055df98-d2e2-49ca-9a6b-ef18eb704faa/) par Nobody · Royalty Free · 32 278 faces · 36.3 Mo
+
+**Salle informatique**
+- [Futuristic Server Room with Displays](https://www.blenderkit.com/asset-gallery-detail/6ce2b713-b6b6-406f-b16d-84030c0f3b77/) par OuterSpaceSimon · Royalty Free · 68 722 faces · 47.3 Mo
+
+**Cockpit de la navette volée**
+- [Spacecraft/Plane Cockpit+Seat](https://www.blenderkit.com/asset-gallery-detail/c32f0357-1a7d-43c1-9d32-ca3a6798c5bf/) par OuterSpaceSimon · Royalty Free · 342 769 faces · 94.4 Mo
+
+**Vaisseaux**
+- ["The Nomad" Spaceship with Interior | RIGGED](https://www.blenderkit.com/asset-gallery-detail/4417107a-abaa-4a46-b422-5172c1008b8f/) par OuterSpaceSimon · Royalty Free · 698 049 faces · 863.1 Mo
+- [Heavy Space Cruise Ship](https://www.blenderkit.com/asset-gallery-detail/024e24a9-5749-413f-8d02-b931750bcc45/) par Alexander Novgorodtsev · Royalty Free · 16 549 faces · 33.4 Mo
+
+**Armes et sanitaires**
+- [Sci-fi rifle](https://www.blenderkit.com/asset-gallery-detail/d5a0188a-7a2c-4272-b134-9484a76a2e0d/) par Eleanie · Royalty Free · 33 267 faces · 36.8 Mo
+- [Wall hung toilet](https://www.blenderkit.com/asset-gallery-detail/23f38727-187c-4e74-8bdc-7aaa3529d754/) par Agustin Paternoster · Royalty Free · 4 583 faces · 1.5 Mo
+
+Les humains de Kyb3r Project sont la piste pour remplacer la tenue de détenu provisoire par un héros réaliste : il faudra sans doute les habiller en détenu dans Blender, puis leur poser un squelette avec Mixamo. Certains décors très légers (moins de 3 000 faces pour une coursive) sont probablement générés par des nœuds Blender : il faut les « appliquer » avant l'export.
+
 ## Déjà sur ton PC (téléchargé le 23 octobre)
 
 Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
