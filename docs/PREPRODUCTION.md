@@ -91,7 +91,9 @@ Les trois camps se battent aussi entre eux. Le joueur peut s'en servir : attirer
 | 3. Récupérer l'équipement | Le hangar est coupé du reste par des sections éventrées par les pirates, donc ouvertes sur le vide. Il faut **une combinaison**, rangée dans la **chambre des reliques** du laboratoire. **C'est la sienne : une combinaison de Veilleur des Bâtisseurs**, couverte de glyphes qu'il lit sans comprendre pourquoi. Sa capsule de sommeil est là, elle aussi. | Chemins multiples, discrétion ou combat, piratage de portes |
 | 4. Le vide | Avec la combinaison, il traverse les sections ouvertes et **la coque extérieure** : bottes magnétiques, apesanteur, oxygène limité, et le silence total du vide (on n'entend que sa respiration et ce qui passe par la coque). | Sortie dans l'espace, gestion de l'air, nouvelles règles du bruit |
 | 5. Le hangar | Seule sortie vers les navettes : les pirates y ont amarré leur vaisseau et les gardes s'y retranchent. **Pas de compte à rebours** : le joueur prend le temps de choisir comment passer. Combat entre gardes et pirates, sas qu'on peut ouvrir sur le vide pour aspirer les ennemis. Il faut démarrer une navette. | Combat sous pression, se servir du décor |
-| 6. L'hyperespace | Fuite sous le feu des tourelles, puis le saut en hyperespace. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
+| 6. L'hyperespace | Fuite sous le feu des tourelles, puis le passage en hyperespace : la navette atteint la vitesse de la lumière, les étoiles s'étirent en traits. Ce voyage cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
+
+**Le plan du niveau** : [`prologue/plan-vaisseau-prison.svg`](prologue/plan-vaisseau-prison.svg) (sections, coursives, conduits, sorties dans le vide, camps).
 
 **Zones facultatives** dans le vaisseau : une arme meilleure, des prisonniers à libérer, et surtout **des indices sur son identité**. Le joueur curieux en apprend plus que celui qui fonce.
 
@@ -139,7 +141,7 @@ Après le prologue, le joueur se balade **où il veut dans la galaxie, dans l'or
 - **On progresse par le savoir, pas par les objets.** Le Cœur de l'Écho n'est pas fermé à clé : il est **caché**. On ne peut le trouver qu'en ayant assez compris (des coordonnées reconstituées, des glyphes déchiffrés). Comme dans *Outer Wilds*, un joueur qui sait peut y aller très tôt.
 - **Une carte des souvenirs** relie les pièces trouvées et montre les pistes ouvertes. Le joueur voit ce qu'il ne comprend pas encore et choisit quelle piste suivre.
 - **Le danger varie selon les régions** : zones contrôlées par l'empire, territoires pirates, mondes sauvages. On peut aller partout, mais pas partout sans risque.
-- **Le voyage a un prix.** Les vaisseaux de l'empire sautent en brûlant de l'Éther. Au début, le joueur aussi. Plus tard, il découvre qu'il brûle son propre peuple, et qu'il peut voyager autrement : par les relais des Bâtisseurs, qu'il réveille un à un. Le gameplay rejoint l'histoire.
+- **Le voyage a un prix.** Les vaisseaux de l'empire passent en hyperespace en brûlant de l'Éther. Au début, le joueur aussi. Plus tard, il découvre qu'il brûle son propre peuple, et qu'il peut voyager autrement : par les relais des Bâtisseurs, qu'il réveille un à un. Le gameplay rejoint l'histoire.
 
 ### Un univers sans fin, comme *No Man's Sky*
 
@@ -150,7 +152,7 @@ Décidé le 28 octobre 2026 : le nombre de galaxies importe peu. Ce qui compte, 
 - **La chaîne de génération** : relief, puis maillage, puis textures, puis peuplement (roches, plantes, animaux, ruines, bases), puis simulation. Tout se fait en continu, en arrière-plan, pendant que le joueur avance (Jobs et Burst dans Unity).
 - **Des planètes rondes à niveaux de détail** : seul le terrain proche du joueur est détaillé. La maquette web avait déjà une planète de ce type, et le projet Unity a déjà une gravité sphérique.
 - **Une origine flottante** : le monde se recentre en permanence autour du joueur, sinon les distances immenses font trembler l'image (limite de précision des nombres).
-- **Du sol à l'espace sans écran de chargement** : on vole en continu de la surface à l'orbite. Entre deux systèmes, l'hyperespace est une courte séquence qui cache le chargement, comme dans *Star Wars Outlaws*.
+- **Du sol à l'espace sans écran de chargement** : on vole en continu de la surface à l'orbite. Entre deux systèmes, on passe en **hyperespace** : le vaisseau atteint la vitesse de la lumière, les étoiles s'étirent en traits, et ce voyage de quelques secondes cache le chargement du système d'arrivée (comme dans *Star Wars Outlaws*). Détails dans [`UNIVERS-TECHNIQUE.md`](UNIVERS-TECHNIQUE.md).
 - **Peupler l'infini avec peu de moyens** : un nombre limité de pièces de qualité (rochers, plantes, bâtiments, textures Poly Haven et ambientCG), combinées et variées par la graine. Mieux vaut moins de types de biomes, mais beaux.
 
 **L'histoire dans un univers infini**
@@ -493,9 +495,23 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - **la vérité : l'Ancien** (voir [L'histoire retenue](#lhistoire-retenue--lancien)) ;
 - **un univers sans fin** que l'on parcourt sans s'arrêter, comme *No Man's Sky* : planètes générées par graine, plus une dizaine de mondes-clés faits main pour l'histoire.
 
-**Encore à décider** :
-1. **Que fait-on dans l'univers, en plus de l'histoire ?** Parmi les systèmes de *No Man's Sky* : améliorer son vaisseau, récolter et fabriquer, commercer, scanner et répertorier la faune et la flore, construire des bases, changer de vaisseau. Proposition de départ : vaisseau à améliorer, scanner, récolte légère, commerce simple. Les bases plus tard.
-2. **Les noms** : Bâtisseurs, Veilleur, la Conservatrice, à garder ou à changer.
+- **en plus de l'histoire** : améliorer son vaisseau, scanner, récolte légère et commerce simple. Les bases viendront plus tard ;
+- on garde **les noms** : les Bâtisseurs, le Veilleur, la Conservatrice ;
+- **l'hyperespace**, c'est voyager à la vitesse de la lumière (et au-delà) entre les systèmes.
+
+**La préproduction est bouclée.** Prochaine étape : les deux prototypes (voir [Prochaines étapes](#9-prochaines-étapes)).
+
+## 9. Prochaines étapes
+
+| Qui | Quoi | Document |
+|---|---|---|
+| Claude du PC | Importer les modèles du prologue et en faire une galerie dans Unity, avec des captures | [`CLAUDE-LOCAL.md`](CLAUDE-LOCAL.md) |
+| Claude du PC | Monter le vaisseau-prison en formes grises d'après le plan | [Plan du vaisseau-prison](prologue/plan-vaisseau-prison.svg) |
+| Claude du cloud | Le code du prototype du prologue : évasion, discrétion, bruit, ennemis des trois camps, combinaison, vide | Ce dossier |
+| Claude du cloud | Le générateur de l'univers : graines, planètes, système, galaxie, hyperespace | [`UNIVERS-TECHNIQUE.md`](UNIVERS-TECHNIQUE.md) |
+| Toi | Télécharger les modèles, jouer aux prototypes et dire ce qui marche ou pas | |
+
+![Plan du vaisseau-prison](prologue/plan-vaisseau-prison.svg)
 
 ## Sources
 

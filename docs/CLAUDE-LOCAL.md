@@ -8,6 +8,7 @@
 > 2. Crée une scène `Assets/_Projet/Local/GaleriePrologue.unity` qui les aligne par dossier, à la bonne échelle (un humain fait 1,80 m), sous une lumière neutre.
 > 3. Fais une capture par dossier dans `docs/captures/prologue/`.
 > 4. Note dans `docs/CORRECTIONS-LOCALES.md` ceux qui posent problème : import raté, matériaux roses, échelle fausse, trop lourd pour la RTX 3060.
+> 5. Monte ensuite le vaisseau-prison en **formes grises** (cubes et couloirs simples, pas encore de modèles) d'après le plan [`prologue/plan-vaisseau-prison.svg`](prologue/plan-vaisseau-prison.svg), dans une scène `Assets/_Projet/Local/PrologueGris.unity`. Un humain fait 1,80 m, une coursive environ 3 m de large et 3 m de haut.
 >
 > Le reste de ce fichier décrit l'ancienne version, toujours valable pour les outils.
 
