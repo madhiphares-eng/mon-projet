@@ -143,6 +143,41 @@ En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
 - Chaque cristal retrouvé dans le monde ouvert lui rend un souvenir.
 - La boucle de jeu (récolter l'Éther) devient la quête de mémoire, et le titre prend tout son sens.
 
+### Autres pistes (deuxième série)
+
+**4. La Carte**
+- **Qui il est** : le seul pilote à avoir traversé une zone de l'espace où l'hyperespace se déchire, et à en être revenu.
+- **Pourquoi la prison** : la route est dans sa tête, verrouillée. Elle ne revient que par morceaux. L'empire le garde pour l'extraire lentement.
+- **Les pirates** : ils veulent la route eux aussi, et l'ont trouvé avant les autres.
+- **Indice du prologue** : devant un hublot, il récite des coordonnées sans comprendre. Aux commandes de la navette volée, ses mains savent quoi faire.
+- **En jeu** : chaque souvenir retrouvé **débloque une nouvelle destination d'hyperespace**. La carte des souvenirs est la carte de la galaxie : explorer, c'est se souvenir.
+- **Fin** : au bout de la route, la livrer, la vendre, ou l'effacer pour toujours.
+
+**5. Le Revenant**
+- **Qui il est** : il vient du futur. L'Éther permet d'envoyer un écho de soi dans le passé, mais le voyage efface la mémoire.
+- **Pourquoi la prison** : dans son futur, la récolte de l'Éther a détruit la galaxie. Il est revenu pour l'empêcher. Arrivé sans papiers ni souvenirs, il a été arrêté comme un inconnu.
+- **Les pirates** : ils ont capté une signature d'Éther jamais vue (son arrivée) et sont venus chercher ce trésor.
+- **Indice du prologue** : sa combinaison, à la consigne, porte une date de fabrication dans trente ans. Le système de la prison l'identifie comme « personne inexistante ».
+- **En jeu** : il trouve des messages laissés par lui-même, et reconnaît des lieux où il se souvient d'événements qui n'ont pas encore eu lieu.
+- **Fin** : il découvre que sa venue déclenche la catastrophe qu'il voulait empêcher. Il doit briser la boucle.
+
+**6. La Vie volée**
+- **Qui il est** : un simple pilote de cargo, personne d'important.
+- **Pourquoi la prison** : un criminel puissant lui a volé son identité (visage, empreintes, nom), lui a effacé la mémoire et lui a laissé sa peine. L'autre vit désormais libre, à sa place.
+- **Les pirates** : l'équipage du criminel, venu libérer son chef. Ils croient que c'est lui, puisqu'il en a le visage.
+- **Indice du prologue** : la combinaison de la consigne est trop grande, le dossier porte le nom d'un criminel célèbre, et dans sa poche il y a la photo d'une femme et d'un enfant qu'il ne reconnaît pas.
+- **En jeu** : tout le monde le prend pour un autre. Les ennemis du criminel le traquent, ses hommes lui obéissent, et il peut bluffer pour s'en servir.
+- **Fin** : face à face avec son double, qui vit sa vie.
+
+**7. Le Héros des affiches**
+- **Qui il est** : le visage de la propagande de l'empire. C'est le soldat qui sourit sur toutes les affiches, celui qui a « gagné la guerre ».
+- **Pourquoi la prison** : il a découvert que la guerre était truquée et a voulu le dire. L'empire l'a effacé, puis l'a remplacé sur les affiches par une copie numérique. Officiellement, il est mort en héros.
+- **Les pirates** : une bande qui vit de rançons. Ils ont appris qu'un prisonnier « qui vaut très cher » était à bord.
+- **Indice du prologue** : sur un mur de la prison, une affiche de propagande montre un soldat souriant… avec son visage. Les détenus le regardent bizarrement. Au premier combat, son corps réagit mieux qu'il ne devrait.
+- **En jeu** : partout, son propre visage sur les affiches, les écrans, les statues. Certains le reconnaissent. Ses réflexes de combat reviennent avec ses souvenirs : les compétences se débloquent en se souvenant.
+- **Fin** : révéler le mensonge et devenir l'ennemi numéro un, ou reprendre sa place de héros et se taire.
+- **Atout** : c'est la satire de propagande à la Helldivers, au cœur de l'histoire.
+
 **Bonne nouvelle pour le scope** : un intérieur de vaisseau se construit avec des **kits modulaires** (couloirs, portes, sas, hangar). C'est plus maîtrisable qu'un grand terrain pour une première tranche verticale.
 Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi, kit modulaire d'intérieur de vaisseau, hangar, sas, passerelle, intérieur de l'ISS.
 
@@ -256,7 +291,7 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - les modèles 3D du prologue sont choisis : [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md). La combinaison du héros est la *Mercenary Astronaut*.
 
 **Encore à décider** :
-1. **La vérité** : une des [trois vérités possibles](#trois-vérités-possibles-à-choisir), un mélange, ou une autre idée.
+1. **La vérité** : une des sept pistes ([trois premières](#trois-vérités-possibles-à-choisir), [quatre autres](#autres-pistes-deuxième-série)), un mélange, ou une autre idée.
 2. **Où mène le saut ?** Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
 
 ## Sources
