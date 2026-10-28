@@ -8,10 +8,11 @@
 
 Le jeu repart de zéro. Il commence désormais par une évasion :
 
-1. Le joueur arrive dans **un vaisseau-prison ennemi, dans l'espace**.
-2. Il **s'échappe** à travers un vaisseau immense, comme dans une campagne, mais avec plusieurs chemins plutôt qu'un couloir imposé.
-3. Il **vole une navette** dans le hangar et **saute** loin du vaisseau (hyperespace, ou un autre nom : voir les décisions).
-4. Le monde ouvert commence là où le saut le mène.
+1. Le joueur se réveille **prisonnier, amnésique**, dans **un vaisseau-prison ennemi, dans l'espace**. Il ne sait ni qui il est, ni pourquoi il est là.
+2. **Des pirates attaquent** le vaisseau. Les ordinateurs disjonctent et **les cellules s'ouvrent**.
+3. En tenue de prisonnier, il doit **récupérer un équipement** pour atteindre le hangar, puis il **s'échappe** à travers un vaisseau immense, avec plusieurs chemins plutôt qu'un couloir imposé.
+4. Il **vole une navette** et passe en **hyperespace**.
+5. Le monde ouvert commence là où le saut le mène. **Sa quête : retrouver la mémoire**, savoir qui il est et pourquoi tout cela lui arrive.
 
 **Mélange de références :**
 
@@ -76,21 +77,40 @@ Comme avant, on emprunte des sensations, jamais des noms, des logos ou des desig
   - la station ouverte et les sorties dans le vide de *Prey* (2017) ;
   - l'apesanteur et la décompression de *Dead Space*.
 
+**Trois camps dans le vaisseau**, ce qui crée le chaos systémique à la Helldivers :
+- **les gardes** tentent de reprendre le contrôle ;
+- **les pirates** abordent et pillent ;
+- **les prisonniers** : certains sont hostiles, d'autres peuvent devenir des alliés de fortune.
+
+Les trois camps se battent aussi entre eux. Le joueur peut s'en servir : attirer les pirates sur les gardes, passer pendant qu'ils s'affrontent.
+
 | Étape | Ce qui se passe | Ce que le joueur apprend |
 |---|---|---|
-| 1. L'arrivée | Le joueur est amené prisonnier : sa navette de transfert s'arrime au vaisseau-prison. Vue sur l'immensité du vaisseau, puis la cellule. | Regarder, se déplacer |
-| 2. Sortir de la cellule | Un événement ouvre les portes (panne, émeute, attaque), ou le joueur s'en charge lui-même. Court passage guidé, première arme volée à un garde. | S'accroupir, se cacher, le bruit, ramasser |
-| 3. Le vaisseau ouvert | **Trois objectifs, dans l'ordre qu'on veut** : le badge d'accès du hangar (le gardien-chef), le carburant ou la cellule d'énergie de la navette (salle des machines), couper le **rayon tracteur** (sinon le vaisseau ramène la navette) | Discrétion ou combat, piratage, chemins multiples |
-| 4. Le vide | L'un des objectifs se fait **sur la coque, à l'extérieur** : bottes magnétiques, apesanteur, oxygène limité, et le silence total du vide (on n'entend que sa propre respiration et ce qui passe par la coque). C'est le « désert » du prologue. | Sortie dans l'espace, gestion de l'air, nouvelles règles du bruit |
-| 5. Le hangar | Alerte générale. Combat dans le hangar, sas qu'on peut ouvrir sur le vide pour aspirer les gardes (chaos à la Helldivers). La navette décolle. | Combat sous pression, se servir du décor |
-| 6. Le saut | Fuite sous le feu des tourelles, puis saut. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
+| 1. Le réveil | Le joueur se réveille en cellule, sans souvenirs. Un flash flou : on le traîne dans un couloir. Puis les secousses de l'abordage, les alarmes, la lumière qui saute. | Regarder, se déplacer |
+| 2. Les cellules s'ouvrent | Les ordinateurs disjonctent, toutes les portes s'ouvrent, c'est la ruée. En tenue de prisonnier, sans arme, il est faible : il se cache et improvise. | S'accroupir, se cacher, le bruit, ramasser une arme de fortune |
+| 3. Récupérer l'équipement | Le hangar est coupé du reste par des sections éventrées par les pirates, donc ouvertes sur le vide. Il faut **une combinaison**, rangée à la **consigne des effets saisis**. **C'est la sienne**, et elle porte un premier indice sur son passé : un emblème qu'il ne reconnaît pas, un nom effacé. | Chemins multiples, discrétion ou combat, piratage de portes |
+| 4. Le vide | Avec la combinaison, il traverse les sections ouvertes et **la coque extérieure** : bottes magnétiques, apesanteur, oxygène limité, et le silence total du vide (on n'entend que sa respiration et ce qui passe par la coque). | Sortie dans l'espace, gestion de l'air, nouvelles règles du bruit |
+| 5. Le hangar | Les systèmes redémarrent : **le rayon tracteur va se rallumer**, c'est un compte à rebours. Combat entre gardes et pirates dans le hangar, sas qu'on peut ouvrir sur le vide pour aspirer les ennemis. Il faut démarrer une navette. | Combat sous pression, se servir du décor |
+| 6. L'hyperespace | Fuite sous le feu des tourelles, puis le saut en hyperespace. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
 
-**Règle de secours** (la leçon de No Man's Sky) : chaque objectif a au moins deux façons d'être rempli. On ne bloque jamais le joueur.
+**Zones facultatives** dans le vaisseau : une arme meilleure, des prisonniers à libérer, et surtout **des indices sur son identité**. Le joueur curieux en apprend plus que celui qui fonce.
+
+**Règle de secours** (la leçon de No Man's Sky) : chaque étape a au moins deux façons d'être réussie. On ne bloque jamais le joueur.
 
 **Le saut ouvre la suite.** Le monde ouvert commence là où il mène (par exemple, une arrivée en catastrophe sur une planète désertique).
 La navette volée devient le refuge du joueur et lui donne plus tard ses appels de soutien.
 Pendant le prologue, il est seul et sans soutien. C'est voulu : il n'a encore rien.
 En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
+
+### L'histoire : retrouver la mémoire
+- **Le joueur en sait autant que son personnage** : rien. Ils découvrent la vérité ensemble. C'est ce qui fait marcher les histoires d'amnésie.
+- **Les souvenirs se retrouvent dans le monde ouvert** : lieux, objets, personnes qui le reconnaissent. Chacun débloque un fragment de souvenir, en flash jouable ou en courte scène, et une **carte des souvenirs** les relie.
+  - On retrouve l'idée de l'ancien GDD : la progression, c'est la connaissance.
+- **L'amnésie est un thème très utilisé** (dont un célèbre retournement de situation dans un jeu Star Wars). Pour rester original :
+  - la vérité doit être **la nôtre** ;
+  - les indices doivent être **justes** : le joueur attentif peut la deviner avant la fin.
+- **Règle de pro** : on fixe toute la vérité **avant** d'écrire le reste (qui il est, pourquoi il est en prison, qui le cherche), même si le joueur ne l'apprend qu'à la fin. Chaque indice en découle.
+- Le titre *Échos d'Éther* colle bien : les souvenirs perdus sont des **échos**.
 
 **Bonne nouvelle pour le scope** : un intérieur de vaisseau se construit avec des **kits modulaires** (couloirs, portes, sas, hangar). C'est plus maîtrisable qu'un grand terrain pour une première tranche verticale.
 Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi, kit modulaire d'intérieur de vaisseau, hangar, sas, passerelle, intérieur de l'ISS.
@@ -194,18 +214,19 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 <a id="decisions"></a>
 ## 8. Décisions à prendre
 
-1. **Pourquoi le joueur est-il dans le vaisseau-prison, et qu'est-ce qui ouvre sa cellule ?**
-   - Il a été capturé, condamné, ou trahi par son propre camp.
-   - Sa cellule s'ouvre par une panne, une émeute, une attaque extérieure, ou par son propre plan.
+**Déjà décidé (28 octobre 2026)** :
+- le joueur est **amnésique**, et sa quête dans le monde ouvert est de retrouver la mémoire ;
+- **une attaque de pirates** fait disjoncter les ordinateurs, ce qui ouvre les cellules ;
+- il commence **en tenue de prisonnier** et doit **récupérer un équipement** pour atteindre le hangar ;
+- le saut s'appelle **l'hyperespace**.
+
+**Encore à décider** :
+1. **La vérité** : qui est-il vraiment, et pourquoi était-il en prison ? À fixer dès maintenant, même si le joueur ne la découvre qu'à la fin.
+   - Les pirates étaient-ils là pour lui ?
    - Où mène le saut ? Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
-2. **Le nom du saut** : « hyperespace » est un mot courant, donc permis. Pour un nom à nous :
-   - le **Saut d'Éther** ;
-   - **passer dans l'Écho** ;
-   - **la Traversée**.
-   - À éviter : « plier l'espace », qui vient de Dune.
-3. **On garde le nom et l'univers ?** *Échos d'Éther*, l'Éther, la Concorde... ou on renomme tout ?
-4. **Quel Arpenteur ?** Le numéro dans la planche d'aperçus.
-5. **L'ancienne version** : je propose de l'archiver dans une branche Git (rien n'est perdu) et de repartir d'un dossier propre. On ne reprend un ancien système que s'il sert le nouveau jeu.
+2. **On garde le nom et l'univers ?** *Échos d'Éther* colle bien à l'amnésie, puisque les souvenirs sont des échos. Mais l'Éther et la Concorde de l'ancienne version peuvent changer.
+3. **Quelle combinaison ?** Celle qu'il récupère à la consigne : le numéro dans la planche d'aperçus.
+4. **L'ancienne version** : je propose de l'archiver dans une branche Git (rien n'est perdu) et de repartir d'un dossier propre. On ne reprend un ancien système que s'il sert le nouveau jeu.
 
 ## Sources
 
