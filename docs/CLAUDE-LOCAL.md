@@ -1,5 +1,9 @@
 # Pour Claude en local : travailler sur Échos d'Éther dans Unity
 
+> **Refonte en cours (28 octobre 2026).** Le jeu repart de zéro : le joueur atterrit dans une base ennemie, s'évade et vole une navette.
+> Lis d'abord [`PREPRODUCTION.md`](PREPRODUCTION.md). N'ajoute pas de nouvelle fonction à l'ancienne version en attendant que les décisions soient prises.
+> Ce qui suit décrit l'ancienne version.
+
 Ce fichier est pour toi, Claude qui pilote Unity sur le PC (MCP for Unity). Une autre session de Claude, dans le cloud,
 écrit le code du jeu et le publie sur GitHub (branche `echos-ether`). Le joueur le copie dans le projet avec `outils/installer.ps1`.
 Cette session-là **ne peut pas lancer Unity** : tout ce qu'elle a écrit compile, mais n'a jamais tourné. Ton rôle est d'être ses yeux et ses mains dans l'éditeur.

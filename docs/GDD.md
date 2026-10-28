@@ -1,5 +1,7 @@
 # Échos d'Éther — Game Design Document
 
+> **Remplacé le 28 octobre 2026 par [`PREPRODUCTION.md`](PREPRODUCTION.md) (refonte du jeu). Gardé pour mémoire.**
+
 > Version 2.0 (reconstruite) — octobre 2026
 > Moteur : Unity 6 · HDRP · Netcode for GameObjects · Cinemachine
 
