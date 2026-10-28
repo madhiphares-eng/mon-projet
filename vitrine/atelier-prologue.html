@@ -1,0 +1,1454 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier du prologue</title>
+<style>
+  :root { color-scheme: dark; --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --rouge: #ff7a6b; --fond: rgba(8, 9, 14, 0.88); --plein: #0b0c10; --trait: rgba(236, 230, 216, 0.14); --survol: rgba(236, 230, 216, 0.07); --actif: rgba(242, 178, 107, 0.16); }
+  html, body { margin: 0; height: 100%; background: var(--plein); color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; touch-action: none; }
+  button, select, input { font: inherit; color: inherit; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; color: var(--ether); }
+
+  #panneau { position: fixed; left: 0; top: 0; bottom: 0; width: 290px; overflow-y: auto; background: var(--fond); border-right: 1px solid var(--trait); padding: 14px 0 28px; box-sizing: border-box; z-index: 3; }
+  #panneau h1 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; margin: 0 16px 4px; color: var(--ambre); }
+  #source { font-size: 12px; color: var(--brume); margin: 0 16px 8px; line-height: 1.45; }
+  #panneau .large { display: block; width: calc(100% - 32px); margin: 0 16px 10px; padding: 7px 10px; background: var(--actif); border: 1px solid rgba(242, 178, 107, 0.45); color: var(--ambre); cursor: pointer; text-align: center; }
+  #filtre { display: block; width: calc(100% - 32px); margin: 0 16px 6px; padding: 6px 9px; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--trait); }
+  #bibliotheque h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--brume); margin: 14px 16px 4px; font-weight: 600; }
+  #bibliotheque p { font-size: 12px; color: var(--brume); margin: 0 16px 4px; line-height: 1.4; }
+  #bibliotheque button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; font-size: 14px; padding: 4px 16px; cursor: pointer; }
+  #bibliotheque button:hover { background: var(--survol); }
+  #bibliotheque button i { width: 7px; height: 7px; border-radius: 50%; background: #555; flex: none; }
+  #bibliotheque button.present i { background: var(--ether); }
+  #bibliotheque button.forme i { background: #a4a8af; border-radius: 1px; }
+  #bibliotheque button.absent { color: var(--brume); }
+  #bibliotheque button small { margin-left: auto; color: var(--brume); font-size: 11px; }
+
+  #outils { position: fixed; left: 290px; right: 0; top: 0; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; background: linear-gradient(rgba(8, 9, 14, 0.85), rgba(8, 9, 14, 0)); z-index: 2; pointer-events: none; }
+  #outils .groupe { display: flex; pointer-events: auto; }
+  #outils button, #outils select { background: var(--fond); border: 1px solid var(--trait); padding: 5px 10px; font-size: 13px; cursor: pointer; }
+  #outils .groupe > * + * { border-left: 0; }
+  #outils button:hover { background: #1a1b22; }
+  #outils button.actif { background: var(--actif); color: var(--ambre); border-color: rgba(242, 178, 107, 0.45); }
+  #outils button:disabled { opacity: 0.4; cursor: default; }
+
+  #fiche { position: fixed; left: 306px; bottom: 14px; max-width: min(600px, calc(100vw - 600px)); min-width: 300px; background: var(--fond); border: 1px solid var(--trait); padding: 12px 14px; font-size: 13px; line-height: 1.5; z-index: 2; }
+  #fiche h3 { margin: 0 0 2px; font-size: 17px; }
+  #fiche .usage { margin: 2px 0 6px; }
+  #fiche .meta { color: var(--brume); }
+  #fiche .alerte { color: var(--ambre); }
+  #fiche a { color: var(--ether); }
+  #fiche .ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+  #fiche input { width: 70px; padding: 3px 6px; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--trait); }
+  #fiche button { background: none; border: 1px solid var(--trait); font-size: 12px; padding: 3px 9px; cursor: pointer; }
+  #fiche button:hover { background: var(--survol); }
+  #fiche button.actif { border-color: var(--ambre); color: var(--ambre); }
+  #fiche button.danger { color: var(--rouge); }
+
+  #aide { position: fixed; right: 12px; bottom: 34px; font-size: 12px; color: var(--brume); background: rgba(6, 7, 12, 0.6); padding: 5px 9px; text-align: right; line-height: 1.5; z-index: 1; }
+  #stats { position: fixed; right: 12px; bottom: 10px; font-size: 12px; color: var(--brume); z-index: 1; font-variant-numeric: tabular-nums; }
+  #toast { position: fixed; left: calc(50% + 145px); top: 56px; transform: translateX(-50%); background: var(--fond); border: 1px solid var(--trait); padding: 7px 14px; font-size: 13px; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 5; max-width: 70vw; text-align: center; }
+  #toast.visible { opacity: 1; }
+
+  #accueil, #depot { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(3, 4, 8, 0.72); z-index: 10; padding: 16px; box-sizing: border-box; }
+  #accueil[hidden], #depot[hidden] { display: none; }
+  #accueil .carte { max-width: 560px; max-height: 100%; overflow-y: auto; background: #101117; border: 1px solid var(--trait); padding: 22px 26px; line-height: 1.55; font-size: 14px; }
+  #accueil h2 { margin: 0 0 6px; font-size: 20px; color: var(--ambre); letter-spacing: 1px; }
+  #accueil ol { padding-left: 20px; }
+  #accueil li { margin-bottom: 8px; }
+  #accueil .petit { font-size: 12.5px; color: var(--brume); }
+  #accueil .ok { color: var(--ether); }
+  .principal { background: var(--actif); border: 1px solid rgba(242, 178, 107, 0.5); color: var(--ambre); padding: 7px 14px; cursor: pointer; margin-top: 6px; }
+  #depot div { border: 2px dashed var(--ether); padding: 40px 50px; font-size: 18px; color: var(--ether); }
+
+  #visee { position: fixed; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: rgba(255, 255, 255, 0.7); display: none; pointer-events: none; z-index: 2; }
+  #aide-visite { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); font-size: 13px; background: rgba(6, 7, 12, 0.65); padding: 6px 12px; display: none; z-index: 2; white-space: nowrap; }
+  #btn-panneau { display: none; }
+
+  body.visite #panneau, body.visite #outils, body.visite #fiche, body.visite #aide, body.visite #btn-panneau { display: none !important; }
+  body.visite #visee, body.visite #aide-visite { display: block; }
+  body.visite #toast { left: 50%; }
+
+  @media (max-width: 760px) {
+    #panneau { transform: translateX(-100%); transition: transform 0.2s; width: min(290px, 86vw); }
+    body.panneau-ouvert #panneau { transform: none; }
+    #btn-panneau { display: block; position: fixed; left: 16px; bottom: 16px; z-index: 4; background: var(--fond); border: 1px solid var(--trait); padding: 8px 12px; }
+    #outils { left: 0; }
+    #fiche { left: 16px; right: 16px; bottom: 60px; max-width: none; min-width: 0; }
+    #aide { display: none; }
+    #toast { left: 50%; }
+    #aide-visite { white-space: normal; width: calc(100% - 64px); text-align: center; }
+  }
+</style>
+</head>
+<body>
+<nav id="panneau">
+  <h1>Atelier du prologue</h1>
+  <div id="source">Recherche des modèles…</div>
+  <button id="btn-dossier" class="large">Choisir le dossier prologue…</button>
+  <input id="champ-dossier" type="file" webkitdirectory multiple hidden>
+  <input id="filtre" type="search" placeholder="Chercher un modèle…" autocomplete="off">
+  <div id="bibliotheque"></div>
+</nav>
+
+<header id="outils">
+  <div class="groupe">
+    <button data-mode="translate" class="actif" title="Déplacer la pièce choisie (T)">Déplacer</button>
+    <button data-mode="rotate" title="Tourner la pièce choisie (R)">Tourner</button>
+    <button data-mode="scale" title="Changer la taille (E)">Taille</button>
+  </div>
+  <div class="groupe"><button id="btn-aimant" class="actif" title="Aimanter à la grille de 50 cm et par pas de 15° (M)">Aimant</button></div>
+  <div class="groupe">
+    <button id="btn-dupliquer" title="Dupliquer (⌘D)">Dupliquer</button>
+    <button id="btn-supprimer" title="Supprimer (⌫)">Supprimer</button>
+  </div>
+  <div class="groupe">
+    <button id="btn-annuler" title="Annuler (⌘Z)">↶ Annuler</button>
+    <button id="btn-retablir" title="Rétablir (⌘⇧Z)">↷</button>
+  </div>
+  <div class="groupe"><button id="btn-visite" title="Visiter à hauteur d'homme (V)">Visiter</button></div>
+  <div class="groupe">
+    <select id="ambiance" title="Ambiance">
+      <option value="atelier">Lumière de travail</option>
+      <option value="panne">Panne : alarme rouge</option>
+      <option value="vide">Le vide spatial</option>
+    </select>
+  </div>
+  <div class="groupe">
+    <button id="btn-exporter" title="Télécharger la scène dans un fichier .json">Exporter</button>
+    <button id="btn-importer" title="Ouvrir une scène .json">Importer</button>
+    <button id="btn-effacer" title="Tout effacer (annulable avec ⌘Z)">Effacer</button>
+  </div>
+  <div class="groupe"><button id="btn-aide" title="Mode d'emploi">?</button></div>
+  <input id="champ-scene" type="file" accept=".json,application/json" hidden>
+</header>
+
+<button id="btn-panneau">Bibliothèque</button>
+<section id="fiche" hidden></section>
+<div id="aide">Clic : choisir une pièce · glisser : tourner la vue · ⇧ + glisser : déplacer la vue<br>molette ou deux doigts : zoom · double-clic ou F : cadrer · V : visiter</div>
+<div id="stats"></div>
+<div id="toast"></div>
+<div id="visee"></div>
+<div id="aide-visite">ZQSD ou flèches : marcher · ⇧ : courir · souris : regarder · Échap : revenir à l'atelier</div>
+<div id="depot" hidden><div>Lâche le dossier prologue ici</div></div>
+
+<div id="accueil" hidden>
+  <div class="carte">
+    <h2>L'atelier du prologue</h2>
+    <p>Tu es dans le hangar du vaisseau-prison. Pose les modèles, assemble-les, puis visite à hauteur d'homme.</p>
+    <ol>
+      <li id="etape-dossier"></li>
+      <li><b>Poser</b> : clique sur un modèle ou une forme grise dans la liste à gauche. Il apparaît au centre de la vue.</li>
+      <li><b>Arranger</b> : clique sur une pièce, puis tire ses flèches pour la déplacer (T), la tourner (R) ou changer sa taille (E). Sa fiche, en bas, donne sa taille en mètres.</li>
+      <li><b>Tracer le niveau</b> : les formes grises (murs, coursives, escaliers) servent à essayer un plan avant d'y poser les vrais modèles.</li>
+      <li><b>Visiter</b> : appuie sur V et marche avec ZQSD. On marche sur les formes grises ; on traverse encore les modèles.</li>
+    </ol>
+    <p class="petit">La scène s'enregistre toute seule dans ce navigateur. « Exporter » la garde dans un fichier, pour la retrouver ailleurs ou la passer à Unity.</p>
+    <button class="principal" data-act="fermer">Commencer</button>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { clone as clonerAvecSquelette } from 'three/addons/utils/SkeletonUtils.js';
+
+// Les modèles choisis pour le prologue (docs/PROLOGUE-MODELES.md), téléchargés par outils/telecharger-prologue.sh
+const MODELES = [{"dossier":"01-Joueur","nom":"tenue-detenu","titre":"Prisoner","auteur":"asadkhan1881","compte":"asadkhan1881","faces":11686,"anims":1,"usage":"Le héros en tenue de détenu (provisoire : à remplacer plus tard par un humain réaliste)","uid":"e0898165a3e24b34bff0ca230d92c311"},{"dossier":"01-Joueur","nom":"combinaison-veilleur","titre":"Spacesuit (Confederation of Planets)","auteur":"tnnv","compte":"tnnv","faces":26006,"anims":0,"usage":"Sa combinaison de Veilleur des Bâtisseurs, saisie à la chambre des reliques (provisoire : à re-texturer avec des glyphes en attendant la version définitive)","uid":"da7b5c14bc634f8283e2d21343afa7cc"},{"dossier":"02-Prisonniers","nom":"detenu-brute","titre":"Balthazar (rigged & animated)","auteur":"Jungle Jim","compte":"jungle_jim","faces":110940,"anims":1,"usage":"Codétenu costaud, hostile ou allié","uid":"dbf9fe0cb81d4758ad2525a56d10e2fc"},{"dossier":"02-Prisonniers","nom":"detenu-vieux","titre":"Realistic Old Russian Guy (animated)","auteur":"Jungle Jim","compte":"jungle_jim","faces":53891,"anims":1,"usage":"Vieux détenu (indices, dialogues)","uid":"6b8009a6e4f747f59ccadb121adc3679"},{"dossier":"02-Prisonniers","nom":"detenu-atelier","titre":"Employee","auteur":"dotflare","compte":"Dotflare","faces":34718,"anims":4,"usage":"Détenu des ateliers toxiques, masque à gaz","uid":"9d1098bc72a74bb1b6371aef4b987100"},{"dossier":"03-Gardes","nom":"garde","titre":"S.W.A.T. Operator","auteur":"SpatialNeglect","compte":"jeandiz","faces":106714,"anims":1,"usage":"Garde de la prison en tenue anti-émeute (écussons à remplacer)","uid":"9e82fabf26194896b5ad4a364d864eab"},{"dossier":"03-Gardes","nom":"droide-securite","titre":"Sci-fi O.B. Robot Unit TH-ICC02 (animated)","auteur":"Jungle Jim","compte":"jungle_jim","faces":124648,"anims":1,"usage":"Droïde de sécurité","uid":"6c0764c2bc4c4aaa8e03ba1653f455a6"},{"dossier":"04-Pirates","nom":"pirate-chef","titre":"Space Pirate","auteur":"Odlab","compte":"Odlab","faces":241821,"anims":0,"usage":"Chef des pirates","uid":"f94ee65527b14bdcb5bafd1ad573c8ca"},{"dossier":"04-Pirates","nom":"pirate","titre":"Scavenger","auteur":"Vasian-Digital3D","compte":"Vasian-Digital3D","faces":98743,"anims":1,"usage":"Pirate d'abordage","uid":"f029fe3297434ed6b5d03c3ffbc0585d"},{"dossier":"04-Pirates","nom":"pirate-masque","titre":"post apo character","auteur":"Am I dead?","compte":"eqisX","faces":924658,"anims":0,"usage":"Pirate masqué (lourd : à alléger)","uid":"9e77c91967ca4263ad347b395f53c1cb"},{"dossier":"04-Pirates","nom":"casque-pirate","titre":"Vintage 2725 \" Spacer Armoured Pressure Helmet \"","auteur":"KallMor","compte":"kallmor","faces":42376,"anims":0,"usage":"Casque pressurisé de pirate, pour varier les tenues","uid":"1059232ac0374767bf49ba95978f580f"},{"dossier":"04-Pirates","nom":"pirate-eva","titre":"Mercenary Astronaut","auteur":"Peter_D","compte":"better_peter","faces":704714,"anims":3,"usage":"Pirate d'abordage en combinaison spatiale, pour passer par le vide (à alléger : 700 000 faces)","uid":"7fd399d488ae4576a0fc62715892956c"},{"dossier":"05-Cellules","nom":"bloc-cellules","titre":"Abandoned prison modular scene","auteur":"Ali2-D2","compte":"Ali2-D2","faces":138134,"anims":0,"usage":"Bloc de cellules modulaire","uid":"1e80d7053fd7440f929bc53db8433509"},{"dossier":"05-Cellules","nom":"porte-cellule","titre":"Prison cell door","auteur":"Rivaldragon","compte":"Rivaldragon","faces":1544,"anims":0,"usage":"Porte de cellule à barreaux","uid":"f8148fab4dc44903b9644170edf0e58c"},{"dossier":"05-Cellules","nom":"porte-isolement","titre":"Door Of The Solitary Cell Of The Prison 14MB","auteur":"Mehdi Shahsavan","compte":"ahmagh2e","faces":3228,"anims":0,"usage":"Porte de cellule d'isolement (celle du héros)","uid":"23db3362debb4d98a56856416e1e9c58"},{"dossier":"05-Cellules","nom":"toilettes","titre":"Filthy Prison Toilet - 4096px²","auteur":"Mark Peters","compte":"mark-peters","faces":3652,"anims":0,"usage":"Toilettes en acier","uid":"b8bdb85f59a44a8ea4b0783c8d22f373"},{"dossier":"05-Cellules","nom":"lavabo","titre":"Filthy Metal Sink - 4096px²","auteur":"Mark Peters","compte":"mark-peters","faces":18610,"anims":0,"usage":"Lavabo en acier","uid":"dcd2b91f54014e95bd488e12f0d54d61"},{"dossier":"05-Cellules","nom":"lit-superpose","titre":"Simple Bunk Bed","auteur":"Blender3D","compte":"Blender3D","faces":9324,"anims":0,"usage":"Lit superposé","uid":"9fb7c54715dd41b98b3dc67b367cf81d"},{"dossier":"06-Couloirs","nom":"couloir-principal","titre":"Sci-fi corridor","auteur":"3dhdscan","compte":"3dhdscan","faces":164086,"anims":0,"usage":"Segment de coursive principal, à répéter","uid":"5e6240c9b30145b0bf81fd02287985e3"},{"dossier":"06-Couloirs","nom":"kit-interieur","titre":"Sci-fi Ship interior - Modular asset pack","auteur":"Rejala","compte":"Rejala","faces":356806,"anims":0,"usage":"Kit modulaire d'intérieur de vaisseau","uid":"50e2af8800cc4ab79add375f817b2d76"},{"dossier":"06-Couloirs","nom":"kit-couloir","titre":"Sci-fi Corridor","auteur":"Eliu_Villanueva","compte":"Eliu_Villanueva","faces":22279,"anims":0,"usage":"Kit de couloir en pièces (murs, portes, sols)","uid":"f3d033a8f3ad4888acc8c0a16878cf85"},{"dossier":"06-Couloirs","nom":"conduit-maintenance","titre":"Sci-fi Hallway Tube","auteur":"SlyEye","compte":"SlyEyePro","faces":201178,"anims":0,"usage":"Conduit tubulaire : chemins de maintenance","uid":"6987b3d35d2441e4b83ed9f87fbb74ff"},{"dossier":"06-Couloirs","nom":"tuyaux","titre":"Sci-Fi Machinery: Pipes Modular Asset Pack","auteur":"somni","compte":"3d.somni","faces":7978,"anims":0,"usage":"Tuyaux modulaires","uid":"0b8188107ef040149f2f71eb08e9ce16"},{"dossier":"06-Couloirs","nom":"porte-coulissante","titre":"Sci-fi Door (high poly)","auteur":"Scarecrow_original","compte":"Scarecrow_original","faces":53530,"anims":0,"usage":"Porte coulissante","uid":"2e8c613214144d12bce416ce437614d6"},{"dossier":"06-Couloirs","nom":"sols","titre":"PBR Sci-Fi Modular Flooring","auteur":"JamesDawson","compte":"JamBoink","faces":696,"anims":0,"usage":"Dalles de sol modulaires","uid":"0aea48c99ae24d78b7814d9dfbd94fe6"},{"dossier":"07-Consigne","nom":"casier","titre":"Locker Equipment","auteur":"Siberia","compte":"LtxxwSibeRia","faces":5226,"anims":0,"usage":"Casiers de la consigne","uid":"fae22ece4d764979aafd614ebe09956d"},{"dossier":"07-Consigne","nom":"armoire-blindee","titre":"Armored Cabinet","auteur":"Ray Ferric","compte":"rayferric","faces":4581,"anims":1,"usage":"Armoire blindée où est rangée la combinaison (porte animée)","uid":"d16736e243904210b938590a42c8ea88"},{"dossier":"07-Consigne","nom":"porte-coffre","titre":"Vault Door","auteur":"Ray Ferric","compte":"rayferric","faces":14556,"anims":1,"usage":"Porte blindée de la consigne (animée)","uid":"20d25f3bae24417a9b6cc5ba690c62f5"},{"dossier":"08-Machines","nom":"reacteur","titre":"ARC Pulse Core","auteur":"TooManyDemons","compte":"toomanydemons","faces":24020,"anims":0,"usage":"Réacteur de la salle des machines","uid":"22e55de3be0c46caad827774109572f5"},{"dossier":"08-Machines","nom":"generateur","titre":"SCIFI GENERATOR","auteur":"LordCinn","compte":"LordCinn","faces":68574,"anims":0,"usage":"Générateur","uid":"bf2e1a087adb4628a376ffbed17c41ff"},{"dossier":"08-Machines","nom":"pylone-energie","titre":"Sci-fi generator","auteur":"aksinia0987","compte":"aksinia0987","faces":16566,"anims":0,"usage":"Pylône d'énergie","uid":"32c5436e8e9c459eac7471dce7c3878f"},{"dossier":"08-Machines","nom":"coeur-fusion","titre":"FUSION CORE","auteur":"Fred Drabble","compte":"FredDrabble","faces":20700,"anims":0,"usage":"Cœur de fusion","uid":"f717683d5502496d9e1ef1f1e1d1cb45"},{"dossier":"09-Informatique","nom":"baie-serveur","titre":"Server Rack","auteur":"Spellkaze","compte":"Spellkaze","faces":744,"anims":0,"usage":"Baie de serveurs (les ordinateurs qui disjonctent)","uid":"62f6779cb7e448b19aaf58544c3c7218"},{"dossier":"09-Informatique","nom":"rangee-serveurs","titre":"Server Racking System","auteur":"wpanayides","compte":"mcpanayides","faces":299604,"anims":0,"usage":"Rangée de serveurs","uid":"6fe2cacf836b4aed96c650b286db5486"},{"dossier":"09-Informatique","nom":"console-murale","titre":"Wall Console","auteur":"LuddePudde","compte":"luddepubde","faces":11780,"anims":0,"usage":"Console murale","uid":"98724ee49fba42a2b0ccbe79a36f246e"},{"dossier":"09-Informatique","nom":"grand-ecran","titre":"Large Wall-Mounted Computer Console","auteur":"Inditrion Dradnon","compte":"dradnon","faces":1092,"anims":0,"usage":"Grand écran mural","uid":"298b7d9b68064618a3819d1a8fae4baf"},{"dossier":"09-Informatique","nom":"terminal","titre":"Sci-fi Computer Terminal","auteur":"Pedro Belthori","compte":"pedrobelthori","faces":13892,"anims":0,"usage":"Terminal à pirater","uid":"e03a14fc845e4e2d9573b95e00f79ef4"},{"dossier":"09-Informatique","nom":"cables","titre":"Electric cable - 13MB","auteur":"Mehdi Shahsavan","compte":"ahmagh2e","faces":14986,"anims":0,"usage":"Câbles électriques (étincelles du court-circuit)","uid":"1f6a4938769846b1ae9b512038aec5f8"},{"dossier":"10-Hangar","nom":"hangar","titre":"SCI FI HANGAR","auteur":"Kerem Kavalci","compte":"Keremz","faces":229786,"anims":0,"usage":"Le hangar","uid":"4b263701219446f1ab13b37a5b98bac5"},{"dossier":"10-Hangar","nom":"caisses","titre":"Game Ready Sci-Fi Crates","auteur":"celebornArt","compte":"celebornArt","faces":14168,"anims":0,"usage":"Caisses de fret","uid":"763fe7cff0534ec8a738b6127827eddd"},{"dossier":"10-Hangar","nom":"caisse-armes","titre":"Military Weapons Container","auteur":"MeshSlinger","compte":"thelastphysician","faces":9964,"anims":0,"usage":"Caisse d'armes","uid":"8a1c32f395f549b8b22265b8a459fa8e"},{"dossier":"10-Hangar","nom":"cellule-energie","titre":"Sci-Fi Power Cell Prop","auteur":"pixelgrapher","compte":"pixelgrapher","faces":2408,"anims":0,"usage":"Cellule d'énergie","uid":"e43322345d39429d82396a8642bb8d70"},{"dossier":"10-Hangar","nom":"bidon-carburant","titre":"Sci-fi Fuel Cell Canister","auteur":"Daniel.Sharma","compte":"Daniel.Sharma","faces":8134,"anims":0,"usage":"Bidon de carburant","uid":"04103035ea8c483db55ba61173929809"},{"dossier":"11-Vaisseaux","nom":"vaisseau-prison","titre":"The Star Prison (Basemesh&Greebles)","auteur":"Relvean","compte":"Relvean","faces":29744,"anims":0,"usage":"Le vaisseau-prison vu de l'extérieur","uid":"e2d0fbe81c0e4182bec23e1adecba2db"},{"dossier":"11-Vaisseaux","nom":"vaisseau-prison-variante","titre":"Gangut space hub","auteur":"Comrade1280","compte":"comrade1280","faces":14832,"anims":0,"usage":"Variante plus industrielle du vaisseau-prison","uid":"db9e338f04ae402c82f8ebdf12b55f9e"},{"dossier":"11-Vaisseaux","nom":"navette-a-voler","titre":"Sci-fi shuttle","auteur":"Hrvoje Wächter","compte":"gazdahrco","faces":48502,"anims":0,"usage":"La navette que le héros vole","uid":"d3e5d9303d1d4e8b8a8e30bf22f59a21"},{"dossier":"11-Vaisseaux","nom":"navette-transfert","titre":"X-4A Enforcer Assault Transport","auteur":"pandoraskitten","compte":"pandoraskitten","faces":39035,"anims":0,"usage":"Navette de transfert des prisonniers","uid":"7a35a4f82e34446aa6131420bb26cc64"},{"dossier":"11-Vaisseaux","nom":"vaisseau-pirate","titre":"Heavy VTOL gunship","auteur":"Kai Xiang","compte":"kirikom9000","faces":46669,"anims":0,"usage":"Vaisseau pirate d'abordage","uid":"86d336e0fa6f40329de8cda4a71d8a17"},{"dossier":"11-Vaisseaux","nom":"capsule-sauvetage","titre":"Sci-Fi Personal Space Pod Ship(weekly challenge)","auteur":"futaba@blender","compte":"futaba_blender","faces":55136,"anims":0,"usage":"Capsule de sauvetage (décor du hangar)","uid":"b158f01dd4a9416fb689ca4401856e7a"},{"dossier":"12-Exterieur","nom":"porte-sas","titre":"Free Airlock Door","auteur":"michael_grodkowski","compte":"michael_grodkowski","faces":4440,"anims":1,"usage":"Porte de sas (animée)","uid":"58729c7672ae4e01a6103617c2f4f55e"},{"dossier":"12-Exterieur","nom":"sas","titre":"Sci-Fi Airlock","auteur":"hamraj15","compte":"hamraj15","faces":14632,"anims":0,"usage":"Sas","uid":"24521cd09bf54aafbd1dce8d8c731293"},{"dossier":"12-Exterieur","nom":"cloison-etanche","titre":"Ship Door / Bulkhead","auteur":"lumoize","compte":"lumoize","faces":20146,"anims":0,"usage":"Cloison étanche","uid":"cdc2fb6ad6cd47cfa96182112b293d3f"},{"dossier":"12-Exterieur","nom":"rocher-spatial","titre":"Meteorite","auteur":"Hailphilly","compte":"hailphilly","faces":82097,"anims":0,"usage":"Rocher qui dérive dans le vide","uid":"0a503e5bec784cbc9082e2f6b2d9f701"},{"dossier":"12-Exterieur","nom":"debris-1","titre":"SpaceShips Junk Yard  ASSET (part1)","auteur":"SebastianSosnowski","compte":"SebastianSosnowski","faces":31348,"anims":0,"usage":"Débris de vaisseaux (1)","uid":"c962c07f89c34e2a9d6714b3d408b878"},{"dossier":"12-Exterieur","nom":"debris-2","titre":"SpaceShips Junk Yard ASSET (part2)","auteur":"SebastianSosnowski","compte":"SebastianSosnowski","faces":53734,"anims":0,"usage":"Débris de vaisseaux (2)","uid":"f8fc1c20073448ccb4803335703c9129"},{"dossier":"12-Exterieur","nom":"gravats-breche","titre":"Construction debris","auteur":"Alex Sade","compte":"Alexsade","faces":194835,"anims":0,"usage":"Gravats des brèches de l'abordage","uid":"53b50b002a0045c8b9f92858aa8c8dd7"},{"dossier":"13-Armes","nom":"fusil-gardes","titre":"ASL - Standart Issue Assault Rifle","auteur":"JmCVoyager","compte":"JmCVoyager","faces":9382,"anims":0,"usage":"Fusil d'assaut des gardes","uid":"60129a0e0cd340a38bf4b4c787a2dce6"},{"dossier":"13-Armes","nom":"mitraillette-gardes","titre":"Futuristic Submachine Gun","auteur":"Newsome Interactive","compte":"newsomellc","faces":63720,"anims":0,"usage":"Mitraillette des gardes","uid":"893ed8d2adaf4658847c4f36dab16f61"},{"dossier":"13-Armes","nom":"pistolet-gardes","titre":"Pistol","auteur":"SINNIK","compte":"sinnik","faces":50208,"anims":0,"usage":"Pistolet des gardes","uid":"54c52df11e164b42992a7d418d99cd3f"},{"dossier":"13-Armes","nom":"fusil-pirates","titre":"Sci-Fi AK Rifle gameready (Free)","auteur":"Egor Likhachev","compte":"egor_likhachev","faces":12242,"anims":0,"usage":"Fusil des pirates","uid":"2d0d3410970d49c6865d00be15048f72"},{"dossier":"13-Armes","nom":"arme-pirates","titre":"Sci Fi Weapon. Gameready Gun / Rifle.","auteur":"gbarzu","compte":"gbarzu","faces":28026,"anims":2,"usage":"Arme bricolée des pirates","uid":"eca46c628f49410081eb73391c62b4ca"},{"dossier":"13-Armes","nom":"fusil-lourd-pirates","titre":"Heavy Assault Rifle","auteur":"valerij1987","compte":"valerij1987","faces":47267,"anims":1,"usage":"Fusil lourd des pirates","uid":"1b91aca44b65417f957d9ec30ce8ee19"},{"dossier":"13-Armes","nom":"pistolet-use","titre":"Sci-Fi Pistol","auteur":"Andrei Milin","compte":"milinam2002","faces":17452,"anims":0,"usage":"Pistolet usé, trouvé en route","uid":"fab28aeb14894752b49149ef00926aff"},{"dossier":"13-Armes","nom":"cle-a-molette","titre":"Weathered Wrench (Game Model)","auteur":"Michael Makivic","compte":"makivic","faces":2642,"anims":0,"usage":"Arme de fortune : clé à molette","uid":"66b29c557ce04bb0b14bdde2cc204a2f"},{"dossier":"14-Accessoires","nom":"extincteur","titre":"Fire Extinguisher","auteur":"Loïc","compte":"loichuet1","faces":2792,"anims":0,"usage":"Extincteur","uid":"5676b179b3b744c0aaae53a3dcea2300"},{"dossier":"14-Accessoires","nom":"neons","titre":"Fluorescent Light Fixtures - 4x 4096px²","auteur":"Mark Peters","compte":"mark-peters","faces":21456,"anims":0,"usage":"Néons de plafond","uid":"2a05034d61dc49bf81b33de44add7aa8"},{"dossier":"14-Accessoires","nom":"caisse-munitions","titre":"Sci-Fi crate / ammunition box (2)","auteur":"ul1tka","compte":"ul1tka","faces":648,"anims":0,"usage":"Caisse de munitions","uid":"342efe4d70f94d37a4edd66a15c39502"},{"dossier":"14-Accessoires","nom":"caisse-cargo","titre":"Sci-fi cargo crate","auteur":"andreas9343","compte":"andreas9343","faces":4052,"anims":0,"usage":"Caisse de cargo","uid":"ac36898521304e51a8e305aa602f1f5b"},{"dossier":"15-Reliques","nom":"capsule-veilleur","titre":"Sci-Fi Coffin — Cryo Casket | sarcophagus","auteur":"UNREAL JOELAB","compte":"Unreal_Joelab","faces":197961,"anims":0,"usage":"La capsule où il dormait depuis des milliers d'années, gardée dans le laboratoire","uid":"ffebf6fb62c840d08b0311ba6b8f9536"},{"dossier":"15-Reliques","nom":"chambre-stase","titre":"Stasis / Clone Chamber (with animations)","auteur":"TampaJoey","compte":"TampaJoey","faces":28528,"anims":1,"usage":"Chambre d'étude du laboratoire de l'empire (animée)","uid":"8738f78ae4ec4630ac35a4783303ea95"},{"dossier":"15-Reliques","nom":"coeur-relique","titre":"Ancient Relic","auteur":"FDU_oficial","compte":"FDU_oficial","faces":18172,"anims":1,"usage":"Le cœur d'hyperespace du vaisseau-prison : une relique des Bâtisseurs qui s'emballe à son réveil (animé)","uid":"c93820e31f1b4a79a6a94269ed9f41b7"},{"dossier":"15-Reliques","nom":"tablette-glyphes","titre":"Lost Alien Technology","auteur":"Citron Legacy","compte":"CitronLegacy","faces":44,"anims":0,"usage":"Tablette de glyphes qu'il lit sans savoir pourquoi","uid":"c56fc34b2bd74b098b7ea68b6bcf215c"},{"dossier":"15-Reliques","nom":"anneau-relais","titre":"Alien Ring","auteur":"Cogent","compte":"koron","faces":1530,"anims":0,"usage":"Anneau d'un relais d'hyperespace des Bâtisseurs","uid":"9c288fb496ab4d15838c0517d0cef47c"},{"dossier":"15-Reliques","nom":"cristal-ether","titre":"Void-Touched Crystal Rock","auteur":"PuzzledPapaya","compte":"PuzzledPapaya","faces":674,"anims":0,"usage":"Cristal d'Éther brut","uid":"2eee63550ed6470dac7659211a605795"},{"dossier":"15-Reliques","nom":"prisme-ether","titre":"Prism of Enlightenment","auteur":"Duznot","compte":"duz_vr","faces":5054,"anims":0,"usage":"Cristal d'Éther taillé, où l'on devine des glyphes","uid":"25c72b016ace4f7aac72c5974437c5f2"}];
+const DOSSIERS = {
+  '01-Joueur': 'Le héros', '02-Prisonniers': 'Détenus', '03-Gardes': 'Gardes', '04-Pirates': 'Pirates', '05-Cellules': 'Cellules',
+  '06-Couloirs': 'Coursives', '07-Consigne': 'Consigne', '08-Machines': 'Salle des machines', '09-Informatique': 'Informatique',
+  '10-Hangar': 'Hangar', '11-Vaisseaux': 'Vaisseaux', '12-Exterieur': 'Sas et vide', '13-Armes': 'Armes', '14-Accessoires': 'Accessoires', '15-Reliques': 'Reliques des Bâtisseurs',
+};
+const PAR_CLE = new Map(MODELES.map(m => [`${m.dossier}/${m.nom}`, m]));
+
+const $ = s => document.querySelector(s);
+const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const arrondi = (v, n = 3) => Math.round(v * 10 ** n) / 10 ** n || 0;
+const nombre = n => Math.round(n || 0).toLocaleString('fr-FR');
+const metres = (v, n = 2) => v.toLocaleString('fr-FR', { minimumFractionDigits: n, maximumFractionDigits: n });
+const DEG = Math.PI / 180;
+
+// le navigateur peut refuser le stockage (navigation privée) : l'atelier marche quand même
+const memoire = {
+  lire(cle, defaut) { try { const v = localStorage.getItem(cle); return v === null ? defaut : JSON.parse(v); } catch { return defaut; } },
+  ecrire(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch { } },
+};
+const CLE_SCENE = 'echos-atelier-prologue/scene', CLE_PREFS = 'echos-atelier-prologue/prefs';
+const prefs = Object.assign({ ambiance: 'atelier', aimant: true, accueilVu: false }, memoire.lire(CLE_PREFS, {}));
+const sauverPrefs = () => memoire.ecrire(CLE_PREFS, prefs);
+
+let minuteurToast;
+function toast(texte, rester = false) {
+  const e = $('#toast');
+  e.textContent = texte;
+  e.classList.add('visible');
+  clearTimeout(minuteurToast);
+  if (!rester) minuteurToast = setTimeout(() => e.classList.remove('visible'), 2800);
+}
+
+// petit générateur pseudo-aléatoire : le décor est le même à chaque ouverture
+function hasard(graine) {
+  return () => { graine = (graine * 1664525 + 1013904223) >>> 0; return graine / 4294967296; };
+}
+
+// ------------------------------------------------------------------ rendu, caméra
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const anisotropie = renderer.capabilities.getMaxAnisotropy();
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020306);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 12000);
+camera.position.set(12, 7.5, 16);
+const orbite = new OrbitControls(camera, renderer.domElement);
+orbite.target.set(0, 1, 0);
+orbite.enableDamping = true;
+orbite.maxDistance = 400;
+orbite.update();
+
+function redimensionner() {
+  const l = innerWidth > 760 && !document.body.classList.contains('visite') ? 290 : 0;
+  renderer.setSize(innerWidth - l, innerHeight);
+  renderer.domElement.style.marginLeft = l + 'px';
+  camera.aspect = (innerWidth - l) / innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', redimensionner);
+redimensionner();
+
+// ------------------------------------------------------------------ textures du décor, dessinées par le code
+
+function toile(l, h = l) {
+  const c = document.createElement('canvas');
+  c.width = l; c.height = h;
+  return [c, c.getContext('2d')];
+}
+
+// plaques d'acier : couleur et rugosité, une toile de 1024 px = 4 m
+function plaques({ colonnes, rangees, teinte, variation, rivets, graine, salete }) {
+  const N = 1024, r = hasard(graine), lc = N / colonnes, lr = N / rangees;
+  const [c, g] = toile(N), [cr, gr] = toile(N);
+  for (let i = 0; i < colonnes; i++) for (let j = 0; j < rangees; j++) {
+    const v = (r() - 0.5) * variation;
+    g.fillStyle = `rgb(${teinte[0] + v},${teinte[1] + v},${teinte[2] + v})`;
+    g.fillRect(i * lc, j * lr, lc, lr);
+    const rv = 132 + r() * 16;
+    gr.fillStyle = `rgb(${rv},${rv},${rv})`;
+    gr.fillRect(i * lc, j * lr, lc, lr);
+  }
+  for (let k = 0; k < 1500 * salete; k++) {
+    const x = r() * N, y = r() * N, s = 3 + r() * 38;
+    g.fillStyle = `rgba(18,16,14,${0.025 + r() * 0.05})`;
+    g.beginPath(); g.arc(x, y, s, 0, 7); g.fill();
+  }
+  for (let k = 0; k < 300 * salete; k++) {
+    const x = r() * N, y = r() * N, a = r() * Math.PI, l = 8 + r() * 90;
+    g.strokeStyle = `rgba(170,175,185,${0.04 + r() * 0.12})`;
+    gr.strokeStyle = 'rgba(60,60,60,0.5)';
+    for (const ctx of [g, gr]) { ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke(); }
+  }
+  g.fillStyle = '#141518'; gr.fillStyle = '#fff';
+  for (let i = 0; i <= colonnes; i++) for (const ctx of [g, gr]) ctx.fillRect(i * lc - 3, 0, 6, N);
+  for (let j = 0; j <= rangees; j++) for (const ctx of [g, gr]) ctx.fillRect(0, j * lr - 3, N, 6);
+  g.fillStyle = 'rgba(255,255,255,0.07)';
+  for (let i = 0; i <= colonnes; i++) g.fillRect(i * lc + 3, 0, 1, N);
+  for (let j = 0; j <= rangees; j++) g.fillRect(0, j * lr + 3, N, 1);
+  if (rivets) {
+    for (let i = 0; i < colonnes; i++) for (let j = 0; j < rangees; j++) for (const [dx, dy] of [[22, 22], [lc - 22, 22], [22, lr - 22], [lc - 22, lr - 22]]) {
+      g.fillStyle = '#25272b'; g.beginPath(); g.arc(i * lc + dx, j * lr + dy, 6, 0, 7); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.12)'; g.beginPath(); g.arc(i * lc + dx - 1.5, j * lr + dy - 1.5, 2.5, 0, 7); g.fill();
+    }
+  } else {
+    // grilles d'aération sur quelques panneaux
+    for (let k = 0; k < 3; k++) {
+      const x = Math.floor(r() * colonnes) * lc + lc * 0.2, y = Math.floor(r() * rangees) * lr + lr * 0.62, l = lc * 0.6, h = lr * 0.18;
+      g.fillStyle = '#1d1f23'; g.fillRect(x, y, l, h);
+      g.fillStyle = 'rgba(255,255,255,0.08)';
+      for (let s = 0; s < 8; s++) g.fillRect(x + 4, y + 4 + s * (h - 8) / 8, l - 8, 2);
+    }
+  }
+  return [c, cr];
+}
+
+function texture(canvas, couleur, rx, ry) {
+  const t = new THREE.CanvasTexture(canvas);
+  if (couleur) t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(rx, ry);
+  t.anisotropy = anisotropie;
+  return t;
+}
+
+const toilesSol = plaques({ colonnes: 2, rangees: 2, teinte: [58, 61, 66], variation: 7, rivets: true, graine: 7, salete: 1 });
+const toilesMur = plaques({ colonnes: 4, rangees: 2, teinte: [70, 74, 82], variation: 9, rivets: false, graine: 11, salete: 0.6 });
+function matPlaques(toiles, rx, ry, options = {}) {
+  return new THREE.MeshStandardMaterial({ map: texture(toiles[0], true, rx, ry), roughnessMap: texture(toiles[1], false, rx, ry), roughness: 1, metalness: 0.55, ...options });
+}
+
+function textureDanger() {
+  const [c, g] = toile(256, 64), r = hasard(5);
+  g.fillStyle = '#d6a11f'; g.fillRect(0, 0, 256, 64);
+  g.fillStyle = '#141414';
+  for (let x = -64; x < 256 + 64; x += 64) { g.beginPath(); g.moveTo(x, 64); g.lineTo(x + 32, 64); g.lineTo(x + 96, 0); g.lineTo(x + 64, 0); g.fill(); }
+  for (let k = 0; k < 500; k++) { g.fillStyle = `rgba(40,36,30,${r() * 0.35})`; g.fillRect(r() * 256, r() * 64, 1 + r() * 4, 1 + r() * 2); }
+  return c;
+}
+
+// ------------------------------------------------------------------ le hangar du vaisseau-prison
+
+const L = 48, H = 16, OUV_L = 26, OUV_H = 11;   // mètres : côté, hauteur, ouverture sur l'espace
+const hangar = new THREE.Group();
+scene.add(hangar);
+
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(L, L), matPlaques(toilesSol, L / 4, L / 4));
+sol.rotation.x = -Math.PI / 2;
+sol.receiveShadow = true;
+hangar.add(sol);
+
+function paroi(l, h, x, y, z, ry, teinte = 0xffffff) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(l, h), matPlaques(toilesMur, l / 4, h / 4, { color: teinte }));
+  m.position.set(x, y, z);
+  m.rotation.y = ry;
+  m.receiveShadow = true;
+  hangar.add(m);
+  return m;
+}
+const cote = (L - OUV_L) / 2;
+paroi(cote, H, -(OUV_L + cote) / 2, H / 2, -L / 2, 0);
+paroi(cote, H, (OUV_L + cote) / 2, H / 2, -L / 2, 0);
+paroi(OUV_L, H - OUV_H, 0, OUV_H + (H - OUV_H) / 2, -L / 2, 0);
+paroi(L, H, 0, H / 2, L / 2, Math.PI);
+paroi(L, H, -L / 2, H / 2, 0, Math.PI / 2);
+paroi(L, H, L / 2, H / 2, 0, -Math.PI / 2);
+const plafond = paroi(L, L, 0, H, 0, 0, 0x8a8a8a);
+plafond.rotation.set(Math.PI / 2, 0, 0);
+
+const matStructure = new THREE.MeshStandardMaterial({ color: 0x3a3f48, metalness: 0.75, roughness: 0.45 });
+const matBande = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xffffff, emissiveIntensity: 3 });
+const matBandeFaible = matBande.clone();
+function bloc(l, h, p, x, y, z, mat = matStructure) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), mat);
+  m.position.set(x, y, z);
+  m.receiveShadow = true;
+  hangar.add(m);
+  return m;
+}
+for (let z = -16; z <= 16; z += 8) {
+  bloc(0.8, H, 1, -L / 2 + 0.4, H / 2, z);
+  bloc(0.8, H, 1, L / 2 - 0.4, H / 2, z);
+  bloc(L, 1, 0.8, 0, H - 0.5, z);
+  bloc(L - 6, 0.1, 0.35, 0, H - 1.05, z, z === 0 ? matBandeFaible : matBande);
+}
+for (let x = -16; x <= 16; x += 8) bloc(1, H, 0.8, x, H / 2, L / 2 - 0.4);
+// cadre de l'ouverture, émetteurs du champ de force, bande de danger au sol
+bloc(1.2, OUV_H, 1.6, -OUV_L / 2 - 0.6, OUV_H / 2, -L / 2 + 0.8);
+bloc(1.2, OUV_H, 1.6, OUV_L / 2 + 0.6, OUV_H / 2, -L / 2 + 0.8);
+bloc(OUV_L + 2.4, 1.2, 1.6, 0, OUV_H + 0.6, -L / 2 + 0.8);
+const matEmetteur = new THREE.MeshStandardMaterial({ color: 0x0a1418, emissive: 0x5fd8ff, emissiveIntensity: 2.2 });
+bloc(0.08, OUV_H, 0.2, -OUV_L / 2 + 0.02, OUV_H / 2, -L / 2 + 0.3, matEmetteur);
+bloc(0.08, OUV_H, 0.2, OUV_L / 2 - 0.02, OUV_H / 2, -L / 2 + 0.3, matEmetteur);
+const bandeDanger = new THREE.Mesh(new THREE.PlaneGeometry(OUV_L, 1), new THREE.MeshStandardMaterial({ map: texture(textureDanger(), true, OUV_L / 4, 1), roughness: 0.7, metalness: 0.1, polygonOffset: true, polygonOffsetFactor: -2 }));
+bandeDanger.rotation.x = -Math.PI / 2;
+bandeDanger.position.set(0, 0.004, -L / 2 + 1.1);
+bandeDanger.receiveShadow = true;
+hangar.add(bandeDanger);
+
+const champForce = new THREE.Mesh(new THREE.PlaneGeometry(OUV_L, OUV_H), new THREE.ShaderMaterial({
+  uniforms: { uTemps: { value: 0 }, uForce: { value: 1 } },
+  vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform float uTemps; uniform float uForce; varying vec2 vUv;
+    void main() {
+      float bandes = 0.5 + 0.5 * sin(vUv.y * 260.0 - uTemps * 2.0);
+      float bord = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x) * smoothstep(0.0, 0.06, vUv.y) * smoothstep(1.0, 0.94, vUv.y);
+      float a = (0.025 + 0.02 * bandes + 0.22 * (1.0 - bord)) * uForce;
+      gl_FragColor = vec4(vec3(0.37, 0.85, 1.0) * a, 1.0);
+    }`,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+}));
+champForce.position.set(0, OUV_H / 2, -L / 2 + 0.3);
+hangar.add(champForce);
+
+// gyrophares de la panne : faisceaux rouges qui balaient le hangar
+const balises = [[-L / 2 + 1, 9, -8], [-L / 2 + 1, 9, 8], [L / 2 - 1, 9, -8], [L / 2 - 1, 9, 8]].map(([x, y, z], i) => {
+  const lampe = new THREE.SpotLight(0xff2a14, 5200, 0, 0.42, 0.5, 2);
+  lampe.position.set(x, y, z);
+  lampe.castShadow = i < 2;
+  lampe.shadow.mapSize.set(1024, 1024);
+  lampe.shadow.bias = -0.0005;
+  const boitier = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 0.45, 16), new THREE.MeshStandardMaterial({ color: 0x300404, emissive: 0xff2010, emissiveIntensity: 2 }));
+  boitier.position.set(x, y, z);
+  hangar.add(lampe, lampe.target, boitier);
+  return { lampe, boitier, phase: i * 1.7, x, y, z };
+});
+
+// ------------------------------------------------------------------ l'espace : étoiles, planète désertique, soleil
+
+const espace = new THREE.Group();
+scene.add(espace);
+const SOLEIL = new THREE.Vector3(-0.55, 0.32, -0.77).normalize();
+
+function disque(taille, interieur, exterieur) {
+  const [c, g] = toile(taille);
+  const d = g.createRadialGradient(taille / 2, taille / 2, 0, taille / 2, taille / 2, taille / 2);
+  d.addColorStop(0, interieur); d.addColorStop(1, exterieur);
+  g.fillStyle = d; g.fillRect(0, 0, taille, taille);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+function etoiles(n, taille, voieLactee, graine) {
+  const r = hasard(graine), pos = new Float32Array(n * 3), col = new Float32Array(n * 3), v = new THREE.Vector3();
+  const axe = new THREE.Vector3(0.3, 0, 1).normalize();
+  for (let i = 0; i < n; i++) {
+    if (r() < voieLactee) {
+      const a = r() * Math.PI * 2, e = (r() + r() + r() - 1.5) * 0.14;
+      v.set(Math.cos(a), e, Math.sin(a)).normalize().applyAxisAngle(axe, 1.1);
+    } else {
+      v.set(r() * 2 - 1, r() * 2 - 1, r() * 2 - 1);
+      if (v.lengthSq() > 1 || v.lengthSq() < 0.01) { i--; continue; }
+      v.normalize();
+    }
+    v.multiplyScalar(9000).toArray(pos, i * 3);
+    const b = 0.35 + r() * 0.65, t = r();
+    col.set([b * (t < 0.15 ? 1 : 0.85 + t * 0.15), b * 0.92, b * (t > 0.85 ? 1 : 0.8 + t * 0.2)], i * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  return new THREE.Points(g, new THREE.PointsMaterial({ size: taille, sizeAttenuation: false, vertexColors: true, map: disque(32, 'rgba(255,255,255,1)', 'rgba(255,255,255,0)'), transparent: true, depthWrite: false, toneMapped: false }));
+}
+espace.add(etoiles(6000, 1.8, 0.45, 3), etoiles(260, 3.4, 0.2, 9));
+for (const [couleur, dir, echelle] of [['rgba(122,60,255,0.16)', [0.8, 0.2, -0.4], 7000], ['rgba(31,181,176,0.12)', [0.5, -0.1, 0.8], 6000], ['rgba(255,122,60,0.10)', [-0.9, 0.4, 0.3], 5000]]) {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: disque(256, couleur, 'rgba(0,0,0,0)'), blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  s.position.fromArray(dir).normalize().multiplyScalar(8600);
+  s.scale.setScalar(echelle);
+  espace.add(s);
+}
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: disque(256, 'rgba(255,240,215,0.9)', 'rgba(255,200,140,0)'), blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+halo.position.copy(SOLEIL).multiplyScalar(8800);
+halo.scale.setScalar(1500);
+const astre = new THREE.Sprite(new THREE.SpriteMaterial({ map: disque(64, 'rgba(255,255,250,1)', 'rgba(255,250,240,0)'), depthWrite: false, toneMapped: false }));
+astre.position.copy(halo.position);
+astre.scale.setScalar(260);
+espace.add(halo, astre);
+
+const BRUIT_GLSL = `
+  float hachage(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+  float bruit(vec3 x) {
+    vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(mix(hachage(i), hachage(i + vec3(1, 0, 0)), f.x), mix(hachage(i + vec3(0, 1, 0)), hachage(i + vec3(1, 1, 0)), f.x), f.y),
+               mix(mix(hachage(i + vec3(0, 0, 1)), hachage(i + vec3(1, 0, 1)), f.x), mix(hachage(i + vec3(0, 1, 1)), hachage(i + vec3(1, 1, 1)), f.x), f.y), f.z);
+  }
+  float fbm(vec3 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 6; i++) { s += a * bruit(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); a *= 0.5; } return s; }`;
+const planete = new THREE.Mesh(new THREE.SphereGeometry(1400, 128, 64), new THREE.ShaderMaterial({
+  uniforms: { uSoleil: { value: SOLEIL } },
+  vertexShader: 'varying vec3 vN; varying vec3 vP; void main() { vP = position; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform vec3 uSoleil; varying vec3 vN; varying vec3 vP; ${BRUIT_GLSL}
+    void main() {
+      vec3 n = normalize(vP);
+      float d = fbm(n * 3.0 + fbm(n * 5.0) * 1.6);
+      float dunes = fbm(vec3(n.x * 2.0, n.y * 30.0 + d * 6.0, n.z * 2.0));
+      vec3 roche = vec3(0.24, 0.15, 0.11), sable = mix(vec3(0.58, 0.38, 0.21), vec3(0.86, 0.66, 0.42), dunes);
+      vec3 c = mix(roche, sable, smoothstep(0.38, 0.56, d));
+      c = mix(c, vec3(0.9, 0.88, 0.84), smoothstep(0.86, 0.93, abs(n.y) + d * 0.08));
+      float l = max(dot(normalize(vN), uSoleil), 0.0);
+      gl_FragColor = vec4(c * (l * 1.5 + 0.012), 1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }`,
+}));
+planete.position.set(-600, -650, -4600);
+const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1450, 96, 48), new THREE.ShaderMaterial({
+  uniforms: { uSoleil: { value: SOLEIL } },
+  vertexShader: 'varying vec3 vN; varying vec3 vW; void main() { vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+  fragmentShader: `uniform vec3 uSoleil; varying vec3 vN; varying vec3 vW;
+    void main() {
+      vec3 n = normalize(vN), v = normalize(cameraPosition - vW);
+      float f = pow(1.0 - max(dot(n, v), 0.0), 2.6), l = smoothstep(-0.25, 0.6, dot(n, uSoleil));
+      gl_FragColor = vec4(vec3(1.0, 0.62, 0.38) * f * l * 1.7, 1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }`,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+}));
+atmosphere.position.copy(planete.position);
+espace.add(planete, atmosphere);
+
+// ------------------------------------------------------------------ lumières et ambiances
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+function sceneReflets(fond, sources) {
+  const s = new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.BoxGeometry(30, 14, 30), new THREE.MeshBasicMaterial({ color: fond, side: THREE.BackSide })));
+  for (const [couleur, taille, position] of sources) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(...taille), new THREE.MeshBasicMaterial({ color: new THREE.Color(...couleur) }));
+    m.position.fromArray(position);
+    s.add(m);
+  }
+  return pmrem.fromScene(s, 0.03).texture;
+}
+const REFLETS = {
+  atelier: pmrem.fromScene(new RoomEnvironment(), 0.04).texture,
+  panne: sceneReflets(0x060303, [[[3, 0.25, 0.12], [0.3, 1.2, 8], [-14, 3, 0]], [[3, 0.25, 0.12], [0.3, 1.2, 8], [14, 3, 0]], [[0.2, 0.2, 0.24], [18, 0.1, 1], [0, 6.8, 0]]]),
+  vide: sceneReflets(0x010102, [[[60, 56, 50], [1.2, 1.2, 1.2], SOLEIL.clone().multiplyScalar(12).toArray()], [[0.05, 0.035, 0.025], [10, 0.2, 10], [0, -6.8, -2]]]),
+};
+
+const ciel = new THREE.HemisphereLight(0xdfe6f0, 0x3a3632, 0.5);
+const plafonnier = new THREE.DirectionalLight(0xfff4e8, 2.2);
+plafonnier.position.set(13, 34, 15);
+plafonnier.castShadow = true;
+plafonnier.shadow.mapSize.set(4096, 4096);
+Object.assign(plafonnier.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 90 });
+plafonnier.shadow.bias = -0.0004;
+plafonnier.shadow.normalBias = 0.02;
+const lumiereSoleil = new THREE.DirectionalLight(0xfff1de, 3.2);
+lumiereSoleil.position.copy(SOLEIL).multiplyScalar(60);
+lumiereSoleil.castShadow = true;
+lumiereSoleil.shadow.mapSize.set(4096, 4096);
+Object.assign(lumiereSoleil.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 140 });
+lumiereSoleil.shadow.bias = -0.0004;
+lumiereSoleil.shadow.normalBias = 0.02;
+scene.add(ciel, plafonnier, plafonnier.target, lumiereSoleil, lumiereSoleil.target);
+
+// grille de 1 m : visible avec l'aimant, et toujours dans le vide
+const grille = new THREE.GridHelper(L, L, 0x8a93a3, 0x5a6170);
+grille.material.transparent = true;
+grille.material.opacity = 0.22;
+grille.material.depthWrite = false;
+grille.position.y = 0.003;
+scene.add(grille);
+
+let ambiance = 'atelier';
+function appliquerAmbiance(nom) {
+  ambiance = ['atelier', 'panne', 'vide'].includes(nom) ? nom : 'atelier';
+  $('#ambiance').value = ambiance;
+  hangar.visible = ambiance !== 'vide';
+  plafonnier.visible = ambiance === 'atelier';
+  lumiereSoleil.visible = ambiance === 'vide';
+  balises.forEach(b => { b.lampe.visible = b.boitier.visible = ambiance === 'panne'; });
+  const [cielHaut, cielBas, force] = { atelier: [0xdfe6f0, 0x3a3632, 0.5], panne: [0x9a2418, 0x180505, 0.9], vide: [0x9fb4dc, 0xc07a48, 0.75] }[ambiance];
+  ciel.color.set(cielHaut); ciel.groundColor.set(cielBas); ciel.intensity = force;
+  for (const m of [matBande, matBandeFaible]) { m.emissive.set(ambiance === 'panne' ? 0xff2a1a : 0xffffff); m.emissiveIntensity = ambiance === 'panne' ? 1.6 : 3; }
+  scene.environment = REFLETS[ambiance];
+  majGrille();
+  prefs.ambiance = ambiance;
+  sauverPrefs();
+}
+
+function animerAmbiance(t) {
+  champForce.material.uniforms.uTemps.value = t;
+  if (ambiance !== 'panne') { champForce.material.uniforms.uForce.value = 1; return; }
+  // le champ de force et un néon vacillent, les gyrophares tournent
+  const panne = Math.sin(t * 17) * Math.sin(t * 5.3) > 0.55;
+  champForce.material.uniforms.uForce.value = panne ? 0.15 : 0.55 + 0.1 * Math.sin(t * 40);
+  matBandeFaible.emissiveIntensity = Math.sin(t * 23) * Math.sin(t * 2.1) > 0.6 ? 2.5 : 0.05;
+  for (const b of balises) {
+    const a = t * 2.2 + b.phase;
+    b.lampe.target.position.set(b.x - Math.sign(b.x) * 10 + Math.cos(a) * 9, 0, b.z + Math.sin(a) * 9);
+    b.boitier.material.emissiveIntensity = 1 + Math.max(0, Math.cos(a * 2)) * 3;
+  }
+}
+
+// ------------------------------------------------------------------ formes grises : tracer le niveau avant de l'habiller
+
+function textureCarreaux() {
+  const [c, g] = toile(128);
+  g.fillStyle = '#8b8f96'; g.fillRect(0, 0, 128, 128);
+  g.fillStyle = '#676b73'; g.fillRect(0, 0, 128, 3); g.fillRect(0, 0, 3, 128);
+  g.fillStyle = '#7f838a'; g.fillRect(0, 63, 128, 1); g.fillRect(63, 0, 1, 128);
+  return texture(c, true, 1, 1);
+}
+const matGris = new THREE.MeshStandardMaterial({ map: textureCarreaux(), roughness: 0.85, metalness: 0 });
+const matHumain = new THREE.MeshStandardMaterial({ color: 0x86efe6, transparent: true, opacity: 0.4, roughness: 0.6 });
+const matAttente = new THREE.MeshBasicMaterial({ color: 0x86efe6, wireframe: true, transparent: true, opacity: 0.35 });
+
+// une boîte dont les coordonnées de texture suivent les mètres : un carreau = 1 m, quelle que soit sa taille
+function boite(l, h, p, x = 0, y = 0, z = 0) {
+  const g = new THREE.BoxGeometry(l, h, p), uv = g.attributes.uv;
+  const faces = [[p, h], [p, h], [l, p], [l, p], [l, h], [l, h]];
+  for (let f = 0; f < 6; f++) for (let k = 0; k < 4; k++) { const i = f * 4 + k; uv.setXY(i, uv.getX(i) * faces[f][0], uv.getY(i) * faces[f][1]); }
+  const m = new THREE.Mesh(g, matGris);
+  m.position.set(x, y, z);
+  m.castShadow = m.receiveShadow = true;
+  return m;
+}
+function silhouette() {
+  const corps = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.1, 6, 16), matHumain); corps.position.y = 0.77;
+  const tete = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), matHumain); tete.position.y = 1.67;
+  return [corps, tete];
+}
+// origine de chaque forme : au sol, au centre
+const FORMES = {
+  sol: { nom: 'Sol 3 × 3 m', taille: [3, 0.1, 3], creer: () => [boite(3, 0.1, 3, 0, 0.05)] },
+  mur: { nom: 'Mur 3 × 3 m', taille: [3, 3, 0.2], creer: () => [boite(3, 3, 0.2, 0, 1.5)] },
+  porte: { nom: 'Mur avec porte', taille: [3, 3, 0.2], creer: () => [boite(0.9, 3, 0.2, -1.05, 1.5), boite(0.9, 3, 0.2, 1.05, 1.5), boite(1.2, 0.8, 0.2, 0, 2.6)] },
+  coursive: { nom: 'Coursive 3 m', taille: [3.4, 3.3, 3], creer: () => [boite(3, 0.1, 3, 0, 0.05), boite(0.2, 3, 3, -1.6, 1.6), boite(0.2, 3, 3, 1.6, 1.6), boite(3.4, 0.2, 3, 0, 3.2)] },
+  escalier: { nom: 'Escalier 1,5 m', taille: [2, 1.5, 3], creer: () => Array.from({ length: 10 }, (_, i) => boite(2, 0.15 * (i + 1), 0.3, 0, 0.075 * (i + 1), 1.35 - i * 0.3)) },
+  plateforme: { nom: 'Plateforme 3 × 3 m', taille: [3, 1.5, 3], creer: () => [boite(3, 1.5, 3, 0, 0.75)] },
+  colonne: { nom: 'Colonne 6 m', taille: [0.6, 6, 0.6], creer: () => [boite(0.6, 6, 0.6, 0, 3)] },
+  cube: { nom: 'Cube 1 m', taille: [1, 1, 1], creer: () => [boite(1, 1, 1, 0, 0.5)] },
+  humain: { nom: 'Silhouette 1,80 m', taille: [0.44, 1.8, 0.44], creer: silhouette },
+};
+
+// ------------------------------------------------------------------ fichiers des modèles : servis par un serveur local, ou choisis sur le disque
+
+const RACINE = new URL((new URLSearchParams(location.search).get('models') || 'prologue').replace(/\/?$/, '/'), location.href);
+const FAUX = 'https://atelier.local/';   // adresse fictive des fichiers choisis sur le disque
+let source = null;                       // 'serveur' ou 'dossier'
+let fichiers = null;                     // chemin relatif → File
+const urlsFichiers = new Map();
+
+const gestionnaire = new THREE.LoadingManager();
+gestionnaire.setURLModifier(url => {
+  if (!fichiers || !url.startsWith(FAUX)) return url;
+  const chemin = decodeURIComponent(new URL(url).pathname.slice(1));
+  const f = fichiers.get(chemin) || fichiers.get(chemin.toLowerCase());
+  if (!f) return url;
+  if (!urlsFichiers.has(chemin)) urlsFichiers.set(chemin, URL.createObjectURL(f));
+  return urlsFichiers.get(chemin);
+});
+const draco = new DRACOLoader(gestionnaire).setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const chargeur = new GLTFLoader(gestionnaire).setDRACOLoader(draco);
+
+const candidats = m => [`${m.dossier}/${m.nom}/${m.nom}.glb`, `${m.dossier}/${m.nom}/scene.gltf`, `${m.dossier}/${m.nom}/scene.glb`];
+
+async function chercherSurServeur(m) {
+  for (const c of candidats(m)) {
+    try { const r = await fetch(new URL(c, RACINE), { method: 'HEAD' }); if (r.ok) return c; } catch { return null; }
+  }
+  // sinon, la liste du dossier que donne « python3 -m http.server »
+  try {
+    const r = await fetch(new URL(`${m.dossier}/${m.nom}/`, RACINE));
+    if (r.ok) {
+      const liens = [...(await r.text()).matchAll(/href="([^"?#/]+\.(?:glb|gltf))"/gi)].map(x => decodeURIComponent(x[1]));
+      if (liens.length) return `${m.dossier}/${m.nom}/${liens[0]}`;
+    }
+  } catch { }
+  return null;
+}
+
+// liste d'un dossier servi par « python3 -m http.server » : [] s'il n'existe pas, null si le serveur ne liste pas
+async function lister(url) {
+  try {
+    const r = await fetch(url);
+    if (r.status === 404) return [];
+    if (!r.ok) return null;
+    const liens = [...(await r.text()).matchAll(/href="([^"?#]+)"/gi)].map(x => decodeURIComponent(x[1]));
+    return liens.length ? liens : null;
+  } catch { return null; }
+}
+async function scannerServeur() {
+  const racine = await lister(RACINE);
+  if (racine === null) return Promise.all(MODELES.map(chercherSurServeur));
+  const trouves = MODELES.map(() => null);
+  await Promise.all(Object.keys(DOSSIERS).filter(d => racine.includes(d + '/')).map(async d => {
+    const sous = await lister(new URL(d + '/', RACINE)) || [];
+    await Promise.all(MODELES.map(async (m, i) => {
+      if (m.dossier !== d || !sous.includes(m.nom + '/')) return;
+      const contenu = await lister(new URL(`${d}/${m.nom}/`, RACINE)) || [];
+      const f = [`${m.nom}.glb`, 'scene.gltf', 'scene.glb'].find(x => contenu.includes(x)) || contenu.find(x => /\.(glb|gltf)$/i.test(x));
+      if (f) trouves[i] = `${d}/${m.nom}/${f}`;
+    }));
+  }));
+  return trouves;
+}
+
+function chercherDansDossier(m) {
+  for (const c of candidats(m)) if (fichiers.has(c)) return c;
+  const debut = `${m.dossier}/${m.nom}/`;
+  return [...fichiers.keys()].filter(k => k.startsWith(debut) && /\.(glb|gltf)$/i.test(k)).sort((a, b) => a.split('/').length - b.split('/').length)[0] || null;
+}
+
+function adresse(m) {
+  return source === 'dossier' ? FAUX + m.chemin.split('/').map(encodeURIComponent).join('/') : new URL(m.chemin, RACINE).href;
+}
+
+// paires [chemin, File] : on garde ce qui est rangé sous 01-Joueur, 02-Prisonniers…
+function utiliserFichiers(paires) {
+  const carte = new Map();
+  for (const [chemin, f] of paires) {
+    const morceaux = chemin.split('/');
+    const i = morceaux.findIndex(s => s in DOSSIERS);
+    if (i < 0) continue;
+    const rel = morceaux.slice(i).join('/');
+    carte.set(rel, f);
+    carte.set(rel.toLowerCase(), carte.get(rel.toLowerCase()) || f);
+  }
+  if (!carte.size) {
+    toast('Ce dossier ne contient pas les sous-dossiers 01-Joueur, 02-Prisonniers… Choisis le dossier « prologue ».');
+    return;
+  }
+  for (const u of urlsFichiers.values()) URL.revokeObjectURL(u);
+  urlsFichiers.clear();
+  cache.clear();
+  fichiers = carte;
+  source = 'dossier';
+  for (const m of MODELES) m.chemin = chercherDansDossier(m);
+  majDisponibilite();
+  remplirEnAttente();
+  const n = MODELES.filter(m => m.chemin).length;
+  toast(n ? `${n} modèles trouvés dans le dossier.` : 'Aucun modèle reconnu dans ce dossier.');
+  if (n) fermerAccueil();
+}
+
+$('#btn-dossier').onclick = () => $('#champ-dossier').click();
+$('#champ-dossier').addEventListener('change', e => {
+  const liste = [...e.target.files];
+  if (liste.length) utiliserFichiers(liste.map(f => [f.webkitRelativePath || f.name, f]));
+  e.target.value = '';
+});
+
+// glisser le dossier depuis le Finder
+async function lireEntree(entree, chemin, sortie) {
+  if (entree.isFile) {
+    sortie.push([chemin + entree.name, await new Promise((ok, ko) => entree.file(ok, ko))]);
+  } else if (entree.isDirectory) {
+    const lecteur = entree.createReader();
+    for (;;) {
+      const lot = await new Promise((ok, ko) => lecteur.readEntries(ok, ko));
+      if (!lot.length) break;
+      await Promise.all(lot.map(e => lireEntree(e, chemin + entree.name + '/', sortie)));
+    }
+  }
+}
+let compteurGlisser = 0;
+addEventListener('dragenter', e => { if ([...e.dataTransfer.types].includes('Files')) { compteurGlisser++; $('#depot').hidden = false; } });
+addEventListener('dragleave', () => { if (--compteurGlisser <= 0) { compteurGlisser = 0; $('#depot').hidden = true; } });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', async e => {
+  e.preventDefault();
+  compteurGlisser = 0;
+  $('#depot').hidden = true;
+  const entrees = [...e.dataTransfer.items].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  const scenes = entrees.filter(x => x.isFile && /\.json$/i.test(x.name));
+  if (scenes.length && scenes.length === entrees.length) { importer(e.dataTransfer.files[0]); return; }
+  toast('Lecture du dossier…', true);
+  const paires = [];
+  try { await Promise.all(entrees.map(x => lireEntree(x, '', paires))); } catch (err) { console.error(err); }
+  utiliserFichiers(paires);
+});
+
+// ------------------------------------------------------------------ bibliothèque
+
+const boutons = new Map();
+function construireBibliotheque() {
+  const b = $('#bibliotheque');
+  const titre = (t, p) => { const h = document.createElement('h2'); h.textContent = t; b.append(h); if (p) { const x = document.createElement('p'); x.textContent = p; b.append(x); } };
+  titre('Formes grises', 'Pour tracer le niveau avant de poser les vrais modèles.');
+  for (const [cle, f] of Object.entries(FORMES)) {
+    const bt = document.createElement('button');
+    bt.className = 'forme';
+    bt.innerHTML = '<i></i>';
+    bt.append(f.nom);
+    bt.dataset.texte = f.nom;
+    bt.onclick = () => ajouter({ type: 'forme', cle });
+    b.append(bt);
+  }
+  let dossier = null;
+  for (const m of MODELES) {
+    if (m.dossier !== dossier) { dossier = m.dossier; titre(DOSSIERS[dossier] || dossier); }
+    const bt = document.createElement('button');
+    bt.className = 'absent';
+    bt.title = m.usage;
+    bt.innerHTML = `<i></i>${esc(m.nom)}<small>${m.faces >= 1e6 ? (m.faces / 1e6).toFixed(1) + ' M' : Math.round(m.faces / 1000) + ' k'}</small>`;
+    bt.dataset.texte = `${m.nom} ${m.usage} ${m.titre} ${DOSSIERS[m.dossier]}`;
+    bt.onclick = () => ajouter({ type: 'modele', cle: `${m.dossier}/${m.nom}` });
+    b.append(bt);
+    boutons.set(`${m.dossier}/${m.nom}`, bt);
+  }
+}
+construireBibliotheque();
+
+const sansAccents = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+$('#filtre').addEventListener('input', e => {
+  const q = sansAccents(e.target.value.trim());
+  let titre = null, visibles = 0;
+  for (const el of $('#bibliotheque').children) {
+    if (el.tagName === 'H2') { if (titre) titre.hidden = !visibles; titre = el; visibles = 0; continue; }
+    if (el.tagName === 'P') { el.hidden = !!q; continue; }
+    el.hidden = !!q && !sansAccents(el.dataset.texte).includes(q);
+    if (!el.hidden) visibles++;
+  }
+  if (titre) titre.hidden = !visibles;
+});
+
+function majDisponibilite() {
+  for (const m of MODELES) {
+    const bt = boutons.get(`${m.dossier}/${m.nom}`);
+    bt.classList.toggle('present', !!m.chemin);
+    bt.classList.toggle('absent', !m.chemin);
+  }
+  const n = MODELES.filter(m => m.chemin).length;
+  $('#source').innerHTML = n
+    ? `${n} modèles sur ${MODELES.length}, ${source === 'dossier' ? 'lus sur ton disque' : `servis depuis <code>${esc(decodeURIComponent(RACINE.pathname))}</code>`}.`
+    : `Aucun modèle chargé. Choisis le dossier <code>~/jeu/prologue</code>, ou glisse-le sur la page.`;
+  $('#btn-dossier').textContent = n ? 'Choisir un autre dossier…' : 'Choisir le dossier prologue…';
+  $('#etape-dossier').innerHTML = n
+    ? `<b>Modèles</b> : <span class="ok">${n} modèles trouvés.</span> Les points bleus de la liste sont disponibles.`
+    : `<b>Charger les modèles</b> : choisis le dossier <code>~/jeu/prologue</code> (ou glisse-le sur la page). Le navigateur demande de confirmer : accepte, rien n'est envoyé sur Internet.<br><button class="principal" data-act="dossier">Choisir le dossier prologue…</button>`;
+}
+
+// ------------------------------------------------------------------ chargement des modèles (une fois chacun, puis copiés)
+
+const cache = new Map();
+function charger(m) {
+  const cle = `${m.dossier}/${m.nom}`;
+  if (!cache.has(cle)) {
+    const promesse = chargeur.loadAsync(adresse(m)).then(gltf => {
+      const s = gltf.scene;
+      let faces = 0;
+      s.traverse(n => {
+        if (!n.isMesh) return;
+        n.castShadow = n.receiveShadow = true;
+        faces += (n.geometry.index ? n.geometry.index.count : n.geometry.attributes.position.count) / 3;
+      });
+      s.updateMatrixWorld(true);
+      const b = new THREE.Box3().setFromObject(s);
+      const vide = b.isEmpty();
+      const centre = vide ? new THREE.Vector3() : b.getCenter(new THREE.Vector3());
+      return {
+        scene: s, animations: gltf.animations, faces,
+        decalage: vide ? new THREE.Vector3() : new THREE.Vector3(-centre.x, -b.min.y, -centre.z),
+        taille: vide ? new THREE.Vector3(1, 1, 1) : b.getSize(new THREE.Vector3()),
+      };
+    });
+    promesse.catch(() => cache.delete(cle));
+    cache.set(cle, promesse);
+  }
+  return cache.get(cle);
+}
+
+// ------------------------------------------------------------------ la scène : une liste de pièces, enregistrée à chaque changement
+
+// pièce : { id, type: 'modele' | 'forme', cle, position [m], rotation [degrés, XYZ], echelle, taille [m, à l'échelle 1], animation }
+function propre(p) {
+  if (!p || !['modele', 'forme'].includes(p.type) || typeof p.cle !== 'string') return null;
+  if (p.type === 'forme' && !FORMES[p.cle]) return null;
+  const v = (a, d) => Array.isArray(a) && a.length === 3 && a.every(Number.isFinite) ? a.map(x => arrondi(x, 4)) : d;
+  const q = { id: typeof p.id === 'string' ? p.id : nouvelId(), type: p.type, cle: p.cle, position: v(p.position, [0, 0, 0]), rotation: v(p.rotation, [0, 0, 0]), echelle: v(p.echelle, [1, 1, 1]) };
+  if (v(p.taille)) q.taille = v(p.taille);
+  if (Number.isInteger(p.animation)) q.animation = p.animation;
+  return q;
+}
+let compteurId = 0;
+const nouvelId = () => `p${Date.now().toString(36)}${(compteurId++).toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+
+const etat = { pieces: (memoire.lire(CLE_SCENE, {}).pieces || []).map(propre).filter(Boolean) };
+const objets = new Map();   // id → groupe dans la scène
+const pieceDe = id => etat.pieces.find(p => p.id === id);
+let historique = [], futur = [];
+const instantane = () => JSON.stringify(etat.pieces);
+let dernier = instantane();
+
+function sauver() { memoire.ecrire(CLE_SCENE, { version: 1, pieces: etat.pieces }); }
+function valider() {
+  const s = instantane();
+  if (s === dernier) return;
+  historique.push(dernier);
+  if (historique.length > 150) historique.shift();
+  futur = [];
+  dernier = s;
+  sauver();
+  majBoutons();
+}
+function revenir(depuis, vers) {
+  if (!depuis.length) return false;
+  vers.push(dernier);
+  dernier = depuis.pop();
+  etat.pieces = JSON.parse(dernier);
+  reconcilier();
+  sauver();
+  majBoutons();
+  return true;
+}
+const annuler = () => { if (revenir(historique, futur)) toast('Annulé'); };
+const retablir = () => { if (revenir(futur, historique)) toast('Rétabli'); };
+
+function poser(o, p) {
+  o.position.fromArray(p.position);
+  o.rotation.set(p.rotation[0] * DEG, p.rotation[1] * DEG, p.rotation[2] * DEG);
+  o.scale.fromArray(p.echelle);
+}
+function relever(o, p) {
+  p.position = o.position.toArray().map(x => arrondi(x));
+  p.rotation = [o.rotation.x, o.rotation.y, o.rotation.z].map(r => arrondi(r / DEG, 2));
+  p.echelle = o.scale.toArray().map(x => arrondi(x, 4));
+}
+
+function creerObjet(p) {
+  const o = new THREE.Group();
+  o.userData = { id: p.id, cle: p.cle, type: p.type };
+  if (p.type === 'forme') {
+    FORMES[p.cle].creer().forEach(x => o.add(x));
+    o.userData.marchable = p.cle !== 'humain';
+    o.userData.faces = 0;
+    o.traverse(n => { if (n.isMesh) o.userData.faces += n.geometry.index.count / 3; });
+  } else {
+    // boîte d'attente à la taille du modèle, remplacée dès qu'il est chargé
+    const t = p.taille || [1, 1, 1];
+    const attente = new THREE.Mesh(new THREE.BoxGeometry(...t), matAttente);
+    attente.position.y = t[1] / 2;
+    attente.userData.attente = true;
+    o.add(attente);
+    remplir(o);
+  }
+  scene.add(o);
+  return o;
+}
+function retirer(o) {
+  scene.remove(o);
+  o.userData.mixer?.stopAllAction();
+  o.traverse(n => { if (n.userData.attente) n.geometry.dispose(); });
+}
+
+async function remplir(o) {
+  const m = PAR_CLE.get(o.userData.cle);
+  if (!m || !m.chemin || o.userData.rempli || o.userData.enCours) return;
+  o.userData.enCours = true;
+  try {
+    const d = await charger(m);
+    if (!o.parent || o.userData.rempli) return;
+    const copie = clonerAvecSquelette(d.scene);
+    copie.position.copy(d.decalage);
+    for (const c of o.children.filter(c => c.userData.attente)) { o.remove(c); c.geometry.dispose(); }
+    o.add(copie);
+    Object.assign(o.userData, { rempli: true, faces: d.faces, animations: d.animations });
+    if (d.animations.length) {
+      o.userData.mixer = new THREE.AnimationMixer(copie);
+      jouer(o, pieceDe(o.userData.id)?.animation ?? 0);
+    }
+    if (selection === o) { cadreSelection.setFromObject(o); majFiche(); }
+  } catch (e) {
+    console.error(e);
+    toast(`Impossible de lire ${m.nom} : ${e.message}`);
+  } finally {
+    o.userData.enCours = false;
+  }
+}
+const remplirEnAttente = () => { for (const o of objets.values()) if (o.userData.type === 'modele') remplir(o); };
+
+function jouer(o, k) {
+  const mixer = o.userData.mixer, clips = o.userData.animations || [];
+  if (!mixer) return;
+  o.userData.anim = k;
+  mixer.stopAllAction();
+  if (k >= 0 && clips[k]) mixer.clipAction(clips[k]).play();
+}
+
+// la scène suit la liste : on retire, on crée, on replace
+function reconcilier() {
+  const ids = new Set(etat.pieces.map(p => p.id));
+  for (const [id, o] of objets) if (!ids.has(id)) { retirer(o); objets.delete(id); }
+  for (const p of etat.pieces) {
+    let o = objets.get(p.id);
+    if (!o || o.userData.cle !== p.cle) { if (o) retirer(o); o = creerObjet(p); objets.set(p.id, o); }
+    poser(o, p);
+    if (o.userData.mixer && o.userData.anim !== (p.animation ?? 0)) jouer(o, p.animation ?? 0);
+  }
+  if (selection && !objets.has(selection.userData.id)) selectionner(null);
+  else if (selection) { cadreSelection.setFromObject(selection); majFiche(); }
+}
+
+// ------------------------------------------------------------------ poser, choisir, déplacer
+
+let aimant = prefs.aimant;
+const transform = new TransformControls(camera, renderer.domElement);
+transform.setSize(0.9);
+scene.add(transform);
+transform.addEventListener('dragging-changed', e => {
+  orbite.enabled = !e.value;
+  if (!e.value && selection) { relever(selection, pieceDe(selection.userData.id)); valider(); majFiche(); }
+});
+transform.addEventListener('objectChange', () => { if (selection) { relever(selection, pieceDe(selection.userData.id)); planifierMesures(); } });
+
+function majGrille() {
+  grille.visible = aimant || ambiance === 'vide';
+  transform.setTranslationSnap(aimant ? 0.5 : null);
+  transform.setRotationSnap(aimant ? 15 * DEG : null);
+  transform.setScaleSnap(aimant ? 0.1 : null);
+  $('#btn-aimant').classList.toggle('actif', aimant);
+}
+function basculerAimant() {
+  aimant = !aimant;
+  prefs.aimant = aimant;
+  sauverPrefs();
+  majGrille();
+  toast(aimant ? 'Aimant : grille de 50 cm, pas de 15°' : 'Aimant coupé : placement libre');
+}
+
+function changerMode(mode) {
+  transform.setMode(mode);
+  document.querySelectorAll('#outils [data-mode]').forEach(b => b.classList.toggle('actif', b.dataset.mode === mode));
+}
+
+const cadreSelection = new THREE.BoxHelper(undefined, 0xf2b26b);
+cadreSelection.visible = false;
+scene.add(cadreSelection);
+let selection = null;
+function selectionner(o) {
+  selection = o || null;
+  if (selection && !visite) { transform.attach(selection); cadreSelection.setFromObject(selection); cadreSelection.visible = true; }
+  else { transform.detach(); cadreSelection.visible = false; }
+  majFiche();
+  majBoutons();
+}
+
+// là où l'on regarde, au sol ; à la grille si l'aimant est mis
+function pointDePose([l, , pr]) {
+  const p = new THREE.Vector3();
+  if (visite) {
+    p.set(-Math.sin(lacet), 0, -Math.cos(lacet)).multiplyScalar(2.5 + pr / 2).add(camera.position);
+  } else {
+    p.copy(orbite.target);
+  }
+  p.y = 0;
+  if (aimant) { p.x = Math.round(p.x * 2) / 2; p.z = Math.round(p.z * 2) / 2; }
+  // pas l'une dans l'autre : tant que l'emprise au sol touche une pièce, on passe à sa droite
+  const boites = [...objets.values()].map(o => new THREE.Box3().setFromObject(o));
+  for (let k = 0; k < 60; k++) {
+    const gene = boites.find(b => p.x - l / 2 < b.max.x - 0.05 && p.x + l / 2 > b.min.x + 0.05 && p.z - pr / 2 < b.max.z - 0.05 && p.z + pr / 2 > b.min.z + 0.05);
+    if (!gene) break;
+    p.x = gene.max.x + l / 2 + 0.5;
+    if (aimant) p.x = Math.ceil(p.x * 2) / 2;
+  }
+  return p;
+}
+
+async function ajouter({ type, cle }) {
+  const p = { id: nouvelId(), type, cle, rotation: [0, 0, 0], echelle: [1, 1, 1] };
+  let taille = [1, 1, 1];
+  if (type === 'modele') {
+    const m = PAR_CLE.get(cle);
+    if (!m.chemin) { toast(`${m.nom} n'est pas dans ton dossier prologue : relance outils/telecharger-prologue.sh, il ne prend que ce qui manque.`); return; }
+    toast(`Chargement de ${m.nom}…`, true);
+    try {
+      const d = await charger(m);
+      p.taille = d.taille.toArray().map(x => arrondi(x));
+      taille = p.taille;
+      toast(`${m.nom} posé : ${metres(d.taille.y)} m de haut dans son fichier.`);
+    } catch (e) {
+      console.error(e);
+      toast(`Impossible de lire ${m.nom} : ${e.message}`);
+      return;
+    }
+  } else {
+    taille = FORMES[cle].taille;
+  }
+  p.position = pointDePose(taille).toArray().map(x => arrondi(x));
+  etat.pieces.push(p);
+  reconcilier();
+  selectionner(objets.get(p.id));
+  valider();
+  if (innerWidth <= 760) document.body.classList.remove('panneau-ouvert');
+}
+
+function dupliquer() {
+  if (!selection) return;
+  const q = structuredClone(pieceDe(selection.userData.id));
+  q.id = nouvelId();
+  const l = new THREE.Box3().setFromObject(selection).getSize(new THREE.Vector3()).x;
+  q.position[0] = arrondi(q.position[0] + Math.max(0.5, Math.ceil(l * 2) / 2));
+  etat.pieces.push(q);
+  reconcilier();
+  selectionner(objets.get(q.id));
+  valider();
+}
+function supprimer() {
+  if (!selection) return;
+  const id = selection.userData.id;
+  etat.pieces = etat.pieces.filter(p => p.id !== id);
+  selectionner(null);
+  reconcilier();
+  valider();
+}
+function effacer() {
+  if (!etat.pieces.length) return;
+  etat.pieces = [];
+  selectionner(null);
+  reconcilier();
+  valider();
+  toast('Scène effacée. ⌘Z pour la retrouver.');
+}
+
+// choisir une pièce : d'abord les boîtes englobantes, puis les triangles des plus proches
+const visee = new THREE.Raycaster();
+function viser(x, y) {
+  const r = renderer.domElement.getBoundingClientRect();
+  visee.setFromCamera(new THREE.Vector2(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1), camera);
+  let meilleur = null, distance = Infinity;
+  const point = new THREE.Vector3(), b = new THREE.Box3();
+  for (const o of objets.values()) {
+    if (!visee.ray.intersectBox(b.setFromObject(o), point)) continue;
+    const touche = visee.intersectObject(o, true)[0];
+    if (touche && touche.distance < distance) { distance = touche.distance; meilleur = o; }
+  }
+  return meilleur;
+}
+let appui = null;
+renderer.domElement.addEventListener('pointerdown', e => { appui = { x: e.clientX, y: e.clientY, gizmo: transform.dragging || transform.axis !== null }; });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!appui || visite) { appui = null; return; }
+  if (e.button === 0 && !appui.gizmo && Math.hypot(e.clientX - appui.x, e.clientY - appui.y) < 5) selectionner(viser(e.clientX, e.clientY));
+  appui = null;
+});
+renderer.domElement.addEventListener('dblclick', e => { if (visite) return; const o = viser(e.clientX, e.clientY); if (o) { selectionner(o); cadrer(o); } });
+
+function cadrer(o = selection) {
+  const b = new THREE.Box3();
+  if (o) b.setFromObject(o);
+  else if (objets.size) for (const x of objets.values()) b.expandByObject(x);
+  else b.set(new THREE.Vector3(-8, 0, -8), new THREE.Vector3(8, 3, 8));
+  const centre = b.getCenter(new THREE.Vector3()), rayon = Math.max(b.getSize(new THREE.Vector3()).length() / 2, 0.6);
+  const direction = camera.position.clone().sub(orbite.target).normalize();
+  orbite.target.copy(centre);
+  camera.position.copy(centre).addScaledVector(direction, rayon / Math.sin(camera.fov * DEG / 2) * 1.1);
+  orbite.update();
+}
+
+// ------------------------------------------------------------------ fiche de la pièce choisie
+
+function mesures(o, p) {
+  const t = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3());
+  const morceaux = [`${metres(t.x)} × ${metres(t.y)} × ${metres(t.z)} m`, `au sol en ${metres(p.position[0], 1)} ; ${metres(p.position[2], 1)}`];
+  if (p.position[1]) morceaux.push(`à ${metres(p.position[1])} m de haut`);
+  if (o.userData.faces) morceaux.push(`${nombre(o.userData.faces)} faces`);
+  let alerte = '';
+  if (p.type === 'modele') {
+    if (t.y > 60 || t.y < 0.03) alerte = 'Échelle à vérifier : règle la hauteur ci-dessous.';
+    else if (o.userData.faces > 300000) alerte = 'Lourd : à alléger avant de le mettre dans Unity.';
+  }
+  return { t, texte: morceaux.join(' · '), alerte };
+}
+
+let mesuresPrevues = false;
+function planifierMesures() {
+  if (mesuresPrevues) return;
+  mesuresPrevues = true;
+  requestAnimationFrame(() => {
+    mesuresPrevues = false;
+    const e = $('#fiche .mesures');
+    if (!e || !selection) return;
+    const p = pieceDe(selection.userData.id);
+    if (!p) return;
+    e.textContent = mesures(selection, p).texte;
+    const h = $('#champ-hauteur');
+    if (h && document.activeElement !== h) h.value = new THREE.Box3().setFromObject(selection).getSize(new THREE.Vector3()).y.toFixed(2);
+  });
+}
+
+const PERSONNAGES = /^0[1-4]-[^/]+\/(?!casque)/;
+function reglerHauteur(o, p, v) {
+  const actuelle = new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y;
+  if (!(v > 0) || !(actuelle > 0)) return;
+  p.echelle = p.echelle.map(x => arrondi(x * v / actuelle, 4));
+  poser(o, p);
+  valider();
+  majFiche();
+}
+
+function majFiche() {
+  const f = $('#fiche');
+  const p = selection && pieceDe(selection.userData.id);
+  if (!p || visite) { f.hidden = true; return; }
+  const o = selection, { t, texte, alerte } = mesures(o, p);
+  let titre, usage, credit = '';
+  if (p.type === 'forme') {
+    titre = FORMES[p.cle].nom;
+    usage = p.cle === 'humain' ? 'Repère d\'échelle : un humain de 1,80 m.' : 'Forme grise : elle sert à essayer le plan du niveau. On marche dessus en visite.';
+  } else {
+    const m = PAR_CLE.get(p.cle);
+    titre = m ? m.nom : p.cle;
+    usage = m ? m.usage : 'Modèle inconnu de la liste du prologue.';
+    if (m) credit = `<div class="meta">« ${esc(m.titre)} » par ${esc(m.auteur)} · CC BY · <a href="https://sketchfab.com/3d-models/${m.uid}" target="_blank" rel="noopener">voir sur Sketchfab</a></div>`;
+    if (!o.userData.rempli) credit += `<div class="alerte">${m && m.chemin ? 'Chargement…' : 'Fichier absent : choisis le dossier prologue pour le voir.'}</div>`;
+  }
+  f.hidden = false;
+  f.innerHTML = `<h3>${esc(titre)}</h3><div class="usage">${esc(usage)}</div>${credit}
+    <div class="meta mesures">${esc(texte)}</div>${alerte ? `<div class="alerte">${esc(alerte)}</div>` : ''}
+    <div class="ligne">
+      <label>Hauteur <input id="champ-hauteur" type="number" min="0.01" step="0.05" value="${t.y.toFixed(2)}"> m</label>
+      ${p.type === 'modele' && PERSONNAGES.test(p.cle) && Math.abs(t.y - 1.8) > 0.02 ? '<button data-act="humain" title="Mettre le personnage à la taille d\'un humain">1,80 m</button>' : ''}
+      <button data-act="pivoter" title="Tourner d'un quart de tour">↻ 90°</button>
+      <button data-act="ausol" title="Poser au sol">Au sol</button>
+      <button data-act="cadrer" title="Cadrer (F)">Cadrer</button>
+      <button data-act="dupliquer" title="Dupliquer (⌘D)">Dupliquer</button>
+      <button data-act="supprimer" class="danger" title="Supprimer (⌫)">Supprimer</button>
+    </div><div class="ligne anims"></div>`;
+  $('#champ-hauteur').addEventListener('change', e => reglerHauteur(o, p, parseFloat(String(e.target.value).replace(',', '.'))));
+  const clips = o.userData.animations || [];
+  if (clips.length) {
+    const zone = f.querySelector('.anims');
+    const actif = p.animation ?? 0;
+    [...clips.map((c, k) => [c.name || `animation ${k + 1}`, k]), ['arrêt', -1]].forEach(([nom, k]) => {
+      const b = document.createElement('button');
+      b.textContent = nom;
+      b.classList.toggle('actif', k === actif);
+      b.onclick = () => { p.animation = k; jouer(o, k); valider(); majFiche(); };
+      zone.append(b);
+    });
+  }
+}
+$('#fiche').addEventListener('click', e => {
+  const act = e.target.dataset.act;
+  if (!act || !selection) return;
+  const p = pieceDe(selection.userData.id);
+  if (act === 'humain') reglerHauteur(selection, p, 1.8);
+  if (act === 'pivoter') { p.rotation[1] = arrondi((p.rotation[1] + 90) % 360, 2); poser(selection, p); valider(); majFiche(); }
+  if (act === 'ausol') { p.position[1] = 0; poser(selection, p); valider(); majFiche(); }
+  if (act === 'cadrer') cadrer();
+  if (act === 'dupliquer') dupliquer();
+  if (act === 'supprimer') supprimer();
+});
+
+// ------------------------------------------------------------------ visite à hauteur d'homme
+
+const YEUX = 1.65;
+let visite = false, lacet = 0, tangage = 0, pied = 0, marchables = [], avaitVerrou = false;
+const touches = new Set();
+const sonde = new THREE.Raycaster();
+const BAS = new THREE.Vector3(0, -1, 0);
+
+function hauteurSol(x, z) {
+  sonde.set(new THREE.Vector3(x, pied + 0.55, z), BAS);
+  sonde.far = 80;
+  const t = sonde.intersectObjects(marchables, false)[0];
+  return t ? Math.max(t.point.y, 0) : 0;
+}
+function bloque(direction, distance) {
+  for (const h of [0.7, 1.5]) {
+    sonde.set(new THREE.Vector3(camera.position.x, pied + h, camera.position.z), direction);
+    sonde.far = distance + 0.3;
+    if (sonde.intersectObjects(marchables, false).length) return true;
+  }
+  return false;
+}
+function demanderVerrou() {
+  try { const r = renderer.domElement.requestPointerLock(); if (r && r.catch) r.catch(() => { }); } catch { }
+}
+
+function basculerVisite(v = !visite) {
+  if (v === visite) return;
+  visite = v;
+  document.body.classList.toggle('visite', v);
+  touches.clear();
+  if (v) {
+    marchables = [];
+    for (const o of objets.values()) if (o.userData.marchable) o.traverse(n => { if (n.isMesh) marchables.push(n); });
+    const d = orbite.target.clone().sub(camera.position);
+    lacet = Math.atan2(-d.x, -d.z);
+    tangage = 0;
+    // on entre là où l'on regardait, un pas en arrière
+    const depart = orbite.target.clone().addScaledVector(new THREE.Vector3(-Math.sin(lacet), 0, -Math.cos(lacet)), -2);
+    camera.position.set(depart.x, 0, depart.z);
+    pied = 0;
+    pied = hauteurSol(depart.x, depart.z);
+    camera.position.y = pied + YEUX;
+    orbite.enabled = false;
+    transform.detach();
+    cadreSelection.visible = false;
+    $('#fiche').hidden = true;
+    demanderVerrou();
+    toast('Visite : ZQSD pour marcher, Échap pour revenir');
+  } else {
+    if (document.pointerLockElement) document.exitPointerLock();
+    // l'atelier reprend là où l'on s'est arrêté
+    const devant = new THREE.Vector3(-Math.sin(lacet), 0, -Math.cos(lacet));
+    orbite.target.set(camera.position.x, Math.max(pied + 1, 0.5), camera.position.z).addScaledVector(devant, 4);
+    camera.position.addScaledVector(devant, -2).add(new THREE.Vector3(0, 1.5, 0));
+    orbite.enabled = true;
+    orbite.update();
+    selectionner(selection);
+  }
+  redimensionner();
+}
+document.addEventListener('pointerlockchange', () => {
+  const verrou = document.pointerLockElement === renderer.domElement;
+  if (!verrou && avaitVerrou && visite) basculerVisite(false);
+  avaitVerrou = verrou;
+});
+renderer.domElement.addEventListener('pointermove', e => {
+  if (!visite) return;
+  if (document.pointerLockElement === renderer.domElement || (e.buttons & 1)) {
+    lacet -= e.movementX * 0.0022;
+    tangage = THREE.MathUtils.clamp(tangage - e.movementY * 0.0022, -1.45, 1.45);
+  }
+});
+renderer.domElement.addEventListener('click', () => { if (visite && !document.pointerLockElement) demanderVerrou(); });
+
+function marcher(dt) {
+  const t = c => touches.has(c);
+  const avant = (t('KeyW') || t('ArrowUp') ? 1 : 0) - (t('KeyS') || t('ArrowDown') ? 1 : 0);
+  const cote = (t('KeyD') || t('ArrowRight') ? 1 : 0) - (t('KeyA') || t('ArrowLeft') ? 1 : 0);
+  const vitesse = (t('ShiftLeft') || t('ShiftRight') ? 5 : 1.6) * dt;
+  const pas = new THREE.Vector3(-Math.sin(lacet), 0, -Math.cos(lacet)).multiplyScalar(avant)
+    .add(new THREE.Vector3(Math.cos(lacet), 0, -Math.sin(lacet)).multiplyScalar(cote));
+  if (pas.lengthSq() > 0) {
+    pas.normalize().multiplyScalar(vitesse);
+    // contre un mur : on glisse le long
+    for (const essai of [pas, new THREE.Vector3(pas.x, 0, 0), new THREE.Vector3(0, 0, pas.z)]) {
+      const l = essai.length();
+      if (l > 1e-5 && !bloque(essai.clone().normalize(), l)) { camera.position.add(essai); break; }
+    }
+  }
+  const cible = hauteurSol(camera.position.x, camera.position.z);
+  pied = cible > pied ? cible : pied + (cible - pied) * Math.min(1, dt * 10);
+  camera.position.y = pied + YEUX;
+  camera.rotation.set(tangage, lacet, 0, 'YXZ');
+}
+
+// ------------------------------------------------------------------ exporter, importer
+
+function credit(m) { return `"${m.titre}" par ${m.auteur} (sketchfab.com/${m.compte}), CC BY 4.0, https://sketchfab.com/3d-models/${m.uid}`; }
+function exporter() {
+  const utilises = [...new Set(etat.pieces.filter(p => p.type === 'modele').map(p => p.cle))].map(c => PAR_CLE.get(c)).filter(Boolean);
+  const doc = {
+    format: 'echos-ether/atelier', version: 1, date: new Date().toISOString(),
+    repere: 'Mètres, Y vers le haut, repère glTF (droitier). Rotations en degrés, ordre XYZ. Origine de chaque pièce : centre du bas de sa boîte englobante à l\'échelle 1 (le modèle est décalé pour y poser ses pieds).',
+    pieces: etat.pieces,
+    credits: utilises.map(credit),
+  };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 1)], { type: 'application/json' }));
+  a.download = 'scene-prologue.json';
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast(`Scène exportée : ${etat.pieces.length} pièces dans scene-prologue.json`);
+}
+async function importer(fichier) {
+  try {
+    const doc = JSON.parse(await fichier.text());
+    const pieces = (Array.isArray(doc) ? doc : doc.pieces || []).map(propre).filter(Boolean);
+    if (!pieces.length) { toast('Ce fichier ne contient aucune pièce de l\'atelier.'); return; }
+    etat.pieces = pieces;
+    selectionner(null);
+    reconcilier();
+    valider();
+    cadrer(null);
+    toast(`${pieces.length} pièces importées. ⌘Z pour revenir en arrière.`);
+  } catch (e) {
+    toast(`Fichier illisible : ${e.message}`);
+  }
+}
+$('#champ-scene').addEventListener('change', e => { if (e.target.files[0]) importer(e.target.files[0]); e.target.value = ''; });
+
+// ------------------------------------------------------------------ boutons et clavier
+
+document.querySelectorAll('#outils [data-mode]').forEach(b => { b.onclick = () => changerMode(b.dataset.mode); });
+$('#btn-aimant').onclick = basculerAimant;
+$('#btn-dupliquer').onclick = dupliquer;
+$('#btn-supprimer').onclick = supprimer;
+$('#btn-annuler').onclick = annuler;
+$('#btn-retablir').onclick = retablir;
+$('#btn-visite').onclick = () => basculerVisite(true);
+$('#ambiance').onchange = e => appliquerAmbiance(e.target.value);
+$('#btn-exporter').onclick = exporter;
+$('#btn-importer').onclick = () => $('#champ-scene').click();
+$('#btn-effacer').onclick = effacer;
+$('#btn-aide').onclick = () => { $('#accueil').hidden = false; };
+$('#btn-panneau').onclick = () => document.body.classList.toggle('panneau-ouvert');
+function fermerAccueil() { $('#accueil').hidden = true; prefs.accueilVu = true; sauverPrefs(); }
+$('#accueil').addEventListener('click', e => {
+  if (e.target.dataset.act === 'fermer' || e.target.id === 'accueil') fermerAccueil();
+  if (e.target.dataset.act === 'dossier') $('#champ-dossier').click();
+});
+function majBoutons() {
+  $('#btn-annuler').disabled = !historique.length;
+  $('#btn-retablir').disabled = !futur.length;
+  $('#btn-dupliquer').disabled = $('#btn-supprimer').disabled = !selection;
+}
+
+addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input, select, textarea')) return;
+  if (visite) {
+    touches.add(e.code);
+    if (e.code === 'Escape' || e.code === 'KeyV') basculerVisite(false);
+    if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
+    return;
+  }
+  const cmd = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+  if (cmd && k === 'z') { e.preventDefault(); e.shiftKey ? retablir() : annuler(); return; }
+  if (cmd && k === 'y') { e.preventDefault(); retablir(); return; }
+  if (cmd && k === 'd') { e.preventDefault(); dupliquer(); return; }
+  if (cmd || e.altKey) return;
+  if (!$('#accueil').hidden) { if (k === 'escape') fermerAccueil(); return; }
+  if (k === 'delete' || k === 'backspace') { e.preventDefault(); supprimer(); }
+  else if (k === 't' || e.code === 'Digit1') changerMode('translate');
+  else if (k === 'r' || e.code === 'Digit2') changerMode('rotate');
+  else if (k === 'e' || e.code === 'Digit3') changerMode('scale');
+  else if (k === 'm') basculerAimant();
+  else if (k === 'f') cadrer();
+  else if (k === 'v') basculerVisite(true);
+  else if (k === 'escape') selectionner(null);
+});
+addEventListener('keyup', e => touches.delete(e.code));
+addEventListener('blur', () => touches.clear());
+
+// ------------------------------------------------------------------ boucle
+
+const horloge = new THREE.Clock();
+let images = 0, depuis = 0;
+renderer.setAnimationLoop(() => {
+  const brut = horloge.getDelta(), dt = Math.min(brut, 0.05), t = horloge.elapsedTime;
+  for (const o of objets.values()) o.userData.mixer?.update(dt);
+  if (visite) marcher(Math.min(brut, 0.1)); else orbite.update();
+  if (cadreSelection.visible) cadreSelection.update();
+  animerAmbiance(t);
+  renderer.render(scene, camera);
+  images++;
+  if (t - depuis > 0.5) {
+    let faces = 0;
+    for (const o of objets.values()) faces += o.userData.faces || 0;
+    $('#stats').textContent = `${etat.pieces.length} pièce${etat.pieces.length > 1 ? 's' : ''} · ${nombre(faces)} faces · ${Math.round(images / (t - depuis))} images/s`;
+    images = 0;
+    depuis = t;
+  }
+});
+
+// ------------------------------------------------------------------ démarrage
+
+appliquerAmbiance(prefs.ambiance);
+changerMode('translate');
+if (!etat.pieces.length) {
+  etat.pieces.push({ id: nouvelId(), type: 'forme', cle: 'humain', position: [0, 0, 3], rotation: [0, 0, 0], echelle: [1, 1, 1] });
+  dernier = instantane();
+}
+reconcilier();
+majBoutons();
+majDisponibilite();
+$('#source').textContent = 'Recherche des modèles…';
+
+(async () => {
+  if (location.protocol !== 'file:') {
+    const trouves = await scannerServeur();
+    if (source !== 'dossier' && trouves.some(Boolean)) {
+      source = 'serveur';
+      MODELES.forEach((m, i) => { m.chemin = trouves[i]; });
+    }
+  }
+  majDisponibilite();
+  remplirEnAttente();
+  if (!MODELES.some(m => m.chemin) || !prefs.accueilVu) $('#accueil').hidden = false;
+})();
+
+// pour les tests automatiques
+window.atelier = { etat, objets, MODELES, camera, orbite, transform, selectionner, ajouter, basculerVisite, appliquerAmbiance, viser, cadrer, get selection() { return selection; } };
+</script>
+</body>
+</html>

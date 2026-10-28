@@ -54,6 +54,20 @@ cd ~/jeu && python3 -m http.server 8766
 
 Puis ouvrir http://localhost:8766/galerie-prologue.html (flèches ← → pour passer d'un modèle à l'autre).
 
+**Créer avec, sur le Mac : l'atelier.** `vitrine/atelier-prologue.html` est un petit éditeur 3D dans le navigateur. Il se passe dans le hangar du vaisseau-prison, avec la planète derrière le champ de force.
+- **Poser** : clic sur un modèle ou une forme grise (sol, mur, porte, coursive, escalier, plateforme, colonne, silhouette de 1,80 m).
+- **Arranger** : déplacer, tourner, changer la taille. L'aimant cale les pièces sur une grille de 50 cm et par pas de 15°. On peut dupliquer, supprimer, annuler (⌘Z), et régler la hauteur d'une pièce en mètres. Un bouton met les personnages à 1,80 m.
+- **Trois ambiances** : lumière de travail, panne avec alarme rouge, vide spatial.
+- **Visiter** (V) : marcher à hauteur d'homme avec ZQSD. On marche sur les formes grises et elles arrêtent le passage ; on traverse encore les modèles.
+- **Enregistrer** : la scène s'enregistre toute seule dans le navigateur. « Exporter » la garde dans `scene-prologue.json`, avec les crédits des modèles utilisés : le Claude du PC pourra la reconstruire dans Unity.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/atelier-prologue.html -o ~/jeu/atelier-prologue.html
+cd ~/jeu && python3 -m http.server 8766
+```
+
+Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu/prologue` se chargent tout seuls. Sans serveur, on peut aussi ouvrir le fichier directement, puis choisir le dossier `prologue` (ou le glisser sur la page). Rien n'est envoyé sur Internet.
+
 Chaque modèle a son `LICENCE.txt`. Les crédits à citer dans le jeu sont regroupés dans `CREDITS-PROLOGUE.txt`, à la racine du projet.
 On peut relancer le script sans risque : ce qui est déjà téléchargé est sauté.
 
