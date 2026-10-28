@@ -212,6 +212,106 @@ La vérité tourne ici autour de **d'où il vient**, plutôt que de ce qu'il a f
 - **En jeu** : tous les camps le veulent, pour le servir, l'utiliser ou l'éliminer.
 - **Fin** : prendre le trône, le détruire, ou disparaître.
 
+### Les deux finalistes, développés
+
+Les noms propres sont provisoires.
+
+#### A. L'Enfant du désert
+> *Il croit s'évader d'une prison. En réalité, il rentre chez lui.*
+
+**Son histoire**
+- Il est né sur **Saresh**, une planète de sable, dans le **Peuple du Silence** : des nomades qui marchent au rythme du sol pour ne pas réveiller les géants qui dorment sous les dunes, et qui se parlent par signes.
+- Il est le fils de la cheffe d'un clan. Par le **Pacte des otages**, chaque clan doit confier un enfant à l'empire, en garantie de sa soumission. Il avait sept ans.
+- Élevé à l'académie militaire, il devient un soldat d'élite. L'empire fait de lui un symbole de propagande : « l'enfant sauvage devenu héros ».
+- Envoyé sur Saresh pour raser un campement rebelle, il reconnaît les chants de son enfance. Il refuse de tirer et se retourne contre son unité. Capturé, il est effacé et enfermé.
+
+**Les personnages autour de lui**
+- **Sa sœur**, devenue capitaine des pillards du sable. C'est elle qui a organisé l'attaque du vaisseau-prison pour le libérer. Dans le chaos, ils se manquent. Elle sait qui il est, mais a ses raisons de ne pas tout dire.
+- **Le commandant qui l'a élevé**, presque un père adoptif, aujourd'hui chef de l'occupation de Saresh. Il le traque par devoir, et par affection.
+- **Une vieille détenue nomade** dans la prison, qui fredonne une berceuse qu'il connaît sans savoir d'où.
+
+**Les indices du prologue**
+- Un tatouage tribal qu'il ne comprend pas.
+- Des signes du Peuple du Silence gravés dans sa cellule, qu'il lit sans savoir comment.
+- La berceuse de la vieille détenue.
+- Dans la navette volée, ses mains tapent toutes seules les coordonnées de Saresh.
+
+**Le monde ouvert** : la navette s'écrase sur Saresh. Il est chez lui sans le savoir.
+- **La marche du silence** : il retrouve peu à peu le pas rythmé de son peuple, qui ne réveille pas les géants. C'est la jauge de bruit, devenue un savoir de ses origines.
+- **La langue des signes** pour parler aux nomades sans un bruit, et entre joueurs en coop, comme dans Journey.
+- **Ses réflexes de soldat** reviennent avec ses souvenirs. C'est le combat lourd à la Helldivers, et la navette volée devient sa source d'appels de soutien.
+- **Les géants du désert ne l'attaquent pas** : ils reconnaissent son sang. Ses coéquipiers, eux, doivent suivre son rythme.
+- **Les souvenirs** reviennent dans les lieux de son enfance : le campement brûlé, l'endroit où on l'a arraché à sa mère, le sanctuaire des géants.
+
+**Les camps** : l'occupation de l'empire (bases, patrouilles, extraction d'Éther), les clans nomades (alliés, quêtes, commerce), les pillards de sa sœur, et le désert lui-même.
+
+**Les fins possibles** : mener le soulèvement des clans, rentrer dans le rang de l'empire, ou une troisième voie (partir avec sa sœur, ou se sacrifier pour sauver les deux camps).
+
+**Pour**
+- L'émotion la plus forte : la famille, le retour chez soi, la trahison, le père adoptif devenu ennemi.
+- Le prologue et le monde ouvert s'enchaînent naturellement : le saut le ramène chez lui.
+- Ton mélange est évident : le désert et les géants pour Dune, l'empire et l'origine modeste pour Star Wars, l'enfant devenu soldat de propagande pour Helldivers.
+- Fabrication plus simple : une grande planète d'abord. Les rochers et sols du désert sont déjà téléchargés, et le code du bruit et du ver existe déjà.
+
+**Contre**
+- C'est la plus proche de Dune (nomades, désert, géants). Il faudra éviter « l'élu », le messie, et chevaucher les vers.
+- Moins de mystère : le joueur devine vite les grandes lignes. La force est dans les personnages, pas dans le secret.
+
+#### B. L'Ancien
+> *Toute la galaxie fouille les ruines d'une civilisation disparue. Il en est le dernier vivant.*
+
+**Son histoire**
+- Il y a des milliers d'années, **les Bâtisseurs** ont couvert la galaxie de ruines et de relais. L'hyperespace qu'utilise l'empire passe encore par leurs anciennes balises, sans que personne ne sache vraiment les comprendre.
+- Ils maîtrisaient l'Éther, le temps figé. Face à une menace qui dévorait le temps (le Chœur du Tombeau), ils ont disparu.
+- Lui était un **Veilleur** : endormi dans une capsule, avec l'ordre de se réveiller quand le danger reviendrait.
+- L'empire a trouvé sa capsule en creusant une veine d'Éther sous une ruine. La récolte l'a à moitié réveillé, et l'empire l'étudie depuis comme une relique vivante.
+- **Pourquoi l'amnésie** : le sommeil millénaire, et les tentatives de l'empire pour lire son esprit. Ses vrais souvenirs ne sont pas perdus : ils sont gardés dans les archives des ruines, sur plusieurs mondes.
+
+**Les personnages autour de lui**
+- **Une pirate archéologue**, cheffe des chasseurs de reliques qui ont attaqué le vaisseau pour voler « l'objet » le plus précieux à bord : lui. Elle en sait plus qu'elle ne le dit, et devient une alliée intéressée.
+- **La Conservatrice**, la scientifique de l'empire qui l'a étudié pendant des années. Elle s'est attachée à lui, mais veut récupérer ce qu'il sait.
+- **La Légion Mécanique** : les machines éclaireuses des Bâtisseurs, toujours en mission. Certaines le reconnaissent comme un chef, d'autres comme celui qui a échoué.
+
+**Les indices du prologue**
+- Le scanner médical de la prison affiche des anomalies (un sang chargé d'Éther, un rythme cardiaque impossible).
+- À la consigne, il lit sans effort les glyphes d'un objet saisi.
+- **La panne vient en partie de lui** : le cœur d'hyperespace du vaisseau-prison est une relique des Bâtisseurs. Il s'est emballé en sentant son réveil, en même temps que l'attaque des pirates, et c'est ce qui a fait disjoncter les ordinateurs et ouvert les cellules. Le joueur l'apprend plus tard.
+
+**Le monde ouvert** : plusieurs mondes, chacun avec ses ruines, et chacun un chapitre de l'histoire de son peuple.
+- **Les ruines s'ouvrent à son contact** : des zones que lui seul peut atteindre.
+- **Les glyphes** : il réapprend sa propre langue peu à peu, et chaque mot compris révèle de nouveaux secrets. La progression par la connaissance de l'ancien GDD.
+- **Les échos jouables** : en touchant certains cristaux d'Éther, il revit le passé au même endroit (la ruine redevient une ville vivante, le temps d'un souvenir).
+- **Les machines anciennes** : il peut en pirater, en réveiller ou en commander certaines.
+- **Les relais des Bâtisseurs** débloquent de nouvelles destinations d'hyperespace.
+
+**La grande révélation** : les Bâtisseurs n'ont pas disparu. Pour échapper à la menace, ils se sont **réfugiés dans l'Éther**. Les cristaux que l'empire récolte et brûle pour ses sauts, ce sont eux. Récolter l'Éther, c'est brûler son peuple.
+
+**Les fins possibles** : réveiller son peuple (au risque de ce que deviendraient les humains), le laisser reposer et arrêter la récolte, ou le libérer pour qu'il s'éteigne en paix.
+
+**Pour**
+- Le plus de mystère et d'émerveillement : le pilier de départ du jeu, la règle d'or « en cas de doute, on choisit le mystère ».
+- La révélation sur l'Éther est forte, et elle donne tout son sens au titre *Échos d'Éther*.
+- Réutilise l'univers déjà écrit : l'Éther comme écho, les monolithes et les ruines, la Légion Mécanique, le Chœur du Tombeau.
+- La panne du prologue a une explication, ce qui supprime la coïncidence de l'attaque.
+- Moins proche de Dune, donc plus original dans ton mélange.
+
+**Contre**
+- Plus abstrait : l'émotion repose sur la solitude et le mystère plus que sur la famille. Les personnages humains (la pirate, la Conservatrice) devront compenser.
+- Des ressemblances à surveiller : *Outer Wilds* (peuple disparu, progression par le savoir), *Mass Effect* (le dernier survivant d'une race ancienne), *Prometheus*.
+- Plus lourd à fabriquer : plusieurs mondes, des ruines, un système de glyphes, les échos jouables.
+
+#### En bref
+| | A. L'Enfant du désert | B. L'Ancien |
+|---|---|---|
+| Ce qu'on ressent | Famille, trahison, retour chez soi | Mystère, solitude, vertige |
+| Ton | Western spatial, Dune, Star Wars | Interstellar, Outer Wilds |
+| Ce que lui seul sait faire | Marche du silence, langue des signes, réflexes de soldat | Ouvrir les ruines, lire les glyphes, revivre les échos, commander les machines |
+| Monde ouvert | Une grande planète d'abord | Plusieurs mondes de ruines |
+| Fabrication | Plus simple | Plus lourde |
+| Risque principal | Trop proche de Dune | Trop abstrait, ressemblances avec Outer Wilds |
+
+**On peut aussi les fusionner** : le Peuple du Silence garde depuis toujours une ruine des Bâtisseurs. Enfant, le héros a touché le cœur de cette ruine, qui l'a « choisi ». C'est pour cela que l'empire l'a pris en otage. On garde la famille et le désert de A, avec le mystère et la révélation sur l'Éther de B. C'est plus riche, mais aussi plus long à raconter.
+
 **Bonne nouvelle pour le scope** : un intérieur de vaisseau se construit avec des **kits modulaires** (couloirs, portes, sas, hangar). C'est plus maîtrisable qu'un grand terrain pour une première tranche verticale.
 Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi, kit modulaire d'intérieur de vaisseau, hangar, sas, passerelle, intérieur de l'ISS.
 
