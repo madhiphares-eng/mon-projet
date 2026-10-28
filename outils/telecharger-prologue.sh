@@ -52,7 +52,7 @@ valeur() { grep -oE "\"$1\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" "$2" | head -1 |
 # lieu|uid Sketchfab|nom|credit (licence relue au telechargement : CC0, CC BY ou CC BY-SA seulement)
 MODELES=$(cat <<'LISTE'
 01-Joueur|e0898165a3e24b34bff0ca230d92c311|tenue-detenu|"Prisoner" par asadkhan1881 (sketchfab.com/asadkhan1881), CC Attribution, https://sketchfab.com/3d-models/e0898165a3e24b34bff0ca230d92c311
-01-Joueur|7fd399d488ae4576a0fc62715892956c|combinaison|"Mercenary Astronaut" par Peter_D (sketchfab.com/better_peter), CC Attribution, https://sketchfab.com/3d-models/7fd399d488ae4576a0fc62715892956c
+01-Joueur|da7b5c14bc634f8283e2d21343afa7cc|combinaison-veilleur|"Spacesuit (Confederation of Planets)" par tnnv (sketchfab.com/tnnv), CC Attribution, https://sketchfab.com/3d-models/da7b5c14bc634f8283e2d21343afa7cc
 02-Prisonniers|dbf9fe0cb81d4758ad2525a56d10e2fc|detenu-brute|"Balthazar (rigged & animated)" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/dbf9fe0cb81d4758ad2525a56d10e2fc
 02-Prisonniers|6b8009a6e4f747f59ccadb121adc3679|detenu-vieux|"Realistic Old Russian Guy (animated)" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/6b8009a6e4f747f59ccadb121adc3679
 02-Prisonniers|9d1098bc72a74bb1b6371aef4b987100|detenu-atelier|"Employee" par dotflare (sketchfab.com/Dotflare), CC Attribution, https://sketchfab.com/3d-models/9d1098bc72a74bb1b6371aef4b987100
@@ -62,6 +62,7 @@ MODELES=$(cat <<'LISTE'
 04-Pirates|f029fe3297434ed6b5d03c3ffbc0585d|pirate|"Scavenger" par Vasian-Digital3D (sketchfab.com/Vasian-Digital3D), CC Attribution, https://sketchfab.com/3d-models/f029fe3297434ed6b5d03c3ffbc0585d
 04-Pirates|9e77c91967ca4263ad347b395f53c1cb|pirate-masque|"post apo character" par Am I dead? (sketchfab.com/eqisX), CC Attribution, https://sketchfab.com/3d-models/9e77c91967ca4263ad347b395f53c1cb
 04-Pirates|1059232ac0374767bf49ba95978f580f|casque-pirate|"Vintage 2725 ' Spacer Armoured Pressure Helmet '" par KallMor (sketchfab.com/kallmor), CC Attribution, https://sketchfab.com/3d-models/1059232ac0374767bf49ba95978f580f
+04-Pirates|7fd399d488ae4576a0fc62715892956c|pirate-eva|"Mercenary Astronaut" par Peter_D (sketchfab.com/better_peter), CC Attribution, https://sketchfab.com/3d-models/7fd399d488ae4576a0fc62715892956c
 05-Cellules|1e80d7053fd7440f929bc53db8433509|bloc-cellules|"Abandoned prison modular scene" par Ali2-D2 (sketchfab.com/Ali2-D2), CC Attribution, https://sketchfab.com/3d-models/1e80d7053fd7440f929bc53db8433509
 05-Cellules|f8148fab4dc44903b9644170edf0e58c|porte-cellule|"Prison cell door" par Rivaldragon (sketchfab.com/Rivaldragon), CC Attribution, https://sketchfab.com/3d-models/f8148fab4dc44903b9644170edf0e58c
 05-Cellules|23db3362debb4d98a56856416e1e9c58|porte-isolement|"Door Of The Solitary Cell Of The Prison 14MB" par Mehdi Shahsavan (sketchfab.com/ahmagh2e), CC Attribution, https://sketchfab.com/3d-models/23db3362debb4d98a56856416e1e9c58
@@ -118,12 +119,19 @@ MODELES=$(cat <<'LISTE'
 14-Accessoires|2a05034d61dc49bf81b33de44add7aa8|neons|"Fluorescent Light Fixtures - 4x 4096px²" par Mark Peters (sketchfab.com/mark-peters), CC Attribution, https://sketchfab.com/3d-models/2a05034d61dc49bf81b33de44add7aa8
 14-Accessoires|342efe4d70f94d37a4edd66a15c39502|caisse-munitions|"Sci-Fi crate / ammunition box (2)" par ul1tka (sketchfab.com/ul1tka), CC Attribution, https://sketchfab.com/3d-models/342efe4d70f94d37a4edd66a15c39502
 14-Accessoires|ac36898521304e51a8e305aa602f1f5b|caisse-cargo|"Sci-fi cargo crate" par andreas9343 (sketchfab.com/andreas9343), CC Attribution, https://sketchfab.com/3d-models/ac36898521304e51a8e305aa602f1f5b
+15-Reliques|ffebf6fb62c840d08b0311ba6b8f9536|capsule-veilleur|"Sci-Fi Coffin — Cryo Casket / sarcophagus" par UNREAL JOELAB (sketchfab.com/Unreal_Joelab), CC Attribution, https://sketchfab.com/3d-models/ffebf6fb62c840d08b0311ba6b8f9536
+15-Reliques|8738f78ae4ec4630ac35a4783303ea95|chambre-stase|"Stasis / Clone Chamber (with animations)" par TampaJoey (sketchfab.com/TampaJoey), CC Attribution, https://sketchfab.com/3d-models/8738f78ae4ec4630ac35a4783303ea95
+15-Reliques|c93820e31f1b4a79a6a94269ed9f41b7|coeur-relique|"Ancient Relic" par FDU_oficial (sketchfab.com/FDU_oficial), CC Attribution, https://sketchfab.com/3d-models/c93820e31f1b4a79a6a94269ed9f41b7
+15-Reliques|c56fc34b2bd74b098b7ea68b6bcf215c|tablette-glyphes|"Lost Alien Technology" par Citron Legacy (sketchfab.com/CitronLegacy), CC Attribution, https://sketchfab.com/3d-models/c56fc34b2bd74b098b7ea68b6bcf215c
+15-Reliques|9c288fb496ab4d15838c0517d0cef47c|anneau-relais|"Alien Ring" par Cogent (sketchfab.com/koron), CC Attribution, https://sketchfab.com/3d-models/9c288fb496ab4d15838c0517d0cef47c
+15-Reliques|2eee63550ed6470dac7659211a605795|cristal-ether|"Void-Touched Crystal Rock" par PuzzledPapaya (sketchfab.com/PuzzledPapaya), CC Attribution, https://sketchfab.com/3d-models/2eee63550ed6470dac7659211a605795
+15-Reliques|25c72b016ace4f7aac72c5974437c5f2|prisme-ether|"Prism of Enlightenment" par Duznot (sketchfab.com/duz_vr), CC Attribution, https://sketchfab.com/3d-models/25c72b016ace4f7aac72c5974437c5f2
 LISTE
 )
 
 total=$(printf '%s\n' "$MODELES" | grep -c '|')
 echo ""
-echo "=== Modeles 3D du prologue d'Echos d'Ether ($total modeles, environ 2,5 Go) ==="
+echo "=== Modeles 3D du prologue d'Echos d'Ether ($total modeles, environ 2,6 Go) ==="
 echo "Dossier : $DEST"
 
 if [ -z "$TOKEN" ]; then

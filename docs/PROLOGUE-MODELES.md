@@ -1,6 +1,6 @@
 # Modèles 3D du prologue : l'évasion du vaisseau-prison
 
-67 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 2,5 Go.
+75 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 2,6 Go.
 Tous sont sous licence **CC BY** (créditer l'auteur, usage commercial permis), vérifiée par l'API Sketchfab le 28 octobre 2026.
 Ils viennent de Sketchfab, qui demande un **compte gratuit** pour télécharger.
 
@@ -18,10 +18,10 @@ irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/out
 Les modèles arrivent rangés par lieu dans `C:\Projets\EchosEther\Assets\_Projet\Externes\Prologue\` :
 
 ```
-01-Joueur\   tenue-detenu, combinaison
+01-Joueur\   tenue-detenu, combinaison-veilleur
 02-Prisonniers\   detenu-brute, detenu-vieux, detenu-atelier
 03-Gardes\   garde, droide-securite
-04-Pirates\   pirate-chef, pirate, pirate-masque, casque-pirate
+04-Pirates\   pirate-chef, pirate, pirate-masque, casque-pirate, pirate-eva
 05-Cellules\   bloc-cellules, porte-cellule, porte-isolement, toilettes, lavabo, lit-superpose
 06-Couloirs\   couloir-principal, kit-interieur, kit-couloir, conduit-maintenance, tuyaux, porte-coulissante, sols
 07-Consigne\   casier, armoire-blindee, porte-coffre
@@ -32,6 +32,7 @@ Les modèles arrivent rangés par lieu dans `C:\Projets\EchosEther\Assets\_Proje
 12-Exterieur\   porte-sas, sas, cloison-etanche, rocher-spatial, debris-1, debris-2, gravats-breche
 13-Armes\   fusil-gardes, mitraillette-gardes, pistolet-gardes, fusil-pirates, arme-pirates, fusil-lourd-pirates, pistolet-use, cle-a-molette
 14-Accessoires\   extincteur, neons, caisse-munitions, caisse-cargo
+15-Reliques\   capsule-veilleur, chambre-stase, coeur-relique, tablette-glyphes, anneau-relais, cristal-ether, prisme-ether
 ```
 
 ### Sur Mac (ou Linux)
@@ -123,10 +124,11 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 
 ## Ce qu'il faudra faire ensuite (le Claude du PC, avec Blender MCP)
 
-- **Alléger les modèles très lourds** : la combinaison (700 000 faces), le pirate masqué (900 000), la rangée de serveurs, le kit d'intérieur. Objectif : moins de 100 000 faces par personnage.
+- **Alléger les modèles très lourds** : le pirate d'abordage en combinaison (700 000 faces), le pirate masqué (900 000), la rangée de serveurs, le kit d'intérieur, la capsule du Veilleur. Objectif : moins de 100 000 faces par personnage.
 - **Retirer les écussons et marquages réels** : la tenue anti-émeute du garde porte des insignes de police, à remplacer par ceux de la prison.
 - **Squelettes et animations** : les personnages sans squelette passent par [Mixamo](https://www.mixamo.com) (gratuit), comme les autres pour leurs animations.
 - **Unifier les matériaux** : mêmes métaux usés, même palette, pour que 50 auteurs donnent un seul vaisseau.
+- **La combinaison de Veilleur** est provisoire : c'est une pièce signature du jeu (voir `PREPRODUCTION.md`). En attendant sa version définitive, on re-texture une combinaison sobre avec des lignes de glyphes lumineuses.
 - **La tenue de détenu** est provisoire : la version finale sera un humain réaliste, avec une combinaison de détenu ajustée dans Blender.
 
 ## Le héros (`01-Joueur`)
@@ -136,7 +138,7 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
 | `tenue-detenu` | [Prisoner](https://sketchfab.com/3d-models/prisoner-e0898165a3e24b34bff0ca230d92c311) | asadkhan1881 | 11 686, 1 anim. | Le héros en tenue de détenu (provisoire : à remplacer plus tard par un humain réaliste) |
-| `combinaison` | [Mercenary Astronaut](https://sketchfab.com/3d-models/mercenary-astronaut-7fd399d488ae4576a0fc62715892956c) | Peter_D | 704 714, 3 anim. | Sa propre combinaison, récupérée à la consigne (à alléger : 700 000 faces) |
+| `combinaison-veilleur` | [Spacesuit (Confederation of Planets)](https://sketchfab.com/3d-models/spacesuit-confederation-of-planets-da7b5c14bc634f8283e2d21343afa7cc) | tnnv | 26 006 | Sa combinaison de Veilleur des Bâtisseurs, saisie à la chambre des reliques (provisoire : à re-texturer avec des glyphes en attendant la version définitive) |
 
 ## Les autres détenus (`02-Prisonniers`)
 
@@ -167,6 +169,7 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 | `pirate` | [Scavenger](https://sketchfab.com/3d-models/scavenger-f029fe3297434ed6b5d03c3ffbc0585d) | Vasian-Digital3D | 98 743, 1 anim. | Pirate d'abordage |
 | `pirate-masque` | [post apo character](https://sketchfab.com/3d-models/post-apo-character-9e77c91967ca4263ad347b395f53c1cb) | Am I dead? | 924 658 | Pirate masqué (lourd : à alléger) |
 | `casque-pirate` | [Vintage 2725 " Spacer Armoured Pressure Helmet "](https://sketchfab.com/3d-models/vintage-2725-spacer-armoured-pressure-helmet-1059232ac0374767bf49ba95978f580f) | KallMor | 42 376 | Casque pressurisé de pirate, pour varier les tenues |
+| `pirate-eva` | [Mercenary Astronaut](https://sketchfab.com/3d-models/mercenary-astronaut-7fd399d488ae4576a0fc62715892956c) | Peter_D | 704 714, 3 anim. | Pirate d'abordage en combinaison spatiale, pour passer par le vide (à alléger : 700 000 faces) |
 
 ## Le bloc des cellules (`05-Cellules`)
 
@@ -294,10 +297,24 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 | `caisse-munitions` | [Sci-Fi crate / ammunition box (2)](https://sketchfab.com/3d-models/sci-fi-crate-ammunition-box-2-342efe4d70f94d37a4edd66a15c39502) | ul1tka | 648 | Caisse de munitions |
 | `caisse-cargo` | [Sci-fi cargo crate](https://sketchfab.com/3d-models/sci-fi-cargo-crate-ac36898521304e51a8e305aa602f1f5b) | andreas9343 | 4 052 | Caisse de cargo |
 
+## Reliques des Bâtisseurs (l'histoire de l'Ancien) (`15-Reliques`)
+
+![Reliques des Bâtisseurs (l'histoire de l'Ancien)](prologue/15-Reliques.jpg)
+
+| Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
+|---|---|---|---:|---|
+| `capsule-veilleur` | [Sci-Fi Coffin — Cryo Casket / sarcophagus](https://sketchfab.com/3d-models/sci-fi-coffin-cryo-casket-sarcophagus-ffebf6fb62c840d08b0311ba6b8f9536) | UNREAL JOELAB | 197 961 | La capsule où il dormait depuis des milliers d'années, gardée dans le laboratoire |
+| `chambre-stase` | [Stasis / Clone Chamber (with animations)](https://sketchfab.com/3d-models/stasis-clone-chamber-with-animations-8738f78ae4ec4630ac35a4783303ea95) | TampaJoey | 28 528, 1 anim. | Chambre d'étude du laboratoire de l'empire (animée) |
+| `coeur-relique` | [Ancient Relic](https://sketchfab.com/3d-models/ancient-relic-c93820e31f1b4a79a6a94269ed9f41b7) | FDU_oficial | 18 172, 1 anim. | Le cœur d'hyperespace du vaisseau-prison : une relique des Bâtisseurs qui s'emballe à son réveil (animé) |
+| `tablette-glyphes` | [Lost Alien Technology](https://sketchfab.com/3d-models/lost-alien-technology-c56fc34b2bd74b098b7ea68b6bcf215c) | Citron Legacy | 44 | Tablette de glyphes qu'il lit sans savoir pourquoi |
+| `anneau-relais` | [Alien Ring](https://sketchfab.com/3d-models/alien-ring-9c288fb496ab4d15838c0517d0cef47c) | Cogent | 1 530 | Anneau d'un relais d'hyperespace des Bâtisseurs |
+| `cristal-ether` | [Void-Touched Crystal Rock](https://sketchfab.com/3d-models/void-touched-crystal-rock-2eee63550ed6470dac7659211a605795) | PuzzledPapaya | 674 | Cristal d'Éther brut |
+| `prisme-ether` | [Prism of Enlightenment](https://sketchfab.com/3d-models/prism-of-enlightenment-25c72b016ace4f7aac72c5974437c5f2) | Duznot | 5 054 | Cristal d'Éther taillé, où l'on devine des glyphes |
+
 ## Crédits (CC BY)
 
 - « Prisoner » par asadkhan1881 (sketchfab.com/asadkhan1881), CC Attribution
-- « Mercenary Astronaut » par Peter_D (sketchfab.com/better_peter), CC Attribution
+- « Spacesuit (Confederation of Planets) » par tnnv (sketchfab.com/tnnv), CC Attribution
 - « Balthazar (rigged & animated) » par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution
 - « Realistic Old Russian Guy (animated) » par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution
 - « Employee » par dotflare (sketchfab.com/Dotflare), CC Attribution
@@ -307,6 +324,7 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 - « Scavenger » par Vasian-Digital3D (sketchfab.com/Vasian-Digital3D), CC Attribution
 - « post apo character » par Am I dead? (sketchfab.com/eqisX), CC Attribution
 - « Vintage 2725 " Spacer Armoured Pressure Helmet " » par KallMor (sketchfab.com/kallmor), CC Attribution
+- « Mercenary Astronaut » par Peter_D (sketchfab.com/better_peter), CC Attribution
 - « Abandoned prison modular scene » par Ali2-D2 (sketchfab.com/Ali2-D2), CC Attribution
 - « Prison cell door » par Rivaldragon (sketchfab.com/Rivaldragon), CC Attribution
 - « Door Of The Solitary Cell Of The Prison 14MB » par Mehdi Shahsavan (sketchfab.com/ahmagh2e), CC Attribution
@@ -363,3 +381,10 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 - « Fluorescent Light Fixtures - 4x 4096px² » par Mark Peters (sketchfab.com/mark-peters), CC Attribution
 - « Sci-Fi crate / ammunition box (2) » par ul1tka (sketchfab.com/ul1tka), CC Attribution
 - « Sci-fi cargo crate » par andreas9343 (sketchfab.com/andreas9343), CC Attribution
+- « Sci-Fi Coffin — Cryo Casket | sarcophagus » par UNREAL JOELAB (sketchfab.com/Unreal_Joelab), CC Attribution
+- « Stasis / Clone Chamber (with animations) » par TampaJoey (sketchfab.com/TampaJoey), CC Attribution
+- « Ancient Relic » par FDU_oficial (sketchfab.com/FDU_oficial), CC Attribution
+- « Lost Alien Technology » par Citron Legacy (sketchfab.com/CitronLegacy), CC Attribution
+- « Alien Ring » par Cogent (sketchfab.com/koron), CC Attribution
+- « Void-Touched Crystal Rock » par PuzzledPapaya (sketchfab.com/PuzzledPapaya), CC Attribution
+- « Prism of Enlightenment » par Duznot (sketchfab.com/duz_vr), CC Attribution

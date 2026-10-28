@@ -30,7 +30,7 @@
     # 'dossier|uid Sketchfab|nom' (licence relue au telechargement : CC0, CC BY ou CC BY-SA seulement)
     $Modeles = @(
         '01-Joueur|e0898165a3e24b34bff0ca230d92c311|tenue-detenu',
-        '01-Joueur|7fd399d488ae4576a0fc62715892956c|combinaison',
+        '01-Joueur|da7b5c14bc634f8283e2d21343afa7cc|combinaison-veilleur',
         '02-Prisonniers|dbf9fe0cb81d4758ad2525a56d10e2fc|detenu-brute',
         '02-Prisonniers|6b8009a6e4f747f59ccadb121adc3679|detenu-vieux',
         '02-Prisonniers|9d1098bc72a74bb1b6371aef4b987100|detenu-atelier',
@@ -40,6 +40,7 @@
         '04-Pirates|f029fe3297434ed6b5d03c3ffbc0585d|pirate',
         '04-Pirates|9e77c91967ca4263ad347b395f53c1cb|pirate-masque',
         '04-Pirates|1059232ac0374767bf49ba95978f580f|casque-pirate',
+        '04-Pirates|7fd399d488ae4576a0fc62715892956c|pirate-eva',
         '05-Cellules|1e80d7053fd7440f929bc53db8433509|bloc-cellules',
         '05-Cellules|f8148fab4dc44903b9644170edf0e58c|porte-cellule',
         '05-Cellules|23db3362debb4d98a56856416e1e9c58|porte-isolement',
@@ -95,7 +96,14 @@
         '14-Accessoires|5676b179b3b744c0aaae53a3dcea2300|extincteur',
         '14-Accessoires|2a05034d61dc49bf81b33de44add7aa8|neons',
         '14-Accessoires|342efe4d70f94d37a4edd66a15c39502|caisse-munitions',
-        '14-Accessoires|ac36898521304e51a8e305aa602f1f5b|caisse-cargo'
+        '14-Accessoires|ac36898521304e51a8e305aa602f1f5b|caisse-cargo',
+        '15-Reliques|ffebf6fb62c840d08b0311ba6b8f9536|capsule-veilleur',
+        '15-Reliques|8738f78ae4ec4630ac35a4783303ea95|chambre-stase',
+        '15-Reliques|c93820e31f1b4a79a6a94269ed9f41b7|coeur-relique',
+        '15-Reliques|c56fc34b2bd74b098b7ea68b6bcf215c|tablette-glyphes',
+        '15-Reliques|9c288fb496ab4d15838c0517d0cef47c|anneau-relais',
+        '15-Reliques|2eee63550ed6470dac7659211a605795|cristal-ether',
+        '15-Reliques|25c72b016ace4f7aac72c5974437c5f2|prisme-ether'
     )
 
     $Etat = @{ Octets = [long]0; Erreurs = New-Object System.Collections.ArrayList; Lourds = New-Object System.Collections.ArrayList }
@@ -132,7 +140,7 @@
     }
 
     Write-Host ''
-    Write-Host "=== Modeles 3D du prologue d'Echos d'Ether ($($Modeles.Count) modeles, environ 2,5 Go) ===" -ForegroundColor Cyan
+    Write-Host "=== Modeles 3D du prologue d'Echos d'Ether ($($Modeles.Count) modeles, environ 2,6 Go) ===" -ForegroundColor Cyan
 
     $token = $env:SKETCHFAB_TOKEN
     if (-not $token) {

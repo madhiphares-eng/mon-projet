@@ -129,7 +129,7 @@ Les menus se règlent à la souris.
 ## Prologue : modèles 3D du vaisseau-prison (PC Windows)
 
 La refonte du jeu (voir `docs/PREPRODUCTION.md`) commence par l'évasion d'un vaisseau-prison.
-67 modèles gratuits (CC BY, environ 2,5 Go) ont été choisis pour la construire : héros, détenus, gardes, pirates, cellules, coursives, consigne, machines, hangar, vaisseaux, armes.
+75 modèles gratuits (CC BY, environ 2,6 Go) ont été choisis pour la construire : héros, détenus, gardes, pirates, cellules, coursives, consigne, machines, hangar, vaisseaux, armes, reliques des Bâtisseurs.
 Il faut un compte Sketchfab gratuit et son token (https://sketchfab.com/settings/password, section *API Token*). Unity fermé, dans PowerShell :
 
 ```powershell

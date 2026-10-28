@@ -86,9 +86,9 @@ Les trois camps se battent aussi entre eux. Le joueur peut s'en servir : attirer
 
 | Étape | Ce qui se passe | Ce que le joueur apprend |
 |---|---|---|
-| 1. Le réveil | Le joueur se réveille en cellule, sans souvenirs. Un flash flou : on le traîne dans un couloir. Puis les secousses de l'abordage, les alarmes, la lumière qui saute. | Regarder, se déplacer |
-| 2. Les cellules s'ouvrent | Les ordinateurs disjonctent, toutes les portes s'ouvrent, c'est la ruée. En tenue de prisonnier, sans arme, il est faible : il se cache et improvise. | S'accroupir, se cacher, le bruit, ramasser une arme de fortune |
-| 3. Récupérer l'équipement | Le hangar est coupé du reste par des sections éventrées par les pirates, donc ouvertes sur le vide. Il faut **une combinaison**, rangée à la **consigne des effets saisis**. **C'est la sienne**, et elle porte un premier indice sur son passé : un emblème qu'il ne reconnaît pas, un nom effacé. | Chemins multiples, discrétion ou combat, piratage de portes |
+| 1. Le réveil | Le joueur se réveille dans une cellule d'observation du **laboratoire** du vaisseau-prison, sans souvenirs. Un flash flou : une capsule qui s'ouvre, des lampes de chercheurs. Puis les secousses de l'abordage, les alarmes, la lumière qui saute. | Regarder, se déplacer |
+| 2. Les cellules s'ouvrent | Les ordinateurs disjonctent, toutes les portes s'ouvrent, c'est la ruée. Le cœur d'hyperespace (une relique des Bâtisseurs) s'emballe en même temps : le joueur ne sait pas encore que c'est à cause de lui. En tenue de prisonnier, sans arme, il est faible : il se cache et improvise. | S'accroupir, se cacher, le bruit, ramasser une arme de fortune |
+| 3. Récupérer l'équipement | Le hangar est coupé du reste par des sections éventrées par les pirates, donc ouvertes sur le vide. Il faut **une combinaison**, rangée dans la **chambre des reliques** du laboratoire. **C'est la sienne : une combinaison de Veilleur des Bâtisseurs**, couverte de glyphes qu'il lit sans comprendre pourquoi. Sa capsule de sommeil est là, elle aussi. | Chemins multiples, discrétion ou combat, piratage de portes |
 | 4. Le vide | Avec la combinaison, il traverse les sections ouvertes et **la coque extérieure** : bottes magnétiques, apesanteur, oxygène limité, et le silence total du vide (on n'entend que sa respiration et ce qui passe par la coque). | Sortie dans l'espace, gestion de l'air, nouvelles règles du bruit |
 | 5. Le hangar | Seule sortie vers les navettes : les pirates y ont amarré leur vaisseau et les gardes s'y retranchent. **Pas de compte à rebours** : le joueur prend le temps de choisir comment passer. Combat entre gardes et pirates, sas qu'on peut ouvrir sur le vide pour aspirer les ennemis. Il faut démarrer une navette. | Combat sous pression, se servir du décor |
 | 6. L'hyperespace | Fuite sous le feu des tourelles, puis le saut en hyperespace. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
@@ -112,7 +112,41 @@ En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
 - **Règle de pro** : on fixe toute la vérité **avant** d'écrire le reste (qui il est, pourquoi il est en prison, qui le cherche), même si le joueur ne l'apprend qu'à la fin. Chaque indice en découle.
 - Le titre *Échos d'Éther* colle bien : les souvenirs perdus sont des **échos**.
 
-### Trois vérités possibles (à choisir)
+### L'histoire retenue : l'Ancien
+
+Décidée le 28 octobre 2026 : c'est la version **B** développée plus bas. Le reste de ce chapitre garde les autres pistes pour mémoire.
+
+**La vérité** (secrète : le joueur ne la découvre qu'à la fin)
+- Il y a des milliers d'années, les **Bâtisseurs** maîtrisaient l'Éther, le temps figé. Ils ont couvert la galaxie de ruines et de relais d'hyperespace.
+- Une menace qui dévore le temps, le **Chœur du Tombeau**, les a poussés à fuir. Ils se sont réfugiés **dans l'Éther**. Les cristaux que l'empire récolte et brûle, ce sont eux.
+- Le héros est un **Veilleur** : endormi dans une capsule, chargé de se réveiller quand la menace reviendrait. La récolte de l'Éther, qui affaiblit les Bâtisseurs et rapproche la menace, l'a réveillé à moitié. L'empire a trouvé sa capsule et l'étudie dans le laboratoire du vaisseau-prison.
+- Son amnésie vient du sommeil et des expériences de l'empire. Ses souvenirs dorment dans les archives des ruines.
+
+**Ce que le joueur découvre, et quand**
+| Moment | Ce qu'il apprend |
+|---|---|
+| Prologue | Il n'est pas normal : le scanner médical, les glyphes qu'il lit, la relique qui s'emballe, sa capsule au laboratoire |
+| Premier monde | Les Bâtisseurs ont existé, et leurs ruines s'ouvrent pour lui. Un message de la Conservatrice lui apprend que l'empire sait ce qu'il est : « Tu es l'un d'eux. » |
+| Mondes suivants | Son rôle de Veilleur, la menace, la mission des machines anciennes. La récolte de l'Éther rapproche le retour de la menace |
+| Dernier monde, le Cœur de l'Écho | La vérité sur l'Éther. Le choix final : réveiller son peuple, arrêter la récolte et le laisser reposer, ou le libérer pour qu'il s'éteigne en paix |
+
+**Tout l'ancien univers trouve sa place**
+| Ancien GDD | Dans l'histoire de l'Ancien |
+|---|---|
+| L'Éther, un écho de temps figé | Le refuge des Bâtisseurs |
+| La Concorde, empire propagandiste qui récolte l'Éther | L'empire qui brûle les Bâtisseurs pour voyager, sans le savoir (ou en le sachant, tout en haut) |
+| La Ruche des Sables, « système immunitaire » qui protège les gisements | Des gardiens créés par les Bâtisseurs pour protéger leurs gisements, donc leurs âmes |
+| La Légion Mécanique, anciens éclaireurs encore en mission | Les machines éclaireuses des Bâtisseurs |
+| Le Chœur du Tombeau et le Lacérateur | La menace qui dévore le temps |
+| Les six secteurs | Six mondes de ruines, six chapitres. Le dernier, le Cœur de l'Écho, est là où dorment les Bâtisseurs |
+| La progression par la connaissance | Les glyphes, les échos jouables, les archives des ruines |
+
+**Ce que ça change pour la fabrication**
+- Le héros récupère sa combinaison de **Veilleur**, une pièce signature à dessiner. En attendant, on re-texture une combinaison sobre avec des glyphes lumineux.
+- Nouveaux modèles : sa capsule, la relique du cœur d'hyperespace, une tablette de glyphes, un anneau de relais, des cristaux d'Éther (dossier `15-Reliques` de `PROLOGUE-MODELES.md`).
+- La combinaison d'astronaute orange (*Mercenary Astronaut*) passe chez les pirates : c'est leur tenue d'abordage dans le vide.
+
+### Trois vérités possibles (pistes étudiées)
 
 **1. Le Témoin**
 - **Qui il est** : un Arpenteur de la Concorde, l'empire qui récolte l'Éther.
@@ -422,11 +456,13 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - **pas de compte à rebours** dans le hangar ;
 - on garde le titre ***Échos d'Éther*** ;
 - on garde le projet existant : ce qui a déjà été fait servira ;
-- les modèles 3D du prologue sont choisis : [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md). La combinaison du héros est la *Mercenary Astronaut*.
+- les modèles 3D du prologue sont choisis : [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md). La combinaison du héros est sa combinaison de Veilleur (provisoire : *Spacesuit (Confederation of Planets)*, à re-texturer).
+
+- **la vérité : l'Ancien** (voir [L'histoire retenue](#lhistoire-retenue--lancien)).
 
 **Encore à décider** :
-1. **La vérité** : une des onze pistes ([série 1](#trois-vérités-possibles-à-choisir), [série 2](#autres-pistes-deuxième-série), [ses origines](#pistes-sur-ses-origines-troisième-série)), un mélange, ou une autre idée.
-2. **Où mène le saut ?** Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
+1. **Où mène le saut ?** Proposition : vers le relais des Bâtisseurs le plus proche, sur la **Mer de Verre**, un désert dont le sable a été vitrifié par l'ancienne catastrophe.
+2. **Les noms** : Bâtisseurs, Veilleur, la Conservatrice, à garder ou à changer.
 
 ## Sources
 
