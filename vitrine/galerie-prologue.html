@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galerie du prologue</title>
+<style>
+  :root { --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --fond: rgba(6, 7, 12, 0.82); --trait: rgba(236, 230, 216, 0.16); }
+  html, body { margin: 0; height: 100%; background: #0b0c10; color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #liste { position: fixed; left: 0; top: 0; bottom: 0; width: 290px; overflow-y: auto; background: var(--fond); border-right: 1px solid var(--trait); padding: 14px 0 24px; box-sizing: border-box; }
+  #liste h1 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; margin: 0 16px 4px; color: var(--ambre); }
+  #liste .compte { font-size: 12px; color: var(--brume); margin: 0 16px 10px; }
+  #liste h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--brume); margin: 14px 16px 4px; font-weight: 600; }
+  #liste button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; color: var(--ivoire); font: inherit; font-size: 14px; padding: 5px 16px; cursor: pointer; }
+  #liste button:hover { background: rgba(236, 230, 216, 0.06); }
+  #liste button.actif { background: rgba(242, 178, 107, 0.14); color: var(--ambre); }
+  #liste button i { width: 7px; height: 7px; border-radius: 50%; background: #555; flex: none; }
+  #liste button.present i { background: var(--ether); }
+  #liste button.absent { color: var(--brume); }
+  #choix { display: none; }
+  #fiche { position: fixed; left: 306px; bottom: 16px; max-width: min(560px, calc(100vw - 340px)); background: var(--fond); border: 1px solid var(--trait); padding: 12px 14px; font-size: 13px; line-height: 1.5; }
+  #fiche h3 { margin: 0 0 2px; font-size: 18px; }
+  #fiche .usage { color: var(--ivoire); margin: 2px 0 6px; }
+  #fiche .meta { color: var(--brume); }
+  #fiche a { color: var(--ether); }
+  #fiche .anims button { background: none; border: 1px solid var(--trait); color: var(--ivoire); font: inherit; font-size: 12px; padding: 3px 8px; margin: 6px 4px 0 0; cursor: pointer; }
+  #fiche .anims button.actif { border-color: var(--ambre); color: var(--ambre); }
+  #aide { position: fixed; right: 14px; top: 14px; font-size: 12px; background: rgba(6, 7, 12, 0.6); padding: 6px 10px; text-align: right; }
+  #chargement { position: fixed; left: 290px; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 13px; letter-spacing: 2px; color: var(--brume); opacity: 0; transition: opacity 0.2s; }
+  #chargement.visible { opacity: 1; }
+  #message { position: fixed; left: 290px; right: 0; top: 40%; text-align: center; padding: 0 24px; color: var(--brume); line-height: 1.6; display: none; }
+  #erreur { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 32px; text-align: center; background: #05060b; line-height: 1.6; }
+  @media (max-width: 760px) {
+    #liste { display: none; }
+    #choix { display: block; position: fixed; left: 16px; right: 16px; top: 12px; font-size: 15px; padding: 8px; background: #111; color: var(--ivoire); border: 1px solid var(--trait); }
+    #fiche { left: 16px; right: 16px; max-width: none; }
+    #aide { display: none; }
+    #chargement, #message { left: 0; }
+  }
+</style>
+</head>
+<body>
+<nav id="liste"><h1>Prologue</h1><div class="compte"></div></nav>
+<select id="choix"></select>
+<div id="aide">Glisser : tourner · clic droit : déplacer · molette : zoom · ← → : modèle suivant</div>
+<div id="fiche" hidden></div>
+<div id="chargement">CHARGEMENT…</div>
+<div id="message"></div>
+<div id="erreur"></div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// Les 67 modèles choisis pour le prologue (docs/PROLOGUE-MODELES.md), téléchargés par outils/telecharger-prologue.sh
+const MODELES = [{"dossier":"01-Joueur","nom":"tenue-detenu","titre":"Prisoner","auteur":"asadkhan1881","compte":"asadkhan1881","faces":11686,"anims":1,"usage":"Le héros en tenue de détenu (provisoire : à remplacer plus tard par un humain réaliste)","uid":"e0898165a3e24b34bff0ca230d92c311"},{"dossier":"01-Joueur","nom":"combinaison","titre":"Mercenary Astronaut","auteur":"Peter_D","compte":"better_peter","faces":704714,"anims":3,"usage":"Sa propre combinaison, récupérée à la consigne (à alléger : 700 000 faces)","uid":"7fd399d488ae4576a0fc62715892956c"},{"dossier":"02-Prisonniers","nom":"detenu-brute","titre":"Balthazar (rigged & animated)","auteur":"Jungle Jim","compte":"jungle_jim","faces":110940,"anims":1,"usage":"Codétenu costaud, hostile ou allié","uid":"dbf9fe0cb81d4758ad2525a56d10e2fc"},{"dossier":"02-Prisonniers","nom":"detenu-vieux","titre":"Realistic Old Russian Guy (animated)","auteur":"Jungle Jim","compte":"jungle_jim","faces":53891,"anims":1,"usage":"Vieux détenu (indices, dialogues)","uid":"6b8009a6e4f747f59ccadb121adc3679"},{"dossier":"02-Prisonniers","nom":"detenu-atelier","titre":"Employee","auteur":"dotflare","compte":"Dotflare","faces":34718,"anims":4,"usage":"Détenu des ateliers toxiques, masque à gaz","uid":"9d1098bc72a74bb1b6371aef4b987100"},{"dossier":"03-Gardes","nom":"garde","titre":"S.W.A.T. Operator","auteur":"SpatialNeglect","compte":"jeandiz","faces":106714,"anims":1,"usage":"Garde de la prison en tenue anti-émeute (écussons à remplacer)","uid":"9e82fabf26194896b5ad4a364d864eab"},{"dossier":"03-Gardes","nom":"droide-securite","titre":"Sci-fi O.B. Robot Unit TH-ICC02 (animated)","auteur":"Jungle Jim","compte":"jungle_jim","faces":124648,"anims":1,"usage":"Droïde de sécurité","uid":"6c0764c2bc4c4aaa8e03ba1653f455a6"},{"dossier":"04-Pirates","nom":"pirate-chef","titre":"Space Pirate","auteur":"Odlab","compte":"Odlab","faces":241821,"anims":0,"usage":"Chef des pirates","uid":"f94ee65527b14bdcb5bafd1ad573c8ca"},{"dossier":"04-Pirates","nom":"pirate","titre":"Scavenger","auteur":"Vasian-Digital3D","compte":"Vasian-Digital3D","faces":98743,"anims":1,"usage":"Pirate d'abordage","uid":"f029fe3297434ed6b5d03c3ffbc0585d"},{"dossier":"04-Pirates","nom":"pirate-masque","titre":"post apo character","auteur":"Am I dead?","compte":"eqisX","faces":924658,"anims":0,"usage":"Pirate masqué (lourd : à alléger)","uid":"9e77c91967ca4263ad347b395f53c1cb"},{"dossier":"04-Pirates","nom":"casque-pirate","titre":"Vintage 2725 \" Spacer Armoured Pressure Helmet \"","auteur":"KallMor","compte":"kallmor","faces":42376,"anims":0,"usage":"Casque pressurisé de pirate, pour varier les tenues","uid":"1059232ac0374767bf49ba95978f580f"},{"dossier":"05-Cellules","nom":"bloc-cellules","titre":"Abandoned prison modular scene","auteur":"Ali2-D2","compte":"Ali2-D2","faces":138134,"anims":0,"usage":"Bloc de cellules modulaire","uid":"1e80d7053fd7440f929bc53db8433509"},{"dossier":"05-Cellules","nom":"porte-cellule","titre":"Prison cell door","auteur":"Rivaldragon","compte":"Rivaldragon","faces":1544,"anims":0,"usage":"Porte de cellule à barreaux","uid":"f8148fab4dc44903b9644170edf0e58c"},{"dossier":"05-Cellules","nom":"porte-isolement","titre":"Door Of The Solitary Cell Of The Prison 14MB","auteur":"Mehdi Shahsavan","compte":"ahmagh2e","faces":3228,"anims":0,"usage":"Porte de cellule d'isolement (celle du héros)","uid":"23db3362debb4d98a56856416e1e9c58"},{"dossier":"05-Cellules","nom":"toilettes","titre":"Filthy Prison Toilet - 4096px²","auteur":"Mark Peters","compte":"mark-peters","faces":3652,"anims":0,"usage":"Toilettes en acier","uid":"b8bdb85f59a44a8ea4b0783c8d22f373"},{"dossier":"05-Cellules","nom":"lavabo","titre":"Filthy Metal Sink - 4096px²","auteur":"Mark Peters","compte":"mark-peters","faces":18610,"anims":0,"usage":"Lavabo en acier","uid":"dcd2b91f54014e95bd488e12f0d54d61"},{"dossier":"05-Cellules","nom":"lit-superpose","titre":"Simple Bunk Bed","auteur":"Blender3D","compte":"Blender3D","faces":9324,"anims":0,"usage":"Lit superposé","uid":"9fb7c54715dd41b98b3dc67b367cf81d"},{"dossier":"06-Couloirs","nom":"couloir-principal","titre":"Sci-fi corridor","auteur":"3dhdscan","compte":"3dhdscan","faces":164086,"anims":0,"usage":"Segment de coursive principal, à répéter","uid":"5e6240c9b30145b0bf81fd02287985e3"},{"dossier":"06-Couloirs","nom":"kit-interieur","titre":"Sci-fi Ship interior - Modular asset pack","auteur":"Rejala","compte":"Rejala","faces":356806,"anims":0,"usage":"Kit modulaire d'intérieur de vaisseau","uid":"50e2af8800cc4ab79add375f817b2d76"},{"dossier":"06-Couloirs","nom":"kit-couloir","titre":"Sci-fi Corridor","auteur":"Eliu_Villanueva","compte":"Eliu_Villanueva","faces":22279,"anims":0,"usage":"Kit de couloir en pièces (murs, portes, sols)","uid":"f3d033a8f3ad4888acc8c0a16878cf85"},{"dossier":"06-Couloirs","nom":"conduit-maintenance","titre":"Sci-fi Hallway Tube","auteur":"SlyEye","compte":"SlyEyePro","faces":201178,"anims":0,"usage":"Conduit tubulaire : chemins de maintenance","uid":"6987b3d35d2441e4b83ed9f87fbb74ff"},{"dossier":"06-Couloirs","nom":"tuyaux","titre":"Sci-Fi Machinery: Pipes Modular Asset Pack","auteur":"somni","compte":"3d.somni","faces":7978,"anims":0,"usage":"Tuyaux modulaires","uid":"0b8188107ef040149f2f71eb08e9ce16"},{"dossier":"06-Couloirs","nom":"porte-coulissante","titre":"Sci-fi Door (high poly)","auteur":"Scarecrow_original","compte":"Scarecrow_original","faces":53530,"anims":0,"usage":"Porte coulissante","uid":"2e8c613214144d12bce416ce437614d6"},{"dossier":"06-Couloirs","nom":"sols","titre":"PBR Sci-Fi Modular Flooring","auteur":"JamesDawson","compte":"JamBoink","faces":696,"anims":0,"usage":"Dalles de sol modulaires","uid":"0aea48c99ae24d78b7814d9dfbd94fe6"},{"dossier":"07-Consigne","nom":"casier","titre":"Locker Equipment","auteur":"Siberia","compte":"LtxxwSibeRia","faces":5226,"anims":0,"usage":"Casiers de la consigne","uid":"fae22ece4d764979aafd614ebe09956d"},{"dossier":"07-Consigne","nom":"armoire-blindee","titre":"Armored Cabinet","auteur":"Ray Ferric","compte":"rayferric","faces":4581,"anims":1,"usage":"Armoire blindée où est rangée la combinaison (porte animée)","uid":"d16736e243904210b938590a42c8ea88"},{"dossier":"07-Consigne","nom":"porte-coffre","titre":"Vault Door","auteur":"Ray Ferric","compte":"rayferric","faces":14556,"anims":1,"usage":"Porte blindée de la consigne (animée)","uid":"20d25f3bae24417a9b6cc5ba690c62f5"},{"dossier":"08-Machines","nom":"reacteur","titre":"ARC Pulse Core","auteur":"TooManyDemons","compte":"toomanydemons","faces":24020,"anims":0,"usage":"Réacteur de la salle des machines","uid":"22e55de3be0c46caad827774109572f5"},{"dossier":"08-Machines","nom":"generateur","titre":"SCIFI GENERATOR","auteur":"LordCinn","compte":"LordCinn","faces":68574,"anims":0,"usage":"Générateur","uid":"bf2e1a087adb4628a376ffbed17c41ff"},{"dossier":"08-Machines","nom":"pylone-energie","titre":"Sci-fi generator","auteur":"aksinia0987","compte":"aksinia0987","faces":16566,"anims":0,"usage":"Pylône d'énergie","uid":"32c5436e8e9c459eac7471dce7c3878f"},{"dossier":"08-Machines","nom":"coeur-fusion","titre":"FUSION CORE","auteur":"Fred Drabble","compte":"FredDrabble","faces":20700,"anims":0,"usage":"Cœur de fusion","uid":"f717683d5502496d9e1ef1f1e1d1cb45"},{"dossier":"09-Informatique","nom":"baie-serveur","titre":"Server Rack","auteur":"Spellkaze","compte":"Spellkaze","faces":744,"anims":0,"usage":"Baie de serveurs (les ordinateurs qui disjonctent)","uid":"62f6779cb7e448b19aaf58544c3c7218"},{"dossier":"09-Informatique","nom":"rangee-serveurs","titre":"Server Racking System","auteur":"wpanayides","compte":"mcpanayides","faces":299604,"anims":0,"usage":"Rangée de serveurs","uid":"6fe2cacf836b4aed96c650b286db5486"},{"dossier":"09-Informatique","nom":"console-murale","titre":"Wall Console","auteur":"LuddePudde","compte":"luddepubde","faces":11780,"anims":0,"usage":"Console murale","uid":"98724ee49fba42a2b0ccbe79a36f246e"},{"dossier":"09-Informatique","nom":"grand-ecran","titre":"Large Wall-Mounted Computer Console","auteur":"Inditrion Dradnon","compte":"dradnon","faces":1092,"anims":0,"usage":"Grand écran mural","uid":"298b7d9b68064618a3819d1a8fae4baf"},{"dossier":"09-Informatique","nom":"terminal","titre":"Sci-fi Computer Terminal","auteur":"Pedro Belthori","compte":"pedrobelthori","faces":13892,"anims":0,"usage":"Terminal à pirater","uid":"e03a14fc845e4e2d9573b95e00f79ef4"},{"dossier":"09-Informatique","nom":"cables","titre":"Electric cable - 13MB","auteur":"Mehdi Shahsavan","compte":"ahmagh2e","faces":14986,"anims":0,"usage":"Câbles électriques (étincelles du court-circuit)","uid":"1f6a4938769846b1ae9b512038aec5f8"},{"dossier":"10-Hangar","nom":"hangar","titre":"SCI FI HANGAR","auteur":"Kerem Kavalci","compte":"Keremz","faces":229786,"anims":0,"usage":"Le hangar","uid":"4b263701219446f1ab13b37a5b98bac5"},{"dossier":"10-Hangar","nom":"caisses","titre":"Game Ready Sci-Fi Crates","auteur":"celebornArt","compte":"celebornArt","faces":14168,"anims":0,"usage":"Caisses de fret","uid":"763fe7cff0534ec8a738b6127827eddd"},{"dossier":"10-Hangar","nom":"caisse-armes","titre":"Military Weapons Container","auteur":"MeshSlinger","compte":"thelastphysician","faces":9964,"anims":0,"usage":"Caisse d'armes","uid":"8a1c32f395f549b8b22265b8a459fa8e"},{"dossier":"10-Hangar","nom":"cellule-energie","titre":"Sci-Fi Power Cell Prop","auteur":"pixelgrapher","compte":"pixelgrapher","faces":2408,"anims":0,"usage":"Cellule d'énergie","uid":"e43322345d39429d82396a8642bb8d70"},{"dossier":"10-Hangar","nom":"bidon-carburant","titre":"Sci-fi Fuel Cell Canister","auteur":"Daniel.Sharma","compte":"Daniel.Sharma","faces":8134,"anims":0,"usage":"Bidon de carburant","uid":"04103035ea8c483db55ba61173929809"},{"dossier":"11-Vaisseaux","nom":"vaisseau-prison","titre":"The Star Prison (Basemesh&Greebles)","auteur":"Relvean","compte":"Relvean","faces":29744,"anims":0,"usage":"Le vaisseau-prison vu de l'extérieur","uid":"e2d0fbe81c0e4182bec23e1adecba2db"},{"dossier":"11-Vaisseaux","nom":"vaisseau-prison-variante","titre":"Gangut space hub","auteur":"Comrade1280","compte":"comrade1280","faces":14832,"anims":0,"usage":"Variante plus industrielle du vaisseau-prison","uid":"db9e338f04ae402c82f8ebdf12b55f9e"},{"dossier":"11-Vaisseaux","nom":"navette-a-voler","titre":"Sci-fi shuttle","auteur":"Hrvoje Wächter","compte":"gazdahrco","faces":48502,"anims":0,"usage":"La navette que le héros vole","uid":"d3e5d9303d1d4e8b8a8e30bf22f59a21"},{"dossier":"11-Vaisseaux","nom":"navette-transfert","titre":"X-4A Enforcer Assault Transport","auteur":"pandoraskitten","compte":"pandoraskitten","faces":39035,"anims":0,"usage":"Navette de transfert des prisonniers","uid":"7a35a4f82e34446aa6131420bb26cc64"},{"dossier":"11-Vaisseaux","nom":"vaisseau-pirate","titre":"Heavy VTOL gunship","auteur":"Kai Xiang","compte":"kirikom9000","faces":46669,"anims":0,"usage":"Vaisseau pirate d'abordage","uid":"86d336e0fa6f40329de8cda4a71d8a17"},{"dossier":"11-Vaisseaux","nom":"capsule-sauvetage","titre":"Sci-Fi Personal Space Pod Ship(weekly challenge)","auteur":"futaba@blender","compte":"futaba_blender","faces":55136,"anims":0,"usage":"Capsule de sauvetage (décor du hangar)","uid":"b158f01dd4a9416fb689ca4401856e7a"},{"dossier":"12-Exterieur","nom":"porte-sas","titre":"Free Airlock Door","auteur":"michael_grodkowski","compte":"michael_grodkowski","faces":4440,"anims":1,"usage":"Porte de sas (animée)","uid":"58729c7672ae4e01a6103617c2f4f55e"},{"dossier":"12-Exterieur","nom":"sas","titre":"Sci-Fi Airlock","auteur":"hamraj15","compte":"hamraj15","faces":14632,"anims":0,"usage":"Sas","uid":"24521cd09bf54aafbd1dce8d8c731293"},{"dossier":"12-Exterieur","nom":"cloison-etanche","titre":"Ship Door / Bulkhead","auteur":"lumoize","compte":"lumoize","faces":20146,"anims":0,"usage":"Cloison étanche","uid":"cdc2fb6ad6cd47cfa96182112b293d3f"},{"dossier":"12-Exterieur","nom":"rocher-spatial","titre":"Meteorite","auteur":"Hailphilly","compte":"hailphilly","faces":82097,"anims":0,"usage":"Rocher qui dérive dans le vide","uid":"0a503e5bec784cbc9082e2f6b2d9f701"},{"dossier":"12-Exterieur","nom":"debris-1","titre":"SpaceShips Junk Yard  ASSET (part1)","auteur":"SebastianSosnowski","compte":"SebastianSosnowski","faces":31348,"anims":0,"usage":"Débris de vaisseaux (1)","uid":"c962c07f89c34e2a9d6714b3d408b878"},{"dossier":"12-Exterieur","nom":"debris-2","titre":"SpaceShips Junk Yard ASSET (part2)","auteur":"SebastianSosnowski","compte":"SebastianSosnowski","faces":53734,"anims":0,"usage":"Débris de vaisseaux (2)","uid":"f8fc1c20073448ccb4803335703c9129"},{"dossier":"12-Exterieur","nom":"gravats-breche","titre":"Construction debris","auteur":"Alex Sade","compte":"Alexsade","faces":194835,"anims":0,"usage":"Gravats des brèches de l'abordage","uid":"53b50b002a0045c8b9f92858aa8c8dd7"},{"dossier":"13-Armes","nom":"fusil-gardes","titre":"ASL - Standart Issue Assault Rifle","auteur":"JmCVoyager","compte":"JmCVoyager","faces":9382,"anims":0,"usage":"Fusil d'assaut des gardes","uid":"60129a0e0cd340a38bf4b4c787a2dce6"},{"dossier":"13-Armes","nom":"mitraillette-gardes","titre":"Futuristic Submachine Gun","auteur":"Newsome Interactive","compte":"newsomellc","faces":63720,"anims":0,"usage":"Mitraillette des gardes","uid":"893ed8d2adaf4658847c4f36dab16f61"},{"dossier":"13-Armes","nom":"pistolet-gardes","titre":"Pistol","auteur":"SINNIK","compte":"sinnik","faces":50208,"anims":0,"usage":"Pistolet des gardes","uid":"54c52df11e164b42992a7d418d99cd3f"},{"dossier":"13-Armes","nom":"fusil-pirates","titre":"Sci-Fi AK Rifle gameready (Free)","auteur":"Egor Likhachev","compte":"egor_likhachev","faces":12242,"anims":0,"usage":"Fusil des pirates","uid":"2d0d3410970d49c6865d00be15048f72"},{"dossier":"13-Armes","nom":"arme-pirates","titre":"Sci Fi Weapon. Gameready Gun / Rifle.","auteur":"gbarzu","compte":"gbarzu","faces":28026,"anims":2,"usage":"Arme bricolée des pirates","uid":"eca46c628f49410081eb73391c62b4ca"},{"dossier":"13-Armes","nom":"fusil-lourd-pirates","titre":"Heavy Assault Rifle","auteur":"valerij1987","compte":"valerij1987","faces":47267,"anims":1,"usage":"Fusil lourd des pirates","uid":"1b91aca44b65417f957d9ec30ce8ee19"},{"dossier":"13-Armes","nom":"pistolet-use","titre":"Sci-Fi Pistol","auteur":"Andrei Milin","compte":"milinam2002","faces":17452,"anims":0,"usage":"Pistolet usé, trouvé en route","uid":"fab28aeb14894752b49149ef00926aff"},{"dossier":"13-Armes","nom":"cle-a-molette","titre":"Weathered Wrench (Game Model)","auteur":"Michael Makivic","compte":"makivic","faces":2642,"anims":0,"usage":"Arme de fortune : clé à molette","uid":"66b29c557ce04bb0b14bdde2cc204a2f"},{"dossier":"14-Accessoires","nom":"extincteur","titre":"Fire Extinguisher","auteur":"Loïc","compte":"loichuet1","faces":2792,"anims":0,"usage":"Extincteur","uid":"5676b179b3b744c0aaae53a3dcea2300"},{"dossier":"14-Accessoires","nom":"neons","titre":"Fluorescent Light Fixtures - 4x 4096px²","auteur":"Mark Peters","compte":"mark-peters","faces":21456,"anims":0,"usage":"Néons de plafond","uid":"2a05034d61dc49bf81b33de44add7aa8"},{"dossier":"14-Accessoires","nom":"caisse-munitions","titre":"Sci-Fi crate / ammunition box (2)","auteur":"ul1tka","compte":"ul1tka","faces":648,"anims":0,"usage":"Caisse de munitions","uid":"342efe4d70f94d37a4edd66a15c39502"},{"dossier":"14-Accessoires","nom":"caisse-cargo","titre":"Sci-fi cargo crate","auteur":"andreas9343","compte":"andreas9343","faces":4052,"anims":0,"usage":"Caisse de cargo","uid":"ac36898521304e51a8e305aa602f1f5b"}];
+const DOSSIERS = {
+  '01-Joueur': 'Le héros', '02-Prisonniers': 'Détenus', '03-Gardes': 'Gardes', '04-Pirates': 'Pirates', '05-Cellules': 'Cellules',
+  '06-Couloirs': 'Coursives', '07-Consigne': 'Consigne', '08-Machines': 'Salle des machines', '09-Informatique': 'Informatique',
+  '10-Hangar': 'Hangar', '11-Vaisseaux': 'Vaisseaux', '12-Exterieur': 'Sas et vide', '13-Armes': 'Armes', '14-Accessoires': 'Accessoires',
+};
+
+// Dossier des modèles : ./prologue/ à côté de cette page, ou ?models=chemin
+const RACINE = new URL((new URLSearchParams(location.search).get('models') || 'prologue').replace(/\/?$/, '/'), location.href);
+const $ = s => document.querySelector(s);
+
+if (location.protocol === 'file:') {
+  const e = $('#erreur');
+  e.style.display = 'flex';
+  e.innerHTML = 'Cette page doit être servie par un petit serveur local (le navigateur bloque les fichiers ouverts directement).<br>' +
+    'Dans le Terminal : <b>cd ~/jeu && python3 -m http.server 8766</b><br>puis ouvrir <b>http://localhost:8766/galerie-prologue.html</b>';
+  throw new Error('file://');
+}
+
+// ------------------------------------------------------------------ scène : studio neutre, sol, silhouette de 1,80 m
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x15161b);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 50000);
+const controles = new OrbitControls(camera, renderer.domElement);
+controles.enableDamping = true;
+
+const soleil = new THREE.DirectionalLight(0xffffff, 1.6);
+soleil.castShadow = true;
+soleil.shadow.mapSize.set(2048, 2048);
+scene.add(soleil, soleil.target, new THREE.HemisphereLight(0xcfd6e6, 0x2a2622, 0.35));
+
+const sol = new THREE.Mesh(new THREE.CircleGeometry(1, 64), new THREE.MeshStandardMaterial({ color: 0x24262c, roughness: 0.95 }));
+sol.rotation.x = -Math.PI / 2;
+sol.receiveShadow = true;
+scene.add(sol);
+const grille = new THREE.GridHelper(1, 10, 0x3a3d46, 0x2c2e35);
+scene.add(grille);
+
+// repère d'échelle : une silhouette de 1,80 m (les modèles glTF sont en mètres)
+const humain = new THREE.Group();
+const matHumain = new THREE.MeshStandardMaterial({ color: 0x86efe6, transparent: true, opacity: 0.35, roughness: 0.6 });
+const corps = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.1, 6, 16), matHumain); corps.position.y = 0.77;
+const tete = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), matHumain); tete.position.y = 1.67;
+humain.add(corps, tete);
+scene.add(humain);
+
+function redimensionner() {
+  const l = innerWidth > 760 ? 290 : 0;
+  renderer.setSize(innerWidth - l, innerHeight);
+  renderer.domElement.style.marginLeft = l + 'px';
+  camera.aspect = (innerWidth - l) / innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', redimensionner);
+redimensionner();
+
+// ------------------------------------------------------------------ liste et disponibilité des fichiers
+
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const chemins = m => [`${m.dossier}/${m.nom}/${m.nom}.glb`, `${m.dossier}/${m.nom}/scene.gltf`, `${m.dossier}/${m.nom}/scene.glb`];
+async function trouver(m) {
+  for (const c of chemins(m)) {
+    try { const r = await fetch(new URL(c, RACINE), { method: 'HEAD' }); if (r.ok) return c; } catch { }
+  }
+  return null;
+}
+
+const boutons = [];
+let dossierCourant = null;
+MODELES.forEach((m, i) => {
+  if (m.dossier !== dossierCourant) {
+    dossierCourant = m.dossier;
+    const h = document.createElement('h2');
+    h.textContent = DOSSIERS[m.dossier] || m.dossier;
+    $('#liste').append(h);
+    const g = document.createElement('optgroup');
+    g.label = DOSSIERS[m.dossier] || m.dossier;
+    $('#choix').append(g);
+  }
+  const b = document.createElement('button');
+  b.innerHTML = '<i></i>';
+  b.append(m.nom);
+  b.onclick = () => ouvrir(i);
+  $('#liste').append(b);
+  boutons.push(b);
+  const o = document.createElement('option');
+  o.value = i; o.textContent = m.nom;
+  $('#choix').lastElementChild.append(o);
+});
+$('#choix').onchange = e => ouvrir(Number(e.target.value));
+
+Promise.all(MODELES.map(async (m, i) => {
+  m.chemin = await trouver(m);
+  boutons[i].classList.toggle('present', !!m.chemin);
+  boutons[i].classList.toggle('absent', !m.chemin);
+})).then(() => {
+  const n = MODELES.filter(m => m.chemin).length;
+  $('#liste .compte').textContent = `${n} modèles téléchargés sur ${MODELES.length}`;
+  if (n === 0) {
+    $('#message').style.display = 'block';
+    $('#message').innerHTML = `Aucun modèle trouvé dans <b>${RACINE.pathname}</b>.<br>Télécharge-les d'abord avec <b>outils/telecharger-prologue.sh</b> (voir docs/PROLOGUE-MODELES.md).`;
+  }
+});
+
+// ------------------------------------------------------------------ affichage d'un modèle
+
+let actuel = -1, objet = null, mixer = null, jeton = 0;
+const horloge = new THREE.Clock();
+
+function liberer(o) {
+  o.traverse(n => {
+    if (n.geometry) n.geometry.dispose();
+    for (const mat of [].concat(n.material || [])) {
+      for (const v of Object.values(mat)) if (v && v.isTexture) v.dispose();
+      mat.dispose();
+    }
+  });
+}
+
+function nombre(n) { return (n || 0).toLocaleString('fr-FR'); }
+
+async function ouvrir(i) {
+  i = (i + MODELES.length) % MODELES.length;
+  actuel = i;
+  const m = MODELES[i], moi = ++jeton;
+  boutons.forEach((b, k) => b.classList.toggle('actif', k === i));
+  boutons[i].scrollIntoView({ block: 'nearest' });
+  $('#choix').value = i;
+  if (objet) { scene.remove(objet); liberer(objet); objet = null; mixer = null; }
+  if (m.chemin === undefined) m.chemin = await trouver(m);
+  const fiche = $('#fiche');
+  fiche.hidden = false;
+  fiche.innerHTML = `<h3>${m.nom}</h3><div class="usage">${m.usage}</div>
+    <div class="meta">« ${m.titre} » par ${m.auteur} · CC BY · <a href="https://sketchfab.com/3d-models/${m.uid}" target="_blank" rel="noopener">voir sur Sketchfab</a><br>
+    ${nombre(m.faces)} faces<span class="taille"></span></div><div class="anims"></div>`;
+  $('#message').style.display = m.chemin ? 'none' : 'block';
+  if (!m.chemin) {
+    $('#message').innerHTML = `<b>${m.nom}</b> n'est pas encore téléchargé.<br>Relance <b>outils/telecharger-prologue.sh</b> : il ne prend que ce qui manque.`;
+    return;
+  }
+  $('#chargement').classList.add('visible');
+  try {
+    const gltf = await new GLTFLoader().setDRACOLoader(draco).loadAsync(new URL(m.chemin, RACINE).href);
+    if (moi !== jeton) { liberer(gltf.scene); return; }
+    objet = gltf.scene;
+    objet.traverse(n => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
+    // posé sur le sol, centré, à son échelle d'origine
+    let b = new THREE.Box3().setFromObject(objet);
+    const c = b.getCenter(new THREE.Vector3());
+    objet.position.set(-c.x, -b.min.y, -c.z);
+    scene.add(objet);
+    b = new THREE.Box3().setFromObject(objet);
+    const t = b.getSize(new THREE.Vector3());
+    const rayon = Math.max(t.length() / 2, 0.3);
+    fiche.querySelector('.taille').textContent = ` · ${t.x.toFixed(2)} × ${t.y.toFixed(2)} × ${t.z.toFixed(2)} m dans le fichier`;
+    // décor à l'échelle du modèle
+    sol.scale.setScalar(rayon * 3);
+    grille.scale.setScalar(rayon * 4);
+    humain.position.set(b.max.x + Math.max(0.6, rayon * 0.15), 0, 0);
+    soleil.position.set(rayon * 2, rayon * 3, rayon * 2);
+    Object.assign(soleil.shadow.camera, { left: -rayon * 2, right: rayon * 2, top: rayon * 2, bottom: -rayon * 2, near: 0.1, far: rayon * 10 });
+    soleil.shadow.camera.updateProjectionMatrix();
+    camera.near = rayon / 200; camera.far = rayon * 200; camera.updateProjectionMatrix();
+    const cible = new THREE.Vector3(0, t.y / 2, 0);
+    camera.position.copy(cible).add(new THREE.Vector3(1, 0.45, 1.2).normalize().multiplyScalar(rayon / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.05));
+    controles.target.copy(cible);
+    controles.maxDistance = rayon * 20;
+    controles.update();
+    // animations du fichier
+    if (gltf.animations.length) {
+      mixer = new THREE.AnimationMixer(objet);
+      const zone = fiche.querySelector('.anims');
+      gltf.animations.forEach((clip, k) => {
+        const bt = document.createElement('button');
+        bt.textContent = clip.name || `animation ${k + 1}`;
+        bt.onclick = () => {
+          mixer.stopAllAction();
+          mixer.clipAction(clip).play();
+          zone.querySelectorAll('button').forEach(x => x.classList.toggle('actif', x === bt));
+        };
+        zone.append(bt);
+        if (k === 0) bt.click();
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    $('#message').style.display = 'block';
+    $('#message').innerHTML = `Impossible de lire <b>${m.chemin}</b> : ${e.message}`;
+  } finally {
+    if (moi === jeton) $('#chargement').classList.remove('visible');
+  }
+}
+
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); ouvrir(actuel + 1); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); ouvrir(actuel - 1); }
+});
+
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(horloge.getDelta(), 0.05);
+  if (mixer) mixer.update(dt);
+  controles.update();
+  renderer.render(scene, camera);
+});
+
+// premier modèle téléchargé, sinon le premier de la liste
+setTimeout(() => ouvrir(Math.max(0, MODELES.findIndex(m => m.chemin))), 400);
+</script>
+</body>
+</html>

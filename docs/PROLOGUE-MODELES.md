@@ -34,6 +34,25 @@ Les modèles arrivent rangés par lieu dans `C:\Projets\EchosEther\Assets\_Proje
 14-Accessoires\   extincteur, neons, caisse-munitions, caisse-cargo
 ```
 
+### Sur Mac (ou Linux)
+
+Dans le Terminal (le script demande le token) :
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/telecharger-prologue.sh | bash -s -- ~/jeu/prologue
+```
+
+Même rangement que sur le PC : le dossier `~/jeu/prologue` peut être copié tel quel dans `Assets/_Projet/Externes/Prologue` du projet Unity.
+
+**Les voir en 3D sur le Mac** : la galerie affiche chaque modèle avec ses animations, sa taille réelle dans le fichier et une silhouette de 1,80 m pour juger l'échelle.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/galerie-prologue.html -o ~/jeu/galerie-prologue.html
+cd ~/jeu && python3 -m http.server 8766
+```
+
+Puis ouvrir http://localhost:8766/galerie-prologue.html (flèches ← → pour passer d'un modèle à l'autre).
+
 Chaque modèle a son `LICENCE.txt`. Les crédits à citer dans le jeu sont regroupés dans `CREDITS-PROLOGUE.txt`, à la racine du projet.
 On peut relancer le script sans risque : ce qui est déjà téléchargé est sauté.
 
