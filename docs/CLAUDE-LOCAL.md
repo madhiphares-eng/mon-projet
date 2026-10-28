@@ -1,6 +1,6 @@
 # Pour Claude en local : travailler sur Échos d'Éther dans Unity
 
-> **Refonte en cours (28 octobre 2026).** Le jeu repart de zéro : le joueur atterrit dans une base ennemie, s'évade et vole une navette.
+> **Refonte en cours (28 octobre 2026).** Le jeu repart de zéro : le joueur s'évade d'un vaisseau-prison ennemi, dans l'espace, et vole une navette.
 > Lis d'abord [`PREPRODUCTION.md`](PREPRODUCTION.md). N'ajoute pas de nouvelle fonction à l'ancienne version en attendant que les décisions soient prises.
 > Ce qui suit décrit l'ancienne version.
 

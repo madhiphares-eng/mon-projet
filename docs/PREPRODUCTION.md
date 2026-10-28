@@ -8,9 +8,10 @@
 
 Le jeu repart de zéro. Il commence désormais par une évasion :
 
-1. Le joueur **atterrit dans une base ennemie**.
-2. Il **s'échappe** en traversant un territoire ouvert, comme dans une campagne, mais sans couloir imposé.
-3. Il **vole une navette** et **saute** loin de la planète (hyperespace, ou un autre nom : voir les décisions).
+1. Le joueur arrive dans **un vaisseau-prison ennemi, dans l'espace**.
+2. Il **s'échappe** à travers un vaisseau immense, comme dans une campagne, mais avec plusieurs chemins plutôt qu'un couloir imposé.
+3. Il **vole une navette** dans le hangar et **saute** loin du vaisseau (hyperespace, ou un autre nom : voir les décisions).
+4. Le monde ouvert commence là où le saut le mène.
 
 **Mélange de références :**
 
@@ -63,25 +64,36 @@ Comme avant, on emprunte des sensations, jamais des noms, des logos ou des desig
 1. **S'en sortir** : chaque minute est une évasion, et on survit avec ce qu'on trouve.
 2. **Crédible et lourd** : le réalisme des armes, du corps et des machines, à la manière d'Helldivers.
 3. **Plusieurs chemins** : discrétion, assaut, diversion. Le monde réagit au bruit, comme dans Dune.
-4. **Le désert est vivant** : chaleur, tempêtes, et ce qui dort sous le sable.
+4. **Le milieu est un ennemi** : le vide et le silence de l'espace dans le prologue, puis le désert, sa chaleur et ce qui dort sous le sable.
 
-### Le prologue (première tranche verticale)
+### Le prologue : l'évasion du vaisseau-prison (première tranche verticale)
 - **Durée** : 30 à 45 minutes la première fois.
-- **Zone** : environ 1,5 km de côté. La base est au centre, entourée de désert et de canyons.
-- **Mêmes règles que le reste du jeu** : c'est le Plateau du Prélude de notre jeu.
+- **Lieu** : un vaisseau-prison ennemi, immense, en orbite. Il est découpé en secteurs : bloc des cellules, ateliers où travaillent les prisonniers, salle des machines, quartiers des gardes, passerelle, hangar.
+- **Plusieurs chemins** entre les secteurs : coursives, conduits de maintenance, et **la coque extérieure, dans le vide**.
+- **Mêmes règles que le reste du jeu** : c'est le Plateau du Prélude de notre jeu, version spatiale.
+- Références d'ambiance :
+  - l'évasion de la prison de l'Étoile de la Mort dans *Star Wars*, où il faut couper le rayon tracteur pour pouvoir fuir ;
+  - la station ouverte et les sorties dans le vide de *Prey* (2017) ;
+  - l'apesanteur et la décompression de *Dead Space*.
 
 | Étape | Ce qui se passe | Ce que le joueur apprend |
 |---|---|---|
-| 1. L'arrivée | Le joueur atterrit dans la base. La raison est à choisir : capsule abattue, prisonnier, sacrifié par son propre camp. | Regarder, se déplacer |
-| 2. Sortir | Court passage guidé : cellule ou épave, couloirs, première arme volée | S'accroupir, se cacher, le bruit, ramasser |
-| 3. La base ouverte | **Trois clés à obtenir dans l'ordre qu'on veut** : le code du hangar (un officier), une cellule d'énergie pour la navette (le dépôt), couper le canon antiaérien (la centrale) | Discrétion ou combat, piratage, routes multiples |
-| 4. Le désert | Une clé est hors de la base, dans le désert (épave, dépôt avancé). Le sable porte le bruit. | Traversée, gestion du bruit, survie, tempête |
-| 5. Le hangar | Alerte générale, la navette décolle sous le feu | Combat sous pression, pilotage |
-| 6. Le saut | Fuite en orbite, puis saut. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
+| 1. L'arrivée | Le joueur est amené prisonnier : sa navette de transfert s'arrime au vaisseau-prison. Vue sur l'immensité du vaisseau, puis la cellule. | Regarder, se déplacer |
+| 2. Sortir de la cellule | Un événement ouvre les portes (panne, émeute, attaque), ou le joueur s'en charge lui-même. Court passage guidé, première arme volée à un garde. | S'accroupir, se cacher, le bruit, ramasser |
+| 3. Le vaisseau ouvert | **Trois objectifs, dans l'ordre qu'on veut** : le badge d'accès du hangar (le gardien-chef), le carburant ou la cellule d'énergie de la navette (salle des machines), couper le **rayon tracteur** (sinon le vaisseau ramène la navette) | Discrétion ou combat, piratage, chemins multiples |
+| 4. Le vide | L'un des objectifs se fait **sur la coque, à l'extérieur** : bottes magnétiques, apesanteur, oxygène limité, et le silence total du vide (on n'entend que sa propre respiration et ce qui passe par la coque). C'est le « désert » du prologue. | Sortie dans l'espace, gestion de l'air, nouvelles règles du bruit |
+| 5. Le hangar | Alerte générale. Combat dans le hangar, sas qu'on peut ouvrir sur le vide pour aspirer les gardes (chaos à la Helldivers). La navette décolle. | Combat sous pression, se servir du décor |
+| 6. Le saut | Fuite sous le feu des tourelles, puis saut. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
 
-**Règle de secours** (la leçon de No Man's Sky) : chaque clé a au moins deux façons d'être obtenue. On ne bloque jamais le joueur.
+**Règle de secours** (la leçon de No Man's Sky) : chaque objectif a au moins deux façons d'être rempli. On ne bloque jamais le joueur.
 
-**Le saut ouvre la suite.** La navette volée devient le refuge du joueur et lui donne plus tard ses appels de soutien. Pendant le prologue, il est seul et sans soutien. C'est voulu : il n'a encore rien.
+**Le saut ouvre la suite.** Le monde ouvert commence là où il mène (par exemple, une arrivée en catastrophe sur une planète désertique).
+La navette volée devient le refuge du joueur et lui donne plus tard ses appels de soutien.
+Pendant le prologue, il est seul et sans soutien. C'est voulu : il n'a encore rien.
+En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
+
+**Bonne nouvelle pour le scope** : un intérieur de vaisseau se construit avec des **kits modulaires** (couloirs, portes, sas, hangar). C'est plus maîtrisable qu'un grand terrain pour une première tranche verticale.
+Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi, kit modulaire d'intérieur de vaisseau, hangar, sas, passerelle, intérieur de l'ISS.
 
 ### Solo d'abord, coop ensuite
 - Le prologue se joue **seul**.
@@ -172,7 +184,7 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 
 | Risque | Parade |
 |---|---|
-| Scope du monde ouvert | Une zone de 1,5 km, terminée avant d'en commencer une autre |
+| Scope du monde ouvert | Le vaisseau-prison d'abord, terminé avant de commencer le monde ouvert. Ensuite, une zone à la fois |
 | Effet patchwork : 50 auteurs, 50 styles | Nos propres matériaux, une palette par lieu, un étalonnage commun |
 | Licences | Seulement CC0, CC BY, domaine public, MIT ou Apache. Chaque crédit est noté |
 | Performances sur la RTX 3060 | Modèles allégés, LOD, objectif 1080p à 60 images/s |
@@ -182,11 +194,10 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 <a id="decisions"></a>
 ## 8. Décisions à prendre
 
-1. **Pourquoi le joueur atterrit dans la base ennemie ?**
-   - A. Sa capsule est abattue par la défense antiaérienne de la base.
-   - B. Il est prisonnier, et un événement (ver, tempête, attaque) lui ouvre la porte.
-   - C. Son propre camp l'a largué là en sacrifice, sous couvert d'une « mission glorieuse ». Il devient hors-la-loi en volant la navette.
-   - On peut aussi mêler A et C.
+1. **Pourquoi le joueur est-il dans le vaisseau-prison, et qu'est-ce qui ouvre sa cellule ?**
+   - Il a été capturé, condamné, ou trahi par son propre camp.
+   - Sa cellule s'ouvre par une panne, une émeute, une attaque extérieure, ou par son propre plan.
+   - Où mène le saut ? Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
 2. **Le nom du saut** : « hyperespace » est un mot courant, donc permis. Pour un nom à nous :
    - le **Saut d'Éther** ;
    - **passer dans l'Écho** ;
