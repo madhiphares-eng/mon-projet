@@ -509,6 +509,7 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 | Claude du PC | Monter le vaisseau-prison en formes grises d'après le plan | [Plan du vaisseau-prison](prologue/plan-vaisseau-prison.svg) |
 | Claude du cloud | Le code du prototype du prologue : évasion, discrétion, bruit, ennemis des trois camps, combinaison, vide | Ce dossier |
 | Claude du cloud | Le générateur de l'univers : graines, planètes, système, galaxie, hyperespace | [`UNIVERS-TECHNIQUE.md`](UNIVERS-TECHNIQUE.md) |
+| Claude du PC et Claude du cloud | Les premières pièces faites avec l'IA : combinaison de Veilleur, cristaux, reliques, ruines | [`IA-3D.md`](IA-3D.md) |
 | Toi | Télécharger les modèles, jouer aux prototypes et dire ce qui marche ou pas | |
 
 ![Plan du vaisseau-prison](prologue/plan-vaisseau-prison.svg)
