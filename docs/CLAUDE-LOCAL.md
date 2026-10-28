@@ -1,8 +1,15 @@
 # Pour Claude en local : travailler sur Échos d'Éther dans Unity
 
-> **Refonte en cours (28 octobre 2026).** Le jeu repart de zéro : le joueur s'évade d'un vaisseau-prison ennemi, dans l'espace, et vole une navette.
-> Lis d'abord [`PREPRODUCTION.md`](PREPRODUCTION.md). N'ajoute pas de nouvelle fonction à l'ancienne version en attendant que les décisions soient prises.
-> Ce qui suit décrit l'ancienne version.
+> **Refonte en cours (28 octobre 2026).** Le jeu commence maintenant par un prologue : le héros, amnésique, s'évade d'un vaisseau-prison ennemi attaqué par des pirates, et vole une navette.
+> Lis d'abord [`PREPRODUCTION.md`](PREPRODUCTION.md). On garde le projet existant : ses systèmes serviront.
+>
+> **Ta prochaine tâche** :
+> 1. Une fois les modèles du prologue téléchargés (`outils/telecharger-prologue.ps1`, liste dans [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md)), vérifie qu'ils s'importent tous dans `Assets/_Projet/Externes/Prologue`.
+> 2. Crée une scène `Assets/_Projet/Local/GaleriePrologue.unity` qui les aligne par dossier, à la bonne échelle (un humain fait 1,80 m), sous une lumière neutre.
+> 3. Fais une capture par dossier dans `docs/captures/prologue/`.
+> 4. Note dans `docs/CORRECTIONS-LOCALES.md` ceux qui posent problème : import raté, matériaux roses, échelle fausse, trop lourd pour la RTX 3060.
+>
+> Le reste de ce fichier décrit l'ancienne version, toujours valable pour les outils.
 
 Ce fichier est pour toi, Claude qui pilote Unity sur le PC (MCP for Unity). Une autre session de Claude, dans le cloud,
 écrit le code du jeu et le publie sur GitHub (branche `echos-ether`). Le joueur le copie dans le projet avec `outils/installer.ps1`.

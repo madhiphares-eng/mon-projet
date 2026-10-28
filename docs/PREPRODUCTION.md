@@ -90,7 +90,7 @@ Les trois camps se battent aussi entre eux. Le joueur peut s'en servir : attirer
 | 2. Les cellules s'ouvrent | Les ordinateurs disjonctent, toutes les portes s'ouvrent, c'est la ruée. En tenue de prisonnier, sans arme, il est faible : il se cache et improvise. | S'accroupir, se cacher, le bruit, ramasser une arme de fortune |
 | 3. Récupérer l'équipement | Le hangar est coupé du reste par des sections éventrées par les pirates, donc ouvertes sur le vide. Il faut **une combinaison**, rangée à la **consigne des effets saisis**. **C'est la sienne**, et elle porte un premier indice sur son passé : un emblème qu'il ne reconnaît pas, un nom effacé. | Chemins multiples, discrétion ou combat, piratage de portes |
 | 4. Le vide | Avec la combinaison, il traverse les sections ouvertes et **la coque extérieure** : bottes magnétiques, apesanteur, oxygène limité, et le silence total du vide (on n'entend que sa respiration et ce qui passe par la coque). | Sortie dans l'espace, gestion de l'air, nouvelles règles du bruit |
-| 5. Le hangar | Les systèmes redémarrent : **le rayon tracteur va se rallumer**, c'est un compte à rebours. Combat entre gardes et pirates dans le hangar, sas qu'on peut ouvrir sur le vide pour aspirer les ennemis. Il faut démarrer une navette. | Combat sous pression, se servir du décor |
+| 5. Le hangar | Seule sortie vers les navettes : les pirates y ont amarré leur vaisseau et les gardes s'y retranchent. **Pas de compte à rebours** : le joueur prend le temps de choisir comment passer. Combat entre gardes et pirates, sas qu'on peut ouvrir sur le vide pour aspirer les ennemis. Il faut démarrer une navette. | Combat sous pression, se servir du décor |
 | 6. L'hyperespace | Fuite sous le feu des tourelles, puis le saut en hyperespace. Une cinématique courte cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
 
 **Zones facultatives** dans le vaisseau : une arme meilleure, des prisonniers à libérer, et surtout **des indices sur son identité**. Le joueur curieux en apprend plus que celui qui fonce.
@@ -112,6 +112,37 @@ En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
 - **Règle de pro** : on fixe toute la vérité **avant** d'écrire le reste (qui il est, pourquoi il est en prison, qui le cherche), même si le joueur ne l'apprend qu'à la fin. Chaque indice en découle.
 - Le titre *Échos d'Éther* colle bien : les souvenirs perdus sont des **échos**.
 
+### Trois vérités possibles (à choisir)
+
+**1. Le Témoin**
+- **Qui il est** : un Arpenteur de la Concorde, l'empire qui récolte l'Éther.
+- **Ce qu'il a découvert** : l'Éther n'est pas un simple cristal, c'est la mémoire figée des mondes. Le récolter efface peu à peu le passé des planètes et de leurs habitants.
+- **Pourquoi la prison** : il a voulu le révéler. La Concorde lui a effacé la mémoire avec l'Éther lui-même, puis l'a enfermé dans un vaisseau-prison qui ne figure sur aucun registre.
+- **Les pirates** : envoyés par un réseau qui veut ce qu'il sait. Dans le chaos, il s'enfuit seul ; ils le traqueront ensuite.
+- **Indice du prologue** : sur sa combinaison, l'emblème de la Concorde gratté et un nom effacé.
+- **En jeu** : ses souvenirs dorment dans des cristaux d'Éther dispersés. Chaque cristal qu'il touche lui rend un écho de sa vie.
+
+**2. La Copie**
+- **Qui il est** : pas l'original. Il est un écho, une copie recréée grâce à l'Éther d'un capitaine pirate légendaire, mort depuis des années.
+- **Pourquoi la prison** : le vaisseau-prison est un laboratoire. On y fabrique des copies de lui, encore et encore, pour arracher à sa mémoire le secret qu'il a emporté.
+- **Les pirates** : son ancien équipage, venu libérer son capitaine, sans savoir que ce n'est qu'une copie.
+- **Indice du prologue** : la combinaison porte une date vieille de 40 ans, et les registres montrent plusieurs détenus avec son matricule.
+- **En jeu** : il croise d'autres copies de lui-même. La question du jeu : si tes souvenirs ne sont pas à toi, qui es-tu ?
+
+**3. Le Plan**
+- **Qui il est** : un homme qui a choisi d'oublier.
+- **Pourquoi la prison** : il portait un secret qui ne devait pas tomber aux mains de la Concorde. Avant d'être capturé, il s'est effacé la mémoire lui-même pour que les interrogatoires ne trouvent rien.
+- **Les pirates** : l'attaque n'est pas un hasard. C'est son propre plan, préparé avant d'oublier : son équipage vient le chercher au jour convenu.
+- **Indice du prologue** : dans sa cellule, des messages gravés de sa main, qu'il ne se souvient pas avoir écrits.
+- **En jeu** : il suit la piste qu'il s'est laissée à lui-même. À la fin, retrouver la mémoire, c'est redevenir l'homme qu'il était, et peut-être découvrir qu'il préfère celui qu'il est devenu.
+
+**Recommandation : la 3, avec le cœur de la 1.**
+- Il a découvert ce qu'est vraiment l'Éther (la 1).
+- Se sachant traqué, il a versé ses propres souvenirs dans des cristaux d'Éther que son équipage a cachés sur plusieurs mondes, puis s'est laissé prendre (la 3).
+- L'attaque des pirates est son plan : ça explique pourquoi elle tombe pile ce jour-là.
+- Chaque cristal retrouvé dans le monde ouvert lui rend un souvenir.
+- La boucle de jeu (récolter l'Éther) devient la quête de mémoire, et le titre prend tout son sens.
+
 **Bonne nouvelle pour le scope** : un intérieur de vaisseau se construit avec des **kits modulaires** (couloirs, portes, sas, hangar). C'est plus maîtrisable qu'un grand terrain pour une première tranche verticale.
 Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi, kit modulaire d'intérieur de vaisseau, hangar, sas, passerelle, intérieur de l'ISS.
 
@@ -124,7 +155,7 @@ Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi
 
 | Phase | But | Fin de phase (on la juge sur) |
 |---|---|---|
-| **0. Concept** (cette semaine) | Valider ce dossier et les décisions | Les décisions sont prises, l'ancienne version est archivée |
+| **0. Concept** (cette semaine) | Valider ce dossier et les décisions | Les décisions sont prises et la vérité de l'histoire est fixée |
 | **1. Prototype** (2 à 3 semaines, formes grises) | Personnage, discrétion et bruit, 1 type d'ennemi (patrouille, alerte, poursuite), tir, décollage | **S'évader est amusant même sans graphismes** |
 | **2. Tranche verticale** | Le prologue complet au niveau final : vrais modèles, lumière, effets, son, interface | 3 personnes le finissent sans aide et veulent la suite |
 | **3. Production** | Les mondes après le saut, la coop | Selon un plan fait à la fin de la phase 2 |
@@ -218,15 +249,15 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - le joueur est **amnésique**, et sa quête dans le monde ouvert est de retrouver la mémoire ;
 - **une attaque de pirates** fait disjoncter les ordinateurs, ce qui ouvre les cellules ;
 - il commence **en tenue de prisonnier** et doit **récupérer un équipement** pour atteindre le hangar ;
-- le saut s'appelle **l'hyperespace**.
+- le saut s'appelle **l'hyperespace** ;
+- **pas de compte à rebours** dans le hangar ;
+- on garde le titre ***Échos d'Éther*** ;
+- on garde le projet existant : ce qui a déjà été fait servira ;
+- les modèles 3D du prologue sont choisis : [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md). La combinaison du héros est la *Mercenary Astronaut*.
 
 **Encore à décider** :
-1. **La vérité** : qui est-il vraiment, et pourquoi était-il en prison ? À fixer dès maintenant, même si le joueur ne la découvre qu'à la fin.
-   - Les pirates étaient-ils là pour lui ?
-   - Où mène le saut ? Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
-2. **On garde le nom et l'univers ?** *Échos d'Éther* colle bien à l'amnésie, puisque les souvenirs sont des échos. Mais l'Éther et la Concorde de l'ancienne version peuvent changer.
-3. **Quelle combinaison ?** Celle qu'il récupère à la consigne : le numéro dans la planche d'aperçus.
-4. **L'ancienne version** : je propose de l'archiver dans une branche Git (rien n'est perdu) et de repartir d'un dossier propre. On ne reprend un ancien système que s'il sert le nouveau jeu.
+1. **La vérité** : une des [trois vérités possibles](#trois-vérités-possibles-à-choisir), un mélange, ou une autre idée.
+2. **Où mène le saut ?** Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
 
 ## Sources
 

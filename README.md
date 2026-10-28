@@ -126,6 +126,18 @@ X récolter / interagir, Y scanner, Select journal, Start pause, croix droite pa
 Combat à la manette : gâchette droite tirer, gâchette gauche viser, croix gauche recharger, croix haut/bas changer d'arme, LB grenade, RB compétence, R3 coup.
 Les menus se règlent à la souris.
 
+## Prologue : modèles 3D du vaisseau-prison (PC Windows)
+
+La refonte du jeu (voir `docs/PREPRODUCTION.md`) commence par l'évasion d'un vaisseau-prison.
+67 modèles gratuits (CC BY, environ 2,5 Go) ont été choisis pour la construire : héros, détenus, gardes, pirates, cellules, coursives, consigne, machines, hangar, vaisseaux, armes.
+Il faut un compte Sketchfab gratuit et son token (https://sketchfab.com/settings/password, section *API Token*). Unity fermé, dans PowerShell :
+
+```powershell
+irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/telecharger-prologue.ps1 | iex
+```
+
+Les modèles sont rangés par lieu dans `Assets\_Projet\Externes\Prologue\`, avec les crédits dans `CREDITS-PROLOGUE.txt`. Liste et aperçus : `docs/PROLOGUE-MODELES.md`.
+
 ## Modèles 3D pour une vitrine web (Mac ou Linux)
 
 `outils/telecharger-vitrine.sh` télécharge un pack léger (environ 175 Mo, sans rien installer) de modèles, textures et ciels libres,
