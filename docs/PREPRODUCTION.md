@@ -12,7 +12,7 @@ Le jeu repart de zéro. Il commence désormais par une évasion :
 2. **Des pirates attaquent** le vaisseau. Les ordinateurs disjonctent et **les cellules s'ouvrent**.
 3. En tenue de prisonnier, il doit **récupérer un équipement** pour atteindre le hangar, puis il **s'échappe** à travers un vaisseau immense, avec plusieurs chemins plutôt qu'un couloir imposé.
 4. Il **vole une navette** et passe en **hyperespace**.
-5. Le monde ouvert commence là où le saut le mène. **Sa quête : retrouver la mémoire**, savoir qui il est et pourquoi tout cela lui arrive.
+5. Ensuite, **la galaxie est ouverte** : il va où il veut, dans l'ordre qu'il veut. **Sa quête : retrouver la mémoire**, savoir qui il est et pourquoi tout cela lui arrive.
 
 **Mélange de références :**
 
@@ -97,7 +97,7 @@ Les trois camps se battent aussi entre eux. Le joueur peut s'en servir : attirer
 
 **Règle de secours** (la leçon de No Man's Sky) : chaque étape a au moins deux façons d'être réussie. On ne bloque jamais le joueur.
 
-**Le saut ouvre la suite.** Le monde ouvert commence là où il mène (par exemple, une arrivée en catastrophe sur une planète désertique).
+**Le saut ouvre la suite.** Après l'évasion, la carte de la galaxie s'ouvre et **le joueur choisit lui-même où aller**. Chaque destination peut servir de point de départ.
 La navette volée devient le refuge du joueur et lui donne plus tard ses appels de soutien.
 Pendant le prologue, il est seul et sans soutien. C'est voulu : il n'a encore rien.
 En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
@@ -122,13 +122,24 @@ Décidée le 28 octobre 2026 : c'est la version **B** développée plus bas. Le 
 - Le héros est un **Veilleur** : endormi dans une capsule, chargé de se réveiller quand la menace reviendrait. La récolte de l'Éther, qui affaiblit les Bâtisseurs et rapproche la menace, l'a réveillé à moitié. L'empire a trouvé sa capsule et l'étudie dans le laboratoire du vaisseau-prison.
 - Son amnésie vient du sommeil et des expériences de l'empire. Ses souvenirs dorment dans les archives des ruines.
 
-**Ce que le joueur découvre, et quand**
-| Moment | Ce qu'il apprend |
+**Une galaxie ouverte, une histoire en puzzle**
+
+Après le prologue, le joueur se balade **où il veut dans la galaxie, dans l'ordre qu'il veut**. L'histoire n'est donc pas une suite de chapitres : c'est un **puzzle**, comme dans *Outer Wilds*. Les souvenirs et les indices sont éparpillés sur tous les mondes, et chaque joueur les trouve dans un ordre différent.
+
+| Pièces du puzzle | Où on les trouve |
 |---|---|
-| Prologue | Il n'est pas normal : le scanner médical, les glyphes qu'il lit, la relique qui s'emballe, sa capsule au laboratoire |
-| Premier monde | Les Bâtisseurs ont existé, et leurs ruines s'ouvrent pour lui. Un message de la Conservatrice lui apprend que l'empire sait ce qu'il est : « Tu es l'un d'eux. » |
-| Mondes suivants | Son rôle de Veilleur, la menace, la mission des machines anciennes. La récolte de l'Éther rapproche le retour de la menace |
-| Dernier monde, le Cœur de l'Écho | La vérité sur l'Éther. Le choix final : réveiller son peuple, arrêter la récolte et le laisser reposer, ou le libérer pour qu'il s'éteigne en paix |
+| Il n'est pas normal (scanner, glyphes, relique qui s'emballe, sa capsule) | Le prologue, pour tout le monde |
+| Les Bâtisseurs ont existé, et leurs ruines s'ouvrent pour lui | N'importe quelle ruine, sur n'importe quel monde |
+| L'empire sait ce qu'il est (« Tu es l'un d'eux ») | Les messages de la Conservatrice, qui le traque partout |
+| Son rôle de Veilleur, la menace, la mission des machines anciennes | Les archives des ruines et les échos jouables, sur plusieurs mondes |
+| La récolte de l'Éther rapproche la menace | Les sites d'extraction de l'empire, les pirates, les échos |
+| La vérité sur l'Éther, et le choix final | Le Cœur de l'Écho |
+
+**Ce qui guide le joueur sans l'enfermer**
+- **On progresse par le savoir, pas par les objets.** Le Cœur de l'Écho n'est pas fermé à clé : il est **caché**. On ne peut le trouver qu'en ayant assez compris (des coordonnées reconstituées, des glyphes déchiffrés). Comme dans *Outer Wilds*, un joueur qui sait peut y aller très tôt.
+- **Une carte des souvenirs** relie les pièces trouvées et montre les pistes ouvertes. Le joueur voit ce qu'il ne comprend pas encore et choisit quelle piste suivre.
+- **Le danger varie selon les régions** : zones contrôlées par l'empire, territoires pirates, mondes sauvages. On peut aller partout, mais pas partout sans risque.
+- **Le voyage a un prix.** Les vaisseaux de l'empire sautent en brûlant de l'Éther. Au début, le joueur aussi. Plus tard, il découvre qu'il brûle son propre peuple, et qu'il peut voyager autrement : par les relais des Bâtisseurs, qu'il réveille un à un. Le gameplay rejoint l'histoire.
 
 **Tout l'ancien univers trouve sa place**
 | Ancien GDD | Dans l'histoire de l'Ancien |
@@ -138,7 +149,7 @@ Décidée le 28 octobre 2026 : c'est la version **B** développée plus bas. Le 
 | La Ruche des Sables, « système immunitaire » qui protège les gisements | Des gardiens créés par les Bâtisseurs pour protéger leurs gisements, donc leurs âmes |
 | La Légion Mécanique, anciens éclaireurs encore en mission | Les machines éclaireuses des Bâtisseurs |
 | Le Chœur du Tombeau et le Lacérateur | La menace qui dévore le temps |
-| Les six secteurs | Six mondes de ruines, six chapitres. Le dernier, le Cœur de l'Écho, est là où dorment les Bâtisseurs |
+| Les six secteurs | Des mondes de ruines visités dans l'ordre que le joueur veut. Le Cœur de l'Écho, là où dorment les Bâtisseurs, est caché jusqu'à ce qu'on ait assez compris |
 | La progression par la connaissance | Les glyphes, les échos jouables, les archives des ruines |
 
 **Ce que ça change pour la fabrication**
@@ -461,8 +472,9 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - **la vérité : l'Ancien** (voir [L'histoire retenue](#lhistoire-retenue--lancien)).
 
 **Encore à décider** :
-1. **Où mène le saut ?** Proposition : vers le relais des Bâtisseurs le plus proche, sur la **Mer de Verre**, un désert dont le sable a été vitrifié par l'ancienne catastrophe.
-2. **Les noms** : Bâtisseurs, Veilleur, la Conservatrice, à garder ou à changer.
+1. **La taille de l'univers** : une galaxie avec beaucoup de systèmes, ou plusieurs galaxies reliées par les relais des Bâtisseurs ?
+2. **Comment fabriquer les mondes** : à la main (moins nombreux, plus beaux, avec les ruines et l'histoire), par génération procédurale (des milliers, comme *No Man's Sky*, mais plus vides), ou **un mélange** : quelques mondes faits main pour l'histoire, et des planètes générées pour l'exploration libre. C'est la question ouverte de l'ancien GDD, et elle devient centrale.
+3. **Les noms** : Bâtisseurs, Veilleur, la Conservatrice, à garder ou à changer.
 
 ## Sources
 
