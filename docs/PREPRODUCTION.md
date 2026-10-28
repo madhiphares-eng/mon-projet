@@ -141,6 +141,25 @@ Après le prologue, le joueur se balade **où il veut dans la galaxie, dans l'or
 - **Le danger varie selon les régions** : zones contrôlées par l'empire, territoires pirates, mondes sauvages. On peut aller partout, mais pas partout sans risque.
 - **Le voyage a un prix.** Les vaisseaux de l'empire sautent en brûlant de l'Éther. Au début, le joueur aussi. Plus tard, il découvre qu'il brûle son propre peuple, et qu'il peut voyager autrement : par les relais des Bâtisseurs, qu'il réveille un à un. Le gameplay rejoint l'histoire.
 
+### Un univers sans fin, comme *No Man's Sky*
+
+Décidé le 28 octobre 2026 : le nombre de galaxies importe peu. Ce qui compte, c'est que **le joueur puisse traverser les mondes et parcourir l'univers sans s'arrêter** : marcher sur une planète, décoller, sortir de l'atmosphère, voler vers une autre planète, sauter vers un autre système.
+
+**Comment on le fabrique** (les principes de *No Man's Sky*, présentés à la GDC 2017)
+- **Tout naît d'une graine.** Chaque galaxie, système, planète et rocher est calculé à partir d'un nombre. Rien n'est stocké : le monde est recalculé quand le joueur s'approche, et il est toujours le même pour tout le monde.
+- **La chaîne de génération** : relief, puis maillage, puis textures, puis peuplement (roches, plantes, animaux, ruines, bases), puis simulation. Tout se fait en continu, en arrière-plan, pendant que le joueur avance (Jobs et Burst dans Unity).
+- **Des planètes rondes à niveaux de détail** : seul le terrain proche du joueur est détaillé. La maquette web avait déjà une planète de ce type, et le projet Unity a déjà une gravité sphérique.
+- **Une origine flottante** : le monde se recentre en permanence autour du joueur, sinon les distances immenses font trembler l'image (limite de précision des nombres).
+- **Du sol à l'espace sans écran de chargement** : on vole en continu de la surface à l'orbite. Entre deux systèmes, l'hyperespace est une courte séquence qui cache le chargement, comme dans *Star Wars Outlaws*.
+- **Peupler l'infini avec peu de moyens** : un nombre limité de pièces de qualité (rochers, plantes, bâtiments, textures Poly Haven et ambientCG), combinées et variées par la graine. Mieux vaut moins de types de biomes, mais beaux.
+
+**L'histoire dans un univers infini**
+- Les pièces importantes du puzzle sont dans des **mondes-clés** placés à des endroits fixes, faits à la main : une dizaine de systèmes, dont le Cœur de l'Écho, caché.
+- Partout ailleurs, la génération sème des **ruines mineures** des Bâtisseurs, des sites d'extraction de l'empire et des épaves pirates. On y trouve des souvenirs secondaires et des ressources.
+- Le joueur peut donc se perdre dans l'infini pour le plaisir, et revenir aux mondes-clés quand il veut avancer dans l'histoire.
+
+**Prudence de pro** : *No Man's Sky* a été fait par une équipe pendant des années. Pour nous, c'est **le risque technique numéro un**. Il faut donc le prototyper très tôt, en même temps que le prologue, avant de construire le reste dessus.
+
 **Tout l'ancien univers trouve sa place**
 | Ancien GDD | Dans l'histoire de l'Ancien |
 |---|---|
@@ -371,6 +390,7 @@ Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi
 |---|---|---|
 | **0. Concept** (cette semaine) | Valider ce dossier et les décisions | Les décisions sont prises et la vérité de l'histoire est fixée |
 | **1. Prototype** (2 à 3 semaines, formes grises) | Personnage, discrétion et bruit, 1 type d'ennemi (patrouille, alerte, poursuite), tir, décollage | **S'évader est amusant même sans graphismes** |
+| **1 bis. Prototype de l'univers** (en parallèle) | Une planète générée par graine, posée depuis l'orbite sans chargement, avec origine flottante. Puis 2 planètes dans un système, puis un saut vers un système généré | 60 images/s en 1080p sur la RTX 3060, sans saccade pendant l'atterrissage |
 | **2. Tranche verticale** | Le prologue complet au niveau final : vrais modèles, lumière, effets, son, interface | 3 personnes le finissent sans aide et veulent la suite |
 | **3. Production** | Les mondes après le saut, la coop | Selon un plan fait à la fin de la phase 2 |
 
@@ -450,6 +470,7 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 | Risque | Parade |
 |---|---|
 | Scope du monde ouvert | Le vaisseau-prison d'abord, terminé avant de commencer le monde ouvert. Ensuite, une zone à la fois |
+| Univers procédural (risque technique n° 1) | Prototype dès la phase 1. Peu de biomes mais beaux, des pièces réutilisées et variées par la graine |
 | Effet patchwork : 50 auteurs, 50 styles | Nos propres matériaux, une palette par lieu, un étalonnage commun |
 | Licences | Seulement CC0, CC BY, domaine public, MIT ou Apache. Chaque crédit est noté |
 | Performances sur la RTX 3060 | Modèles allégés, LOD, objectif 1080p à 60 images/s |
@@ -469,12 +490,12 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - on garde le projet existant : ce qui a déjà été fait servira ;
 - les modèles 3D du prologue sont choisis : [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md). La combinaison du héros est sa combinaison de Veilleur (provisoire : *Spacesuit (Confederation of Planets)*, à re-texturer).
 
-- **la vérité : l'Ancien** (voir [L'histoire retenue](#lhistoire-retenue--lancien)).
+- **la vérité : l'Ancien** (voir [L'histoire retenue](#lhistoire-retenue--lancien)) ;
+- **un univers sans fin** que l'on parcourt sans s'arrêter, comme *No Man's Sky* : planètes générées par graine, plus une dizaine de mondes-clés faits main pour l'histoire.
 
 **Encore à décider** :
-1. **La taille de l'univers** : une galaxie avec beaucoup de systèmes, ou plusieurs galaxies reliées par les relais des Bâtisseurs ?
-2. **Comment fabriquer les mondes** : à la main (moins nombreux, plus beaux, avec les ruines et l'histoire), par génération procédurale (des milliers, comme *No Man's Sky*, mais plus vides), ou **un mélange** : quelques mondes faits main pour l'histoire, et des planètes générées pour l'exploration libre. C'est la question ouverte de l'ancien GDD, et elle devient centrale.
-3. **Les noms** : Bâtisseurs, Veilleur, la Conservatrice, à garder ou à changer.
+1. **Que fait-on dans l'univers, en plus de l'histoire ?** Parmi les systèmes de *No Man's Sky* : améliorer son vaisseau, récolter et fabriquer, commercer, scanner et répertorier la faune et la flore, construire des bases, changer de vaisseau. Proposition de départ : vaisseau à améliorer, scanner, récolte légère, commerce simple. Les bases plus tard.
+2. **Les noms** : Bâtisseurs, Veilleur, la Conservatrice, à garder ou à changer.
 
 ## Sources
 
@@ -513,3 +534,7 @@ Certains articles (gamedeveloper.com, itch.io) n'ont pas pu être ouverts depuis
 - [FLUX.1 schnell, licence et RTX (NVIDIA)](https://blogs.nvidia.com/blog/ai-decoded-flux-one)
 - [Mixamo : questions fréquentes (Adobe)](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html)
 - [Claude Code Game Studios](https://www.mdskills.ai/skills/claude-code-game-studios)
+- [GDC Vault : Continuous World Generation in No Man's Sky](https://gdcvault.com/play/1024265/Continuous-World-Generation-in-No)
+- [GDC Vault : Building Worlds Using Math(s), Sean Murray](https://gdcvault.com/play/1024514/Building-Worlds-Using)
+- [Planètes à niveaux de détail et origine flottante dans Unity (forum Unity)](https://discussions.unity.com/t/planetary-terrain-quadtree-planets-for-unity/682382)
+- [Comparaison de générateurs de planètes (arXiv)](https://arxiv.org/html/2510.24764v1)
