@@ -178,6 +178,40 @@ En coop, les 4 joueurs seront des **codétenus** qui s'évadent ensemble.
 - **Fin** : révéler le mensonge et devenir l'ennemi numéro un, ou reprendre sa place de héros et se taire.
 - **Atout** : c'est la satire de propagande à la Helldivers, au cœur de l'histoire.
 
+### Pistes sur ses origines (troisième série)
+
+La vérité tourne ici autour de **d'où il vient**, plutôt que de ce qu'il a fait.
+
+**8. L'Enfant du désert**
+- **Ses origines** : il est né sur une planète de sable, chez un peuple nomade qui vit avec les géants du désert. Enfant, il a été pris par l'empire comme **otage**, pour tenir son peuple en respect, puis élevé et formé comme soldat.
+- **Pourquoi la prison** : adulte, il a appris d'où il venait et s'est retourné contre l'empire. On lui a effacé la mémoire.
+- **Les pirates** : des pillards de son peuple, venus le récupérer.
+- **Indice du prologue** : un tatouage tribal qu'il ne comprend pas. Quand il entre une destination dans la navette volée, ses mains tapent toutes seules des coordonnées.
+- **En jeu** : l'hyperespace le mène, sans qu'il le sache, **chez lui**, sur la planète de sable où commence le monde ouvert. Les nomades reconnaissent sa marque, il marche d'instinct au bon rythme sur le sable, et le ver ne l'attaque pas.
+- **Fin** : choisir entre le peuple qui l'a vu naître et l'empire qui l'a élevé.
+
+**9. L'Ancien**
+- **Ses origines** : il n'est pas d'ici. Il vient d'une civilisation disparue depuis des milliers d'années, dont on trouve les ruines sur tous les mondes. Il dormait dans une capsule, au fond d'une de ces ruines, quand l'empire l'a trouvé.
+- **Pourquoi la prison** : l'empire l'étudie comme une relique vivante. Son amnésie vient de ce sommeil millénaire.
+- **Les pirates** : des chasseurs de reliques, venus voler « l'objet » le plus précieux du vaisseau.
+- **Indice du prologue** : le scanner médical de la prison affiche des anomalies, et il lit sans effort des glyphes gravés sur une pièce saisie.
+- **En jeu** : les ruines anciennes s'ouvrent à son contact, et les machines de la Légion Mécanique (anciens éclaireurs de son peuple, encore en mission) le reconnaissent. Explorer les ruines, c'est retrouver l'histoire de son peuple, et comprendre pourquoi il a disparu.
+
+**10. Né de l'Éther**
+- **Ses origines** : il n'est pas né d'une mère. Des mineurs l'ont trouvé, enfant, au cœur d'un gisement d'Éther : un écho devenu chair.
+- **Pourquoi la prison** : l'empire a découvert ce qu'il était et veut savoir s'il en existe d'autres. Il n'a pas perdu la mémoire : il n'en a jamais eu à lui, seulement les échos des autres.
+- **Les pirates** : des contrebandiers d'Éther qui ont flairé une fortune.
+- **Indice du prologue** : près des cristaux d'Éther saisis à la consigne, il entend des voix et voit des souvenirs qui ne sont pas les siens.
+- **En jeu** : chaque gisement lui montre des fragments de vies passées. La question n'est pas « qui étais-je ? », mais « qu'est-ce que je suis ? ».
+
+**11. L'Héritier caché**
+- **Ses origines** : il est l'enfant caché du fondateur de l'empire. Son existence menace celui qui gouverne aujourd'hui.
+- **Pourquoi la prison** : on ne pouvait pas le tuer sans en faire un martyr. On l'a effacé et enfermé sous un faux nom.
+- **Les pirates** : payés par des fidèles de l'ancien régime qui veulent le remettre sur le trône.
+- **Indice du prologue** : la consigne garde une bague ou un médaillon frappé de l'emblème de l'empire, et certains gardes baissent les yeux devant lui sans savoir pourquoi.
+- **En jeu** : tous les camps le veulent, pour le servir, l'utiliser ou l'éliminer.
+- **Fin** : prendre le trône, le détruire, ou disparaître.
+
 **Bonne nouvelle pour le scope** : un intérieur de vaisseau se construit avec des **kits modulaires** (couloirs, portes, sas, hangar). C'est plus maîtrisable qu'un grand terrain pour une première tranche verticale.
 Plusieurs kits gratuits sont déjà repérés dans `ASSETS.md` : couloirs sci-fi, kit modulaire d'intérieur de vaisseau, hangar, sas, passerelle, intérieur de l'ISS.
 
@@ -291,7 +325,7 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 - les modèles 3D du prologue sont choisis : [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md). La combinaison du héros est la *Mercenary Astronaut*.
 
 **Encore à décider** :
-1. **La vérité** : une des sept pistes ([trois premières](#trois-vérités-possibles-à-choisir), [quatre autres](#autres-pistes-deuxième-série)), un mélange, ou une autre idée.
+1. **La vérité** : une des onze pistes ([série 1](#trois-vérités-possibles-à-choisir), [série 2](#autres-pistes-deuxième-série), [ses origines](#pistes-sur-ses-origines-troisième-série)), un mélange, ou une autre idée.
 2. **Où mène le saut ?** Par exemple, une arrivée en catastrophe sur la planète désertique où commence le monde ouvert.
 
 ## Sources
