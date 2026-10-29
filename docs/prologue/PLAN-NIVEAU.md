@@ -1,7 +1,7 @@
 # Plan du niveau du prologue : l'évasion du Colosse
 
 > Écrit d'après [`docs/PROMPT-DA-ET-PLAN.md`](../PROMPT-DA-ET-PLAN.md), avec la direction artistique de la [bible](BIBLE-DA.md).
-> **Où on en est** : le rythme et le schéma des zones sont faits. **On attend leur validation** avant le plan à l'échelle.
+> **Où on en est** : le schéma des zones a été validé le 29 octobre 2026. Le plan à l'échelle, les mesures, les points de vue, les verrous et les modèles sont faits ; la maquette de l'atelier est construite d'après ce plan.
 
 ## Les intentions et les contraintes
 
@@ -94,22 +94,134 @@ cellule d'observation → laboratoire → anneau du cœur-relique → nef des ce
 - Deux nouvelles zones : l'infirmerie et la troisième clé des reliques (le badge).
 - Les zones gardent leur rôle, mais elles seront redessinées à l'échelle de la bible. La nef des cellules et le hangar deviennent les deux grands volumes.
 
-## La suite, après validation
+## 3. Le plan à l'échelle
 
-3. **Le plan à l'échelle**, sur une grille en mètres. Pour chaque zone :
-   - les dimensions et la hauteur ;
-   - les entrées et les sorties ;
-   - les abris et les cachettes ;
-   - les patrouilles ;
-   - le repère visible de loin ;
-   - la lumière qui guide.
-4. **Les mesures** : le joueur et les passages, et les distances de vue et d'ouïe des ennemis.
-5. **Les points de vue clés** :
-   - la première vue de la nef ;
-   - la révélation du cœur-relique ;
-   - la sortie sur la coque ;
-   - la première vue du hangar.
-6. **Les boucles et les verrous**, en détail.
-7. **Quel modèle va où**, à sa taille réelle.
+![Le plan à l'échelle](plan-niveau.svg)
 
-Puis la partie 3 : reconstruire la maquette d'après ce plan, et vérifier les rendus face à la bible.
+Le plan est tiré des pièces mêmes de la maquette : `python3 outils/maquette-prologue.py` reconstruit les deux à la fois, ils ne peuvent pas diverger.
+
+- **Le repère** : mètres. X va de la proue (ouest) vers la poupe (est), Z vers le sud, Y vers le haut. L'origine est le cœur-relique.
+- **L'emprise du vaisseau** : 214 m sur 84 m pour la partie jouable. Le pont est en Y = 0.
+
+| Zone | Emprise (x ; z) | Taille | Hauteur | Entrées et sorties | Abris, cachettes | Camps | Repère visible de loin | La lumière qui guide |
+|---|---|---|---|---|---|---|---|---|
+| **Cellule d'observation** (départ) | −4 à 4 ; −34 à −28 | 8 × 6 m | 4 m | Porte vers le laboratoire ; conduit d'aération à l'est | — | — | La vitre sur le laboratoire | La lampe froide de la cellule |
+| **Laboratoire** | −12 à 12 ; −34 à −14 | 24 × 20 m | 8 m | La cellule ; une grande porte au sud, vers l'anneau | Chambres d'étude, baies de serveurs | 1 garde | Les chambres d'étude | Deux lignes froides ; après la panne, les gyrophares |
+| Bureau de la Conservatrice (facultatif) | −12 à −5 ; −22 à −14 | 7 × 8 m | vitré, 2,6 m | Porte vitrée à l'est | Sous le bureau | — | Le dossier | — |
+| Infirmerie (facultative) | 5 à 12 ; −22 à −14 | 7 × 8 m | vitrée, 2,6 m | Porte vitrée à l'ouest ; arrivée du conduit | — | — | Le scanner | — |
+| **Anneau du cœur-relique** | carré de 20 m | coursive de 4 m | 4,5 m | Laboratoire (nord), nef (ouest), machines (est), reliques (sud, porte scellée) | Les angles | 2 gardes en ronde | **Le cœur cyan, par les hublots** | Lignes froides |
+| Puits du cœur | −6 à 6 ; −6 à 6 | 12 × 12 m | 16 m | Hublots de 8 m, pas de porte | — | — | Le cœur | Le cyan, la seule couleur froide vivante |
+| **Nef des cellules** | −66 à −18 ; −12 à 12 | 48 × 24 m | 24 m, 5 niveaux de 4,5 m | Entrée à l'est ; sortie par une cellule au sud-ouest ; trou d'un conduit dans une cellule ; escaliers jusqu'au niveau 3 | Cellules ouvertes du rez-de-chaussée, piliers, dessous des escaliers | Gardes sur les coursives des niveaux 2 à 4 et au poste d'entrée ; détenus au fond | Le pont transversal du niveau 3 | Deux lignes froides à 22 m ; gyrophares aux deux bouts ; une lampe chaude par cellule |
+| **Ateliers** | −66 à −38 ; 16 à 40 | 28 × 24 m | 10 m | La nef (nord), la coursive sud (est), un conduit (est) | Établis, caisses | Détenus, alliés possibles | Le pont roulant à 8 m | Îlots au sodium sur les postes |
+| Coursive sud | −38 à −10 ; 22 à 26 | 28 × 4 m | 4,5 m | Ateliers, consigne, raccourci, reliques | Les nervures | — | La porte scellée rouge, au bout | Lignes froides ; croisements chauds |
+| **Consigne** | −34 à −14 ; 30 à 46 | 20 × 16 m | 6 m | Coursive sud ; un conduit | Rayonnages, armoires | 2 gardes | La chambre forte, en ambre | Les casiers qu'on peut ouvrir, en ambre |
+| **Chambre des reliques** | −10 à 10 ; 14 à 34 | 20 × 20 m | 12 m | Deux portes scellées (ouest, nord) ; le sas au sud | Les stèles | — | La capsule et les lignes cyan | Le cyan ; une seule ligne froide, très haut |
+| Sas | −4 à 4 ; 34 à 42 | 8 × 8 m | 4,5 m | Les reliques ; la coque | — | — | — | Sodium |
+| **Coque extérieure** | un chemin de 4 m de large | environ 110 m | le vide | Le sas ; une montée de 12 m le long du hangar | Antennes, bouches d'aération | — | Le hangar et ses balises | Balises rouges le long du chemin |
+| **Salle des machines** | 14 à 38 ; −12 à 12 | 24 × 24 m | 16 m, passerelles à 4 et 8 m | L'anneau (ouest) ; la coursive éventrée (est, il faut la combinaison) | Générateurs, pylônes, dessous des passerelles | 3 pirates | Le réacteur | Sodium ; passerelle bordée d'ambre |
+| Coursive éventrée | 38 à 58 ; −2 à 2 | 20 × 4 m | ouverte sur le vide | Les machines ; le hangar, au sol | Débris | 1 pirate en combinaison | Le vide, au sud | Gyrophares |
+| **Hangar** | 58 à 118 ; −20 à 20 | 60 × 40 m | 30 m, galeries à 12 m | Sas de la galerie sud (depuis la coque) ; coursive éventrée (sol) ; porte des gardes (nord, scellée) ; tube d'abordage (nord) ; sas sur le vide (est) | Abris, caisses, navette de transfert | Gardes à l'ouest, pirates à l'est | La navette sous les projecteurs | Projecteurs froids sur la navette |
+| Quartiers des officiers (facultatifs) | −40 à −12,4 ; −36 à −22 | 27,6 × 14 m | 4,5 m | Coursive nord-ouest ; coursive vers la passerelle | Lits | 2 gardes | L'armurerie, en ambre | Sodium sur le badge |
+| Passerelle (facultative) | −96 à −76 ; −10 à 10 | 20 × 20 m | 8 m | Une coursive au nord | Pupitres | 3 gardes | La baie vitrée sur l'espace | Écrans ambre |
+
+## 4. Les mesures
+
+**Le joueur**
+
+| Mesure | Valeur |
+|---|---|
+| Taille | 1,80 m, les yeux à 1,70 m |
+| Marche | 1,6 m/s |
+| Course | 4,5 m/s |
+| Accroupi | 0,9 m/s ; 1,2 m de haut |
+| Sur la coque (bottes magnétiques) | 1,0 m/s |
+| Enjamber | jusqu'à 0,6 m |
+| Se hisser | jusqu'à 1,2 m |
+| Échelles | partout où un niveau monte de plus de 4 m |
+
+**Les passages**
+
+| Passage | Mesure |
+|---|---|
+| Porte ordinaire | 1,6 × 2,6 m |
+| Grande porte | 3 × 3,2 m |
+| Sas | 3 × 3 m |
+| Porte de la nef ou du hangar | 8 × 10 m |
+| Coursive principale | 4 × 4,5 m |
+| Coursive de service | 2,4 × 3 m |
+| Conduit | 1,2 × 1,2 m dans le jeu ; 2 m de haut dans la maquette, pour la visite |
+| Garde-corps | 1,1 m |
+| Abri bas | 1,2 m : on s'y cache accroupi |
+| Abri haut | 2 m |
+| Marches | 18 × 28 cm dans le jeu ; 25 × 30 cm dans la maquette, pour garder peu de pièces |
+
+**Les ennemis** (première version, à régler en jouant)
+
+| Camp | Vue, en lumière | Vue, dans le noir | Champ de vision | Entendent les pas | Entendent la course | Entendent un tir |
+|---|---|---|---|---|---|---|
+| Gardes | 25 m | 10 m | 90° | 6 m | 15 m | 40 m |
+| Pirates | 20 m | 8 m | 110° | 6 m | 15 m | 40 m |
+| Détenus hostiles | 12 m | 6 m | 120° | 4 m | 10 m | 30 m |
+
+**Dans le vide**, on n'entend rien : seulement les chocs qui passent par la coque, à 5 m.
+
+## 5. Les points de vue clés
+
+| # | Nom | Position (x ; y ; z) | Regarde vers | Ce qu'on voit | Ce que ça dit |
+|---|---|---|---|---|---|
+| 1 | La révélation du cœur | 0 ; 1,7 ; −9,2 | le sud, le puits | Par le hublot de 8 m, le cœur cyan dans son puits de 16 m | Le seul cyan avant les reliques : la couleur du héros |
+| 2 | La première vue de la nef | −19,5 ; 1,7 ; 0 | l'ouest | 48 m de cellules sur 5 niveaux, le pont, les lignes froides à 22 m | L'Empire écrase |
+| 3 | Les machines | 16 ; 1,7 ; 8,5 | le réacteur | Le réacteur, les passerelles, la console tout en haut | Le Chantier, et le but placé en hauteur |
+| 4 | La chambre des reliques | −8,5 ; 1,7 ; 24 | l'est | Le noir, des lignes cyan qui mènent à la capsule | Le calme ; il est chez lui |
+| 5 | La sortie sur la coque | 0 ; 1,7 ; 44 | le hangar, au loin | Le chemin balisé de rouge, le hangar éclairé | Le vertige, le but visible |
+| 6 | Le hangar d'en haut | 80 ; 13,7 ; 18,5 | la navette, vers le bas | La navette sous les projecteurs, les gardes à l'ouest, les pirates à l'est | Observer, puis choisir |
+
+Les rendus de ces vues, dans l'atelier, sont dans la bible, au § 16.
+
+## 6. Les boucles et les verrous
+
+| Verrou | Ce qui l'ouvre | Le secours |
+|---|---|---|
+| La cellule d'observation | La panne (une scène) | Le conduit d'aération, vers l'infirmerie |
+| Les portes scellées des reliques (ouest et nord) | Le courant (la console de la salle des machines, à 8 m), **ou** le piratage (la console de la consigne), **ou** le badge (les quartiers des officiers) | Trois clés ; il en suffit d'une |
+| Le raccourci de service | Il ne s'ouvre que depuis la coursive sud | Une fois aux ateliers, on revient vite à l'anneau et aux machines |
+| La cloison des machines vers la coursive éventrée | La combinaison : la cloison la reconnaît | Le sas des reliques |
+| Le sas des reliques vers la coque | La combinaison | La coursive éventrée |
+| La porte des gardes du hangar | La commande de la passerelle (facultative) | Les deux autres entrées du hangar |
+| Le sas du hangar sur le vide | La console du poste de contrôle, sur la galerie ouest : elle aspire les ennemis | Le combat, ou les galeries pendant que les camps s'affrontent |
+
+**Les boucles** :
+- **La boucle de l'anneau** : nef, anneau, machines.
+- **La boucle du sud** : ateliers, coursive sud, raccourci, anneau.
+- **La boucle des conduits** : nef, coursive sud, ateliers, consigne.
+- **Après les reliques, deux routes vers le hangar** : par la coque, on arrive en haut, sur la galerie ; par la coursive éventrée, on arrive en bas, au sol.
+
+**Jamais coincé** :
+- Chaque verrou a au moins deux clés.
+- Les conduits relient toujours la nef, les ateliers et la consigne.
+- Si une console est détruite pendant un combat, une autre clé reste possible.
+
+## 7. Quel modèle va où
+
+<!--MODELES-DEBUT-->
+| Zone | Modèles |
+|---|---|
+| L · Laboratoire | `baie-serveur` × 2, `cables`, `chambre-stase` × 2, `console-murale` × 2, `porte-isolement` |
+| Bureau | `console-murale`, `tablette-glyphes` |
+| Infirmerie | `chambre-stase`, `console-murale` |
+| Cœur-relique | `anneau-relais`, `coeur-relique`, `pylone-energie` × 4 |
+| C · Nef des cellules | `cle-a-molette`, `console-murale`, `detenu-atelier`, `detenu-brute`, `droide-securite`, `lavabo`, `lit-superpose` × 4, `toilettes` × 4 |
+| Coursives | `couloir-principal` × 7 |
+| Quartiers des officiers | `caisse-armes`, `fusil-gardes`, `lit-superpose` × 2, `pistolet-gardes` |
+| P · Passerelle | `console-murale` × 5 |
+| A · Ateliers | `caisse-armes`, `caisses` × 3, `cellule-energie` × 2, `detenu-atelier` × 2 |
+| Consigne | `armoire-blindee` × 2, `casier` × 9, `console-murale`, `porte-coffre`, `tablette-glyphes` |
+| X · Chambre des reliques | `armoire-blindee`, `capsule-veilleur`, `cloison-etanche` × 2, `combinaison-veilleur`, `cristal-ether`, `prisme-ether`, `tablette-glyphes` |
+| Sas | `porte-sas` × 2 |
+| Dehors : la coque et l'espace | `debris-1` × 2, `debris-2`, `rocher-spatial`, `vaisseau-pirate` |
+| H · Hangar | `bidon-carburant` × 2, `caisse-armes`, `caisses` × 2, `capsule-sauvetage` × 2, `cellule-energie` × 2, `console-murale`, `navette-a-voler`, `navette-transfert`, `pirate-chef`, `porte-sas` |
+| M · Salle des machines | `coeur-fusion`, `console-murale`, `generateur` × 2, `pirate`, `pylone-energie` × 2, `reacteur` |
+| Coursive éventrée | `cables`, `cloison-etanche`, `pirate-eva` |
+
+Et 69 dalles de sol (`sols`), dans la passerelle, la salle des machines et l'aire d'envol du hangar. Chaque modèle est posé à sa taille réelle (`tailles-modeles.json`) ; le bouton Contrôle de l'atelier vérifie qu'aucun ne chevauche un mur.
+<!--MODELES-FIN-->

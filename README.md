@@ -137,7 +137,7 @@ irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/out
 ```
 
 Les modèles sont rangés par lieu dans `Assets\_Projet\Externes\Prologue\`, avec les crédits dans `CREDITS-PROLOGUE.txt`. Liste et aperçus : `docs/PROLOGUE-MODELES.md`.
-Sur Mac ou Linux : `outils/telecharger-prologue.sh`, `vitrine/galerie-prologue.html` pour les voir en 3D dans le navigateur, et `vitrine/atelier-prologue.html` pour les assembler dans le hangar du vaisseau-prison et visiter la scène à hauteur d'homme. L'atelier contient la maquette du niveau entier, à l'échelle, faite par `outils/maquette-prologue.py`. Elle combine formes grises, vrais modèles et néons, selon la direction artistique de `docs/prologue/DA-vaisseau-prison.md`. `outils/normaliser-prologue.py` remet les fichiers des modèles à leur taille réelle (mode d'emploi dans `docs/PROLOGUE-MODELES.md`).
+Sur Mac ou Linux : `outils/telecharger-prologue.sh`, `vitrine/galerie-prologue.html` pour les voir en 3D dans le navigateur, et `vitrine/atelier-prologue.html` pour les assembler dans le hangar du vaisseau-prison et visiter la scène à hauteur d'homme. L'atelier contient la maquette du niveau entier, à l'échelle, faite par `outils/maquette-prologue.py`. C'est le Colosse : le niveau construit d'après le plan `docs/prologue/PLAN-NIVEAU.md`, avec la direction artistique de `docs/prologue/BIBLE-DA.md` (structure monumentale au-dessus de 4 m, chantier usé en dessous). Le même script dessine le plan à l'échelle, `docs/prologue/plan-niveau.svg`. `outils/normaliser-prologue.py` remet les fichiers des modèles à leur taille réelle (mode d'emploi dans `docs/PROLOGUE-MODELES.md`).
 
 ## Modèles 3D pour une vitrine web (Mac ou Linux)
 

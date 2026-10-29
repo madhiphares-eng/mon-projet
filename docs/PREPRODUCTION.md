@@ -93,7 +93,7 @@ Les trois camps se battent aussi entre eux. Le joueur peut s'en servir : attirer
 | 5. Le hangar | Seule sortie vers les navettes : les pirates y ont amarré leur vaisseau et les gardes s'y retranchent. **Pas de compte à rebours** : le joueur prend le temps de choisir comment passer. Combat entre gardes et pirates, sas qu'on peut ouvrir sur le vide pour aspirer les ennemis. Il faut démarrer une navette. | Combat sous pression, se servir du décor |
 | 6. L'hyperespace | Fuite sous le feu des tourelles, puis le passage en hyperespace : la navette atteint la vitesse de la lumière, les étoiles s'étirent en traits. Ce voyage cache le chargement, avant l'écran-titre. | Récompense émotionnelle |
 
-**Le plan du niveau** : [`prologue/plan-vaisseau-prison.svg`](prologue/plan-vaisseau-prison.svg) (sections, coursives, conduits, sorties dans le vide, camps).
+**Le plan du niveau** : [`prologue/PLAN-NIVEAU.md`](prologue/PLAN-NIVEAU.md) (rythme, schéma des zones, plan à l'échelle, mesures, points de vue, verrous), avec la [bible de direction artistique](prologue/BIBLE-DA.md). La première esquisse est gardée : [`prologue/plan-vaisseau-prison.svg`](prologue/plan-vaisseau-prison.svg).
 
 **Zones facultatives** dans le vaisseau : une arme meilleure, des prisonniers à libérer, et surtout **des indices sur son identité**. Le joueur curieux en apprend plus que celui qui fonce.
 
@@ -513,7 +513,7 @@ Sans squelette, le modèle passe par Mixamo, qui pose les os et les animations g
 | Claude du PC et Claude du cloud | Les premières pièces faites avec l'IA : combinaison de Veilleur, cristaux, reliques, ruines | [`IA-3D.md`](IA-3D.md) |
 | Toi | Télécharger les modèles, jouer aux prototypes et dire ce qui marche ou pas | |
 
-![Plan du vaisseau-prison](prologue/plan-vaisseau-prison.svg)
+![Plan du prologue à l'échelle](prologue/plan-niveau.svg)
 
 ## Sources
 

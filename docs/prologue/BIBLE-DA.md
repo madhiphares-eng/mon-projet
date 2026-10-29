@@ -167,7 +167,7 @@ Les tissus des personnages restent ceux des modèles, recolorés au besoin.
 | Garde-corps | 1,1 m |
 | Marches | 18 cm de haut, 28 cm de profondeur |
 
-Ces mesures sont plus grandes que la maquette actuelle : le plan du niveau (partie 2) les reprend.
+Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits à ces mesures.
 
 ## 10. La signalétique
 

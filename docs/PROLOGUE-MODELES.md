@@ -76,24 +76,27 @@ cd ~/jeu && python3 -m http.server 8766
 
 Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu/prologue` se chargent tout seuls. Sans serveur, on peut aussi ouvrir le fichier directement, puis choisir le dossier `prologue` (ou le glisser sur la page). Rien n'est envoyé sur Internet.
 
-**La maquette du vaisseau-prison.** Dans l'atelier, section *Maquettes* : « Vaisseau-prison (prologue) ».
-- **Le niveau entier, à l'échelle réelle** : environ 130 × 65 m, d'après le [plan](prologue/plan-vaisseau-prison.svg).
-  - Les salles : passerelle, officiers, consigne, laboratoire et la cellule du héros, cœur-relique, chambre des reliques scellée, blocs de cellules, salle informatique, ateliers, salle des machines, coursive éventrée, hangar.
-  - Autour : les conduits de maintenance, la coque extérieure et le vaisseau pirate amarré.
+**La maquette du vaisseau-prison : le Colosse.** Dans l'atelier, section *Maquettes* : « Vaisseau-prison (prologue) ».
+- **Le niveau entier, à l'échelle de la [bible](prologue/BIBLE-DA.md)**, d'après le [plan du niveau](prologue/PLAN-NIVEAU.md) : 214 × 84 m, du réveil au laboratoire jusqu'au hangar.
+  - **Les grands volumes** : la nef des cellules (48 × 24 m, 24 m de haut, 5 niveaux), le hangar (60 × 40 m, 30 m de haut, galeries à 12 m), la salle des machines (16 m de haut, passerelles à 4 et 8 m).
+  - **Les autres salles** : laboratoire et cellule d'observation, anneau et puits du cœur-relique, ateliers, consigne, chambre des reliques, sas.
+  - **Les zones facultatives** : bureau de la Conservatrice, infirmerie, quartiers des officiers, passerelle.
+  - **Autour** : les conduits de maintenance, la coque extérieure (le vide), la coursive éventrée et le vaisseau pirate amarré.
+- **La règle des deux couches**, celle de la bible, est visible partout :
+  - au-dessus de 4 m, le Monolithe : acier, nervures tous les 4 m, lignes de lumière froide ;
+  - en dessous, le Chantier : tôle vert-de-gris, tuyaux, lampes au sodium.
 - **Le code couleur** :
-  - murs en acier à plaques, sols en tôle : les matières du vaisseau, dans la palette de la [direction artistique](prologue/DA-vaisseau-prison.md) ;
-  - néons blancs pour la lumière de travail, cyan pour la technologie et les reliques, ambre pour les machines et la signalétique ;
-  - néons rouges : l'alarme, une porte verrouillée, le vide (les lignes au sol de la coque extérieure et de la coursive éventrée) ;
+  - lumière froide en lignes : le chemin ;
+  - sodium (ambre) en îlots : ce qui sert ;
+  - rouge : l'alarme, une porte verrouillée, le vide ;
+  - cyan : seulement les Bâtisseurs (le cœur, les reliques) ;
   - rouge transparent : une porte scellée (on la traverse en visite) ;
-  - bleu : un champ de force ;
-  - silhouettes : bleu pour les gardes, orange pour les pirates, jaune pour les détenus ;
-  - étiquettes ambre : les étapes 1 à 7 du chemin principal.
-- **Plus de 200 modèles posés**, et 274 néons.
-  - Les vrais modèles habillent le niveau : le couloir détaillé dans les coursives principales, les dalles de sol dans la passerelle, la salle des machines et le hangar, les portes de sas rondes, les cloisons étanches et les portes coulissantes.
-  - Chaque modèle est à sa taille réelle, quelle que soit l'unité de son fichier.
-  - Le contrôle ne trouve aucun chevauchement.
-- **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule du héros, et les plafonds apparaissent.
-- **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier et le fichier `docs/prologue/maquette-vaisseau-prison.json`, à reconstruire dans Unity.
+  - blanc froid transparent : un champ de force ;
+  - silhouettes : acier bleuté pour les gardes, orange pour les pirates, ocre pour les détenus ;
+  - étiquettes ambre : les étapes 1 à 6 du chemin principal.
+- **180 modèles posés**, chacun à sa taille réelle, et 192 néons. Le contrôle ne trouve aucun chevauchement.
+- **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule d'observation, et les plafonds apparaissent.
+- **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier, le fichier `docs/prologue/maquette-vaisseau-prison.json` (à reconstruire dans Unity) et le plan à l'échelle `docs/prologue/plan-niveau.svg`.
 
 ![La maquette vue de dessus, en veille de nuit](prologue/maquette-vue-ensemble.jpg)
 ![Le réveil : la porte de la cellule d'isolement](prologue/maquette-reveil.jpg)
