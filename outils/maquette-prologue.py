@@ -71,7 +71,7 @@ GARDES = ['03-Gardes/androide-sentinelle', '03-Gardes/androide-antiemeute', '03-
 DETENUS = ['02-Prisonniers/detenu-tshirt', '16-Especes/gris-marcheur', '02-Prisonniers/detenu-figurant', '16-Especes/crocodilien',
            '02-Prisonniers/detenu-brute', '16-Especes/saurien-pale', '02-Prisonniers/detenu-figurant', '16-Especes/ichtyen',
            '16-Especes/gris-anime', '16-Especes/longiligne-rouge']
-PIRATES = ['04-Pirates/pirate', '16-Especes/mercenaire-alien', '16-Especes/saurien-guerrier', '16-Especes/cephalopode']
+PIRATES = ['16-Especes/mercenaire-alien', '16-Especes/saurien-guerrier', '04-Pirates/pirate-eva', '16-Especes/cephalopode']   # pirate (Scavenger) : squelette cassé à la source
 _tour = {'bleu': 0, 'jaune': 0, 'orange': 0}
 
 

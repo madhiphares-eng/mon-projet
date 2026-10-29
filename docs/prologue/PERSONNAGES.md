@@ -68,23 +68,30 @@ Pour le tir au fusil, il n'existe pas encore d'animation libre de bonne qualité
 
 `outils/rigger-statues.py` procède en quatre temps :
 1. Il pose le squelette de la bibliothèque dans le modèle.
-2. Il oriente les bras vers les mains et les jambes vers les pieds.
+2. Il oriente les bras et les jambes :
+   - bras écartés (pose en T ou en A) : vers la main la plus éloignée ;
+   - bras le long du corps : il suit le bras tranche par tranche jusqu'à la main.
 3. Il retire les socles et les armes tenues à la main.
 4. Il calcule les poids :
-   - **souples** pour un corps ;
-   - **rigides** pour un robot : chaque pièce suit un seul os, celui de son nom quand la pièce est nommée (`left_thigh`, ou `bedro`, « cuisse » en russe).
+   - **la chaleur des os** de Blender pour un corps, calculée sur une copie aux sommets fusionnés. La forme du corps compte, pas seulement la distance : le flanc ne suit plus le bras.
+   - Les vêtements longs (manteau, cape) suivent le buste et le bassin, pas les jambes.
+   - Un robot fait de pièces reçoit des poids **rigides** : chaque pièce suit un seul os, celui de son nom quand elle est nommée (`left_thigh`, ou `bedro`, « cuisse » en russe).
 
 | Statue | Résultat |
 |---|---|
 | `tenue-detenu` (le héros) | Réussi : il marche, attend, vise |
 | `gris-vert`, `longiligne-rouge`, `ichtyen`, `ceratopsien` | Réussi |
+| `cephalopode`, `pirate-masque`, `saurien-guerrier` | Réussi ; un léger pli sous le bras quand il est levé très haut |
 | `androide-medical`, `androide-lourd` | Réussi (quelques petites pièces flottent sur l'androïde lourd) |
-| `cephalopode`, `pirate-masque`, `saurien-guerrier` | Marche et attente bonnes ; les bras se déforment dans les gestes amples : à refaire sur Mixamo |
-| `pirate-chef` | Échec (son long manteau) : Mixamo, ou à la main dans Blender |
-| `androide-soldat`, `androide-fantassin`, `androide-vieux-modele` | Échec : ils restent des décors (androïdes en réparation dans les ateliers) |
-| `mutant-biomecanique` | Pas de squelette : il est figé dans une pose, c'est un spécimen de décor |
+| `pirate-chef` | Raté (son long manteau) : il reste une statue, le chef qui attend. Une version animable est à faire avec Meshy |
+| `mutant-biomecanique` | Raté : il reste un spécimen de décor |
+| `androide-soldat`, `androide-fantassin`, `androide-vieux-modele` | Pièces sans nom : ils restent des décors (androïdes en réparation) |
 
-Les images sont dans [`personnages/statues.jpg`](personnages/statues.jpg).
+**Deux modèles sont cassés à la source** et sont retirés de la maquette : le pirate « Scavenger » et la combinaison étanche (`detenu-corvee-toxique`).
+- Leurs squelettes empilent des échelles (×1000, ×0,001, ×71), et chaque pièce est dans un repère différent.
+- Ni three.js ni Blender ne les affichent correctement.
+
+Leurs remplaçants sont à faire avec Meshy : voir [`ia/PROMPTS-MESHY.md`](ia/PROMPTS-MESHY.md).
 
 ## 5. Personnage par personnage
 
@@ -95,7 +102,7 @@ Les images sont dans [`personnages/statues.jpg`](personnages/statues.jpg).
 | `detenu-vieux` | Détenus | Character Creator, 102 os | Oui | 54 k | Torse nu, à rhabiller (IA prévue) |
 | `detenu-tshirt` | Détenus | Mixamo, 69 os | Oui | 19 k | **Le détenu de base** |
 | `detenu-figurant` | Détenus | Mixamo, 58 os | Oui | 2 k | **La foule** |
-| `detenu-corvee-toxique` | Détenus | Cassé (échelles empilées) | — | 55 k | À corriger dans Blender |
+| `detenu-corvee-toxique` | — | Cassé à la source | — | 55 k | **Retiré** : à refaire avec Meshy |
 | `detenu-atelier` | — | Non humain | — | 35 k | **Retiré** : personnage d'un autre jeu |
 | `garde` | — | Mixamo | — | 107 k | **Retiré** : garde humain |
 | `droide-securite` | Androïdes | Character Creator, 84 os | Oui | 125 k | Garde des officiers ; à alléger |
@@ -106,13 +113,15 @@ Les images sont dans [`personnages/statues.jpg`](personnages/statues.jpg).
 | `androide-soldat`, `-fantassin`, `-vieux-modele` | Androïdes | Script : échec | — | 21-32 k | Décors |
 | `drone-securite` | Androïdes | Aucun | Vol par le code | 11 k | Prêt |
 | `marcheur-blinde` | Androïdes | Le sien, 21 os | Ses 41 animations | 11 k | Prêt |
-| `pirate`, `pirate-eva` | Pirates | Unreal, Mixamo | Oui | 99 k, 705 k | `pirate-eva` à alléger d'urgence |
-| `pirate-chef`, `pirate-masque` | Pirates | Fait par le script | Oui | 242 k, 925 k | À alléger ; voir § 4 |
+| `pirate` | — | Cassé à la source | — | 99 k | **Retiré** : à refaire avec Meshy |
+| `pirate-eva` | Pirates | Mixamo | Oui | 705 k | À alléger d'urgence |
+| `pirate-chef` | Pirates | Statue | — | 242 k | Il attend, immobile ; à refaire avec Meshy pour l'animer |
+| `pirate-masque` | Pirates | Fait par le script | Oui | 925 k | À alléger |
 | `saurien-pale`, `crocodilien`, `gris-leger` | Espèces | Maison, quadrupède debout, Rigify | Oui | 7-26 k | Animés |
 | `gris-marcheur`, `gris-anime`, `mercenaire-alien` | Espèces | Mixamo, Character Creator | Oui | 50-55 k | Animés |
 | `gris-vert`, `longiligne-rouge`, `ichtyen`, `ceratopsien` | Espèces | Fait par le script | Oui | 5-290 k | Le cératopsien est à alléger |
 | `saurien-guerrier`, `cephalopode` | Espèces | Fait par le script | Oui | 34 k, 36 k | Gestes amples à refaire sur Mixamo |
-| `mutant-biomecanique` | Décor | Aucun | — | 26 k | Spécimen figé |
+| `mutant-biomecanique` | Décor | Statue | — | 26 k | Spécimen de décor (une cuve Meshy est prévue) |
 
 Les images de chacun, à plusieurs moments de ses animations, sont dans [`personnages/`](personnages/).
 
@@ -136,6 +145,7 @@ La maquette (`outils/maquette-prologue.py`) ne pose plus aucune silhouette : par
 | Qui | Quoi |
 |---|---|
 | Toi, sur le Mac | Relancer `outils/telecharger-prologue.sh` : il ajoute les androïdes, les espèces et la bibliothèque d'animations. Puis, dans l'ordre : `normaliser-prologue.py`, `rigger-statues.py` (`pip install bpy scipy`), `recolorer-prologue.py` (`pip install pillow numpy`). |
-| Mixamo (gratuit) | Refaire le squelette de `pirate-chef`, `cephalopode`, `pirate-masque`, `saurien-guerrier` ; récupérer des animations au fusil pour les pirates. |
+| Meshy (gratuit) | Les remplaçants et les pièces qui manquent : [`ia/PROMPTS-MESHY.md`](ia/PROMPTS-MESHY.md) (androïde de l'Empire, pirate, chef pirate animable, détenu de corvée, vieux détenu habillé…). |
+| Mixamo (gratuit) | Des animations au fusil pour les pirates. |
 | Le Claude du PC (Blender) | Corriger le squelette de la combinaison étanche ; alléger les modèles trop lourds ; effacer « police » et « security ». |
 | L'IA 3D (avec ton jeton) | L'androïde de l'Empire à la forme exacte de la bible, et le vieux détenu rhabillé ([`ia/fiches.json`](ia/fiches.json)). |

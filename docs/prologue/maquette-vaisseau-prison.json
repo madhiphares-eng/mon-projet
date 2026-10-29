@@ -20937,26 +20937,11 @@
 },
 {
 "type": "modele",
-"cle": "04-Pirates/pirate",
+"cle": "16-Especes/mercenaire-alien",
 "position": [
 20,
 0,
 8
-],
-"cadre": [
-0,
-1.85,
-0
-],
-"camp": "orange"
-},
-{
-"type": "modele",
-"cle": "16-Especes/mercenaire-alien",
-"position": [
-32,
-0,
--8
 ],
 "cadre": [
 0,
@@ -20969,13 +20954,28 @@
 "type": "modele",
 "cle": "16-Especes/saurien-guerrier",
 "position": [
+32,
+0,
+-8
+],
+"cadre": [
+0,
+2.0,
+0
+],
+"camp": "orange"
+},
+{
+"type": "modele",
+"cle": "04-Pirates/pirate-eva",
+"position": [
 24,
 4,
 -10.7
 ],
 "cadre": [
 0,
-2.0,
+1.9,
 0
 ],
 "camp": "orange"
@@ -25354,26 +25354,11 @@
 },
 {
 "type": "modele",
-"cle": "04-Pirates/pirate",
+"cle": "16-Especes/mercenaire-alien",
 "position": [
 106,
 0.0,
 4
-],
-"cadre": [
-0,
-1.85,
-0
-],
-"camp": "orange"
-},
-{
-"type": "modele",
-"cle": "16-Especes/mercenaire-alien",
-"position": [
-112,
-0.0,
-7
 ],
 "cadre": [
 0,
@@ -25386,13 +25371,28 @@
 "type": "modele",
 "cle": "16-Especes/saurien-guerrier",
 "position": [
+112,
+0.0,
+7
+],
+"cadre": [
+0,
+2.0,
+0
+],
+"camp": "orange"
+},
+{
+"type": "modele",
+"cle": "04-Pirates/pirate-eva",
+"position": [
 104,
 0.0,
 -12
 ],
 "cadre": [
 0,
-2.0,
+1.9,
 0
 ],
 "camp": "orange"

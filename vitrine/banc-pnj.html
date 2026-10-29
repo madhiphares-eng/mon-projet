@@ -53,7 +53,7 @@ const PNJ = [
   { cle: '02-Prisonniers/detenu-atelier', camp: 'detenu', hauteur: 1.85, titre: 'Employee', auteur: 'Dotflare', ecarte: 'hommage à un jeu existant (personnage d’un autre jeu)' },
   { cle: '02-Prisonniers/detenu-tshirt', camp: 'detenu', hauteur: 1.78, titre: 'Prisoner', auteur: 'syedabbas0815' },
   { cle: '02-Prisonniers/detenu-figurant', camp: 'detenu', hauteur: 1.75, titre: 'Prisoner Hostage Low Poly Character', auteur: '00amza' },
-  { cle: '02-Prisonniers/detenu-corvee-toxique', camp: 'detenu', hauteur: 1.8, titre: 'Hazmat Suit 3', auteur: 'impulsio', note: 'squelette mal exporté (échelles ×100 et ×0,01 empilées) : le corps s’affiche mal ; à repasser dans Blender (appliquer les échelles) avant Unity' },
+  { cle: '02-Prisonniers/detenu-corvee-toxique', camp: 'detenu', hauteur: 1.8, titre: 'Hazmat Suit 3', auteur: 'impulsio', ecarte: 'squelette cassé à la source (échelles ×100 et ×0,01 empilées, chaque pièce dans un repère différent) : à remplacer (Meshy)' },
   { cle: '03-Gardes/garde', camp: 'androide', hauteur: 1.85, titre: 'S.W.A.T. Operator', auteur: 'SpatialNeglect', ecarte: 'garde humain : la sécurité est faite d’androïdes' },
   { cle: '03-Gardes/droide-securite', camp: 'androide', hauteur: 2.1, titre: 'Sci-fi O.B. Robot Unit TH-ICC02 (animated)', auteur: 'Jungle Jim' },
   { cle: '03-Gardes/androide-antiemeute', camp: 'androide', hauteur: 2.0, titre: 'Robot Police Unit (animated)', auteur: 'Jungle Jim' },
@@ -79,10 +79,10 @@ const PNJ = [
   { cle: '16-Especes/cephalopode', camp: 'espece', hauteur: 1.9, titre: 'Mutant Soldier', auteur: 'dakotakimble' },
   { cle: '16-Especes/ichtyen', camp: 'espece', hauteur: 1.8, titre: 'Fishman', auteur: 'w7w728115' },
   { cle: '16-Especes/mercenaire-alien', camp: 'espece', hauteur: 1.9, titre: 'Free Game Character - Alien', auteur: 'kaanTezcan' },
-  { cle: '16-Especes/mutant-biomecanique', camp: 'espece', hauteur: 2.0, titre: 'Free - Biomechanical Mutant', auteur: 'Game-Ready', note: 'figé dans une pose : un spécimen de décor, dans une cuve du laboratoire' },
-  { cle: '04-Pirates/pirate', camp: 'pirate', hauteur: 1.85, titre: 'Scavenger', auteur: 'Vasian-Digital3D' },
+  { cle: '16-Especes/mutant-biomecanique', camp: 'espece', hauteur: 2.0, titre: 'Free - Biomechanical Mutant', auteur: 'Game-Ready', note: 'statue : un spécimen de décor, dans une cuve du laboratoire' },
+  { cle: '04-Pirates/pirate', camp: 'pirate', hauteur: 1.85, titre: 'Scavenger', auteur: 'Vasian-Digital3D', retirer: ['Portal'], ecarte: 'squelette cassé à la source (échelles ×1000, ×0,001, ×71 empilées) : le corps ne s’affiche pas ; à remplacer (Meshy)' },
   { cle: '04-Pirates/pirate-eva', camp: 'pirate', hauteur: 1.9, titre: 'Mercenary Astronaut', auteur: 'Peter_D' },
-  { cle: '04-Pirates/pirate-chef', camp: 'pirate', hauteur: 1.95, titre: 'Space Pirate', auteur: 'Odlab' },
+  { cle: '04-Pirates/pirate-chef', camp: 'pirate', hauteur: 1.95, titre: 'Space Pirate', auteur: 'Odlab', retirer: ['pCylinder1'], note: 'statue : le rig automatique rate son long manteau ; il attend immobile (Mixamo ou Meshy pour l’animer)' },
   { cle: '04-Pirates/pirate-masque', camp: 'pirate', hauteur: 1.85, titre: 'post apo character', auteur: 'Am I dead?' },
 ];
 const CAMPS = { heros: 'Le héros', detenu: 'Détenus', espece: 'Autres espèces', androide: 'Sécurité : androïdes', pirate: 'Pirates' };
@@ -151,6 +151,9 @@ async function charger(p) {
   const gltf = await new Promise((ok, ko) => chargeur.load(lien, ok, undefined, ko)).catch(e => ({ erreur: e.message || String(e) }));
   if (gltf.erreur) return { ...p, erreur: gltf.erreur };
   const racine = gltf.scene;
+  // les pièces parasites (le portail géant d'un pirate, un socle), comme dans l'atelier (docs/prologue/tailles-modeles.json)
+  const parasites = []; racine.traverse(n => { if ((p.retirer || []).some(r => n.name.startsWith(r))) parasites.push(n); });
+  parasites.forEach(n => n.parent && n.parent.remove(n));
   const reposOs = []; racine.traverse(o => { if (o !== racine) reposOs.push([o, o.position.clone(), o.quaternion.clone()]); });
   let faces = 0, maillages = 0, souples = 0;
   const textures = new Set(), materiaux = new Set(), os = new Set();
@@ -598,7 +601,7 @@ window.banc = {
   jouer: (i, a) => jouer(bancs[i], a),
   plein: () => { plein = true; document.querySelector('#panneau').style.display = 'none'; redimensionner(); },
   camp: camp => {
-    const du = bancs.filter(r => r.objet && r.camp === camp);
+    const du = bancs.filter(r => r.objet && camp.split(',').includes(r.camp) && !r.ecarte);
     bancs.forEach(r => { if (r.objet) r.objet.visible = du.includes(r); });
     const b = new THREE.Box3(); du.forEach(r => b.union(boite(r.objet)));
     const c = b.getCenter(new THREE.Vector3()), t = b.getSize(new THREE.Vector3());
