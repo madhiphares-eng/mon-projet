@@ -25,8 +25,8 @@ def r(v):
     return round(v, 3)
 
 
-def bloc(x, z, l, p, h, y=0.0, teinte=None, plafond=False):
-    """Bloc de l (X) × h (Y) × p (Z), centré en (x, z), le bas à la hauteur y."""
+def bloc(x, z, l, p, h, y=0.0, teinte='acier', plafond=False):
+    """Bloc de l (X) × h (Y) × p (Z), centré en (x, z), le bas à la hauteur y. Par défaut en acier : la matière du vaisseau."""
     q = {'type': 'forme', 'cle': 'bloc', 'position': [r(x), r(y), r(z)], 'dims': [r(l), r(h), r(p)]}
     if teinte:
         q['teinte'] = teinte
@@ -60,7 +60,7 @@ def etiquette(texte, x, z, y, police=1.0, teinte=None):
     pieces.append(q)
 
 
-def mur(axe, ligne, a, b, h, ouvertures=(), y0=0.0, teinte=None, prolonger=True):
+def mur(axe, ligne, a, b, h, ouvertures=(), y0=0.0, teinte='acier', prolonger=True):
     """Mur sur la ligne z = ligne (axe 'z', il court le long de X) ou x = ligne (axe 'x', le long de Z), de a à b.
     Ouverture : (centre, largeur, haut, genre, bas). Genres : porte, passage (toute la hauteur), fenetre (verre),
     scellee (panneau rouge qu'on traverse en visite), champ (champ de force)."""
@@ -89,7 +89,7 @@ def mur(axe, ligne, a, b, h, ouvertures=(), y0=0.0, teinte=None, prolonger=True)
     plein(cur, b, 0, h)
 
 
-def espace(x0, x1, z0, z1, h, murs='nseo', portes=None, sol='sol', plafond=True, nom=None, police=1.8, teinte_nom=None):
+def espace(x0, x1, z0, z1, h, murs='nseo', portes=None, sol='tole', plafond=True, nom=None, police=1.8, teinte_nom=None):
     """Une salle ou une coursive : sol, plafond, murs des côtés demandés (n = Z min, s = Z max, o = X min, e = X max)."""
     portes = portes or {}
     cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
@@ -234,7 +234,7 @@ espace(-9, 9, 6, 9, HC, 'soe', {'s': [passage(0)]})
 espace(-9, -6, -6, 6, HC, 'o', {'o': [passage(0)]})
 espace(6, 9, -6, 6, HC, 'e', {'e': [passage(0)]})
 espace(-6, 6, -6, 6, 10, portes={'o': [porte(0)], 'e': [porte(0)], 'n': [(0, 8, 3.0, 'fenetre', 1.0)], 's': [(0, 8, 3.0, 'fenetre', 1.0)]},
-       sol='sombre', nom='Cœur-relique (hyperespace)', police=2.2, teinte_nom='ether')
+       sol='tole', nom='Cœur-relique (hyperespace)', police=2.2, teinte_nom='ether')
 bloc(0, 0, 2.4, 2.4, 0.8, 0, 'ether')                          # le socle
 for (x, z, l, p) in ((0, -2.6, 5.5, 0.3), (0, 2.6, 5.5, 0.3), (-2.6, 0, 0.3, 5.5), (2.6, 0, 0.3, 5.5)):
     bloc(x, z, l, p, 0.04, 0, 'ether')
@@ -306,13 +306,13 @@ neon(1.5, 23.75, 1.02, 4, 'x', 'cyan', section=(0.02, 0.04))     # le bord de l'
 neon(4, 21, 2.92, 1.6, 'x', 'blanc', section=(0.02, 0.04))      # la vitrine éclairée par le haut
 
 # ------------------------------------------------------------------ les conduits de maintenance (discrétion)
-espace(-12.6, -11.4, -13, -1.5, 2.0, 'eo', sol='sombre')       # labo → coursive ouest
-espace(-12.6, -11.4, 1.5, 13, 2.0, 'eo', sol='sombre')         # coursive ouest → reliques
-espace(14, 15, -24.6, -23.4, 2.0, 'ns', sol='sombre')          # labo → cellules
-espace(11, 12.2, -13, -5.2, 2.0, 'eos', {'e': [conduit(-5.8)]}, sol='sombre')   # labo → informatique
-espace(12.2, 17, -6.4, -5.2, 2.0, 'ns', sol='sombre')
-espace(33, 34.2, -10.1, -7, 2.0, 'neo', {'e': [conduit(-9.5)]}, sol='sombre')   # informatique → machines
-espace(34.2, 41, -10.1, -8.9, 2.0, 'ns', sol='sombre')
+espace(-12.6, -11.4, -13, -1.5, 2.0, 'eo', sol='tole')       # labo → coursive ouest
+espace(-12.6, -11.4, 1.5, 13, 2.0, 'eo', sol='tole')         # coursive ouest → reliques
+espace(14, 15, -24.6, -23.4, 2.0, 'ns', sol='tole')          # labo → cellules
+espace(11, 12.2, -13, -5.2, 2.0, 'eos', {'e': [conduit(-5.8)]}, sol='tole')   # labo → informatique
+espace(12.2, 17, -6.4, -5.2, 2.0, 'ns', sol='tole')
+espace(33, 34.2, -10.1, -7, 2.0, 'neo', {'e': [conduit(-9.5)]}, sol='tole')   # informatique → machines
+espace(34.2, 41, -10.1, -8.9, 2.0, 'ns', sol='tole')
 for x, z in ((-12, -7), (-12, 7), (14.5, -24), (14.6, -5.8), (37.5, -9.5)):
     etiquette('Conduit', x, z, 2.5, 0.4)
 for (x, z, l, a) in ((-12, -7.25, 11, 'z'), (-12, 7.25, 11, 'z'), (11.6, -9.1, 7.4, 'z'), (14.6, -5.8, 4.4, 'x'), (37.6, -9.5, 6.4, 'x'), (33.6, -8.55, 2.8, 'z')):
@@ -322,8 +322,8 @@ for (x, z, l, a) in ((-12, -7.25, 11, 'z'), (-12, 7.25, 11, 'z'), (11.6, -9.1, 7
 espace(-6, -2, 25, 28.5, 3, 'seo', {'s': [porte(-4, 3.0, 2.6)]}, nom='Sas', police=0.6)
 modele('12-Exterieur/porte-sas', -4, 28.5)
 neon(-4, 26.75, 2.9, 1.6, 'x', 'ambre', plafond=True)
-espace(-5.5, -2.5, 28.5, 32, 0, '', sol='rouge', plafond=False)
-espace(-5.5, 45, 32, 35, 0, '', sol='rouge', plafond=False)
+espace(-5.5, -2.5, 28.5, 32, 0, '', sol='tole', plafond=False)
+espace(-5.5, 45, 32, 35, 0, '', sol='tole', plafond=False)
 etiquette('5 · Le vide : la coque extérieure', 20, 33.5, 1.4, 0.8, 'ambre')
 for x in range(-4, 46, 3):                                     # feux de piste le long du chemin
     for z in (32.1, 34.9):
@@ -414,7 +414,7 @@ etiquette('Porte scellée : le vide derrière', 38.2, 0, 2.9, 0.4, 'rouge')
 modele('12-Exterieur/cloison-etanche', 40, 0, [0, 3.2, 0])
 neon(39.85, 0, 3.3, 3, 'z', 'rouge', section=(0.05, 0.06))
 espace(40, 64, -4.5, 4.5, 4, 'nso', {'o': [(0, 3, 3.2, 'scellee', 0.0)], 'n': [porte(47, 2.4, 3.0)], 's': [porte(52, 4, 3.6)]},
-       sol='rouge', plafond=False, nom='Coursive éventrée : ouverte sur le vide', police=1.5, teinte_nom='rouge')
+       sol='tole', plafond=False, nom='Coursive éventrée : ouverte sur le vide', police=1.5, teinte_nom='rouge')
 bloc(47.5, 0, 15, 9, E, 4, plafond=True)                       # plafond arraché après 55 m
 modele('12-Exterieur/gravats-breche', 59, 0, [4, 3, 4])
 modele('12-Exterieur/debris-1', 70, -1, [7, 4, 7], 1.5)
@@ -493,7 +493,7 @@ etiquette('Champ de force : sortie des navettes', 57, 31.4, 9.6, 0.6, 'ether')
 neon(64, 9.0, 3.0, 6, 'x', 'ambre', section=(0.03, 0.05))       # le bord du poste de contrôle
 etiquette('7 · Décoller, puis l\'hyperespace', 57, 34, 10.8, 0.8, 'ambre')
 
-espace(68, 74, 16.5, 19.5, 3, 'ns', sol='sombre', nom='Tube d\'abordage', police=0.5)
+espace(68, 74, 16.5, 19.5, 3, 'ns', sol='tole', nom='Tube d\'abordage', police=0.5)
 modele('11-Vaisseaux/vaisseau-pirate', 86, 18, [24, 10, 18])
 etiquette('Vaisseau pirate amarré', 86, 18, 12, 1.2, 'orange')
 

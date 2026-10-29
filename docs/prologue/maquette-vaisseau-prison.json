@@ -190,6 +190,7 @@
 0.2,
 18
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -204,7 +205,8 @@
 15.2,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -218,7 +220,8 @@
 15.2,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -232,7 +235,8 @@
 0.2,
 5,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -246,7 +250,8 @@
 0.2,
 0.8,
 12.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -260,7 +265,8 @@
 0.2,
 1.0,
 12.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -289,7 +295,8 @@
 0.2,
 5,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -303,7 +310,8 @@
 0.2,
 5,
 7.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -317,7 +325,8 @@
 0.2,
 2.0,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -331,7 +340,8 @@
 0.2,
 5,
 7.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -697,7 +707,8 @@
 6,
 0.5,
 8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -711,7 +722,8 @@
 1,
 0.25,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -725,7 +737,8 @@
 1.2,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -739,7 +752,8 @@
 1.2,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -753,7 +767,8 @@
 1.2,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -767,7 +782,8 @@
 1.2,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -978,7 +994,7 @@
 0.2,
 3.0
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -993,6 +1009,7 @@
 0.2,
 3.0
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -1007,7 +1024,8 @@
 10.6,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1021,7 +1039,8 @@
 12.9,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1035,7 +1054,8 @@
 1.2,
 1.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1049,7 +1069,8 @@
 2.5,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1063,7 +1084,8 @@
 10.6,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1077,7 +1099,8 @@
 12.9,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1091,7 +1114,8 @@
 1.2,
 1.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1105,7 +1129,8 @@
 2.5,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1120,7 +1145,7 @@
 0.2,
 10.5
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -1135,6 +1160,7 @@
 0.2,
 10.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -1149,7 +1175,8 @@
 0.2,
 3.5,
 10.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1163,7 +1190,8 @@
 0.2,
 3.5,
 10.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1178,7 +1206,7 @@
 0.2,
 10.5
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -1193,6 +1221,7 @@
 0.2,
 10.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -1207,7 +1236,8 @@
 0.2,
 3.5,
 10.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1221,7 +1251,8 @@
 0.2,
 3.5,
 10.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -1382,7 +1413,7 @@
 0.2,
 14
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -1397,6 +1428,7 @@
 0.2,
 14
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -1411,7 +1443,8 @@
 20.2,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1425,7 +1458,8 @@
 8.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1439,7 +1473,8 @@
 2.4,
 1.2,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1453,7 +1488,8 @@
 8.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1467,7 +1503,8 @@
 0.2,
 4,
 14
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1481,7 +1518,8 @@
 0.2,
 4,
 14
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1534,7 +1572,8 @@
 4,
 0.6,
 2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -1576,7 +1615,8 @@
 2,
 0.9,
 1
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -1623,7 +1663,8 @@
 2,
 0.9,
 1
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1825,7 +1866,7 @@
 0.2,
 12
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -1840,6 +1881,7 @@
 0.2,
 12
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -1854,7 +1896,8 @@
 8.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1868,7 +1911,8 @@
 2.4,
 1.2,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1882,7 +1926,8 @@
 8.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1896,7 +1941,8 @@
 20.2,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1910,7 +1956,8 @@
 0.2,
 4,
 12
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -1924,7 +1971,8 @@
 0.2,
 4,
 12
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2115,7 +2163,8 @@
 6,
 2.2,
 0.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2129,7 +2178,8 @@
 6,
 2.2,
 0.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -2322,7 +2372,7 @@
 0.2,
 3
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -2337,6 +2387,7 @@
 0.2,
 3
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -2351,7 +2402,8 @@
 7.6,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2365,7 +2417,8 @@
 7.6,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2379,7 +2432,8 @@
 0.2,
 3.5,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2393,7 +2447,8 @@
 0.2,
 3.5,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2408,7 +2463,7 @@
 0.2,
 3
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -2423,6 +2478,7 @@
 0.2,
 3
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -2437,7 +2493,8 @@
 7.6,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2451,7 +2508,8 @@
 7.6,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2465,7 +2523,8 @@
 0.2,
 3.5,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2479,7 +2538,8 @@
 0.2,
 3.5,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2494,7 +2554,7 @@
 0.2,
 12
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -2509,6 +2569,7 @@
 0.2,
 12
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -2523,7 +2584,8 @@
 0.2,
 3.5,
 4.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2537,7 +2599,8 @@
 0.2,
 3.5,
 4.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2552,7 +2615,7 @@
 0.2,
 12
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -2567,6 +2630,7 @@
 0.2,
 12
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -2581,7 +2645,8 @@
 0.2,
 3.5,
 4.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2595,7 +2660,8 @@
 0.2,
 3.5,
 4.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2610,7 +2676,7 @@
 0.2,
 12
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -2625,6 +2691,7 @@
 0.2,
 12
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -2639,7 +2706,8 @@
 2.1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2653,7 +2721,8 @@
 8.0,
 7.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2667,7 +2736,8 @@
 8.0,
 1.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2696,7 +2766,8 @@
 2.1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2710,7 +2781,8 @@
 2.1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2724,7 +2796,8 @@
 8.0,
 7.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2738,7 +2811,8 @@
 8.0,
 1.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2767,7 +2841,8 @@
 2.1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2781,7 +2856,8 @@
 0.2,
 10,
 4.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2795,7 +2871,8 @@
 0.2,
 7.2,
 2.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2809,7 +2886,8 @@
 0.2,
 10,
 4.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2823,7 +2901,8 @@
 0.2,
 10,
 4.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2837,7 +2916,8 @@
 0.2,
 7.2,
 2.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -2851,7 +2931,8 @@
 0.2,
 10,
 4.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3469,7 +3550,7 @@
 0.2,
 4
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -3484,6 +3565,7 @@
 0.2,
 4
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -3498,7 +3580,8 @@
 0.2,
 3.5,
 4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3512,7 +3595,8 @@
 0.2,
 3.5,
 4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3527,7 +3611,7 @@
 0.2,
 15
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -3542,6 +3626,7 @@
 0.2,
 15
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -3556,7 +3641,8 @@
 28.2,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3570,7 +3656,8 @@
 1.5,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3584,7 +3671,8 @@
 1.2,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3598,7 +3686,8 @@
 10.2,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3612,7 +3701,8 @@
 2.4,
 2.2,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3626,7 +3716,8 @@
 9.8,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3640,7 +3731,8 @@
 1.2,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3654,7 +3746,8 @@
 1.9,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3668,7 +3761,8 @@
 0.2,
 5,
 15
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3682,7 +3776,8 @@
 0.2,
 5,
 3.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3696,7 +3791,8 @@
 0.2,
 3.0,
 1.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3710,7 +3806,8 @@
 0.2,
 5,
 10.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3736,6 +3833,7 @@
 0.2,
 5.0
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -3750,7 +3848,8 @@
 5.2,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3764,7 +3863,8 @@
 0.4,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3778,7 +3878,8 @@
 4.4,
 0.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3792,7 +3893,8 @@
 4.4,
 0.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3821,7 +3923,8 @@
 0.4,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3835,7 +3938,8 @@
 0.2,
 3,
 5.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3849,7 +3953,8 @@
 0.2,
 3,
 1.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3863,7 +3968,8 @@
 0.2,
 0.6,
 1.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3877,7 +3983,8 @@
 0.2,
 3,
 1.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -3891,7 +3998,8 @@
 1,
 0.5,
 2.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -4109,7 +4217,8 @@
 2.4,
 0.8,
 1.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -4524,7 +4633,7 @@
 0.2,
 4
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -4539,6 +4648,7 @@
 0.2,
 4
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -4553,7 +4663,8 @@
 0.2,
 3.5,
 4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4567,7 +4678,8 @@
 0.2,
 3.5,
 4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4594,7 +4706,7 @@
 0.2,
 12
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -4609,6 +4721,7 @@
 0.2,
 12
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -4623,7 +4736,8 @@
 1.5,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4637,7 +4751,8 @@
 1.2,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4651,7 +4766,8 @@
 10.2,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4665,7 +4781,8 @@
 2.4,
 2.2,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4694,7 +4811,8 @@
 12.9,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4708,7 +4826,8 @@
 9.1,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4722,7 +4841,8 @@
 2.0,
 2.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4736,7 +4856,8 @@
 17.1,
 5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4750,7 +4871,8 @@
 0.2,
 5,
 12
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -4764,7 +4886,8 @@
 0.2,
 5,
 12
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5173,7 +5296,8 @@
 0.8,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -5201,7 +5325,8 @@
 0.8,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -5229,7 +5354,8 @@
 0.8,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -5257,7 +5383,8 @@
 4,
 1.0,
 0.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -5344,7 +5471,7 @@
 0.2,
 11.5
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5359,6 +5486,7 @@
 0.2,
 11.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5373,7 +5501,8 @@
 0.2,
 2.0,
 11.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5387,7 +5516,8 @@
 0.2,
 2.0,
 11.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5402,7 +5532,7 @@
 0.2,
 11.5
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5417,6 +5547,7 @@
 0.2,
 11.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5431,7 +5562,8 @@
 0.2,
 2.0,
 11.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5445,7 +5577,8 @@
 0.2,
 2.0,
 11.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5460,7 +5593,7 @@
 0.2,
 1.2
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5475,6 +5608,7 @@
 0.2,
 1.2
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5489,7 +5623,8 @@
 1.2,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5503,7 +5638,8 @@
 1.2,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5518,7 +5654,7 @@
 0.2,
 7.8
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5533,6 +5669,7 @@
 0.2,
 7.8
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5547,7 +5684,8 @@
 1.4,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5561,7 +5699,8 @@
 0.2,
 2.0,
 7.8
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5575,7 +5714,8 @@
 0.2,
 2.0,
 6.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5590,7 +5730,7 @@
 0.2,
 1.2
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5605,6 +5745,7 @@
 0.2,
 1.2
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5619,7 +5760,8 @@
 5.0,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5633,7 +5775,8 @@
 5.0,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5648,7 +5791,7 @@
 0.2,
 3.1
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5663,6 +5806,7 @@
 0.2,
 3.1
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5677,7 +5821,8 @@
 1.4,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5691,7 +5836,8 @@
 0.2,
 2.0,
 3.1
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5705,7 +5851,8 @@
 0.2,
 2.0,
 1.9
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5720,7 +5867,7 @@
 0.2,
 1.2
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5735,6 +5882,7 @@
 0.2,
 1.2
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5749,7 +5897,8 @@
 7.0,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5763,7 +5912,8 @@
 7.0,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5929,7 +6079,7 @@
 0.2,
 3.5
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -5944,6 +6094,7 @@
 0.2,
 3.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -5958,7 +6109,8 @@
 0.6,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5972,7 +6124,8 @@
 3.0,
 0.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -5986,7 +6139,8 @@
 0.6,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6000,7 +6154,8 @@
 0.2,
 3,
 3.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6014,7 +6169,8 @@
 0.2,
 3,
 3.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6070,7 +6226,7 @@
 0.2,
 3.5
 ],
-"teinte": "rouge"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -6085,7 +6241,7 @@
 0.2,
 3
 ],
-"teinte": "rouge"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -6650,7 +6806,7 @@
 0.2,
 3.0
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -6665,6 +6821,7 @@
 0.2,
 3.0
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -6679,7 +6836,8 @@
 8.2,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6693,7 +6851,8 @@
 8.2,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -6732,7 +6891,7 @@
 0.2,
 14
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -6747,6 +6906,7 @@
 0.2,
 14
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -6761,7 +6921,8 @@
 7.6,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6775,7 +6936,8 @@
 3.0,
 0.8,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6789,7 +6951,8 @@
 5.5,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6803,7 +6966,8 @@
 1.2,
 2.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6817,7 +6981,8 @@
 0.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6831,7 +6996,8 @@
 7.6,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6845,7 +7011,8 @@
 3.0,
 0.8,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6859,7 +7026,8 @@
 7.6,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6873,7 +7041,8 @@
 0.2,
 4,
 0.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6887,7 +7056,8 @@
 0.2,
 2.0,
 1.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6901,7 +7071,8 @@
 0.2,
 4,
 3.7
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6915,7 +7086,8 @@
 0.2,
 0.8,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6929,7 +7101,8 @@
 0.2,
 4,
 5.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6943,7 +7116,8 @@
 0.2,
 4,
 5.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6957,7 +7131,8 @@
 0.2,
 0.8,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -6971,7 +7146,8 @@
 0.2,
 4,
 5.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7407,7 +7583,7 @@
 0.2,
 5
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -7422,6 +7598,7 @@
 0.2,
 5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -7436,7 +7613,8 @@
 0.2,
 3.5,
 5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7450,7 +7628,8 @@
 0.2,
 3.5,
 5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7465,7 +7644,7 @@
 0.2,
 16
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -7480,6 +7659,7 @@
 0.2,
 16
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -7494,7 +7674,8 @@
 22.2,
 4.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7508,7 +7689,8 @@
 9.6,
 4.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7522,7 +7704,8 @@
 3.0,
 1.3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7536,7 +7719,8 @@
 9.6,
 4.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7550,7 +7734,8 @@
 0.2,
 4.5,
 3.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7564,7 +7749,8 @@
 0.2,
 2.5,
 1.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7578,7 +7764,8 @@
 0.2,
 4.5,
 11.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7592,7 +7779,8 @@
 0.2,
 4.5,
 16
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7659,7 +7847,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -7715,7 +7904,8 @@
 1.233,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7729,7 +7919,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7743,7 +7934,8 @@
 1.233,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7757,7 +7949,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -7813,7 +8006,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -7869,7 +8063,8 @@
 1.233,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7883,7 +8078,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7897,7 +8093,8 @@
 1.233,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7911,7 +8108,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -7953,7 +8151,8 @@
 1.233,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7967,7 +8166,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7981,7 +8181,8 @@
 1.233,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -7995,7 +8196,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -8066,6 +8268,7 @@
 0.2,
 3
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -8108,7 +8311,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8122,7 +8326,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8136,7 +8341,8 @@
 1.333,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8150,7 +8356,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8164,7 +8371,8 @@
 2.467,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8178,7 +8386,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8192,7 +8401,8 @@
 1.333,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8207,6 +8417,7 @@
 0.2,
 3
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -8249,7 +8460,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8263,7 +8475,8 @@
 0.2,
 3.0,
 3
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8277,7 +8490,8 @@
 1.333,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8291,7 +8505,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8305,7 +8520,8 @@
 2.467,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8319,7 +8535,8 @@
 1.2,
 0.6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8333,7 +8550,8 @@
 1.333,
 3.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8348,6 +8566,7 @@
 0.2,
 3
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -8362,7 +8581,8 @@
 3,
 1.0,
 1.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -8795,7 +9015,7 @@
 0.2,
 5
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -8810,6 +9030,7 @@
 0.2,
 5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -8824,7 +9045,8 @@
 0.2,
 3.5,
 5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8838,7 +9060,8 @@
 0.2,
 3.5,
 5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8853,7 +9076,7 @@
 0.2,
 15
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -8868,6 +9091,7 @@
 0.2,
 15
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -8882,7 +9106,8 @@
 9.6,
 6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8896,7 +9121,8 @@
 3.0,
 2.8,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8910,7 +9136,8 @@
 9.6,
 6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8924,7 +9151,8 @@
 22.2,
 6,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8938,7 +9166,8 @@
 0.2,
 6,
 15
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8952,7 +9181,8 @@
 0.2,
 6,
 15
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8977,7 +9207,8 @@
 4,
 0.9,
 1.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -8991,7 +9222,8 @@
 4,
 0.9,
 1.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9005,7 +9237,8 @@
 4,
 0.9,
 1.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9019,7 +9252,8 @@
 4,
 0.9,
 1.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9361,7 +9595,7 @@
 0.2,
 3.0
 ],
-"teinte": "sol"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -9376,6 +9610,7 @@
 0.2,
 3.0
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -9390,7 +9625,8 @@
 5.2,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9404,7 +9640,8 @@
 5.2,
 3.5,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9490,7 +9727,7 @@
 0.2,
 9.0
 ],
-"teinte": "rouge"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -9504,7 +9741,8 @@
 5.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9518,7 +9756,8 @@
 2.4,
 1.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9532,7 +9771,8 @@
 15.9,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9546,7 +9786,8 @@
 10.1,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9560,7 +9801,8 @@
 4.0,
 0.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9574,7 +9816,8 @@
 10.1,
 4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9588,7 +9831,8 @@
 0.2,
 4,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9602,7 +9846,8 @@
 0.2,
 0.8,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9631,7 +9876,8 @@
 0.2,
 4,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9658,6 +9904,7 @@
 0.2,
 9
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -9789,6 +10036,7 @@
 0.2,
 23.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -9803,7 +10051,8 @@
 24.2,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9817,7 +10066,8 @@
 0.2,
 10,
 17.9
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9831,7 +10081,8 @@
 0.2,
 8.0,
 1.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9845,7 +10096,8 @@
 0.2,
 10,
 4.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -9859,7 +10111,8 @@
 0.2,
 10,
 23.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10774,7 +11027,8 @@
 0.1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10788,7 +11042,8 @@
 23.0,
 6.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10802,7 +11057,8 @@
 0.1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10816,7 +11072,8 @@
 1,
 10,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -10844,7 +11101,8 @@
 22,
 0.3,
 2.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10858,7 +11116,8 @@
 0.3,
 0.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10872,7 +11131,8 @@
 0.3,
 0.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10886,7 +11146,8 @@
 0.3,
 0.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10900,7 +11161,8 @@
 0.3,
 1.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10914,7 +11176,8 @@
 0.3,
 1.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10928,7 +11191,8 @@
 0.3,
 1.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10942,7 +11206,8 @@
 0.3,
 1.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10956,7 +11221,8 @@
 0.3,
 2.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10970,7 +11236,8 @@
 0.3,
 2.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10984,7 +11251,8 @@
 0.3,
 2.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -10998,7 +11266,8 @@
 0.3,
 2.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11012,7 +11281,8 @@
 0.3,
 3.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11026,7 +11296,8 @@
 0.3,
 3.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11040,7 +11311,8 @@
 0.3,
 3.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11054,7 +11326,8 @@
 0.3,
 3.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11068,7 +11341,8 @@
 0.3,
 4.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "modele",
@@ -11269,6 +11543,7 @@
 0.2,
 27.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -11283,7 +11558,8 @@
 0.6,
 12,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11297,7 +11573,8 @@
 3.0,
 9.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11311,7 +11588,8 @@
 6.5,
 12,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11325,7 +11603,8 @@
 14.0,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11354,7 +11633,8 @@
 4.1,
 12,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11368,7 +11648,8 @@
 0.2,
 12,
 27.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11382,7 +11663,8 @@
 0.2,
 12,
 12.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11396,7 +11678,8 @@
 0.2,
 9,
 3.0
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -11410,7 +11693,8 @@
 0.2,
 12,
 12.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12888,7 +13172,8 @@
 0.1,
 12,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12902,7 +13187,8 @@
 24.0,
 8.0,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12916,7 +13202,8 @@
 0.1,
 12,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12930,7 +13217,8 @@
 4,
 12,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12945,6 +13233,7 @@
 0.2,
 3.5
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -12959,7 +13248,8 @@
 1.1,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12973,7 +13263,8 @@
 2.0,
 0.4,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -12987,7 +13278,8 @@
 1.1,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13001,7 +13293,8 @@
 0.2,
 3,
 3.5
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13267,7 +13560,8 @@
 2.4,
 1.2,
 1
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13281,7 +13575,8 @@
 2.4,
 1.2,
 1
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13295,7 +13590,8 @@
 1,
 1.2,
 2.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13309,7 +13605,8 @@
 2.4,
 1.2,
 1
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13323,7 +13620,8 @@
 1,
 1.2,
 2.4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13337,7 +13635,8 @@
 6,
 3,
 4
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13351,7 +13650,8 @@
 0.3,
 0.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13365,7 +13665,8 @@
 0.3,
 0.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13379,7 +13680,8 @@
 0.3,
 0.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13393,7 +13695,8 @@
 0.3,
 1.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13407,7 +13710,8 @@
 0.3,
 1.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13421,7 +13725,8 @@
 0.3,
 1.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13435,7 +13740,8 @@
 0.3,
 1.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13449,7 +13755,8 @@
 0.3,
 2.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13463,7 +13770,8 @@
 0.3,
 2.25,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13477,7 +13785,8 @@
 0.3,
 2.5,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13491,7 +13800,8 @@
 0.3,
 2.75,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13505,7 +13815,8 @@
 0.3,
 3.0,
 1.6
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13707,7 +14018,7 @@
 0.2,
 3.0
 ],
-"teinte": "sombre"
+"teinte": "tole"
 },
 {
 "type": "forme",
@@ -13722,6 +14033,7 @@
 0.2,
 3.0
 ],
+"teinte": "acier",
 "plafond": true
 },
 {
@@ -13736,7 +14048,8 @@
 6.2,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
@@ -13750,7 +14063,8 @@
 6.2,
 3,
 0.2
-]
+],
+"teinte": "acier"
 },
 {
 "type": "forme",
