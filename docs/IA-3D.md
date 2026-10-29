@@ -65,7 +65,45 @@ L'IA donne des **ébauches** : formes lourdes, maillage désordonné, textures p
 | 3 | 6 modules de ruines des Bâtisseurs | À semer sur les planètes générées |
 | 4 | 10 plantes extraterrestres | Pour peupler les biomes |
 
-## 6. Qui fait quoi
+## 6. Les 9 modèles du prologue à refaire
+
+La [bible du prologue](prologue/BIBLE-DA.md) (§ 12) en désigne neuf :
+- **les personnages** : le garde, la combinaison du Veilleur, le vieux détenu ;
+- **le mobilier et les machines** : la porte de cellule, le lit, la console ;
+- **le reste** : la capsule du Veilleur, le vaisseau pirate, les débris de coque.
+
+Leurs fiches sont dans [`prologue/ia/fiches.json`](prologue/ia/fiches.json). Chacune donne :
+- le modèle remplacé ;
+- le texte de l'image de concept, en anglais et sans nom d'œuvre ;
+- la taille réelle ;
+- le budget de faces.
+
+**La chaîne, en une commande** : `outils/generer-modeles-ia.py`.
+1. **L'image de concept** : FLUX.1 [schnell], licence Apache 2.0.
+2. **La forme, puis la texture** : TripoSG, licence MIT.
+3. **La mise à la taille réelle** : en mètres, pieds au sol.
+4. **Le rangement** :
+   - le modèle va dans `prologue-ia/` ;
+   - une ligne s'ajoute au registre (`docs/REGISTRE-IA.md`) ;
+   - le modèle entre dans le catalogue de l'atelier ;
+   - la maquette est refaite : les nouveaux modèles prennent la place des anciens.
+
+Le calcul se fait sur les espaces Hugging Face officiels de ces deux modèles, avec un GPU prêté gratuitement (ZeroGPU).
+- **Sans compte, le quota est nul.** Il faut un jeton Hugging Face gratuit, en lecture, dans la variable d'environnement `HF_TOKEN`.
+- **Le quota gratuit est de quelques minutes de GPU par jour**, soit 2 à 4 modèles. Quand il est épuisé, le script s'arrête proprement ; relancé le lendemain, il reprend où il en était.
+
+```bash
+pip install gradio_client trimesh numpy pillow
+python3 outils/generer-modeles-ia.py --essai                  # ce qui reste à faire
+HF_TOKEN=... python3 outils/generer-modeles-ia.py --sortie ~/jeu/prologue
+```
+
+**Après la génération** :
+- `outils/telecharger-prologue.sh` (Mac) et `.ps1` (PC) téléchargent aussi les modèles faits, depuis le dépôt.
+- Les trois personnages sortent sans squelette : il faut leur en donner un avec Mixamo avant Unity.
+- Comme tout modèle fait par IA, ils passent ensuite par Blender pour être nettoyés (§ 3).
+
+## 7. Qui fait quoi
 
 | Qui | Quoi |
 |---|---|
@@ -76,6 +114,9 @@ L'IA donne des **ébauches** : formes lourdes, maillage désordonné, textures p
 Sur le Mac, le plus simple reste **Meshy dans le navigateur**. Les modèles locaux sont faits pour la carte NVIDIA du PC.
 
 ## Sources
+
+- [TripoSG (espace Hugging Face)](https://huggingface.co/spaces/VAST-AI/TripoSG)
+- [FLUX.1 schnell (espace Hugging Face)](https://huggingface.co/spaces/black-forest-labs/FLUX.1-schnell)
 
 - [Meshy : ce qui est inclus dans la version gratuite](https://intercom.help/meshy/en/articles/15696428-what-is-included-on-the-free-plan)
 - [Meshy : usage commercial](https://intercom.help/meshy/en/articles/16102098-can-i-use-meshy-assets-commercially)

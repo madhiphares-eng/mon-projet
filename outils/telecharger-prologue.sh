@@ -180,6 +180,18 @@ while IFS='|' read -r lieu uid nom credit; do
     sleep 1
 done < "$TMP/liste.txt"
 
+# les modeles refaits avec l'IA (outils/generer-modeles-ia.py) : ils sont dans le depot, pas sur Sketchfab
+DEPOT_IA="https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/prologue-ia"
+if curl -fsS --retry 3 -o "$TMP/faits.json" "https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/docs/prologue/ia/faits.json" 2>/dev/null; then
+    grep -oE '"[0-9]{2}-[A-Za-z]+/[a-z0-9-]+"[[:space:]]*:' "$TMP/faits.json" | grep -oE '[0-9]{2}-[A-Za-z]+/[a-z0-9-]+' | while read -r cle; do
+        lieu="${cle%/*}"; nom="${cle#*/}"; d="$DEST/$lieu/$nom"
+        if [ -f "$d/$nom.glb" ]; then continue; fi
+        mkdir -p "$d"
+        telecharger "$DEPOT_IA/$lieu/$nom/$nom.glb" "$d/$nom.glb" && curl -fsS --retry 3 -o "$d/LICENCE.txt" "https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/prologue-ia/$lieu/$nom/LICENCE.txt" \
+            || erreur "$cle : modele IA introuvable dans le depot"
+    done
+fi
+
 {
     echo "Credits des modeles 3D du prologue d'Echos d'Ether (a reprendre dans l'ecran des credits du jeu)."
     echo ""

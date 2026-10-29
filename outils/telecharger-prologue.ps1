@@ -212,6 +212,23 @@
         }
     }
 
+    # les modeles refaits avec l'IA (outils/generer-modeles-ia.py) : ils sont dans le depot, pas sur Sketchfab
+    $DepotIA = 'https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/prologue-ia'
+    $Brut = 'https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether'
+    try { $faits = Invoke-RestMethod -Uri "$Brut/docs/prologue/ia/faits.json" -UseBasicParsing } catch { $faits = $null }
+    if ($faits) {
+        foreach ($cle in $faits.PSObject.Properties.Name) {
+            $dossier, $nom = $cle -split '/'
+            $d = Join-Path $Dest "$dossier\$nom"
+            try {
+                [void](Telecharger "$DepotIA/$dossier/$nom/$nom.glb" (Join-Path $d "$nom.glb"))
+                [void](Telecharger "$Brut/prologue-ia/$dossier/$nom/LICENCE.txt" (Join-Path $d 'LICENCE.txt'))
+            } catch {
+                [void]$Etat.Erreurs.Add("$cle : modele IA introuvable dans le depot")
+            }
+        }
+    }
+
     # credits regroupes
     $credits = New-Object System.Collections.ArrayList
     [void]$credits.Add("Credits des modeles 3D du prologue d'Echos d'Ether (a reprendre dans l'ecran des credits du jeu).")

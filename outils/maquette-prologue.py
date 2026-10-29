@@ -23,6 +23,12 @@ E = 0.2       # épaisseur des murs, des sols et des plafonds
 HC = 4.5      # hauteur d'une coursive principale (bible, § 9)
 CHANTIER = 4.0  # la limite des deux couches
 pieces = []
+# les modèles refaits avec l'IA (outils/generer-modeles-ia.py) : ils prennent la place des anciens dès qu'ils existent
+FICHES_IA = json.load(open(os.path.join(RACINE, 'docs', 'prologue', 'ia', 'fiches.json'), encoding='utf-8'))['modeles']
+_faits = os.path.join(RACINE, 'docs', 'prologue', 'ia', 'faits.json')
+FAITS_IA = json.load(open(_faits, encoding='utf-8')) if os.path.exists(_faits) else {}
+ia = lambda cle: cle in FAITS_IA and cle in TAILLES
+SUBSTITUTS = {f['remplace']: f['cle'] for f in FICHES_IA if ia(f['cle'])}
 ZONES = []    # les salles et les coursives, pour le plan : (x0, x1, z0, z1, h, nom, couche)
 CHEMINS = []  # les chemins dessinés sur le plan
 
@@ -43,6 +49,8 @@ def bloc(x, z, l, p, h, y=0.0, teinte='acier', plafond=False):
 
 def modele(cle, x, z, cadre=None, y=0.0, rot=0, rotx=0, echelle=None):
     """Un modèle du prologue ; sans cadre, il prend sa taille réelle (docs/prologue/tailles-modeles.json)."""
+    if cle in SUBSTITUTS:                                      # le modèle refait avec l'IA, à sa propre taille réelle
+        cle, cadre = SUBSTITUTS[cle], None
     assert cle in TAILLES, cle
     q = {'type': 'modele', 'cle': cle, 'position': [r(x), r(y), r(z)], 'cadre': cadre or TAILLES[cle]['cadre']}
     if rot or rotx:
@@ -52,8 +60,12 @@ def modele(cle, x, z, cadre=None, y=0.0, rot=0, rotx=0, echelle=None):
     pieces.append(q)
 
 
-def humain(x, z, camp=None, y=0.0):
-    """Une silhouette de 1,80 m : bleu les gardes, orange les pirates, jaune les détenus."""
+def humain(x, z, camp=None, y=0.0, rot=0):
+    """Une silhouette de 1,80 m : bleu les gardes, orange les pirates, jaune les détenus.
+    Quand le garde de l'Empire a été refait avec l'IA, il remplace les silhouettes des gardes."""
+    if camp == 'bleu' and ia('03-Gardes/garde-empire'):
+        modele('03-Gardes/garde-empire', x, z, y=y, rot=rot)
+        return
     q = {'type': 'forme', 'cle': 'humain', 'position': [r(x), r(y), r(z)]}
     if camp:
         q['teinte'] = camp
@@ -65,6 +77,14 @@ def etiquette(texte, x, z, y, police=1.0, teinte=None):
     if teinte:
         q['teinte'] = teinte
     pieces.append(q)
+
+
+def console(x, z, y=0.0, rot=0, cadre_mural=(1.0, 1.0, 0.3), y_mural=1.0):
+    """Une console : celle de l'Empire refaite avec l'IA (sur pied), sinon la console murale posée sur son socle."""
+    if ia('09-Informatique/console-empire'):
+        modele('09-Informatique/console-empire', x, z, y=y, rot=rot)
+    else:
+        modele('09-Informatique/console-murale', x, z, list(cadre_mural), y + y_mural, rot)
 
 
 def neon(x, z, y, l, axe='x', teinte='blanc', plafond=False, section=(0.06, 0.12)):
@@ -362,7 +382,10 @@ for s in (-1, 1):                                              # s = -1 : rangé
         else:
             bloc((NX0 + NX1) / 2, front, NX1 - NX0, E, 4.5, y)  # les façades des étages, portes fermées
             for k in range(12):
-                bloc(NX0 + (k + 0.5) * LC, front - s * 0.12, 1.6, 0.06, 2.6, y, 'sombre')
+                if i == 1 and ia('05-Cellules/porte-cellule-acier'):
+                    modele('05-Cellules/porte-cellule-acier', NX0 + (k + 0.5) * LC, front - s * 0.15, y=y, rot=0 if s > 0 else 180)
+                else:
+                    bloc(NX0 + (k + 0.5) * LC, front - s * 0.12, 1.6, 0.06, 2.6, y, 'sombre')
                 if k % 3 == 1:
                     verrou(NX0 + (k + 0.5) * LC, front - s * 0.16, y + 2.75, 0.8)
         if i:
@@ -387,12 +410,15 @@ for (x, s) in ((-52, -1), (-44, -1), (-28, 1), (-40, 1)):
     sodium(x, s * 10, 4.1, 'x', 0.6)                           # la vie des détenus : une lampe chaude par cellule
 modele('05-Cellules/lavabo', -42.8, -9.3, [0.6, 1.0, 0.5], 0.4)
 bloc(-22, -3.5, 3, 1.2, 1.1)                                   # le poste de garde, à l'entrée
-modele('09-Informatique/console-murale', -22, -3.5, [1.0, 1.0, 0.3], 1.1)
+console(-22, -3.5, 1.1, 0, y_mural=0.0) if not ia('09-Informatique/console-empire') else console(-22, -2.4)
 modele('03-Gardes/droide-securite', -24.5, -2, [0, 2.1, 0], rot=-90)
 modele('02-Prisonniers/detenu-brute', -36, 2.5)
 modele('02-Prisonniers/detenu-atelier', -50, -2.5)
 for x, z in ((-28, 1.5), (-33, -3), (-41, 3.5), (-47, 1), (-55, -3.5), (-58, 2)):
-    humain(x, z, 'jaune')
+    if (x, z) == (-47, 1) and ia('02-Prisonniers/detenu-vieux-ia'):
+        modele('02-Prisonniers/detenu-vieux-ia', x, z, rot=90)
+    else:
+        humain(x, z, 'jaune')
 for x, z, y in ((-30, -7, 9), (-52, 7, 9), (-38, -7, 13.5), (-25, 7, 4.5)):
     humain(x, z, 'bleu', y)
 modele('13-Armes/cle-a-molette', -27, -1, [0.45, 0.45, 0.45], 0.02, 0, 90)   # l'arme de fortune, au sol
@@ -506,7 +532,7 @@ for z in (35, 39):
     bloc(-24, z, 8, 0.6, 2.2)                                  # rayonnages
 modele('15-Reliques/tablette-glyphes', -24, 39, [0.5, 0, 0], 2.2)
 etiquette('Objet saisi : il en lit les glyphes', -24, 39, 3.3, 0.42, 'ambre')
-modele('09-Informatique/console-murale', -19, 30.35, [1.2, 1.2, 0.3], 1.0)
+console(-19, 30.9, rot=180, cadre_mural=(1.2, 1.2, 0.3)) if ia('09-Informatique/console-empire') else modele('09-Informatique/console-murale', -19, 30.35, [1.2, 1.2, 0.3], 1.0)
 sodium(-19, 30.6, 2.5)
 etiquette('Console : pirater la porte des reliques', -19, 31, 2.9, 0.42, 'ambre')
 for x, z in ((-29, 41), (-18, 34)):
@@ -629,7 +655,7 @@ bloc(42, 0, 8, 4, E, HC, plafond=True)                         # le plafond arra
 mur('z', 2, 38, 43, HC)                                        # ce qui reste du mur sud
 for x, l in ((47, 2), (53, 1.5)):
     bloc(x, 2.2, l, 0.4, 1.2, 0, 'rouille')                    # les bords déchirés
-modele('12-Exterieur/debris-1', 51, 8, [7, 4, 7], 1)
+modele('12-Exterieur/debris-coque', 50, 5.5) if ia('12-Exterieur/debris-coque') else modele('12-Exterieur/debris-1', 51, 8, [7, 4, 7], 1)
 modele('04-Pirates/pirate-eva', 52, -0.8, [0, 1.9, 0], rot=-90)
 modele('09-Informatique/cables', 44, -1.6, [3, 0, 3], 1.6)
 for x in (40, 44):

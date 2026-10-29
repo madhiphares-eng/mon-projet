@@ -25,3 +25,6 @@
 *.ogg  filter=lfs diff=lfs merge=lfs -text
 *.mp4  filter=lfs diff=lfs merge=lfs -text
 *.raw  filter=lfs diff=lfs merge=lfs -text
+
+# Modèles faits avec l'IA pour le prologue (outils/generer-modeles-ia.py)
+prologue-ia/**/*.glb filter=lfs diff=lfs merge=lfs -text

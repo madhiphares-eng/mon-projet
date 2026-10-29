@@ -309,6 +309,8 @@ Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits 
 | 3 | **La capsule** et **la combinaison du Veilleur** | IA 3D |
 | 3 | **Le vaisseau pirate**, et des **débris de coque** à la place des gravats | IA 3D |
 
+**Les 9 modèles à remplacer** ont chacun leur fiche dans [`ia/fiches.json`](ia/fiches.json) et se fabriquent avec `outils/generer-modeles-ia.py` (voir [`IA-3D.md`](../IA-3D.md), § 6). Dès qu'ils existent, la maquette les utilise d'elle-même.
+
 **Prompts pour l'IA 3D**, en anglais (les outils le comprennent mieux), sans aucun nom d'œuvre ni de marque :
 - **Garde** : `heavy armored prison guard, full closed helmet with a narrow visor, dark gunmetal plate armor with one thin red stripe, angular chamfered plates, worn and scratched, realistic, full body, T-pose`
 - **Porte de cellule** : `heavy solid steel prison cell door, small sliding hatch at eye level, chamfered edges, dark painted steel, chipped paint, rust streaks, realistic`

@@ -1,0 +1,77 @@
+{
+"_lisez-moi": "Les 9 modèles du prologue à refaire avec l'IA, d'après l'audit de la bible (docs/prologue/BIBLE-DA.md, § 12). remplace : le modèle actuel (gardé dans le catalogue). cle : le nouveau modèle. prompt : l'image de concept, en anglais, sans aucun nom d'œuvre ni de marque (docs/IA-3D.md, § 4). cadre : sa taille réelle en mètres (0 = côté libre). faces : le budget de faces. Lu par outils/generer-modeles-ia.py.",
+"modeles": [
+  {
+    "remplace": "03-Gardes/garde",
+    "cle": "03-Gardes/garde-empire",
+    "titre": "Garde de l'Empire",
+    "usage": "Garde de la prison : armure fermée sombre, un seul liseré rouge",
+    "prompt": "Full body concept of a heavily armored prison guard standing in a T-pose, front view, full closed helmet with a narrow horizontal visor, dark gunmetal angular plate armor with chamfered edges, one thin red stripe across the chest and the helmet, worn and scratched metal, heavy boots and gloves, no weapon, isolated on a plain light grey background, even studio lighting, realistic, high detail",
+    "cadre": [0, 1.85, 0], "faces": 50000, "personnage": true
+  },
+  {
+    "remplace": "01-Joueur/combinaison-veilleur",
+    "cle": "01-Joueur/combinaison-veilleur-ia",
+    "titre": "Combinaison de Veilleur",
+    "usage": "Sa combinaison de Veilleur des Bâtisseurs : noir lisse, glyphes cyan",
+    "prompt": "Full body concept of a sleek ancient armored suit standing in a T-pose, front view, matte black smooth material, slender elongated proportions, thin glowing cyan line patterns like engraved glyphs across the chest, arms and legs, closed smooth featureless helmet, pristine, no rust, isolated on a plain light grey background, even studio lighting, realistic, high detail",
+    "cadre": [0, 1.9, 0], "faces": 50000, "personnage": true
+  },
+  {
+    "remplace": "02-Prisonniers/detenu-vieux",
+    "cle": "02-Prisonniers/detenu-vieux-ia",
+    "titre": "Vieux détenu",
+    "usage": "Vieux détenu en combinaison orange (indices, dialogues)",
+    "prompt": "Full body concept of an old thin prisoner standing in a T-pose, front view, worn orange jumpsuit with rolled sleeves, shaved grey head, tired wrinkled face, work boots, isolated on a plain light grey background, even studio lighting, realistic, high detail",
+    "cadre": [0, 1.75, 0], "faces": 50000, "personnage": true
+  },
+  {
+    "remplace": "05-Cellules/porte-cellule",
+    "cle": "05-Cellules/porte-cellule-acier",
+    "titre": "Porte de cellule en acier",
+    "usage": "Porte de cellule pleine, à guichet",
+    "prompt": "Product render of a heavy solid steel prison cell door standing upright, single isolated object, front three-quarter view, small sliding hatch at eye level, chamfered edges, dark gunmetal painted steel, chipped paint, rust streaks, plain light grey seamless background, soft even studio lighting, realistic, high detail",
+    "cadre": [1.6, 2.6, 0], "faces": 15000
+  },
+  {
+    "remplace": "05-Cellules/lit-superpose",
+    "cle": "05-Cellules/lit-acier",
+    "titre": "Lit superposé en acier",
+    "usage": "Lit de détenu en métal soudé, deux couchettes",
+    "prompt": "Product render of a steel prison bunk bed with two levels, welded metal frame, thin grey mattresses and grey wool blankets, worn painted steel, front three-quarter view, single isolated object, plain light grey seamless background, soft even studio lighting, realistic, high detail",
+    "cadre": [2.0, 1.8, 0.9], "faces": 15000
+  },
+  {
+    "remplace": "09-Informatique/terminal",
+    "cle": "09-Informatique/console-empire",
+    "titre": "Console de l'Empire",
+    "usage": "Console à pirater : coque sombre, petit écran ambre",
+    "prompt": "Product render of a heavy industrial computer console on a pedestal, dark gunmetal casing with chamfered corners, small amber monochrome screen, rows of heavy toggle switches and buttons, worn paint and scratches, front three-quarter view, single isolated object, plain light grey seamless background, soft even studio lighting, realistic, high detail",
+    "cadre": [1.2, 1.4, 0.8], "faces": 15000
+  },
+  {
+    "remplace": "15-Reliques/capsule-veilleur",
+    "cle": "15-Reliques/capsule-veilleur-ia",
+    "titre": "Capsule du Veilleur",
+    "usage": "La capsule où il dormait : pierre noire polie, glyphes cyan",
+    "prompt": "Product render of an ancient sarcophagus pod made of polished black stone, elongated proportions, sharp thin edges, thin glowing cyan line glyphs engraved on its lid, pristine, no rust, lying horizontally, three-quarter view, single isolated object, plain light grey seamless background, soft even studio lighting, realistic, high detail",
+    "cadre": [2.4, 1.2, 1.2], "faces": 20000
+  },
+  {
+    "remplace": "11-Vaisseaux/vaisseau-pirate",
+    "cle": "11-Vaisseaux/vaisseau-pirate-ia",
+    "titre": "Vaisseau pirate de récupération",
+    "usage": "Vaisseau pirate d'abordage, fait de pièces récupérées",
+    "prompt": "Concept render of a salvaged pirate gunship spacecraft assembled from mismatched hull plates, orange and rust paint, welded patches, asymmetric silhouette, exposed engines and pipes, three-quarter top view, single isolated object, plain light grey seamless background, soft even studio lighting, realistic, high detail",
+    "cadre": [24, 10, 18], "faces": 40000
+  },
+  {
+    "remplace": "12-Exterieur/gravats-breche",
+    "cle": "12-Exterieur/debris-coque",
+    "titre": "Débris de coque",
+    "usage": "Débris des brèches de l'abordage : tôles d'acier tordues",
+    "prompt": "Product render of a pile of twisted torn steel hull plates and broken metal beams, dark painted metal, burnt edges, single isolated object, three-quarter view, plain light grey seamless background, soft even studio lighting, realistic, high detail",
+    "cadre": [4, 2.5, 4], "faces": 20000
+  }
+]
+}
