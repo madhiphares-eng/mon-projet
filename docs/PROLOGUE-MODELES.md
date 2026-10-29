@@ -110,6 +110,8 @@ python3 ~/jeu/normaliser-prologue.py ~/jeu/prologue
 
 Sur le PC, avec Python installé : `py normaliser-prologue.py C:\Projets\EchosEther\Assets\_Projet\Externes\Prologue`.
 
+On peut le relancer quand on veut : un fichier déjà fait est laissé tel quel, sauf si sa taille ou ses pièces à retirer ont changé dans les tables. Il repart alors de son `.original`. Testé sur les 75 modèles, animés compris : chacun ressort à la taille de son cadre, pieds au sol.
+
 Ce qui a été corrigé, modèle par modèle (mesuré le 29 octobre 2026 avec les 75 modèles téléchargés) :
 - **`pirate`** : un portail de pierre géant était collé au personnage. Il est retiré.
 - **`pirate-chef`** : son socle de présentation est retiré.
