@@ -1,5 +1,7 @@
 # Direction artistique du vaisseau-prison
 
+> **Remplacée par la [bible de direction artistique](BIBLE-DA.md) (le Colosse).** Gardée pour l'historique.
+>
 > Version 1, 29 octobre 2026. Pour le prologue d'*Échos d'Éther*.
 > Règle d'or : **peu d'objets différents, mais qui se ressemblent**. Un objet qui ne colle pas à la palette est recoloré, ou il attend d'être remplacé.
 
