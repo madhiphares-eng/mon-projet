@@ -328,6 +328,7 @@ for x, z in ((-4.5, -4.5), (4.5, -4.5), (-4.5, 4.5), (4.5, 4.5)):
     modele('08-Machines/pylone-energie', x, z, [2.5, 4, 2.5])
 for (x, z, l, a) in ((0, -5.7, 10, 'x'), (0, 5.7, 10, 'x'), (-5.7, 0, 10, 'z'), (5.7, 0, 10, 'z')):
     neon(x, z, 15.4, l, a, 'blanc', section=(0.08, 0.1))        # la couronne froide en haut du puits
+neon(0, 0, 4.2, 11, 'y', 'cyan', section=(0.22, 0.22))          # le faisceau d'Éther : le cœur s'emballe, on le voit de partout
 etiquette('Il s\'emballe à son réveil', 0, 0, 12, 0.6, 'ether')
 
 # ================================================================== 2 · la nef des cellules (Monolithe 70 %)
@@ -390,6 +391,10 @@ modele('13-Armes/cle-a-molette', -27, -1, [0.45, 0.45, 0.45], 0.02, 0, 90)   # l
 etiquette('Arme de fortune', -27, -1, 0.7, 0.35, 'ambre')
 for s in (-3, 3):
     ligne_froide(NX0 + 2, NX1 - 2, s, 22.0)                    # les deux lignes froides de la nef, à 22 m
+for s in (-1, 1):
+    for y in NIVEAUX[1:]:
+        neon((NX0 + NX1) / 2, s * 6.04, y - 0.36, NX1 - NX0 - 1, 'x', 'blanc', section=(0.04, 0.06))   # le bord de chaque niveau : la nef se lit en lignes
+sodium(-60, 7.75, 4.45, 'x', 2.4)                             # la sortie, chaude, au fond : la cellule qui mène aux ateliers
 for x in (NX0 + 0.6, NX1 - 0.6):
     for z in (-5.5, 5.5):
         gyrophare(x, z, 10)
@@ -533,7 +538,7 @@ modele('15-Reliques/prisme-ether', -7.5, 31, [0, 1.2, 0], 1.6)
 modele('15-Reliques/cristal-ether', 7.5, 31, [0.8, 0.8, 0.8], 1.6)
 for x, z in ((-7.5, 17), (-7.5, 31), (7.5, 31)):
     neon(x, z - 0.47, 0.02, 0.9, 'x', 'cyan', section=(0.02, 0.03))
-neon(0, 24, 11.6, 14, 'z', 'blanc', section=(0.06, 0.1))       # une seule ligne froide, très haut
+neon(0, 24, 11.4, 3.0, 'z', 'blanc', section=(0.3, 0.3))       # une seule lumière froide, très haut, sur la capsule
 modele('07-Consigne/armoire-blindee', 9, 32.6, [1.6, 2.4, 1.0], rot=180)
 
 # ================================================================== 4 · le sas et la coque extérieure (le vide)
@@ -568,6 +573,10 @@ bloc(78.4, 21.7, 4, 3, 12, 0, 'sombre')                        # le palier
 for x in range(64, 77, 4):
     neon(x, 22.1, ((x - 62) / 0.3 + 1) * 0.25, 0.4, 'x', 'rouge', section=(0.04, 0.06))   # le bord des marches
 modele('12-Exterieur/porte-sas', 78.4, 20, y=12)
+sodium(78.4, 20.35, 14.9, 'x', 1.6)                            # le sas d'arrivée : ce qui sert
+neon(78.4, 23.0, 12.0, 0.6, 'x', 'blanc', section=(0.35, 0.35))  # le projecteur du palier : on le voit depuis le sas des reliques
+for x, z in ((58, 20), (118, 20), (58, -20), (118, -20), (88, 20)):
+    gyrophare(x, z + (0.3 if z > 0 else -0.3), 30.2)           # les balises du hangar, sur son toit : le but, visible de loin
 
 # ================================================================== l'aile est : salle des machines (Chantier 75 %)
 espace(10, 14, -2, 2, HC, 'ns', chantier=True, couche='coursive')

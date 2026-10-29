@@ -2476,6 +2476,21 @@
 },
 {
 "type": "forme",
+"cle": "neon",
+"position": [
+0,
+4.2,
+0
+],
+"dims": [
+0.22,
+11,
+0.22
+],
+"teinte": "cyan"
+},
+{
+"type": "forme",
 "cle": "etiquette",
 "position": [
 0,
@@ -7490,6 +7505,141 @@
 0.14
 ],
 "teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+4.14,
+-6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+8.64,
+-6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+13.14,
+-6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+17.64,
+-6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+4.14,
+6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+8.64,
+6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+13.14,
+6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-42.0,
+17.64,
+6.04
+],
+"dims": [
+47,
+0.04,
+0.06
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-60,
+4.45,
+7.75
+],
+"dims": [
+2.4,
+0.12,
+0.14
+],
+"teinte": "ambre"
 },
 {
 "type": "forme",
@@ -13692,13 +13842,13 @@
 "cle": "neon",
 "position": [
 0,
-11.6,
+11.4,
 24
 ],
 "dims": [
-0.1,
-0.06,
-14
+0.3,
+0.3,
+3.0
 ],
 "teinte": "blanc"
 },
@@ -15565,6 +15715,111 @@
 2.6,
 0
 ]
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+78.4,
+14.9,
+20.35
+],
+"dims": [
+1.6,
+0.12,
+0.14
+],
+"teinte": "ambre"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+78.4,
+12.0,
+23.0
+],
+"dims": [
+0.6,
+0.35,
+0.35
+],
+"teinte": "blanc"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+58,
+30.2,
+20.3
+],
+"dims": [
+0.2,
+0.35,
+0.2
+],
+"teinte": "rouge"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+118,
+30.2,
+20.3
+],
+"dims": [
+0.2,
+0.35,
+0.2
+],
+"teinte": "rouge"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+58,
+30.2,
+-20.3
+],
+"dims": [
+0.2,
+0.35,
+0.2
+],
+"teinte": "rouge"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+118,
+30.2,
+-20.3
+],
+"dims": [
+0.2,
+0.35,
+0.2
+],
+"teinte": "rouge"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+88,
+30.2,
+20.3
+],
+"dims": [
+0.2,
+0.35,
+0.2
+],
+"teinte": "rouge"
 },
 {
 "type": "forme",
