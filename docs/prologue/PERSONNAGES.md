@@ -1,95 +1,141 @@
-# Les personnages du prologue : le test
+# Les personnages du prologue : animations, squelettes, espèces
 
-> Version 1, 29 octobre 2026. Les 23 personnages du prologue passés au **banc des personnages** ([`vitrine/banc-pnj.html`](../../vitrine/banc-pnj.html)) : squelette, animations, taille, poids. La sécurité de l'Empire n'emploie plus que des androïdes (voir la [bible](BIBLE-DA.md), § 4).
+> Version 2, 29 octobre 2026. Les 36 personnages du prologue passés au **banc des personnages** ([`vitrine/banc-pnj.html`](../../vitrine/banc-pnj.html)). Ils comptent :
+> - les humains ;
+> - les androïdes : la sécurité de l'Empire n'emploie qu'eux (voir la [bible](BIBLE-DA.md), § 4) ;
+> - les autres espèces de la galaxie.
+>
+> Tous reçoivent la même **bibliothèque de 84 animations**.
 
-## 1. Le banc des personnages
+## 1. Ce qu'il faut retenir
 
-Une page qui charge chaque personnage et le mesure tout seul :
-- **le squelette** : présent ou non, nombre d'os, humain ou non, nommé façon Mixamo ou non ;
-- **la pose de départ** : T (bras à l'horizontale), A (bras à 30-45°) ou bras baissés, mesurée sur l'angle du bras gauche ;
-- **chaque animation** : est-ce qu'elle bouge, est-ce qu'elle avance (root motion), est-ce qu'elle grossit le modèle (unités fausses) ;
-- **la taille d'origine** : beaucoup de fichiers sont en centimètres, ou plus étranges ;
-- **le poids** : faces, textures.
+1. **84 animations gratuites pour tout le monde.** La bibliothèque vient de Quaternius (CC0, domaine public : aucune obligation, même pour un jeu vendu). Elle est rangée dans `prologue-anim/00-Animations/` ; les scripts de téléchargement la copient dans `00-Animations/`.
+2. **Le reciblage marche sur tous les squelettes** :
+   - la bibliothèque est reciblée sur chaque squelette humain, doigts compris, quelle que soit la convention de noms (Mixamo, Character Creator, Unreal, Rigify, et même les quadrupèdes debout) ;
+   - 35 personnages sur 36 la reçoivent ;
+   - le seul qui ne la reçoit pas est le marcheur blindé, qui a déjà ses 41 animations à lui.
+3. **Les statues ont maintenant un squelette.** `outils/rigger-statues.py` (Blender en module Python) en a donné un aux 14 statues :
+   - 8 sont réussies (le héros, 5 espèces, 2 androïdes) ;
+   - 3 sont bonnes pour marcher et attendre, mais leurs bras se déforment dans les gestes amples : à refaire sur Mixamo ;
+   - 3 ont échoué : ce sont des décors de toute façon.
+4. **Les drones** ont un vol stationnaire fait par le code : ils montent, descendent et balaient la salle du regard.
+5. **Les couleurs de la bible dans les fichiers** : `outils/recolorer-prologue.py` recolore les textures une fois pour toutes, avec le même calcul que l'atelier. Unity ouvre ainsi les modèles déjà aux couleurs du Colosse.
+6. **13 espèces** rejoignent les détenus et les pirates :
+   - des « gris », des sauriens, un crocodilien, un cératopsien ;
+   - un grand alien rouge, un ichtyen à tête de poisson, un céphalopode, un mercenaire en armure ;
+   - un spécimen biomécanique pour le décor du laboratoire.
+   Un homme-oiseau en tenue de fantasy a été écarté.
 
-Tous les personnages sont remis à leur taille de jeu et posés en rangée par camp, avec une silhouette cyan de 1,80 m pour comparer. Le banc montre les couleurs d'origine des fichiers ; les recolorations de la bible (acier sombre pour les androïdes) sont appliquées par l'atelier et le seront dans Unity.
-
-**S'en servir sur le Mac** : ouvrir `vitrine/banc-pnj.html` dans Chrome, cliquer sur « Choisir le dossier », choisir `~/jeu/prologue`.
-- Clique sur un camp pour ne voir que lui.
-- Clique sur un nom pour le cadrer.
-- Clique sur un bouton pour jouer une autre animation.
-
-![Les détenus](personnages/rangee-detenu.jpg)
+![Les détenus, humains et autres espèces](personnages/rangee-detenu.jpg)
+![Les autres espèces](personnages/rangee-espece.jpg)
 ![La sécurité : les androïdes](personnages/rangee-androide.jpg)
 ![Les pirates](personnages/rangee-pirate.jpg)
 
-## 2. Ce qu'il faut retenir
+## 2. La bibliothèque d'animations
 
-1. **Les androïdes prêts à jouer** : trois sont animés et utilisables tout de suite, sans retouche.
-   - `androide-sentinelle` : squelette humain, pose en T, une animation de mouvements variés.
-   - `androide-antiemeute` : squelette humain, pose en A, une marche de 1,4 s.
-   - `marcheur-blinde` : 41 animations (marche, course, coups, chute, démarrage, surchauffe), sur place et en root motion.
-2. **Les détenus prêts pour Mixamo** : `detenu-tshirt` et `detenu-figurant` ont un squelette Mixamo, donc les centaines d'animations gratuites de Mixamo s'appliquent directement. Ils n'ont pas encore d'animation à eux.
-3. **Les statues** : huit personnages n'ont pas de squelette.
-   - Pour le héros et les androïdes debout : à faire rigger sur Mixamo, c'est automatique.
-   - Le fantassin est posé avec son arme : il reste un décor.
-4. **Deux retraits** :
-   - le garde humain (la sécurité n'est faite que d'androïdes) ;
-   - `detenu-atelier`, dont l'auteur déclare qu'il reprend le personnage d'un autre jeu : même sous licence libre, on ne le garde pas.
-5. **Un modèle cassé** : la combinaison étanche (`detenu-corvee-toxique`). Son squelette empile des échelles ×100 et ×0,01 ; le corps s'affiche mal. Il faut appliquer les échelles dans Blender avant Unity. En attendant, il n'est pas placé dans la maquette.
-6. **Les unités** : sept fichiers ne sont pas en mètres (du centimètre jusqu'à 30 000 unités pour 1,85 m). L'atelier et le normaliseur les remettent à la bonne taille ; dans Unity, l'import doit le faire aussi.
-7. **Trop lourds** pour le budget de 60 000 faces par personnage : `pirate-masque` (925 k), `pirate-eva` (705 k), `pirate-chef` et `androide-lourd` (240 k), `droide-securite` (125 k), `detenu-brute` (111 k).
+Deux fichiers, *Universal Animation Library* 1 et 2 de Quaternius, en version Standard (gratuite). Les fichiers `_RM`, avec le déplacement intégré, sont sur itch.io.
 
-## 3. Personnage par personnage
+| Famille | Animations |
+|---|---|
+| Se déplacer | `Idle_Loop`, `Walk_Loop`, `Walk_Formal_Loop`, `Jog_Fwd_Loop`, `Sprint_Loop`, `Crouch_Idle_Loop`, `Crouch_Fwd_Loop`, `Walk_Carry_Loop`, `Roll`, `Slide_Start` / `_Loop` / `_Exit`, `ClimbUp_1m`, `Jump_Start` / `_Loop` / `_Land`, `NinjaJump_*`, `Swim_Idle_Loop`, `Swim_Fwd_Loop` |
+| Attendre, parler | `Idle_Talking_Loop`, `Idle_FoldArms_Loop`, `Idle_No_Loop`, `Yes`, `Idle_Rail_Loop`, `Idle_Rail_Call`, `Idle_TalkingPhone_Loop`, `Idle_Lantern_Loop`, `Idle_Torch_Loop`, `Sitting_Enter` / `_Idle_Loop` / `_Talking_Loop` / `_Exit`, `Dance_Loop` |
+| Agir | `Interact`, `PickUp_Table`, `Push_Loop`, `Chest_Open`, `Fixing_Kneeling`, `Consume`, `Driving_Loop`, `OverhandThrow`, `TreeChopping_Loop`, `Farm_*` |
+| Tir | `Pistol_Idle_Loop`, `Pistol_Aim_Neutral` / `_Up` / `_Down`, `Pistol_Shoot`, `Pistol_Reload` |
+| Arme intégrée des androïdes | `Spell_Simple_Enter` / `_Idle_Loop` / `_Shoot` / `_Exit` : le bras tendu, l'arme sort de l'avant-bras |
+| Corps à corps | `Punch_Jab`, `Punch_Cross`, `Melee_Hook`, `Sword_*` (pour une barre de fer), `Shield_*` (un bouclier anti-émeute) |
+| Encaisser, tomber | `Hit_Chest`, `Hit_Head`, `Hit_Knockback`, `Death01`, `LayToIdle` (se relever : **le réveil du héros**), `Zombie_*` (un détenu blessé qui se traîne) |
 
-| Personnage | Camp | Squelette | Pose | Animations | Faces | Verdict |
-|---|---|---|---|---|---:|---|
-| `tenue-detenu` | Héros | Aucun | — | Une pose fixe | 12 k | Statue : à rigger sur Mixamo (provisoire de toute façon) |
-| `detenu-brute` | Détenus | Humain, 102 os | A | 1 qui bouge (15 s) | 111 k | Bon ; à alléger |
-| `detenu-vieux` | Détenus | Humain, 102 os | A | 1 qui bouge (22 s) | 54 k | Bon squelette ; torse nu, à rhabiller (IA prévue) |
-| `detenu-tshirt` | Détenus | Mixamo, 69 os | T | Aucune | 19 k | **Le détenu de base** : animations Mixamo directes |
-| `detenu-figurant` | Détenus | Mixamo, 58 os | T | Une pose fixe | 2 k | **La foule** : très léger, animations Mixamo directes |
-| `detenu-corvee-toxique` | Détenus | Humain, 68 os | A | Aucune | 55 k | Squelette cassé : à corriger dans Blender |
-| `detenu-atelier` | Détenus | Non humain, 135 os | — | 1 qui bouge sur 4 | 35 k | **Retiré** : personnage d'un autre jeu |
-| `garde` | — | Mixamo, 66 os | Bras baissés | 1 qui bouge | 107 k | **Retiré** : garde humain |
-| `droide-securite` | Androïdes | Humain, 84 os | Bras baissés | 1 qui bouge (21 s) | 125 k | Bon ; à alléger. Garde des officiers |
-| `androide-sentinelle` | Androïdes | Humain, 265 os | T | 1 qui bouge (17 s) | 28 k | **Prêt** : le garde de base |
-| `androide-antiemeute` | Androïdes | Humain, 102 os | A | 1 marche (1,4 s) | 20 k | **Prêt** ; effacer « police » |
-| `androide-patrouille` | Androïdes | Aucun, pièces animées | — | 1 qui bouge (5 s) | 68 k | Utilisable tel quel ; en centimètres |
-| `androide-soldat` | Androïdes | Aucun | — | Aucune | 21 k | Statue : décor « en réparation » ou Mixamo |
-| `androide-fantassin` | Androïdes | Aucun | — | Aucune | 32 k | Statue posée avec son arme : décor |
-| `androide-lourd` | Androïdes | Aucun | — | Aucune | 241 k | Statue lourde : à alléger puis rigger |
-| `androide-medical` | Androïdes | Aucun | — | Aucune | 21 k | Statue : Mixamo |
-| `androide-vieux-modele` | Androïdes | Aucun | — | Aucune | 26 k | Décor : en pièces dans les ateliers |
-| `drone-securite` | Androïdes | Aucun | — | Aucune | 11 k | **Prêt** : un drone flotte, ses pièces tournent par script |
-| `marcheur-blinde` | Androïdes | Non humain, 21 os | — | **41**, dont 37 qui bougent | 11 k | **Prêt** : le plus complet |
-| `pirate` | Pirates | Humain, 88 os | Bras baissés | 1, presque immobile | 99 k | Animation trop faible ; unités énormes (30 000) |
-| `pirate-eva` | Pirates | Humain, 72 os | A | 3 : marche, attente, course (Mixamo) | 705 k | Bonnes animations ; à alléger d'urgence |
-| `pirate-chef` | Pirates | Aucun | — | Aucune | 242 k | Statue ; à alléger puis rigger |
-| `pirate-masque` | Pirates | Aucun | — | Aucune | 925 k | Statue ; à alléger puis rigger |
+Pour le tir au fusil, il n'existe pas encore d'animation libre de bonne qualité. Les androïdes n'en ont pas besoin, puisque leur arme est dans l'avant-bras. Pour les pirates, Mixamo en a beaucoup (gratuit, compte Adobe).
 
-Les images de chaque personnage, à quatre moments de son animation, sont dans [`personnages/`](personnages/).
+## 3. Comment ça marche
 
-## 4. Où ils sont dans la maquette
+**Dans le banc et l'atelier (navigateur)**, chaque animation est recalculée pour chaque squelette, en moins d'un dixième de seconde :
+1. Les os comptent : bassin, colonne, cou, tête, clavicules, bras, avant-bras, mains, doigts, cuisses, mollets, pieds, orteils. Ils sont reconnus par leur nom, quelle que soit la convention :
+   - Mixamo (`mixamorig:LeftArm`) ;
+   - Character Creator (`CC_Base_L_Upperarm`) ;
+   - Unreal (`upperarm_l`) ;
+   - Rigify (`DEF-upper_arm.L`) ;
+   - des noms maison (`L_elbow`, `b_L_front_leg_1`…).
+2. On corrige la différence de pose de départ (T, A, bras baissés) et de direction du regard.
+3. La position du bassin suit, à l'échelle de la taille de chacun.
 
-La maquette (`outils/maquette-prologue.py`) ne pose plus de silhouettes pour la sécurité et les détenus, mais les vrais modèles. Seuls les pirates restent des silhouettes orange.
+**Dans Unity**, c'est encore plus simple : le système *Humanoid* recible tout seul.
+1. Importer `UAL1_Standard.fbx` et `UAL2_Standard.fbx` : *Rig* → *Animation Type* : **Humanoid**.
+2. Importer chaque personnage de la même façon (*Humanoid*, *Create From This Model*), après `normaliser-prologue.py`, `rigger-statues.py` et `recolorer-prologue.py`.
+3. Dans l'*Animator Controller* de n'importe quel personnage, on glisse n'importe quelle animation de la bibliothèque.
 
-| Lieu | Sécurité | Détenus |
+## 4. Les statues qui ont reçu un squelette
+
+`outils/rigger-statues.py` procède en quatre temps :
+1. Il pose le squelette de la bibliothèque dans le modèle.
+2. Il oriente les bras vers les mains et les jambes vers les pieds.
+3. Il retire les socles et les armes tenues à la main.
+4. Il calcule les poids :
+   - **souples** pour un corps ;
+   - **rigides** pour un robot : chaque pièce suit un seul os, celui de son nom quand la pièce est nommée (`left_thigh`, ou `bedro`, « cuisse » en russe).
+
+| Statue | Résultat |
+|---|---|
+| `tenue-detenu` (le héros) | Réussi : il marche, attend, vise |
+| `gris-vert`, `longiligne-rouge`, `ichtyen`, `ceratopsien` | Réussi |
+| `androide-medical`, `androide-lourd` | Réussi (quelques petites pièces flottent sur l'androïde lourd) |
+| `cephalopode`, `pirate-masque`, `saurien-guerrier` | Marche et attente bonnes ; les bras se déforment dans les gestes amples : à refaire sur Mixamo |
+| `pirate-chef` | Échec (son long manteau) : Mixamo, ou à la main dans Blender |
+| `androide-soldat`, `androide-fantassin`, `androide-vieux-modele` | Échec : ils restent des décors (androïdes en réparation dans les ateliers) |
+| `mutant-biomecanique` | Pas de squelette : il est figé dans une pose, c'est un spécimen de décor |
+
+Les images sont dans [`personnages/statues.jpg`](personnages/statues.jpg).
+
+## 5. Personnage par personnage
+
+| Personnage | Camp | Squelette | Bibliothèque | Faces | Verdict |
+|---|---|---|---|---:|---|
+| `tenue-detenu` | Héros | Fait par le script | Oui | 12 k | Provisoire, mais il s'anime |
+| `detenu-brute` | Détenus | Character Creator, 102 os | Oui | 111 k | Bon ; à alléger |
+| `detenu-vieux` | Détenus | Character Creator, 102 os | Oui | 54 k | Torse nu, à rhabiller (IA prévue) |
+| `detenu-tshirt` | Détenus | Mixamo, 69 os | Oui | 19 k | **Le détenu de base** |
+| `detenu-figurant` | Détenus | Mixamo, 58 os | Oui | 2 k | **La foule** |
+| `detenu-corvee-toxique` | Détenus | Cassé (échelles empilées) | — | 55 k | À corriger dans Blender |
+| `detenu-atelier` | — | Non humain | — | 35 k | **Retiré** : personnage d'un autre jeu |
+| `garde` | — | Mixamo | — | 107 k | **Retiré** : garde humain |
+| `droide-securite` | Androïdes | Character Creator, 84 os | Oui | 125 k | Garde des officiers ; à alléger |
+| `androide-sentinelle` | Androïdes | Character Creator, 265 os | Oui | 28 k | **Le garde de base** |
+| `androide-antiemeute` | Androïdes | Character Creator, 102 os | Oui | 20 k | Effacer « police » |
+| `androide-patrouille` | Androïdes | Pièces animées | — | 68 k | Sa propre animation |
+| `androide-medical`, `androide-lourd` | Androïdes | Fait par le script | Oui | 21 k, 241 k | Le lourd est à alléger |
+| `androide-soldat`, `-fantassin`, `-vieux-modele` | Androïdes | Script : échec | — | 21-32 k | Décors |
+| `drone-securite` | Androïdes | Aucun | Vol par le code | 11 k | Prêt |
+| `marcheur-blinde` | Androïdes | Le sien, 21 os | Ses 41 animations | 11 k | Prêt |
+| `pirate`, `pirate-eva` | Pirates | Unreal, Mixamo | Oui | 99 k, 705 k | `pirate-eva` à alléger d'urgence |
+| `pirate-chef`, `pirate-masque` | Pirates | Fait par le script | Oui | 242 k, 925 k | À alléger ; voir § 4 |
+| `saurien-pale`, `crocodilien`, `gris-leger` | Espèces | Maison, quadrupède debout, Rigify | Oui | 7-26 k | Animés |
+| `gris-marcheur`, `gris-anime`, `mercenaire-alien` | Espèces | Mixamo, Character Creator | Oui | 50-55 k | Animés |
+| `gris-vert`, `longiligne-rouge`, `ichtyen`, `ceratopsien` | Espèces | Fait par le script | Oui | 5-290 k | Le cératopsien est à alléger |
+| `saurien-guerrier`, `cephalopode` | Espèces | Fait par le script | Oui | 34 k, 36 k | Gestes amples à refaire sur Mixamo |
+| `mutant-biomecanique` | Décor | Aucun | — | 26 k | Spécimen figé |
+
+Les images de chacun, à plusieurs moments de ses animations, sont dans [`personnages/`](personnages/).
+
+## 6. Où ils sont dans la maquette
+
+La maquette (`outils/maquette-prologue.py`) ne pose plus aucune silhouette : partout de vrais modèles, pris à tour de rôle.
+
+| Lieu | Sécurité | Détenus et pirates |
 |---|---|---|
 | Laboratoire | `androide-medical` | — |
 | Anneau du cœur | 2 androïdes en ronde | — |
-| Nef des cellules | `droide-securite` au poste de garde, 4 androïdes sur les galeries, 2 drones | 6 détenus, `detenu-brute`, `detenu-tshirt` |
-| Ateliers | `androide-soldat` et `androide-vieux-modele` en réparation | 5 détenus |
-| Consigne | 2 androïdes | — |
-| Salle des machines | 1 drone | — |
-| Quartiers des officiers | 2 androïdes | — |
+| Nef des cellules | `droide-securite` au poste de garde, 4 androïdes sur les galeries, 2 drones | Détenus humains et d'autres espèces (gris, crocodilien, saurien, ichtyen…) |
+| Ateliers | `androide-soldat` et `androide-vieux-modele` en réparation | Détenus |
+| Consigne, quartiers des officiers | 2 androïdes chacun | — |
+| Salle des machines | 1 drone | Un pirate |
 | Passerelle | 3 `droide-securite` | — |
-| Hangar | 5 androïdes, `androide-lourd` à la porte, `marcheur-blinde`, 1 drone | — |
+| Hangar | 5 androïdes, `androide-lourd` à la porte, `marcheur-blinde`, 1 drone | Le chef pirate, des pirates humains et aliens (mercenaire, saurien, céphalopode) |
 
-## 5. Ce qu'il reste à faire
+## 7. Ce qu'il reste à faire
 
 | Qui | Quoi |
 |---|---|
-| Toi, sur le Mac | Relancer `outils/telecharger-prologue.sh` : il ajoute les 13 nouveaux modèles. Puis `normaliser-prologue.py` pour les remettre à leur taille. |
-| Mixamo (gratuit) | Rigger le héros, `androide-medical`, `androide-soldat` ; donner des animations (attente, marche, course, tir, mort) aux détenus Mixamo et aux androïdes. |
-| Le Claude du PC (Blender) | Corriger le squelette de la combinaison étanche ; alléger les pirates, `androide-lourd`, `droide-securite`, `detenu-brute` ; effacer « police » et « security ». |
+| Toi, sur le Mac | Relancer `outils/telecharger-prologue.sh` : il ajoute les androïdes, les espèces et la bibliothèque d'animations. Puis, dans l'ordre : `normaliser-prologue.py`, `rigger-statues.py` (`pip install bpy scipy`), `recolorer-prologue.py` (`pip install pillow numpy`). |
+| Mixamo (gratuit) | Refaire le squelette de `pirate-chef`, `cephalopode`, `pirate-masque`, `saurien-guerrier` ; récupérer des animations au fusil pour les pirates. |
+| Le Claude du PC (Blender) | Corriger le squelette de la combinaison étanche ; alléger les modèles trop lourds ; effacer « police » et « security ». |
 | L'IA 3D (avec ton jeton) | L'androïde de l'Empire à la forme exacte de la bible, et le vieux détenu rhabillé ([`ia/fiches.json`](ia/fiches.json)). |

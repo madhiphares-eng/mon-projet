@@ -41,7 +41,7 @@ def camp_de(q):
     if q.get('cle') == 'humain':
         return q.get('teinte')
     if q.get('type') == 'modele':
-        return PERSONNAGES.get(q['cle'].split('/')[0])
+        return q.get('camp') or PERSONNAGES.get(q['cle'].split('/')[0])
     return None
 
 

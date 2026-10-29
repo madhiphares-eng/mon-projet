@@ -22,6 +22,7 @@
   #ouvrir label { display: inline-block; border: 1px solid var(--ambre); color: var(--ambre); padding: 5px 10px; cursor: pointer; }
   #ouvrir input { display: none; }
   #etat { color: var(--brume); }
+  select { background: #111; color: var(--ivoire); border: 1px solid var(--trait); font: inherit; font-size: 12px; margin-top: 4px; max-width: 100%; }
   .tout { background: none; border: 1px solid var(--trait); color: var(--ivoire); font: inherit; padding: 3px 9px; cursor: pointer; }
   @media (max-width: 760px) { #panneau { top: auto; height: 50%; width: 100%; border-left: 0; border-top: 1px solid var(--trait); } }
 </style>
@@ -65,16 +66,31 @@ const PNJ = [
   { cle: '03-Gardes/androide-vieux-modele', camp: 'androide', hauteur: 1.85, titre: 'RoboPolice', auteur: 'ilasolomon' },
   { cle: '03-Gardes/drone-securite', camp: 'androide', hauteur: 0.9, titre: 'Security drone', auteur: 'SteelBlue8', vol: 2.2 },
   { cle: '03-Gardes/marcheur-blinde', camp: 'androide', hauteur: 3.2, titre: 'Medium Mech Striker', auteur: 'MSGDI' },
+  // les autres espèces de la galaxie : détenus et pirates qui ne sont pas humains
+  { cle: '16-Especes/saurien-pale', camp: 'espece', hauteur: 1.9, titre: 'Lizardman', auteur: 'bumstrum' },
+  { cle: '16-Especes/saurien-guerrier', camp: 'espece', hauteur: 2.0, titre: 'Lizard Man - Hashanass', auteur: 'ianm841' },
+  { cle: '16-Especes/crocodilien', camp: 'espece', hauteur: 2.1, titre: 'Alligator walking upright', auteur: 'Jungle Jim' },
+  { cle: '16-Especes/ceratopsien', camp: 'espece', hauteur: 2.3, titre: 'Triceralien', auteur: 'laurent-dem1994' },
+  { cle: '16-Especes/gris-marcheur', camp: 'espece', hauteur: 1.5, titre: 'Alien Walk', auteur: 'ShaxerTakkuY' },
+  { cle: '16-Especes/gris-anime', camp: 'espece', hauteur: 1.5, titre: 'Grey Alien idle', auteur: 'ShaxerTakkuY' },
+  { cle: '16-Especes/gris-vert', camp: 'espece', hauteur: 1.6, titre: 'Alien (A-Pose)', auteur: 'krrril_' },
+  { cle: '16-Especes/gris-leger', camp: 'espece', hauteur: 1.4, titre: 'Allan the Grey', auteur: 'Rasmus82' },
+  { cle: '16-Especes/longiligne-rouge', camp: 'espece', hauteur: 2.3, titre: 'Alien Character', auteur: 'duanesmind' },
+  { cle: '16-Especes/cephalopode', camp: 'espece', hauteur: 1.9, titre: 'Mutant Soldier', auteur: 'dakotakimble' },
+  { cle: '16-Especes/ichtyen', camp: 'espece', hauteur: 1.8, titre: 'Fishman', auteur: 'w7w728115' },
+  { cle: '16-Especes/mercenaire-alien', camp: 'espece', hauteur: 1.9, titre: 'Free Game Character - Alien', auteur: 'kaanTezcan' },
+  { cle: '16-Especes/mutant-biomecanique', camp: 'espece', hauteur: 2.0, titre: 'Free - Biomechanical Mutant', auteur: 'Game-Ready', note: 'figé dans une pose : un spécimen de décor, dans une cuve du laboratoire' },
   { cle: '04-Pirates/pirate', camp: 'pirate', hauteur: 1.85, titre: 'Scavenger', auteur: 'Vasian-Digital3D' },
   { cle: '04-Pirates/pirate-eva', camp: 'pirate', hauteur: 1.9, titre: 'Mercenary Astronaut', auteur: 'Peter_D' },
   { cle: '04-Pirates/pirate-chef', camp: 'pirate', hauteur: 1.95, titre: 'Space Pirate', auteur: 'Odlab' },
   { cle: '04-Pirates/pirate-masque', camp: 'pirate', hauteur: 1.85, titre: 'post apo character', auteur: 'Am I dead?' },
 ];
-const CAMPS = { heros: 'Le héros', detenu: 'Détenus', androide: 'Sécurité : androïdes', pirate: 'Pirates' };
-const ORDRE = ['heros', 'detenu', 'androide', 'pirate'];
+const CAMPS = { heros: 'Le héros', detenu: 'Détenus', espece: 'Autres espèces', androide: 'Sécurité : androïdes', pirate: 'Pirates' };
+const ORDRE = ['heros', 'detenu', 'espece', 'androide', 'pirate'];
 
 const params = new URLSearchParams(location.search);
 const RACINE = params.get('racine');           // ex. ?racine=http://localhost:8000/prologue/
+const SEULEMENT = params.get('seulement');     // ex. ?seulement=detenu-tshirt,androide-medical (pour aller vite)
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x15171c);
 const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 400);
@@ -135,6 +151,7 @@ async function charger(p) {
   const gltf = await new Promise((ok, ko) => chargeur.load(lien, ok, undefined, ko)).catch(e => ({ erreur: e.message || String(e) }));
   if (gltf.erreur) return { ...p, erreur: gltf.erreur };
   const racine = gltf.scene;
+  const reposOs = []; racine.traverse(o => { if (o !== racine) reposOs.push([o, o.position.clone(), o.quaternion.clone()]); });
   let faces = 0, maillages = 0, souples = 0;
   const textures = new Set(), materiaux = new Set(), os = new Set();
   racine.traverse(o => {
@@ -185,7 +202,7 @@ async function charger(p) {
       mouvement: +(mouvement / Math.max(taille0.y, 1e-6)).toFixed(3), avance: +(avance / Math.max(taille0.y, 1e-6)).toFixed(3),
       boucle: +(ecartBoucle / Math.max(taille0.y, 1e-6)).toFixed(3), quittePose: +(ecartRepos / Math.max(taille0.y, 1e-6)).toFixed(3), echelle: +ech.toFixed(2) });
   }
-  mixeur.stopAllAction(); racine.updateMatrixWorld(true);
+  mixeur.stopAllAction(); reposOs.forEach(([o, p, qq]) => { o.position.copy(p); o.quaternion.copy(qq); }); racine.updateMatrixWorld(true);
   // mise à la taille voulue, pieds au sol (sur la pose de repos)
   const b1 = boite(racine), h1 = b1.getSize(new THREE.Vector3()).y || 1;
   const facteur = p.hauteur / h1;
@@ -194,7 +211,7 @@ async function charger(p) {
   const b2 = boite(groupe), c2 = b2.getCenter(new THREE.Vector3());
   racine.position.set(-c2.x, -b2.min.y + (p.vol || 0), -c2.z);
   const r = {
-    ...p, objet: groupe, mixeur, clips: gltf.animations, actif: -1,
+    ...p, objet: groupe, mixeur, clips: gltf.animations, actif: -1, repos: reposOs,
     faces: Math.round(faces), maillages, souples, os: listeOs.length, materiaux: materiaux.size, textures: textures.size,
     texMax: Math.max(0, ...[...textures].map(i => Math.max(i.width || 0, i.height || 0))),
     mixamo: listeOs.some(b => /^mixamorig/i.test(b.name)),
@@ -202,6 +219,18 @@ async function charger(p) {
     tailleBrute: taille0.toArray().map(v => +v.toFixed(3)), minBrut: b0.min.toArray().map(v => +v.toFixed(5)), maxBrut: b0.max.toArray().map(v => +v.toFixed(5)), facteur: +facteur.toFixed(4), pose, anims,
     chargement: Math.round(performance.now() - t0),
   };
+  if (p.vol && !gltf.animations.length) {
+    // un drone : vol stationnaire, il monte et descend un peu et balaie la salle du regard (fait par le code, comme dans le jeu)
+    const base = racine.position.clone(), base_q = racine.quaternion.clone();
+    const t = [0, 1.2, 2.4, 3.6, 4.8], haut = [0, 0.06, 0, -0.06, 0];
+    const lacets = [-25, 0, 25, 0, -25].map(d => base_q.clone().multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), d * Math.PI / 180)));
+    const clip = new THREE.AnimationClip('Vol stationnaire (procédural)', 4.8, [
+      new THREE.VectorKeyframeTrack(racine.uuid + '.position', t, t.flatMap((_, i) => [base.x, base.y + haut[i], base.z])),
+      new THREE.QuaternionKeyframeTrack(racine.uuid + '.quaternion', t, lacets.flatMap(qq => qq.toArray())),
+    ]);
+    r.clips = [clip];
+    r.anims = [{ nom: clip.name, duree: 4.8, pistes: 2, mouvement: 0.1, avance: 0, boucle: 0, quittePose: 0, echelle: 1 }];
+  }
   r.verdict = juger(r);
   return r;
 }
@@ -214,10 +243,12 @@ function juger(r) {
   if (r.note) { notes.push(r.note); pire('attention'); }
   const vivantes = r.anims.filter(a => a.mouvement > 0.01);
   if (!r.souples) {
-    if (r.vol) notes.push('pas de squelette : normal pour un drone (il flotte, ses pièces tournent par script)');
+    if (r.vol) notes.push('pas de squelette : normal pour un drone ; son vol stationnaire est fait par le code');
     else if (vivantes.length) notes.push('pas de squelette, mais animé pièce par pièce : utilisable tel quel, pas de Mixamo');
     else { notes.push('pas de squelette : statue, à faire rigger (Mixamo)'); pire('attention'); }
   }
+  else if (r.reciblage?.cib) notes.push(`reçoit les ${biblio.clips.length} animations de la bibliothèque (reciblées sur son squelette)`);
+  else if (r.reciblage) { notes.push(`ne reçoit pas la bibliothèque : il manque ${r.reciblage.manque.join(', ')}`); pire('attention'); }
   else if (!r.humanoide) notes.push(`squelette non humain (${r.os} os) : il ne prend pas les animations Mixamo, seulement les siennes`);
   else notes.push(`squelette humain, ${r.os} os${r.mixamo ? ', nommé façon Mixamo (animations Mixamo directes)' : ' (Unity : à régler en Humanoid à l’import)'}`);
   if (!r.anims.length) { notes.push('aucune animation'); if (r.souples) pire('attention'); }
@@ -234,6 +265,204 @@ function juger(r) {
   if (r.faces > 100000) { notes.push(`${Math.round(r.faces / 1000)} k faces : à alléger (budget 60 k)`); pire('attention'); }
   else if (r.faces > 60000) { notes.push(`${Math.round(r.faces / 1000)} k faces : un peu au-dessus du budget (60 k)`); }
   return { niveau, notes };
+}
+
+// --- le reciblage : les animations de la bibliothèque (Quaternius, CC0) sur chaque squelette humain ----------------
+const BIBLIO = ['00-Animations/UAL1_Standard.glb', '00-Animations/UAL2_Standard.glb'];
+const biblio = { clips: [], sources: new Map() };   // nom → { clip, source }
+const PARTIES = [   // [partie, motif sur le nom nettoyé, a un côté]
+  ['hanches', /^(hips?|pelvis)$/, false], ['cou', /^neck(twist)?$/, false], ['tete', /^head$/, false],
+  ['clavicule', /^(clavicle|shoulder)$/, true], ['bras', /^(upperarm|arm|uparm)$/, true], ['avantbras', /^(forearm|lowerarm)$/, true],
+  ['main', /^(hand|wrist)$/, true], ['cuisse', /^(thigh|upleg|upperleg)$/, true], ['mollet', /^(calf|leg|lowerleg|shin)$/, true],
+  ['pied', /^foot$/, true], ['orteil', /^(toebase|toe|ball|toes)$/, true],
+];
+const ECARTER = /(correct|twist|share|helper|sim|fix|target|pole|pad|holster|leaf|nub|end)/;
+const COLONNE = /^(spine|waist|chest|stomach|abdomen|torso)$/;
+// des noms d'os d'autres conventions : quadrupèdes debout (front/back leg), rigs à genou et cheville séparés
+const ALIAS = [[/front_?leg_?1$/, 'bras'], [/front_?leg_?2$/, 'avantbras'], [/front_?foot$/, 'main'], [/back_?leg_?1$/, 'cuisse'],
+  [/back_?leg_?2$/, 'mollet'], [/back_?foot$/, 'pied'], [/back_?toe$/, 'orteil'], [/scapula$/, 'clavicule'],
+  [/elbow$/, 'avantbras'], [/wrist$/, 'main'], [/knee$/, 'mollet'], [/ankle$/, 'pied'], [/toes$/, 'orteil'], [/upper_?arm$/, 'bras']];
+function lireNom(nom) {
+  let n = nom.replace(/^mixamorig[:_]?/i, '').replace(/^(cc_base_|rl_|def-|b_)/i, '').replace(/_\d+$/, '');
+  const bas = n.toLowerCase();
+  let cote = null;
+  if (/^left|(^|[_.])l([_.]|$)/.test(bas)) cote = 'g';
+  if (/^right|(^|[_.])r([_.]|$)/.test(bas)) cote = 'd';
+  let sansCote = bas.replace(/left|right/, '').replace(/(^|[_.])[lr](?=[_.]|$)/g, '$1').replace(/^[_.]+|[_.]+$/g, '');
+  let partie = sansCote.replace(/[_.\s\d-]/g, '');
+  // les noms où le point a été retiré (thigh.L → thighL) : le côté est la dernière lettre
+  const sansChiffres = bas.replace(/\d+$/, '');
+  if (!cote && /[lr]$/.test(sansChiffres)) {
+    const base = sansChiffres.slice(0, -1).replace(/[_.\s\d-]/g, '');
+    if (PARTIES.some(([, motif]) => motif.test(base)) || ALIAS.some(([motif]) => motif.test(base)) || /^(shoulder|breast|pelvis)$/.test(base)) {
+      cote = sansChiffres.endsWith('l') ? 'g' : 'd'; partie = base; sansCote = sansChiffres.slice(0, -1);
+    }
+  }
+  return { cote, partie, brut: bas, sansCote };
+}
+// les os qui comptent, trouvés par leur nom, dans l'ordre de la hiérarchie
+function cartographier(racine) {
+  const carte = {}, ordre = [];
+  racine.traverse(o => { if (o.isBone) ordre.push(o); });
+  if (!ordre.length) return null;
+  const noms = new Map(ordre.map(o => [o, lireNom(o.name)]));
+  const prendre = (cle, os) => { if (!carte[cle]) carte[cle] = os; };
+  for (const os of ordre) {
+    const { cote, partie, brut, sansCote } = noms.get(os);
+    if (/^(org|mch|tweak|ik|fk)/.test(brut) || /(fk|ik|mch|org|tweak)/.test(partie)) continue;
+    const alias = ALIAS.find(([motif]) => motif.test(sansCote.replace(/\d+$/, '').replace(/[_.]+$/, '')) || motif.test(sansCote));
+    if (alias && cote) { prendre(alias[1] + '_' + cote, os); continue; }
+    for (const [nom, motif, aCote] of PARTIES) {
+      if (!motif.test(partie)) continue;
+      if (nom !== 'cou' && ECARTER.test(brut.replace(/^neck/, ''))) continue;
+      if (aCote !== !!cote) continue;              // un os de côté pour un membre, un os central pour le reste
+      prendre(aCote ? nom + '_' + cote : nom, os);
+    }
+  }
+  // les doigts : pouce, index, majeur, annulaire, auriculaire, phalanges 1 à 3
+  const DOIGTS = { thumb: 'pouce', index: 'index', point: 'index', middle: 'majeur', mid: 'majeur', ring: 'annulaire', pinky: 'auriculaire', pink: 'auriculaire' };
+  const PAR_RANG = ['pouce', 'index', 'majeur', 'annulaire', 'auriculaire'];
+  for (const os of ordre) {
+    const { cote, sansCote } = noms.get(os);
+    if (!cote || /(end|leaf|nub|correct|share)/.test(sansCote)) continue;
+    let doigt = null, rang = null, m;
+    if ((m = sansCote.match(/finger_?(\d)(\d)/))) { doigt = PAR_RANG[+m[1]]; rang = +m[2] + 1; }
+    else if ((m = sansCote.match(/(thumb|index|point|middle|mid|ring|pinky|pink)[_.]?0?(\d)/))) { doigt = DOIGTS[m[1]]; rang = +m[2]; }
+    if (doigt && rang >= 1 && rang <= 3) prendre(`${doigt}${rang}_${cote}`, os);
+  }
+  // une jambe nommée « leg » suivie d'un genou : leg est la cuisse
+  for (const c of ['g', 'd']) {
+    const leg = ordre.find(o => noms.get(o).partie === 'leg' && noms.get(o).cote === c);
+    const genou = ordre.find(o => /knee$/.test(noms.get(o).sansCote) && noms.get(o).cote === c);
+    if (leg && genou && carte['mollet_' + c] === genou) { carte['cuisse_' + c] = carte['cuisse_' + c] || leg; }
+    else if (leg && genou) { carte['cuisse_' + c] = leg; carte['mollet_' + c] = genou; }
+  }
+  // un rig façon Rigify : spine (bassin), spine.001 à .003 (dos), .004-.005 (cou), .006 (tête)
+  const colonnes = ordre.filter(o => noms.get(o).partie === 'spine' && !/(fk|ik|mch|org|tweak)/.test(noms.get(o).brut));
+  if (!carte.hanches && colonnes.length >= 4) {
+    carte.hanches = colonnes[0];
+    if (!carte.tete) carte.tete = colonnes[colonnes.length - 1];
+    if (!carte.cou) carte.cou = colonnes[colonnes.length - 2];
+  }
+  // la colonne : les os entre les hanches et le cou
+  const haut = carte.cou || carte.tete;
+  carte.colonne = [];
+  if (haut && carte.hanches) {
+    for (let o = haut.parent; o && o !== carte.hanches; o = o.parent) if (o.isBone && !ECARTER.test(noms.get(o)?.brut || '') && !/(fk|ik|mch|org|tweak)/.test(noms.get(o)?.brut || '')) carte.colonne.unshift(o);
+  }
+  const manque = ['hanches', 'tete', 'bras_g', 'bras_d', 'avantbras_g', 'avantbras_d', 'cuisse_g', 'cuisse_d', 'mollet_g', 'mollet_d'].filter(k => !carte[k]);
+  return { carte, manque, ordre };
+}
+const SUITE = { clavicule: 'bras', bras: 'avantbras', avantbras: 'main', cuisse: 'mollet', mollet: 'pied', pied: 'orteil' };
+const v = () => new THREE.Vector3(), q = () => new THREE.Quaternion();
+// les paires d'os (source, cible), avec la direction de chaque os au repos, dans l'ordre de la hiérarchie de la cible
+function apparier(src, cib) {
+  const paires = [];
+  const ajouter = (a, b, sa, sb) => {
+    if (!a || !b) return;
+    const da = sa ? sa.getWorldPosition(v()).sub(a.getWorldPosition(v())).normalize() : null;
+    const db = sb ? sb.getWorldPosition(v()).sub(b.getWorldPosition(v())).normalize() : null;
+    paires.push({ s: a, c: b, ds: da, dc: db });
+  };
+  const S = src.carte, C = cib.carte;
+  ajouter(S.hanches, C.hanches, null, null);
+  const ns = S.colonne.length, nc = C.colonne.length;
+  for (let i = 0; i < nc; i++) {
+    const j = nc === 1 ? ns - 1 : Math.round(i * (ns - 1) / (nc - 1));
+    if (nc > ns && i > 0 && i < nc - 1 && Math.round((i - 1) * (ns - 1) / (nc - 1)) === j) continue;   // pas deux os pour un
+    const suivC = C.colonne[i + 1] || C.cou || C.tete, suivS = S.colonne[j + 1] || S.cou || S.tete;
+    ajouter(S.colonne[j], C.colonne[i], suivS, suivC);
+  }
+  ajouter(S.cou, C.cou, S.tete, C.tete);
+  ajouter(S.tete, C.tete, null, null);
+  for (const c of ['g', 'd']) for (const p of ['clavicule', 'bras', 'avantbras', 'main', 'cuisse', 'mollet', 'pied', 'orteil']) {
+    const suite = SUITE[p];
+    ajouter(S[p + '_' + c], C[p + '_' + c], suite && S[suite + '_' + c], suite && C[suite + '_' + c]);
+  }
+  for (const c of ['g', 'd']) for (const d of ['pouce', 'index', 'majeur', 'annulaire', 'auriculaire']) for (let n = 1; n <= 3; n++) {
+    const k = `${d}${n}_${c}`, suite = `${d}${n + 1}_${c}`;
+    ajouter(S[k], C[k], S[suite], C[suite]);
+  }
+  const rang = new Map(cib.ordre.map((o, i) => [o, i]));
+  return paires.sort((a, b) => rang.get(a.c) - rang.get(b.c));
+}
+function devant(carte) {   // le regard du squelette, à plat
+  const droite = carte.cuisse_d.getWorldPosition(v()).sub(carte.cuisse_g.getWorldPosition(v()));
+  return v().crossVectors(new THREE.Vector3(0, 1, 0), droite).setY(0).normalize();
+}
+function niveauSol(carte) { return Math.min(...['pied_g', 'pied_d', 'orteil_g', 'orteil_d'].filter(k => carte[k]).map(k => carte[k].getWorldPosition(v()).y)); }
+
+function preparerCible(r) {
+  r.objet.updateMatrixWorld(true);
+  const cib = cartographier(r.objet);
+  if (!cib || cib.manque.length) return { manque: cib ? cib.manque : ['squelette'] };
+  return { cib, recibles: new Map() };
+}
+
+function recibler(r, nom) {
+  const prep = r.reciblage; if (!prep?.cib) return null;
+  if (prep.recibles.has(nom)) return prep.recibles.get(nom);
+  const { clip, source } = biblio.sources.get(nom);
+  // tout au repos
+  source.mixeur.stopAllAction(); source.racine.updateMatrixWorld(true);
+  r.mixeur.stopAllAction(); r.repos.forEach(([o, p, qq]) => { o.position.copy(p); o.quaternion.copy(qq); }); r.objet.updateMatrixWorld(true);
+  const paires = apparier(source, prep.cib);
+  const F = q().setFromUnitVectors(devant(source.carte), devant(prep.cib.carte)), Fi = F.clone().invert();
+  for (const p of paires) {
+    p.reposS = p.s.getWorldQuaternion(q()); p.reposC = p.c.getWorldQuaternion(q());
+    p.A = (p.ds && p.dc) ? q().setFromUnitVectors(p.dc, p.ds.clone().applyQuaternion(F)) : q();
+    p.valeurs = [];
+  }
+  const hS = source.carte.hanches, hC = prep.cib.carte.hanches;
+  const reposHS = hS.getWorldPosition(v()), reposHC = hC.getWorldPosition(v());
+  const rapport = (reposHC.y - niveauSol(prep.cib.carte)) / Math.max(1e-6, reposHS.y - niveauSol(source.carte));
+  const positions = [];
+  const action = source.mixeur.clipAction(clip); action.reset().play();
+  const n = Math.max(2, Math.ceil(clip.duration * 30) + 1), temps = [];
+  for (let i = 0; i < n; i++) {
+    const t = Math.min(clip.duration, i / 30); temps.push(t);
+    source.mixeur.setTime(t); source.racine.updateMatrixWorld(true);
+    for (const p of paires) {
+      const delta = p.s.getWorldQuaternion(q()).multiply(p.reposS.clone().invert());
+      const deltaC = F.clone().multiply(delta).multiply(Fi);
+      const voulu = deltaC.multiply(p.A).multiply(p.reposC);
+      const parent = p.c.parent.getWorldQuaternion(q());
+      p.c.quaternion.copy(parent.invert().multiply(voulu));
+      p.c.updateMatrixWorld(true);
+      p.valeurs.push(...p.c.quaternion.toArray());
+    }
+    const d = hS.getWorldPosition(v()).sub(reposHS).applyQuaternion(F).multiplyScalar(rapport);
+    const cible = reposHC.clone().add(d);
+    hC.parent.updateMatrixWorld(true);
+    positions.push(...hC.parent.worldToLocal(cible).toArray());
+    hC.position.fromArray(positions.slice(-3)); hC.updateMatrixWorld(true);
+  }
+  action.stop();
+  const pistes = paires.map(p => new THREE.QuaternionKeyframeTrack(p.c.uuid + '.quaternion', temps, p.valeurs));
+  pistes.push(new THREE.VectorKeyframeTrack(hC.uuid + '.position', temps, positions));
+  r.repos.forEach(([o, p, qq]) => { o.position.copy(p); o.quaternion.copy(qq); });
+  const recible = new THREE.AnimationClip(nom, clip.duration, pistes);
+  prep.recibles.set(nom, recible);
+  return recible;
+}
+
+async function chargerBiblio() {
+  for (const chemin of BIBLIO) {
+    let lien = null;
+    if (fichiers) { const f = fichiers.get(chemin); lien = f ? URL.createObjectURL(f) : null; }
+    else if (RACINE) lien = new URL(chemin, RACINE).href;
+    if (!lien) continue;
+    const gltf = await new Promise((ok, ko) => chargeur.load(lien, ok, undefined, ko)).catch(() => null);
+    if (!gltf) continue;
+    gltf.scene.updateMatrixWorld(true);
+    const source = { racine: gltf.scene, mixeur: new THREE.AnimationMixer(gltf.scene), ...cartographier(gltf.scene) };
+    for (const clip of gltf.animations) {
+      if (/tpose/i.test(clip.name) || biblio.sources.has(clip.name)) continue;
+      biblio.sources.set(clip.name, { clip, source });
+      biblio.clips.push(clip.name);
+    }
+  }
+  biblio.clips.sort();
 }
 
 // --- la rangée -------------------------------------------------------------------------
@@ -258,15 +487,33 @@ function ranger() {
   camera.position.set(vu / 2 - 1, 2.2, vu * 0.95 + 3); orbite.target.set(vu / 2 - 1, 1.0, 0); orbite.update();
 }
 
-function jouer(r, i) {
-  r.mixeur.stopAllAction(); r.actif = i;
-  if (i >= 0 && r.clips[i]) r.mixeur.clipAction(r.clips[i]).reset().play();
+function remettre(r) { r.mixeur.stopAllAction(); r.repos.forEach(([o, p, qq]) => { o.position.copy(p); o.quaternion.copy(qq); }); }
+function jouer(r, i, sansListe) {
+  remettre(r); r.actif = i; r.biblioActif = null; r.clipActif = r.clips[i] || null;
+  if (r.clipActif) r.mixeur.clipAction(r.clipActif).reset().play();
+  if (!sansListe) majListe();
+}
+function jouerBiblio(r, nom, sansListe) {
+  const clip = recibler(r, nom);
+  if (!clip) return false;
+  remettre(r); r.actif = -1; r.biblioActif = nom; r.clipActif = clip;
+  r.mixeur.clipAction(clip).reset().play();
+  if (!sansListe) majListe();
+  return true;
+}
+function jouerPourTous(nom) {
+  for (const r of bancs) if (r.objet && r.reciblage?.cib) jouerBiblio(r, nom, true);
   majListe();
 }
 
 function majListe() {
   const liste = document.querySelector('#liste'); liste.innerHTML = '';
   const tout = document.createElement('button'); tout.textContent = 'Tout voir'; tout.className = 'tout'; tout.onclick = () => { window.banc.seul(null); ranger(); }; liste.append(tout);
+  if (biblio.clips.length) {
+    const pourTous = document.createElement('select'); pourTous.className = 'tout';
+    pourTous.innerHTML = `<option value="">Faire jouer à tous…</option>` + biblio.clips.map(n => `<option>${n}</option>`).join('');
+    pourTous.onchange = () => pourTous.value && jouerPourTous(pourTous.value); liste.append(' ', pourTous);
+  }
   for (const camp of ORDRE) {
     const du = bancs.filter(r => r.camp === camp); if (!du.length) continue;
     const h = document.createElement('h2'); h.textContent = CAMPS[camp] + ' ›'; h.title = 'Ne montrer que ce camp'; h.style.cursor = 'pointer'; h.onclick = () => window.banc.camp(camp); liste.append(h);
@@ -276,8 +523,11 @@ function majListe() {
       if (r.absent || r.erreur) { d.innerHTML = `<b>${nom}</b> <span class="ko">${r.absent ? 'absent du dossier' : 'erreur : ' + r.erreur}</span>`; liste.append(d); continue; }
       d.innerHTML = `<b>${nom}</b> <span class="${r.verdict.niveau}">●</span><div class="meta">« ${r.titre} », ${r.auteur} · ${Math.round(r.faces / 1000)} k faces · ${r.textures} textures (max ${r.texMax} px) · pose ${r.pose}</div>
         <div>${r.verdict.notes.map(n => '– ' + n).join('<br>')}</div>
-        <div class="anims">${r.anims.map((a, i) => `<button data-i="${i}" class="${r.actif === i ? 'actif' : ''}">${a.nom} · ${a.duree} s${a.mouvement > 0.01 ? '' : ' (immobile)'}</button>`).join('')}</div>`;
+        <div class="anims">${r.anims.map((a, i) => `<button data-i="${i}" class="${r.actif === i ? 'actif' : ''}">${a.nom} · ${a.duree} s${a.mouvement > 0.01 ? '' : ' (immobile)'}</button>`).join('')}
+        ${r.reciblage?.cib ? `<select><option value="">Bibliothèque : ${biblio.clips.length} animations…</option>${biblio.clips.map(n => `<option ${r.biblioActif === n ? 'selected' : ''}>${n}</option>`).join('')}</select>` : ''}</div>`;
       d.querySelectorAll('button').forEach(b => b.onclick = e => { e.stopPropagation(); jouer(r, +b.dataset.i); });
+      const choix = d.querySelector('select');
+      if (choix) { choix.onclick = e => e.stopPropagation(); choix.onchange = () => choix.value && jouerBiblio(r, choix.value); }
       d.onclick = () => cadrer(r);
       liste.append(d);
     }
@@ -294,13 +544,22 @@ async function lancer() {
   document.querySelector('#etat').textContent = 'Chargement…';
   for (const r of bancs.splice(0)) if (r.objet) scene.remove(r.objet);
   for (const p of PNJ) {
+    if (SEULEMENT && !SEULEMENT.split(',').includes(p.cle.split('/')[1])) continue;
     const r = await charger(p);
     bancs.push(r);
     document.querySelector('#etat').textContent = `Chargement… ${bancs.length} / ${PNJ.length}`;
   }
   bancs.sort((a, b) => ORDRE.indexOf(a.camp) - ORDRE.indexOf(b.camp));
   ranger();
-  for (const r of bancs) if (r.clips?.length) jouer(r, 0);
+  document.querySelector('#etat').textContent = 'Chargement de la bibliothèque d’animations…';
+  await chargerBiblio();
+  for (const r of bancs) {
+    if (!r.objet) continue;
+    if (r.souples) r.reciblage = preparerCible(r);
+    r.verdict = juger(r);
+    if (r.reciblage?.cib && biblio.sources.has('Idle_Loop')) jouerBiblio(r, 'Idle_Loop', true);
+    else if (r.clips?.length) jouer(r, 0, true);
+  }
   const n = bancs.filter(r => r.objet).length;
   document.querySelector('#etat').textContent = `${n} personnages chargés sur ${PNJ.length}. Clique un nom pour le cadrer, un bouton pour changer d’animation.`;
   majListe();
@@ -311,7 +570,7 @@ document.querySelector('#dossier').addEventListener('change', e => {
   fichiers = new Map();
   for (const f of e.target.files) {
     const morceaux = f.webkitRelativePath.split('/');
-    const i = morceaux.findIndex(m => /^0[1-4]-/.test(m));
+    const i = morceaux.findIndex(m => /^(0\d|1[0-6])-/.test(m));
     if (i >= 0) fichiers.set(morceaux.slice(i).join('/'), f);
   }
   lancer();
@@ -321,9 +580,9 @@ document.querySelector('#dossier').addEventListener('change', e => {
   requestAnimationFrame(boucle);
   const dt = horloge.getDelta();
   for (const r of bancs) {
-    if (!r.mixeur || r.actif < 0) continue;
+    if (!r.mixeur || !r.clipActif) continue;
     if (figer === null) r.mixeur.update(dt);
-    else r.mixeur.setTime(r.clips[r.actif].duration * figer);
+    else r.mixeur.setTime(r.clipActif.duration * figer);
   }
   rendu.render(scene, camera);
 })();
@@ -331,7 +590,10 @@ document.querySelector('#dossier').addEventListener('change', e => {
 // pour les tests automatiques
 window.banc = {
   pret: false, bancs, cadrer: i => cadrer(bancs[i]), figer: f => { figer = f; },
-  rapport: () => bancs.map(({ objet, mixeur, clips, ...r }) => r),
+  rapport: () => bancs.map(({ objet, mixeur, clips, repos, reciblage, clipActif, ...r }) => ({ ...r, reciblable: !!reciblage?.cib, manque: reciblage?.manque || null })),
+  biblio: () => biblio.clips.slice(),
+  pourTous: nom => jouerPourTous(nom),
+  jouerBiblio: (i, nom) => jouerBiblio(bancs[i], nom),
   vue: (x, y, z, cx, cy, cz) => { camera.position.set(x, y, z); orbite.target.set(cx, cy, cz); orbite.update(); },
   jouer: (i, a) => jouer(bancs[i], a),
   plein: () => { plein = true; document.querySelector('#panneau').style.display = 'none'; redimensionner(); },

@@ -1,6 +1,6 @@
 # Modèles 3D du prologue : l'évasion du vaisseau-prison
 
-88 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 1 Go une fois téléchargés.
+101 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 1 Go une fois téléchargés.
 Tous sont sous licence **CC BY** (créditer l'auteur, usage commercial permis), vérifiée par l'API Sketchfab le 28 octobre 2026.
 Ils viennent de Sketchfab, qui demande un **compte gratuit** pour télécharger.
 
@@ -192,7 +192,8 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 - **Alléger les modèles très lourds** : le pirate d'abordage en combinaison (700 000 faces), le pirate masqué (900 000), la rangée de serveurs, le kit d'intérieur, la capsule du Veilleur. Objectif : moins de 100 000 faces par personnage.
 - **Retirer les inscriptions** : « police » sur le torse de l'androïde anti-émeute, « security » sur le drone.
 - **Corriger le squelette de `detenu-corvee-toxique`** : ses échelles (×100 et ×0,01) sont empilées ; dans Blender, appliquer les échelles puis réexporter.
-- **Squelettes et animations** : les personnages sans squelette passent par [Mixamo](https://www.mixamo.com) (gratuit), comme les autres pour leurs animations.
+- **Squelettes et animations** : `outils/rigger-statues.py` donne un squelette aux personnages qui n'en ont pas ; tous reçoivent les 84 animations de la bibliothèque (`00-Animations`, Quaternius, CC0). Ceux que le script rate passent par [Mixamo](https://www.mixamo.com) (gratuit). Voir [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md).
+- **Les couleurs de la bible** : `outils/recolorer-prologue.py` les applique aux textures, après `normaliser-prologue.py`.
 - **Unifier les matériaux** : mêmes métaux usés, même palette, pour que 50 auteurs donnent un seul vaisseau.
 - **La combinaison de Veilleur** est provisoire : c'est une pièce signature du jeu (voir `PREPRODUCTION.md`). En attendant sa version définitive, on re-texture une combinaison sobre avec des lignes de glyphes lumineuses.
 - **La tenue de détenu** est provisoire : la version finale sera un humain réaliste, avec une combinaison de détenu ajustée dans Blender.
@@ -391,6 +392,27 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 | `anneau-relais` | [Alien Ring](https://sketchfab.com/3d-models/alien-ring-9c288fb496ab4d15838c0517d0cef47c) | Cogent | 1 530 | Anneau d'un relais d'hyperespace des Bâtisseurs |
 | `cristal-ether` | [Void-Touched Crystal Rock](https://sketchfab.com/3d-models/void-touched-crystal-rock-2eee63550ed6470dac7659211a605795) | PuzzledPapaya | 674 | Cristal d'Éther brut |
 | `prisme-ether` | [Prism of Enlightenment](https://sketchfab.com/3d-models/prism-of-enlightenment-25c72b016ace4f7aac72c5974437c5f2) | Duznot | 5 054 | Cristal d'Éther taillé, où l'on devine des glyphes |
+
+
+## Les autres espèces (`16-Especes`)
+
+La galaxie n'est pas peuplée que d'humains : détenus et pirates de plusieurs espèces (voir la [bible](prologue/BIBLE-DA.md), § 4). Les statues reçoivent un squelette avec `outils/rigger-statues.py`, puis toutes les animations de la bibliothèque.
+
+| Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
+|---|---|---|---:|---|
+| `saurien-pale` | [Lizardman](https://sketchfab.com/3d-models/lizardman-a710eb3eaeab4200a2ff83abc9b0c4db) | DJMaesen | 6 582, 1 anim. | Saurien à la peau pâle : un détenu d'une autre espèce (animé) |
+| `saurien-guerrier` | [Lizard Man - Hashanass](https://sketchfab.com/3d-models/lizard-man-hashanass-3f894a8e1e444b5c8345bd7616b90b6b) | Ian Miller | 34 020 | Saurien en armure de cuir : un pirate d'une autre espèce (squelette fait par outils/rigger-statues.py) |
+| `crocodilien` | [Alligator walking upright](https://sketchfab.com/3d-models/alligator-walking-upright-c23101cf5b3349668ef320e94e041b4d) | Jungle Jim | 25 654, 1 anim. | Crocodilien debout, massif : un détenu de force (animé) |
+| `ceratopsien` | [Triceralien](https://sketchfab.com/3d-models/triceralien-60d260df8c3749c0bc492f50965ced6f) | Larry | 146 948 | Grand reptile à collerette : un détenu imposant (à alléger : 290 000 faces) |
+| `gris-marcheur` | [Alien Walk](https://sketchfab.com/3d-models/alien-walk-f339a62af93d406caa64aad1c7851838) | ShaxerTakkuY | 52 222, 1 anim. | Petit « gris » : un détenu fragile (animé) |
+| `gris-anime` | [Grey Alien idle](https://sketchfab.com/3d-models/grey-alien-idle-4983ac47fa674c1e8e9230c8afa4546e) | ShaxerTakkuY | 55 016, 1 anim. | « Gris » au squelette Mixamo : un détenu (animé) |
+| `gris-vert` | [Alien (A-Pose)](https://sketchfab.com/3d-models/alien-a-pose-e5c1eb7795884ca4baff6e937d8749d0) | klir | 44 944 | « Gris » à peau verdâtre, très détaillé : un détenu |
+| `gris-leger` | [Allan the Grey](https://sketchfab.com/3d-models/allan-the-grey-4544e06bbb344c6cad54505584a1a6ad) | Rasmus | 11 188, 1 anim. | « Gris » léger (11 000 faces) : la foule des cellules |
+| `longiligne-rouge` | [Alien Character](https://sketchfab.com/3d-models/alien-character-7319eff76e5a4327b82929b6f24c6ca8) | Duane's Mind | 9 584 | Grand alien élancé : un détenu inquiétant |
+| `cephalopode` | [Mutant Soldier](https://sketchfab.com/3d-models/mutant-soldier-72e56e2f79dc413eb409d7b05571dc27) | Dak Attack | 35 577 | Mutant au visage de céphalopode : un pirate |
+| `ichtyen` | [Fishman](https://sketchfab.com/3d-models/fishman-8e5403aa51c94a0bb03c845882cd02a8) | w7w728115 | 27 314 | Humanoïde pâle à tête de poisson : un détenu |
+| `mercenaire-alien` | [Free Game Character - Alien (Unreal & Unity )](https://sketchfab.com/3d-models/free-game-character-alien-unreal-unity-c6d2b0a9f40c4d1caca517fef9fe9143) | Kaan Tezcan | 50 558, 1 anim. | Mercenaire alien en armure : un pirate (animé) |
+| `mutant-biomecanique` | [Free - Biomechanical Mutant](https://sketchfab.com/3d-models/free-biomechanical-mutant-bdb9c9cfcf9c4a5eafec9f58b170bf98) | GAME-READY STUDIOS | 25 988 | Spécimen biomécanique figé : décor du laboratoire, dans une cuve |
 
 ## Crédits (CC BY)
 

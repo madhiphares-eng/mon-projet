@@ -248,16 +248,16 @@ On y trouve aussi :
 | Infirmerie | `chambre-stase`, `console-murale` |
 | Dehors : la coque et l'espace | `androide-antiemeute`, `androide-sentinelle`, `debris-1` × 2, `debris-2`, `rocher-spatial`, `vaisseau-pirate` |
 | Cœur-relique | `anneau-relais`, `coeur-relique`, `pylone-energie` × 4 |
-| C · Nef des cellules | `androide-antiemeute`, `androide-patrouille` × 2, `androide-sentinelle`, `cle-a-molette`, `console-murale`, `detenu-brute` × 2, `detenu-figurant` × 3, `detenu-tshirt` × 3, `droide-securite`, `drone-securite` × 2, `lavabo`, `lit-superpose` × 4, `toilettes` × 4 |
+| C · Nef des cellules | `androide-antiemeute`, `androide-patrouille` × 2, `androide-sentinelle`, `cle-a-molette`, `console-murale`, `crocodilien`, `detenu-brute` × 2, `detenu-figurant`, `detenu-tshirt` × 2, `droide-securite`, `drone-securite` × 2, `gris-marcheur`, `lavabo`, `lit-superpose` × 4, `saurien-pale`, `toilettes` × 4 |
 | Coursives | `couloir-principal` × 7 |
 | Quartiers des officiers | `androide-antiemeute`, `androide-sentinelle`, `caisse-armes`, `fusil-gardes`, `lit-superpose` × 2, `pistolet-gardes` |
 | P · Passerelle | `console-murale` × 5, `droide-securite` × 3 |
-| A · Ateliers | `androide-soldat`, `androide-vieux-modele`, `caisse-armes`, `caisses` × 3, `cellule-energie` × 2, `detenu-brute`, `detenu-figurant` × 2, `detenu-tshirt` × 2 |
+| A · Ateliers | `androide-soldat`, `androide-vieux-modele`, `caisse-armes`, `caisses` × 3, `cellule-energie` × 2, `detenu-figurant` × 2, `detenu-tshirt`, `gris-anime`, `ichtyen` |
 | Consigne | `androide-patrouille`, `androide-sentinelle`, `armoire-blindee` × 2, `casier` × 9, `console-murale`, `porte-coffre`, `tablette-glyphes` |
 | X · Chambre des reliques | `armoire-blindee`, `capsule-veilleur`, `cloison-etanche` × 2, `combinaison-veilleur`, `cristal-ether`, `prisme-ether`, `tablette-glyphes` |
 | Sas | `porte-sas` × 2 |
-| H · Hangar | `androide-antiemeute` × 2, `androide-lourd`, `androide-patrouille` × 2, `androide-sentinelle`, `bidon-carburant` × 2, `caisse-armes`, `caisses` × 2, `capsule-sauvetage` × 2, `cellule-energie` × 2, `console-murale`, `drone-securite`, `marcheur-blinde`, `navette-a-voler`, `navette-transfert`, `pirate-chef`, `porte-sas` |
-| M · Salle des machines | `coeur-fusion`, `console-murale`, `drone-securite`, `generateur` × 2, `pirate`, `pylone-energie` × 2, `reacteur` |
+| H · Hangar | `androide-antiemeute` × 2, `androide-lourd`, `androide-patrouille` × 2, `androide-sentinelle`, `bidon-carburant` × 2, `caisse-armes`, `caisses` × 2, `capsule-sauvetage` × 2, `cellule-energie` × 2, `cephalopode`, `console-murale`, `drone-securite`, `marcheur-blinde`, `mercenaire-alien`, `navette-a-voler`, `navette-transfert`, `pirate`, `pirate-chef`, `porte-sas`, `saurien-guerrier` |
+| M · Salle des machines | `coeur-fusion`, `console-murale`, `drone-securite`, `generateur` × 2, `mercenaire-alien`, `pirate` × 2, `pylone-energie` × 2, `reacteur`, `saurien-guerrier` |
 | Coursive éventrée | `cables`, `cloison-etanche`, `pirate-eva` |
 
 Et 69 dalles de sol (`sols`), dans la passerelle, la salle des machines et l'aire d'envol du hangar. Chaque modèle est posé à sa taille réelle (`tailles-modeles.json`) ; le bouton Contrôle de l'atelier vérifie qu'aucun ne chevauche un mur.

@@ -97,6 +97,31 @@ L'Empire ne confie pas la garde du Colosse à des hommes : **toute la sécurité
 | Marcheur blindé | `marcheur-blinde` | Le hangar : la menace finale avant la navette |
 | En réparation | `androide-soldat`, `androide-vieux-modele` | Les ateliers : les détenus les démontent |
 
+### Les autres espèces de la galaxie
+
+Le Colosse enferme les prisonniers de tout l'Empire : **les détenus et les pirates ne sont pas tous humains**. Cette diversité dit, sans un mot, que la galaxie est vaste et que l'Empire la tient tout entière.
+
+**Les règles** :
+- **Des espèces inventées**, jamais celles d'une saga connue : pas de copie d'une créature de film ou de jeu, même « inspirée ». Les modèles qui l'avouent sont écartés.
+- **Réalistes** : une anatomie crédible, des peaux et des écailles usées, jamais de style dessin animé.
+- **Lisibles en silhouette** : chaque espèce a une forme qui la distingue à 20 m (la tête énorme des « gris », la mâchoire du crocodilien, la collerette du cératopsien, la tête de poisson de l'ichtyen).
+- **Les couleurs** : les peaux restent naturelles (gris, vert olive, ocre, rouge sombre), **jamais de cyan** (il est aux Bâtisseurs). Les détenus habillés portent l'orange de la prison ; les pirates, le chaud et l'asymétrie de leur camp.
+- **Toutes reçoivent les mêmes animations** que les humains (la bibliothèque d'animations, voir [`PERSONNAGES.md`](PERSONNAGES.md)) : une démarche propre à chaque espèce viendra plus tard.
+
+**Les espèces du prologue** :
+
+| Espèce | Modèles | Rôle |
+|---|---|---|
+| Les « gris » : petits, tête énorme, fragiles | `gris-marcheur`, `gris-anime`, `gris-vert`, `gris-leger` | Détenus ; la foule des cellules |
+| Les sauriens : reptiles bipèdes | `saurien-pale` (détenu), `saurien-guerrier` (pirate) | Les deux camps |
+| Le crocodilien : massif, lent, dangereux | `crocodilien` | Détenu de force, dans la nef |
+| Le cératopsien : collerette et cornes, 2,3 m | `ceratopsien` | Détenu imposant |
+| Le grand rouge : 2,3 m, longiligne, inquiétant | `longiligne-rouge` | Détenu solitaire |
+| L'ichtyen : peau pâle, tête de poisson | `ichtyen` | Détenu |
+| Le céphalopode : tentacules au visage | `cephalopode` | Pirate |
+| Le mercenaire alien, en armure | `mercenaire-alien` | Pirate |
+| Le spécimen biomécanique, figé | `mutant-biomecanique` | Décor : une cuve du laboratoire |
+
 ## 5. Les valeurs et la lisibilité
 
 - **La règle des trois valeurs**, à vérifier sur une capture en noir et blanc :
@@ -108,7 +133,8 @@ L'Empire ne confie pas la garde du Colosse à des hommes : **toute la sécurité
 - **Les camps** se lisent en silhouette et en couleur :
   - les androïdes de la sécurité sont sombres, avec un seul capteur ou liseré rouge ;
   - les pirates sont chauds et asymétriques ;
-  - les détenus sont en orange uni.
+  - les détenus sont en orange uni, quelle que soit leur espèce quand ils sont habillés ;
+  - les autres espèces se lisent d'abord à leur silhouette.
 
 ## 6. La palette
 
@@ -243,9 +269,11 @@ Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits 
   - les glyphes qu'il lit sans effort ;
   - sa capsule.
 
-## 12. Les 88 modèles face à la bible
+## 12. Les 101 modèles face à la bible
 
-**Bilan** : 39 gardés, 33 recolorés, 9 à remplacer, 7 écartés. 72 modèles servent tout de suite.
+**Bilan** : 49 gardés, 35 recolorés, 9 à remplacer, 8 écartés. 84 modèles servent tout de suite.
+
+Les 13 derniers sont les autres espèces (§ 4). Un quatorzième, un homme-oiseau en tenue de fantasy (cape, panier de champignons), a été écarté : hors de la DA.
 
 Les 13 derniers (10 androïdes et drones, 3 détenus) ont été ajoutés quand la sécurité est devenue entièrement robotique (§ 4). Chaque personnage a été testé dans le banc des personnages (`vitrine/banc-pnj.html`) : squelette, animations, taille, voir [`PERSONNAGES.md`](PERSONNAGES.md).
 
@@ -328,7 +356,7 @@ Les 13 derniers (10 androïdes et drones, 3 détenus) ont été ajoutés quand l
 | `fusil-lourd-pirates` | Gardé |  |
 | `pistolet-use` | Gardé |  |
 | `cle-a-molette` | Gardé |  |
-| `extincteur` | Gardé |  |
+| `extincteur` | Écarté | Un extincteur d'aujourd'hui, avec ses étiquettes : un objet de la Terre (voir l'annexe). À remplacer par un modèle sans texte. |
 | `neons` | Gardé |  |
 | `caisse-munitions` | Recoloré | Blanc → acier. |
 | `caisse-cargo` | Gardé |  |
@@ -339,6 +367,19 @@ Les 13 derniers (10 androïdes et drones, 3 détenus) ont été ajoutés quand l
 | `anneau-relais` | Recoloré | Rouille → pierre noire. |
 | `cristal-ether` | Recoloré | Violet → noir et cyan. |
 | `prisme-ether` | Recoloré | Orange → cyan. |
+| `saurien-pale` | Gardé | Reptile pâle, animé : un détenu. |
+| `saurien-guerrier` | Gardé | Armure de cuir usée : un pirate. Squelette fait par le script. |
+| `crocodilien` | Gardé | Massif, animé : un détenu de force. |
+| `ceratopsien` | Gardé | À alléger (290 000 faces). |
+| `gris-marcheur` | Gardé | Animé. |
+| `gris-anime` | Gardé | Squelette Mixamo. |
+| `gris-vert` | Gardé | Le plus détaillé des « gris ». |
+| `gris-leger` | Gardé | 11 000 faces : la foule. |
+| `longiligne-rouge` | Gardé | Rouge sombre, jamais vif. |
+| `cephalopode` | Gardé | Un pirate. Les gestes de bras sont à refaire sur Mixamo. |
+| `ichtyen` | Gardé |  |
+| `mercenaire-alien` | Recoloré | Armure désaturée : un pirate. |
+| `mutant-biomecanique` | Recoloré | Figé dans une pose : un spécimen de décor, au laboratoire. |
 
 ### Ce qui manque, par priorité
 

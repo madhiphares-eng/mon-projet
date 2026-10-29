@@ -116,7 +116,20 @@
         '15-Reliques|c56fc34b2bd74b098b7ea68b6bcf215c|tablette-glyphes',
         '15-Reliques|9c288fb496ab4d15838c0517d0cef47c|anneau-relais',
         '15-Reliques|2eee63550ed6470dac7659211a605795|cristal-ether',
-        '15-Reliques|25c72b016ace4f7aac72c5974437c5f2|prisme-ether'
+        '15-Reliques|25c72b016ace4f7aac72c5974437c5f2|prisme-ether',
+        '16-Especes|a710eb3eaeab4200a2ff83abc9b0c4db|saurien-pale',
+        '16-Especes|3f894a8e1e444b5c8345bd7616b90b6b|saurien-guerrier',
+        '16-Especes|c23101cf5b3349668ef320e94e041b4d|crocodilien',
+        '16-Especes|60d260df8c3749c0bc492f50965ced6f|ceratopsien',
+        '16-Especes|f339a62af93d406caa64aad1c7851838|gris-marcheur',
+        '16-Especes|4983ac47fa674c1e8e9230c8afa4546e|gris-anime',
+        '16-Especes|e5c1eb7795884ca4baff6e937d8749d0|gris-vert',
+        '16-Especes|4544e06bbb344c6cad54505584a1a6ad|gris-leger',
+        '16-Especes|7319eff76e5a4327b82929b6f24c6ca8|longiligne-rouge',
+        '16-Especes|72e56e2f79dc413eb409d7b05571dc27|cephalopode',
+        '16-Especes|8e5403aa51c94a0bb03c845882cd02a8|ichtyen',
+        '16-Especes|c6d2b0a9f40c4d1caca517fef9fe9143|mercenaire-alien',
+        '16-Especes|bdb9c9cfcf9c4a5eafec9f58b170bf98|mutant-biomecanique'
     )
 
     $Etat = @{ Octets = [long]0; Erreurs = New-Object System.Collections.ArrayList; Lourds = New-Object System.Collections.ArrayList }
@@ -241,6 +254,16 @@
             }
         }
     }
+
+    # la bibliotheque d'animations (Quaternius, CC0) : 84 animations pour tous les personnages, dans le depot
+    $DepotAnim = 'https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/prologue-anim/00-Animations'
+    $d = Join-Path $Dest '00-Animations'
+    foreach ($f in 'UAL1_Standard.glb', 'UAL2_Standard.glb', 'UAL1_Standard.fbx', 'UAL2_Standard.fbx') {
+        if (-not (Test-Path -LiteralPath (Join-Path $d $f))) {
+            try { [void](Telecharger "$DepotAnim/$f" (Join-Path $d $f)) } catch { [void]$Etat.Erreurs.Add("00-Animations/$f : introuvable dans le depot") }
+        }
+    }
+    try { [void](Telecharger "$Brut/prologue-anim/00-Animations/LICENCE.txt" (Join-Path $d 'LICENCE.txt')) } catch { }
 
     # credits regroupes
     $credits = New-Object System.Collections.ArrayList

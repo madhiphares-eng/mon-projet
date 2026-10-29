@@ -51,7 +51,7 @@ def bloc(x, z, l, p, h, y=0.0, teinte='acier', plafond=False):
     pieces.append(q)
 
 
-def modele(cle, x, z, cadre=None, y=0.0, rot=0, rotx=0, echelle=None):
+def modele(cle, x, z, cadre=None, y=0.0, rot=0, rotx=0, echelle=None, camp=None):
     """Un modèle du prologue ; sans cadre, il prend sa taille réelle (docs/prologue/tailles-modeles.json)."""
     if cle in SUBSTITUTS:                                      # le modèle refait avec l'IA, à sa propre taille réelle
         cle, cadre = SUBSTITUTS[cle], None
@@ -61,26 +61,31 @@ def modele(cle, x, z, cadre=None, y=0.0, rot=0, rotx=0, echelle=None):
         q['rotation'] = [rotx, rot, 0]
     if echelle:
         q['echelle'] = [r(v) for v in echelle]
+    if camp:
+        q['camp'] = camp                                       # pour le plan : détenu, pirate ou androïde, quelle que soit l'espèce
     pieces.append(q)
 
 
-# la sécurité de l'Empire n'emploie que des androïdes (bible, § 4) ; les détenus sont de vrais modèles, les pirates restent des silhouettes
+# la sécurité de l'Empire n'emploie que des androïdes (bible, § 4) ; détenus et pirates sont de plusieurs espèces (bible, § 4)
 GARDES = ['03-Gardes/androide-sentinelle', '03-Gardes/androide-antiemeute', '03-Gardes/androide-patrouille']
-DETENUS = ['02-Prisonniers/detenu-tshirt', '02-Prisonniers/detenu-figurant', '02-Prisonniers/detenu-brute', '02-Prisonniers/detenu-figurant']
-_tour = {'bleu': 0, 'jaune': 0}
+DETENUS = ['02-Prisonniers/detenu-tshirt', '16-Especes/gris-marcheur', '02-Prisonniers/detenu-figurant', '16-Especes/crocodilien',
+           '02-Prisonniers/detenu-brute', '16-Especes/saurien-pale', '02-Prisonniers/detenu-figurant', '16-Especes/ichtyen',
+           '16-Especes/gris-anime', '16-Especes/longiligne-rouge']
+PIRATES = ['04-Pirates/pirate', '16-Especes/mercenaire-alien', '16-Especes/saurien-guerrier', '16-Especes/cephalopode']
+_tour = {'bleu': 0, 'jaune': 0, 'orange': 0}
 
 
 def humain(x, z, camp=None, y=0.0, rot=0, qui=None):
-    """Un personnage : bleu un androïde de la sécurité, jaune un détenu (modèles pris à tour de rôle, ou qui),
-    orange une silhouette de pirate de 1,80 m. Quand l'androïde de l'Empire a été refait avec l'IA, il devient le garde de base."""
-    if camp in ('bleu', 'jaune') or qui:
+    """Un personnage : bleu un androïde de la sécurité, jaune un détenu, orange un pirate (modèles pris à tour de rôle, ou qui).
+    Quand l'androïde de l'Empire a été refait avec l'IA, il devient le garde de base."""
+    if camp in ('bleu', 'jaune', 'orange') or qui:
         if not qui:
-            liste = GARDES if camp == 'bleu' else DETENUS
+            liste = {'bleu': GARDES, 'jaune': DETENUS, 'orange': PIRATES}[camp]
             if camp == 'bleu' and ia('03-Gardes/androide-empire'):
                 liste = ['03-Gardes/androide-empire']
             qui = liste[_tour[camp] % len(liste)]
             _tour[camp] += 1
-        modele(qui, x, z, y=y, rot=rot)
+        modele(qui, x, z, y=y, rot=rot, camp=camp)
         return
     q = {'type': 'forme', 'cle': 'humain', 'position': [r(x), r(y), r(z)]}
     if camp:

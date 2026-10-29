@@ -87,5 +87,18 @@
 "15-Reliques/tablette-glyphes": {"cadre": [0.6, 0, 0]},
 "15-Reliques/anneau-relais": {"cadre": [5, 5, 5], "da": {"saturation": 0, "teinte": [0.32, 0.34, 0.37]}},
 "15-Reliques/cristal-ether": {"cadre": [0.8, 0.8, 0.8], "da": {"saturation": 0, "teinte": [0.55, 1.0, 0.95]}},
-"15-Reliques/prisme-ether": {"cadre": [0, 1.2, 0], "da": {"saturation": 0, "teinte": [0.55, 1.0, 0.95]}}
+"15-Reliques/prisme-ether": {"cadre": [0, 1.2, 0], "da": {"saturation": 0, "teinte": [0.55, 1.0, 0.95]}},
+"16-Especes/saurien-pale": {"cadre": [0, 1.9, 0]},
+"16-Especes/saurien-guerrier": {"cadre": [0, 2.0, 0]},
+"16-Especes/crocodilien": {"cadre": [0, 2.1, 0]},
+"16-Especes/ceratopsien": {"cadre": [0, 2.3, 0]},
+"16-Especes/gris-marcheur": {"cadre": [0, 1.5, 0]},
+"16-Especes/gris-anime": {"cadre": [0, 1.5, 0]},
+"16-Especes/gris-vert": {"cadre": [0, 1.6, 0]},
+"16-Especes/gris-leger": {"cadre": [0, 1.4, 0]},
+"16-Especes/longiligne-rouge": {"cadre": [0, 2.3, 0]},
+"16-Especes/cephalopode": {"cadre": [0, 1.9, 0]},
+"16-Especes/ichtyen": {"cadre": [0, 1.8, 0]},
+"16-Especes/mercenaire-alien": {"cadre": [0, 1.9, 0], "da": {"saturation": 0.6}},
+"16-Especes/mutant-biomecanique": {"cadre": [0, 2.0, 0], "da": {"saturation": 0.5}}
 }

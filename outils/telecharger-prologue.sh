@@ -139,6 +139,19 @@ MODELES=$(cat <<'LISTE'
 15-Reliques|9c288fb496ab4d15838c0517d0cef47c|anneau-relais|"Alien Ring" par Cogent (sketchfab.com/koron), CC Attribution, https://sketchfab.com/3d-models/9c288fb496ab4d15838c0517d0cef47c
 15-Reliques|2eee63550ed6470dac7659211a605795|cristal-ether|"Void-Touched Crystal Rock" par PuzzledPapaya (sketchfab.com/PuzzledPapaya), CC Attribution, https://sketchfab.com/3d-models/2eee63550ed6470dac7659211a605795
 15-Reliques|25c72b016ace4f7aac72c5974437c5f2|prisme-ether|"Prism of Enlightenment" par Duznot (sketchfab.com/duz_vr), CC Attribution, https://sketchfab.com/3d-models/25c72b016ace4f7aac72c5974437c5f2
+16-Especes|a710eb3eaeab4200a2ff83abc9b0c4db|saurien-pale|"Lizardman" par DJMaesen (sketchfab.com/bumstrum), CC Attribution, https://sketchfab.com/3d-models/a710eb3eaeab4200a2ff83abc9b0c4db
+16-Especes|3f894a8e1e444b5c8345bd7616b90b6b|saurien-guerrier|"Lizard Man - Hashanass" par Ian Miller (sketchfab.com/ianm841), CC Attribution, https://sketchfab.com/3d-models/3f894a8e1e444b5c8345bd7616b90b6b
+16-Especes|c23101cf5b3349668ef320e94e041b4d|crocodilien|"Alligator walking upright" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/c23101cf5b3349668ef320e94e041b4d
+16-Especes|60d260df8c3749c0bc492f50965ced6f|ceratopsien|"Triceralien" par Larry (sketchfab.com/laurent-dem1994), CC Attribution, https://sketchfab.com/3d-models/60d260df8c3749c0bc492f50965ced6f
+16-Especes|f339a62af93d406caa64aad1c7851838|gris-marcheur|"Alien Walk" par ShaxerTakkuY (sketchfab.com/ShaxerTakkuY), CC Attribution, https://sketchfab.com/3d-models/f339a62af93d406caa64aad1c7851838
+16-Especes|4983ac47fa674c1e8e9230c8afa4546e|gris-anime|"Grey Alien idle" par ShaxerTakkuY (sketchfab.com/ShaxerTakkuY), CC Attribution, https://sketchfab.com/3d-models/4983ac47fa674c1e8e9230c8afa4546e
+16-Especes|e5c1eb7795884ca4baff6e937d8749d0|gris-vert|"Alien (A-Pose)" par klir (sketchfab.com/krrril_), CC Attribution, https://sketchfab.com/3d-models/e5c1eb7795884ca4baff6e937d8749d0
+16-Especes|4544e06bbb344c6cad54505584a1a6ad|gris-leger|"Allan the Grey" par Rasmus (sketchfab.com/Rasmus82), CC Attribution, https://sketchfab.com/3d-models/4544e06bbb344c6cad54505584a1a6ad
+16-Especes|7319eff76e5a4327b82929b6f24c6ca8|longiligne-rouge|"Alien Character" par Duane's Mind (sketchfab.com/duanesmind), CC Attribution, https://sketchfab.com/3d-models/7319eff76e5a4327b82929b6f24c6ca8
+16-Especes|72e56e2f79dc413eb409d7b05571dc27|cephalopode|"Mutant Soldier" par Dak Attack (sketchfab.com/dakotakimble), CC Attribution, https://sketchfab.com/3d-models/72e56e2f79dc413eb409d7b05571dc27
+16-Especes|8e5403aa51c94a0bb03c845882cd02a8|ichtyen|"Fishman" par w7w728115 (sketchfab.com/w7w728115), CC Attribution, https://sketchfab.com/3d-models/8e5403aa51c94a0bb03c845882cd02a8
+16-Especes|c6d2b0a9f40c4d1caca517fef9fe9143|mercenaire-alien|"Free Game Character - Alien (Unreal & Unity )" par Kaan Tezcan (sketchfab.com/kaanTezcan), CC Attribution, https://sketchfab.com/3d-models/c6d2b0a9f40c4d1caca517fef9fe9143
+16-Especes|bdb9c9cfcf9c4a5eafec9f58b170bf98|mutant-biomecanique|"Free - Biomechanical Mutant" par GAME-READY STUDIOS (sketchfab.com/Game-Ready), CC Attribution, https://sketchfab.com/3d-models/bdb9c9cfcf9c4a5eafec9f58b170bf98
 LISTE
 )
 
@@ -204,6 +217,14 @@ if curl -fsS --retry 3 -o "$TMP/faits.json" "https://raw.githubusercontent.com/m
             || erreur "$cle : modele IA introuvable dans le depot"
     done
 fi
+
+# la bibliotheque d'animations (Quaternius, CC0) : 84 animations pour tous les personnages, dans le depot
+DEPOT_ANIM="https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/prologue-anim/00-Animations"
+d="$DEST/00-Animations"; mkdir -p "$d"
+for f in UAL1_Standard.glb UAL2_Standard.glb UAL1_Standard.fbx UAL2_Standard.fbx; do
+    [ -f "$d/$f" ] || telecharger "$DEPOT_ANIM/$f" "$d/$f" || erreur "00-Animations/$f : introuvable dans le depot"
+done
+curl -fsS --retry 3 -o "$d/LICENCE.txt" "https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/prologue-anim/00-Animations/LICENCE.txt" || true
 
 {
     echo "Credits des modeles 3D du prologue d'Echos d'Ether (a reprendre dans l'ecran des credits du jeu)."

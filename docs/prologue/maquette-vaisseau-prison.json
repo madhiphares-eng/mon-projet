@@ -1143,7 +1143,8 @@
 0,
 1.85,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "forme",
@@ -1848,7 +1849,8 @@
 0,
 1.95,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -1862,7 +1864,8 @@
 0,
 2.0,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "forme",
@@ -9499,11 +9502,12 @@
 0,
 1.78,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-figurant",
+"cle": "16-Especes/gris-marcheur",
 "position": [
 -33,
 0.0,
@@ -9511,13 +9515,14 @@
 ],
 "cadre": [
 0,
-1.75,
+1.5,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-brute",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -41,
 0.0,
@@ -9525,13 +9530,14 @@
 ],
 "cadre": [
 0,
-1.95,
+1.75,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-figurant",
+"cle": "16-Especes/crocodilien",
 "position": [
 -47,
 0.0,
@@ -9539,13 +9545,14 @@
 ],
 "cadre": [
 0,
-1.75,
+2.1,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-tshirt",
+"cle": "02-Prisonniers/detenu-brute",
 "position": [
 -55,
 0.0,
@@ -9553,13 +9560,14 @@
 ],
 "cadre": [
 0,
-1.78,
+1.95,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-figurant",
+"cle": "16-Especes/saurien-pale",
 "position": [
 -58,
 0.0,
@@ -9567,9 +9575,10 @@
 ],
 "cadre": [
 0,
-1.75,
+1.9,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
@@ -9583,7 +9592,8 @@
 0,
 1.9,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -9597,7 +9607,8 @@
 0,
 1.95,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -9611,7 +9622,8 @@
 0,
 2.0,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -9625,7 +9637,8 @@
 0,
 1.9,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -10911,7 +10924,8 @@
 0,
 1.95,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -10925,7 +10939,8 @@
 0,
 2.0,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "forme",
@@ -12166,7 +12181,8 @@
 0,
 2.1,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -12180,7 +12196,8 @@
 0,
 2.1,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -12194,7 +12211,8 @@
 0,
 2.1,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "forme",
@@ -13358,7 +13376,7 @@
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-brute",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -61,
 0.0,
@@ -13366,13 +13384,14 @@
 ],
 "cadre": [
 0,
-1.95,
+1.75,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-figurant",
+"cle": "16-Especes/ichtyen",
 "position": [
 -50,
 0.0,
@@ -13380,13 +13399,14 @@
 ],
 "cadre": [
 0,
-1.75,
+1.8,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-tshirt",
+"cle": "16-Especes/gris-anime",
 "position": [
 -44,
 0.0,
@@ -13394,9 +13414,10 @@
 ],
 "cadre": [
 0,
-1.78,
+1.5,
 0
-]
+],
+"camp": "jaune"
 },
 {
 "type": "forme",
@@ -15012,7 +15033,8 @@
 0,
 1.9,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -15026,7 +15048,8 @@
 0,
 1.95,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "forme",
@@ -20913,34 +20936,49 @@
 ]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "04-Pirates/pirate",
 "position": [
 20,
 0,
 8
 ],
-"teinte": "orange"
+"cadre": [
+0,
+1.85,
+0
+],
+"camp": "orange"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "16-Especes/mercenaire-alien",
 "position": [
 32,
 0,
 -8
 ],
-"teinte": "orange"
+"cadre": [
+0,
+1.9,
+0
+],
+"camp": "orange"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "16-Especes/saurien-guerrier",
 "position": [
 24,
 4,
 -10.7
 ],
-"teinte": "orange"
+"cadre": [
+0,
+2.0,
+0
+],
+"camp": "orange"
 },
 {
 "type": "modele",
@@ -25103,7 +25141,8 @@
 0,
 90,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -25122,7 +25161,8 @@
 0,
 90,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -25141,7 +25181,8 @@
 0,
 90,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -25160,7 +25201,8 @@
 0,
 90,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -25179,7 +25221,8 @@
 0,
 90,
 0
-]
+],
+"camp": "bleu"
 },
 {
 "type": "modele",
@@ -25295,44 +25338,64 @@
 ]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "16-Especes/cephalopode",
 "position": [
 111,
 0.0,
 -8
 ],
-"teinte": "orange"
+"cadre": [
+0,
+1.9,
+0
+],
+"camp": "orange"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "04-Pirates/pirate",
 "position": [
 106,
 0.0,
 4
 ],
-"teinte": "orange"
+"cadre": [
+0,
+1.85,
+0
+],
+"camp": "orange"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "16-Especes/mercenaire-alien",
 "position": [
 112,
 0.0,
 7
 ],
-"teinte": "orange"
+"cadre": [
+0,
+1.9,
+0
+],
+"camp": "orange"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "16-Especes/saurien-guerrier",
 "position": [
 104,
 0.0,
 -12
 ],
-"teinte": "orange"
+"cadre": [
+0,
+2.0,
+0
+],
+"camp": "orange"
 },
 {
 "type": "modele",
