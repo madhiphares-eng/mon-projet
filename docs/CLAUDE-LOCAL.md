@@ -8,7 +8,10 @@
 > 2. Crée une scène `Assets/_Projet/Local/GaleriePrologue.unity` qui les aligne par dossier, à la bonne échelle (un humain fait 1,80 m), sous une lumière neutre.
 > 3. Fais une capture par dossier dans `docs/captures/prologue/`.
 > 4. Note dans `docs/CORRECTIONS-LOCALES.md` ceux qui posent problème : import raté, matériaux roses, échelle fausse, trop lourd pour la RTX 3060.
-> 5. Monte ensuite le vaisseau-prison en **formes grises** (cubes et couloirs simples, pas encore de modèles) d'après le plan [`prologue/plan-vaisseau-prison.svg`](prologue/plan-vaisseau-prison.svg), dans une scène `Assets/_Projet/Local/PrologueGris.unity`. Un humain fait 1,80 m, une coursive environ 3 m de large et 3 m de haut.
+> 5. Monte ensuite le vaisseau-prison en **formes grises** dans une scène `Assets/_Projet/Local/PrologueGris.unity`. La maquette est déjà faite, à l'échelle réelle : [`prologue/maquette-vaisseau-prison.json`](prologue/maquette-vaisseau-prison.json), à voir dans `vitrine/atelier-prologue.html`.
+>    - Chaque bloc est un cube de dimensions `dims` (en mètres), posé par le bas à `position`.
+>    - Chaque modèle de `Externes/Prologue/<cle>` est mis à l'échelle sans déformation pour tenir dans son `cadre` (un 0 laisse ce côté libre), puis posé par le bas, centré.
+>    - Le champ `repere` du fichier décrit tout. Attention : c'est le repère glTF, droitier, alors qu'Unity est gaucher. Retourne l'axe comme le fait glTFast à l'import des modèles.
 >
 > Le reste de ce fichier décrit l'ancienne version, toujours valable pour les outils.
 

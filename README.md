@@ -129,7 +129,7 @@ Les menus se règlent à la souris.
 ## Prologue : modèles 3D du vaisseau-prison (PC Windows)
 
 La refonte du jeu (voir `docs/PREPRODUCTION.md`) commence par l'évasion d'un vaisseau-prison.
-75 modèles gratuits (CC BY, environ 2,6 Go) ont été choisis pour la construire : héros, détenus, gardes, pirates, cellules, coursives, consigne, machines, hangar, vaisseaux, armes, reliques des Bâtisseurs.
+75 modèles gratuits (CC BY, environ 1 Go) ont été choisis pour la construire : héros, détenus, gardes, pirates, cellules, coursives, consigne, machines, hangar, vaisseaux, armes, reliques des Bâtisseurs.
 Il faut un compte Sketchfab gratuit et son token (https://sketchfab.com/settings/password, section *API Token*). Unity fermé, dans PowerShell :
 
 ```powershell
@@ -137,7 +137,7 @@ irm https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/out
 ```
 
 Les modèles sont rangés par lieu dans `Assets\_Projet\Externes\Prologue\`, avec les crédits dans `CREDITS-PROLOGUE.txt`. Liste et aperçus : `docs/PROLOGUE-MODELES.md`.
-Sur Mac ou Linux : `outils/telecharger-prologue.sh`, `vitrine/galerie-prologue.html` pour les voir en 3D dans le navigateur, et `vitrine/atelier-prologue.html` pour les assembler dans le hangar du vaisseau-prison et visiter la scène à hauteur d'homme (mode d'emploi dans `docs/PROLOGUE-MODELES.md`).
+Sur Mac ou Linux : `outils/telecharger-prologue.sh`, `vitrine/galerie-prologue.html` pour les voir en 3D dans le navigateur, et `vitrine/atelier-prologue.html` pour les assembler dans le hangar du vaisseau-prison et visiter la scène à hauteur d'homme. L'atelier contient la maquette du niveau entier, en formes grises et à l'échelle, faite par `outils/maquette-prologue.py` (mode d'emploi dans `docs/PROLOGUE-MODELES.md`).
 
 ## Modèles 3D pour une vitrine web (Mac ou Linux)
 

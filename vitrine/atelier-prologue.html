@@ -23,6 +23,9 @@
   #bibliotheque button i { width: 7px; height: 7px; border-radius: 50%; background: #555; flex: none; }
   #bibliotheque button.present i { background: var(--ether); }
   #bibliotheque button.forme i { background: #a4a8af; border-radius: 1px; }
+  #bibliotheque button.maquette i { background: var(--ambre); }
+  #fiche select { background: #15161c; border: 1px solid var(--trait); padding: 2px 4px; }
+  #fiche input[type=checkbox] { width: auto; }
   #bibliotheque button.absent { color: var(--brume); }
   #bibliotheque button small { margin-left: auto; color: var(--brume); font-size: 11px; }
 
@@ -110,6 +113,13 @@
   </div>
   <div class="groupe"><button id="btn-visite" title="Visiter à hauteur d'homme (V)">Visiter</button></div>
   <div class="groupe">
+    <select id="decor" title="Où se trouve la scène">
+      <option value="hangar">Dans le hangar</option>
+      <option value="espace">Dans l'espace</option>
+    </select>
+    <button id="btn-plafonds" title="Afficher les plafonds (P). En visite, ils sont toujours là.">Plafonds</button>
+  </div>
+  <div class="groupe">
     <select id="ambiance" title="Ambiance">
       <option value="atelier">Lumière de travail</option>
       <option value="panne">Panne : alarme rouge</option>
@@ -140,6 +150,7 @@
     <p>Tu es dans le hangar du vaisseau-prison. Pose les modèles, assemble-les, puis visite à hauteur d'homme.</p>
     <ol>
       <li id="etape-dossier"></li>
+      <li><b>Le niveau du prologue</b> : clique sur « Vaisseau-prison (prologue) », dans <i>Maquettes</i> à gauche, puis appuie sur V pour le parcourir depuis la cellule du héros.</li>
       <li><b>Poser</b> : clique sur un modèle ou une forme grise dans la liste à gauche. Il apparaît au centre de la vue.</li>
       <li><b>Arranger</b> : clique sur une pièce, puis tire ses flèches pour la déplacer (T), la tourner (R) ou changer sa taille (E). Sa fiche, en bas, donne sa taille en mètres.</li>
       <li><b>Tracer le niveau</b> : les formes grises (murs, coursives, escaliers) servent à essayer un plan avant d'y poser les vrais modèles.</li>
@@ -170,6 +181,8 @@ const DOSSIERS = {
   '10-Hangar': 'Hangar', '11-Vaisseaux': 'Vaisseaux', '12-Exterieur': 'Sas et vide', '13-Armes': 'Armes', '14-Accessoires': 'Accessoires', '15-Reliques': 'Reliques des Bâtisseurs',
 };
 const PAR_CLE = new Map(MODELES.map(m => [`${m.dossier}/${m.nom}`, m]));
+// niveaux tout faits, écrits par outils/maquette-prologue.py (ne pas modifier à la main)
+const MAQUETTES = /*MAQUETTES-DEBUT*/{"vaisseau-prison":{"nom":"Vaisseau-prison (prologue)","description":"Le niveau du prologue en formes grises, à l'échelle, d'après le plan : du réveil au laboratoire jusqu'au hangar.","decor":"espace","vue":{"camera":[26,110,107],"cible":[6,0,2]},"depart":{"position":[-9.0,0,-24.0],"lacet":-90},"pieces":[{"type":"forme","cle":"bloc","position":[4,-1.2,2.5],"dims":[128,1.0,65],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[-63,-1.2,0],"dims":[6,1.4,16],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[-68,-1.2,0],"dims":[4,1.0,8],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[71,-1.2,-24],"dims":[6,6,6],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[74.5,-0.45,-24],"dims":[1,4.5,4.5],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[71,-1.2,-16],"dims":[6,6,6],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[74.5,-0.45,-16],"dims":[1,4.5,4.5],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[71,-1.2,-8],"dims":[6,6,6],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[74.5,-0.45,-8],"dims":[1,4.5,4.5],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[-46.5,-0.2,0.0],"dims":[15,0.2,18],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-46.5,5,0.0],"dims":[15,0.2,18],"plafond":true},{"type":"forme","cle":"bloc","position":[-46.5,0.0,-9],"dims":[15.2,5,0.2]},{"type":"forme","cle":"bloc","position":[-46.5,0.0,9],"dims":[15.2,5,0.2]},{"type":"forme","cle":"bloc","position":[-54,0.0,-7.5],"dims":[0.2,5,3.0]},{"type":"forme","cle":"bloc","position":[-54,4.2,0.0],"dims":[0.2,0.8,12.0]},{"type":"forme","cle":"bloc","position":[-54,0.0,0.0],"dims":[0.2,1.0,12.0]},{"type":"forme","cle":"bloc","position":[-54,1.0,0.0],"dims":[0.08,3.2,12.0],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[-54,0.0,7.5],"dims":[0.2,5,3.0]},{"type":"forme","cle":"bloc","position":[-39,0.0,-5.25],"dims":[0.2,5,7.5]},{"type":"forme","cle":"bloc","position":[-39,3.0,0.0],"dims":[0.2,2.0,3.0]},{"type":"forme","cle":"bloc","position":[-39,0.0,5.25],"dims":[0.2,5,7.5]},{"type":"forme","cle":"etiquette","position":[-46.5,6.0,0.0],"texte":"Passerelle","police":2.2},{"type":"forme","cle":"bloc","position":[-49,0.0,0],"dims":[6,0.5,8]},{"type":"forme","cle":"bloc","position":[-45.5,0.0,0],"dims":[1,0.25,3]},{"type":"forme","cle":"bloc","position":[-52,0.0,-5],"dims":[1.2,1.0,0.8]},{"type":"forme","cle":"bloc","position":[-52,0.0,5],"dims":[1.2,1.0,0.8]},{"type":"forme","cle":"bloc","position":[-47,0.0,-7.6],"dims":[1.2,1.0,0.8]},{"type":"forme","cle":"bloc","position":[-47,0.0,7.6],"dims":[1.2,1.0,0.8]},{"type":"modele","cle":"09-Informatique/terminal","position":[-51.2,0.5,-2.5],"cadre":[1.6,0,1.8]},{"type":"modele","cle":"09-Informatique/terminal","position":[-51.2,0.5,2.5],"cadre":[1.6,0,1.8]},{"type":"modele","cle":"09-Informatique/grand-ecran","position":[-43.5,0.0,-8.0],"cadre":[3.5,2.2,0]},{"type":"modele","cle":"09-Informatique/console-murale","position":[-41.5,1.0,-8.6],"cadre":[1.5,1.5,0.4]},{"type":"modele","cle":"03-Gardes/garde","position":[-49,0.5,1.5],"cadre":[0,1.85,0],"rotation":[0,90,0]},{"type":"forme","cle":"humain","position":[-48,0.5,-2],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[-47,0,-4.5],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[-50,0.5,-3],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[-41,0.0,3],"teinte":"orange"},{"type":"forme","cle":"humain","position":[-42,0.0,5.5],"teinte":"orange"},{"type":"forme","cle":"etiquette","position":[-46.5,3.4,0],"texte":"Gardes retranchés, les pirates attaquent","police":0.5},{"type":"forme","cle":"bloc","position":[-24.0,-0.2,0.0],"dims":[30,0.2,3.0],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-24.0,3.5,0.0],"dims":[30,0.2,3.0],"plafond":true},{"type":"forme","cle":"bloc","position":[-33.8,0.0,-1.5],"dims":[10.6,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-19.05,0.0,-1.5],"dims":[12.9,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-12.0,2.0,-1.5],"dims":[1.2,1.5,0.2]},{"type":"forme","cle":"bloc","position":[-10.15,0.0,-1.5],"dims":[2.5,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-33.8,0.0,1.5],"dims":[10.6,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-19.05,0.0,1.5],"dims":[12.9,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-12.0,2.0,1.5],"dims":[1.2,1.5,0.2]},{"type":"forme","cle":"bloc","position":[-10.15,0.0,1.5],"dims":[2.5,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-27.0,-0.2,-6.75],"dims":[3.0,0.2,10.5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-27.0,3.5,-6.75],"dims":[3.0,0.2,10.5],"plafond":true},{"type":"forme","cle":"bloc","position":[-28.5,0.0,-6.75],"dims":[0.2,3.5,10.5]},{"type":"forme","cle":"bloc","position":[-25.5,0.0,-6.75],"dims":[0.2,3.5,10.5]},{"type":"forme","cle":"bloc","position":[-27.0,-0.2,6.75],"dims":[3.0,0.2,10.5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-27.0,3.5,6.75],"dims":[3.0,0.2,10.5],"plafond":true},{"type":"forme","cle":"bloc","position":[-28.5,0.0,6.75],"dims":[0.2,3.5,10.5]},{"type":"forme","cle":"bloc","position":[-25.5,0.0,6.75],"dims":[0.2,3.5,10.5]},{"type":"forme","cle":"bloc","position":[-27.0,-0.2,-19.0],"dims":[20,0.2,14],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-27.0,4,-19.0],"dims":[20,0.2,14],"plafond":true},{"type":"forme","cle":"bloc","position":[-27.0,0.0,-26],"dims":[20.2,4,0.2]},{"type":"forme","cle":"bloc","position":[-32.65,0.0,-12],"dims":[8.9,4,0.2]},{"type":"forme","cle":"bloc","position":[-27.0,2.8,-12],"dims":[2.4,1.2,0.2]},{"type":"forme","cle":"bloc","position":[-21.35,0.0,-12],"dims":[8.9,4,0.2]},{"type":"forme","cle":"bloc","position":[-37,0.0,-19.0],"dims":[0.2,4,14]},{"type":"forme","cle":"bloc","position":[-17,0.0,-19.0],"dims":[0.2,4,14]},{"type":"forme","cle":"etiquette","position":[-27.0,5.0,-19.0],"texte":"Officiers : quartiers, armurerie","police":1.8},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[-34,0.0,-24.6],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[-30.5,0.0,-24.6],"cadre":[2.1,1.9,2.1]},{"type":"forme","cle":"bloc","position":[-20,0.0,-24.9],"dims":[4,0.6,2]},{"type":"modele","cle":"10-Hangar/caisse-armes","position":[-20,0.0,-22.4],"cadre":[1.8,1.0,1.0]},{"type":"modele","cle":"14-Accessoires/caisse-munitions","position":[-22.6,0.0,-22.4],"cadre":[0,0,0.8]},{"type":"forme","cle":"bloc","position":[-23,0.0,-17],"dims":[2,0.9,1]},{"type":"modele","cle":"13-Armes/fusil-gardes","position":[-23,0.9,-17],"cadre":[1.0,0,0]},{"type":"modele","cle":"13-Armes/pistolet-gardes","position":[-22.3,0.9,-16.8],"cadre":[0.25,0,0]},{"type":"forme","cle":"bloc","position":[-29.5,0.0,-15.5],"dims":[2,0.9,1]},{"type":"forme","cle":"bloc","position":[-29.5,0.9,-15.5],"dims":[0.3,0.05,0.2],"teinte":"ambre"},{"type":"forme","cle":"etiquette","position":[-29.5,1.5,-15.5],"texte":"Badge de la Conservatrice","police":0.45,"teinte":"ambre"},{"type":"forme","cle":"humain","position":[-32,0.0,-17],"teinte":"bleu"},{"type":"forme","cle":"bloc","position":[-27.0,-0.2,18.0],"dims":[20,0.2,12],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-27.0,4,18.0],"dims":[20,0.2,12],"plafond":true},{"type":"forme","cle":"bloc","position":[-32.65,0.0,12],"dims":[8.9,4,0.2]},{"type":"forme","cle":"bloc","position":[-27.0,2.8,12],"dims":[2.4,1.2,0.2]},{"type":"forme","cle":"bloc","position":[-21.35,0.0,12],"dims":[8.9,4,0.2]},{"type":"forme","cle":"bloc","position":[-27.0,0.0,24],"dims":[20.2,4,0.2]},{"type":"forme","cle":"bloc","position":[-37,0.0,18.0],"dims":[0.2,4,12]},{"type":"forme","cle":"bloc","position":[-17,0.0,18.0],"dims":[0.2,4,12]},{"type":"forme","cle":"etiquette","position":[-27.0,5.0,18.0],"texte":"Consigne : effets saisis","police":1.8},{"type":"modele","cle":"07-Consigne/porte-coffre","position":[-21,0.0,21],"cadre":[2.8,2.8,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-35.2,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-33.55,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-31.9,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-30.25,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-28.6,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-26.95,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-25.3,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"modele","cle":"07-Consigne/casier","position":[-23.65,0.0,23.4],"cadre":[1.6,2.0,0],"rotation":[0,180,0]},{"type":"forme","cle":"bloc","position":[-27,0.0,16],"dims":[6,2.2,0.6]},{"type":"forme","cle":"bloc","position":[-27,0.0,19.5],"dims":[6,2.2,0.6]},{"type":"modele","cle":"10-Hangar/caisse-armes","position":[-20,0.0,15],"cadre":[1.8,1.0,1.0]},{"type":"modele","cle":"14-Accessoires/extincteur","position":[-36.5,0.0,13],"cadre":[0,0.6,0]},{"type":"forme","cle":"bloc","position":[0.0,-0.2,-7.5],"dims":[18,0.2,3],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[0.0,3.5,-7.5],"dims":[18,0.2,3],"plafond":true},{"type":"forme","cle":"bloc","position":[-5.3,0.0,-9],"dims":[7.6,3.5,0.2]},{"type":"forme","cle":"bloc","position":[5.3,0.0,-9],"dims":[7.6,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-9,0.0,-7.5],"dims":[0.2,3.5,3]},{"type":"forme","cle":"bloc","position":[9,0.0,-7.5],"dims":[0.2,3.5,3]},{"type":"forme","cle":"bloc","position":[0.0,-0.2,7.5],"dims":[18,0.2,3],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[0.0,3.5,7.5],"dims":[18,0.2,3],"plafond":true},{"type":"forme","cle":"bloc","position":[-5.3,0.0,9],"dims":[7.6,3.5,0.2]},{"type":"forme","cle":"bloc","position":[5.3,0.0,9],"dims":[7.6,3.5,0.2]},{"type":"forme","cle":"bloc","position":[-9,0.0,7.5],"dims":[0.2,3.5,3]},{"type":"forme","cle":"bloc","position":[9,0.0,7.5],"dims":[0.2,3.5,3]},{"type":"forme","cle":"bloc","position":[-7.5,-0.2,0.0],"dims":[3,0.2,12],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-7.5,3.5,0.0],"dims":[3,0.2,12],"plafond":true},{"type":"forme","cle":"bloc","position":[-9,0.0,-3.75],"dims":[0.2,3.5,4.5]},{"type":"forme","cle":"bloc","position":[-9,0.0,3.75],"dims":[0.2,3.5,4.5]},{"type":"forme","cle":"bloc","position":[7.5,-0.2,0.0],"dims":[3,0.2,12],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[7.5,3.5,0.0],"dims":[3,0.2,12],"plafond":true},{"type":"forme","cle":"bloc","position":[9,0.0,-3.75],"dims":[0.2,3.5,4.5]},{"type":"forme","cle":"bloc","position":[9,0.0,3.75],"dims":[0.2,3.5,4.5]},{"type":"forme","cle":"bloc","position":[0.0,-0.2,0.0],"dims":[12,0.2,12],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[0.0,10,0.0],"dims":[12,0.2,12],"plafond":true},{"type":"forme","cle":"bloc","position":[-5.05,0.0,-6],"dims":[2.1,10,0.2]},{"type":"forme","cle":"bloc","position":[0.0,3.0,-6],"dims":[8.0,7.0,0.2]},{"type":"forme","cle":"bloc","position":[0.0,0.0,-6],"dims":[8.0,1.0,0.2]},{"type":"forme","cle":"bloc","position":[0.0,1.0,-6],"dims":[8.0,2.0,0.08],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[5.05,0.0,-6],"dims":[2.1,10,0.2]},{"type":"forme","cle":"bloc","position":[-5.05,0.0,6],"dims":[2.1,10,0.2]},{"type":"forme","cle":"bloc","position":[0.0,3.0,6],"dims":[8.0,7.0,0.2]},{"type":"forme","cle":"bloc","position":[0.0,0.0,6],"dims":[8.0,1.0,0.2]},{"type":"forme","cle":"bloc","position":[0.0,1.0,6],"dims":[8.0,2.0,0.08],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[5.05,0.0,6],"dims":[2.1,10,0.2]},{"type":"forme","cle":"bloc","position":[-6,0.0,-3.6],"dims":[0.2,10,4.8]},{"type":"forme","cle":"bloc","position":[-6,2.8,0.0],"dims":[0.2,7.2,2.4]},{"type":"forme","cle":"bloc","position":[-6,0.0,3.6],"dims":[0.2,10,4.8]},{"type":"forme","cle":"bloc","position":[6,0.0,-3.6],"dims":[0.2,10,4.8]},{"type":"forme","cle":"bloc","position":[6,2.8,0.0],"dims":[0.2,7.2,2.4]},{"type":"forme","cle":"bloc","position":[6,0.0,3.6],"dims":[0.2,10,4.8]},{"type":"forme","cle":"etiquette","position":[0.0,11.0,0.0],"texte":"Cœur-relique (hyperespace)","police":2.2,"teinte":"ether"},{"type":"forme","cle":"bloc","position":[0,0,0],"dims":[2.4,0.8,2.4],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[0,0,-2.6],"dims":[5.5,0.04,0.3],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[0,0,2.6],"dims":[5.5,0.04,0.3],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[-2.6,0,0],"dims":[0.3,0.04,5.5],"teinte":"ether"},{"type":"forme","cle":"bloc","position":[2.6,0,0],"dims":[0.3,0.04,5.5],"teinte":"ether"},{"type":"modele","cle":"15-Reliques/coeur-relique","position":[0,1.3,0],"cadre":[3,3.5,3]},{"type":"modele","cle":"15-Reliques/anneau-relais","position":[0,4.6,0],"cadre":[5,5,5]},{"type":"modele","cle":"08-Machines/pylone-energie","position":[-4.5,0.0,-4.5],"cadre":[2.5,4,2.5]},{"type":"modele","cle":"08-Machines/pylone-energie","position":[4.5,0.0,-4.5],"cadre":[2.5,4,2.5]},{"type":"modele","cle":"08-Machines/pylone-energie","position":[-4.5,0.0,4.5],"cadre":[2.5,4,2.5]},{"type":"modele","cle":"08-Machines/pylone-energie","position":[4.5,0.0,4.5],"cadre":[2.5,4,2.5]},{"type":"forme","cle":"etiquette","position":[0,7.5,0],"texte":"Il s'emballe à son réveil","police":0.6,"teinte":"ether"},{"type":"forme","cle":"bloc","position":[0.0,-0.2,-11.0],"dims":[3.0,0.2,4],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[0.0,3.5,-11.0],"dims":[3.0,0.2,4],"plafond":true},{"type":"forme","cle":"bloc","position":[-1.5,0.0,-11.0],"dims":[0.2,3.5,4]},{"type":"forme","cle":"bloc","position":[1.5,0.0,-11.0],"dims":[0.2,3.5,4]},{"type":"forme","cle":"bloc","position":[0.0,-0.2,-20.5],"dims":[28,0.2,15],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[0.0,5,-20.5],"dims":[28,0.2,15],"plafond":true},{"type":"forme","cle":"bloc","position":[0.0,0.0,-28],"dims":[28.2,5,0.2]},{"type":"forme","cle":"bloc","position":[-13.35,0.0,-13],"dims":[1.5,5,0.2]},{"type":"forme","cle":"bloc","position":[-12.0,2.0,-13],"dims":[1.2,3.0,0.2]},{"type":"forme","cle":"bloc","position":[-6.3,0.0,-13],"dims":[10.2,5,0.2]},{"type":"forme","cle":"bloc","position":[0.0,2.8,-13],"dims":[2.4,2.2,0.2]},{"type":"forme","cle":"bloc","position":[6.1,0.0,-13],"dims":[9.8,5,0.2]},{"type":"forme","cle":"bloc","position":[11.6,2.0,-13],"dims":[1.2,3.0,0.2]},{"type":"forme","cle":"bloc","position":[13.15,0.0,-13],"dims":[1.9,5,0.2]},{"type":"forme","cle":"bloc","position":[-14,0.0,-20.5],"dims":[0.2,5,15]},{"type":"forme","cle":"bloc","position":[14,0.0,-26.3],"dims":[0.2,5,3.4]},{"type":"forme","cle":"bloc","position":[14,2.0,-24.0],"dims":[0.2,3.0,1.2]},{"type":"forme","cle":"bloc","position":[14,0.0,-18.2],"dims":[0.2,5,10.4]},{"type":"forme","cle":"etiquette","position":[0.0,6.0,-20.5],"texte":"Laboratoire","police":2.2},{"type":"forme","cle":"bloc","position":[-10.0,3,-24.0],"dims":[5.0,0.2,5.0],"plafond":true},{"type":"forme","cle":"bloc","position":[-10.0,0.0,-26.5],"dims":[5.2,3,0.2]},{"type":"forme","cle":"bloc","position":[-12.4,0.0,-21.5],"dims":[0.4,3,0.2]},{"type":"forme","cle":"bloc","position":[-10.0,2.6,-21.5],"dims":[4.4,0.4,0.2]},{"type":"forme","cle":"bloc","position":[-10.0,0.0,-21.5],"dims":[4.4,0.4,0.2]},{"type":"forme","cle":"bloc","position":[-10.0,0.4,-21.5],"dims":[4.4,2.2,0.08],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[-7.6,0.0,-21.5],"dims":[0.4,3,0.2]},{"type":"forme","cle":"bloc","position":[-12.5,0.0,-24.0],"dims":[0.2,3,5.0]},{"type":"forme","cle":"bloc","position":[-7.5,0.0,-25.6],"dims":[0.2,3,1.8]},{"type":"forme","cle":"bloc","position":[-7.5,2.4,-24.0],"dims":[0.2,0.6,1.4]},{"type":"forme","cle":"bloc","position":[-7.5,0.0,-22.4],"dims":[0.2,3,1.8]},{"type":"forme","cle":"bloc","position":[-11.6,0.0,-24],"dims":[1,0.5,2.2]},{"type":"modele","cle":"05-Cellules/porte-isolement","position":[-7.5,0.0,-24],"cadre":[1.4,2.4,0.4],"rotation":[0,90,0]},{"type":"modele","cle":"01-Joueur/tenue-detenu","position":[-10.6,0.0,-22.4],"cadre":[0,1.8,0]},{"type":"forme","cle":"etiquette","position":[-10,2.3,-24],"texte":"1 · Réveil : départ de la visite","police":0.4,"teinte":"ambre"},{"type":"modele","cle":"15-Reliques/chambre-stase","position":[-2,0.0,-24],"cadre":[2.4,3.0,2.4]},{"type":"modele","cle":"15-Reliques/chambre-stase","position":[2,0.0,-24],"cadre":[2.4,3.0,2.4]},{"type":"forme","cle":"etiquette","position":[0,3.6,-24],"texte":"Chambres d'étude","police":0.5},{"type":"modele","cle":"09-Informatique/terminal","position":[-4,0.0,-16],"cadre":[1.6,0,1.8]},{"type":"modele","cle":"09-Informatique/terminal","position":[4,0.0,-16],"cadre":[1.6,0,1.8]},{"type":"modele","cle":"09-Informatique/grand-ecran","position":[0,0.0,-27.2],"cadre":[3.5,2.2,0]},{"type":"modele","cle":"09-Informatique/console-murale","position":[-13.6,1.0,-18],"cadre":[1.4,1.4,0.4],"rotation":[0,90,0]},{"type":"forme","cle":"bloc","position":[6.5,0,-21],"dims":[1,2.4,0.06],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[11.0,0,-21],"dims":[5.6,2.4,0.06],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[6,0,-24.5],"dims":[0.06,2.4,7],"teinte":"verre"},{"type":"forme","cle":"bloc","position":[10,0.0,-25],"dims":[2.4,0.8,1.2]},{"type":"modele","cle":"09-Informatique/terminal","position":[10.6,0.8,-25.2],"cadre":[0.6,0.6,0.6]},{"type":"modele","cle":"15-Reliques/tablette-glyphes","position":[9.3,0.8,-24.8],"cadre":[0.3,0,0]},{"type":"forme","cle":"etiquette","position":[10,2.9,-24],"texte":"Bureau de la Conservatrice","police":0.45},{"type":"forme","cle":"bloc","position":[0.0,-0.2,11.0],"dims":[3.0,0.2,4],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[0.0,3.5,11.0],"dims":[3.0,0.2,4],"plafond":true},{"type":"forme","cle":"bloc","position":[-1.5,0.0,11.0],"dims":[0.2,3.5,4]},{"type":"forme","cle":"bloc","position":[1.5,0.0,11.0],"dims":[0.2,3.5,4]},{"type":"forme","cle":"etiquette","position":[0,2.9,11],"texte":"3 · Porte scellée : courant, badge ou conduit","police":0.4,"teinte":"ambre"},{"type":"forme","cle":"bloc","position":[0.0,-0.2,19.0],"dims":[28,0.2,12],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[0.0,5,19.0],"dims":[28,0.2,12],"plafond":true},{"type":"forme","cle":"bloc","position":[-13.35,0.0,13],"dims":[1.5,5,0.2]},{"type":"forme","cle":"bloc","position":[-12.0,2.0,13],"dims":[1.2,3.0,0.2]},{"type":"forme","cle":"bloc","position":[-6.3,0.0,13],"dims":[10.2,5,0.2]},{"type":"forme","cle":"bloc","position":[0.0,2.8,13],"dims":[2.4,2.2,0.2]},{"type":"forme","cle":"bloc","position":[0.0,0.0,13],"dims":[2.4,2.8,0.08],"teinte":"scelle"},{"type":"forme","cle":"bloc","position":[7.65,0.0,13],"dims":[12.9,5,0.2]},{"type":"forme","cle":"bloc","position":[-9.55,0.0,25],"dims":[9.1,5,0.2]},{"type":"forme","cle":"bloc","position":[-4.0,2.6,25],"dims":[2.0,2.4,0.2]},{"type":"forme","cle":"bloc","position":[5.55,0.0,25],"dims":[17.1,5,0.2]},{"type":"forme","cle":"bloc","position":[-14,0.0,19.0],"dims":[0.2,5,12]},{"type":"forme","cle":"bloc","position":[14,0.0,19.0],"dims":[0.2,5,12]},{"type":"forme","cle":"etiquette","position":[0.0,6.0,19.0],"texte":"Chambre des reliques","police":2.2,"teinte":"ether"},{"type":"forme","cle":"bloc","position":[-6,0,19],"dims":[3,0.3,4.2],"teinte":"ether"},{"type":"modele","cle":"15-Reliques/capsule-veilleur","position":[-6,0.3,19],"cadre":[2.4,1.2,1.2],"rotation":[0,90,0]},{"type":"forme","cle":"etiquette","position":[-6,2.4,19],"texte":"Sa capsule de sommeil","police":0.45},{"type":"forme","cle":"bloc","position":[4,0,21],"dims":[1.4,0.3,1.4],"teinte":"ether"},{"type":"modele","cle":"01-Joueur/combinaison-veilleur","position":[4,0.3,21],"cadre":[0,2.0,0]},{"type":"forme","cle":"bloc","position":[4,0.3,21],"dims":[1.6,2.6,1.6],"teinte":"verre"},{"type":"forme","cle":"etiquette","position":[4,3.4,21],"texte":"4 · Sa combinaison de Veilleur","police":0.45,"teinte":"ambre"},{"type":"modele","cle":"07-Consigne/armoire-blindee","position":[9,0.0,24.2],"cadre":[1.6,2.4,1.0],"rotation":[0,180,0]},{"type":"forme","cle":"bloc","position":[-11,0.0,15],"dims":[0.8,1.0,0.8]},{"type":"modele","cle":"15-Reliques/tablette-glyphes","position":[-11,1.0,15],"cadre":[0.6,0,0]},{"type":"forme","cle":"bloc","position":[-11,0.0,23],"dims":[0.8,1.0,0.8]},{"type":"modele","cle":"15-Reliques/tablette-glyphes","position":[-11,1.0,23],"cadre":[0.6,0,0]},{"type":"forme","cle":"bloc","position":[11,0.0,15],"dims":[0.8,1.0,0.8]},{"type":"modele","cle":"15-Reliques/prisme-ether","position":[11,1.0,15],"cadre":[0,1.2,0]},{"type":"forme","cle":"bloc","position":[1.5,0.0,24.2],"dims":[4,1.0,0.8]},{"type":"modele","cle":"15-Reliques/cristal-ether","position":[0,1.0,24.2],"cadre":[0.8,0.8,0.8]},{"type":"modele","cle":"15-Reliques/cristal-ether","position":[1.5,1.0,24.2],"cadre":[0.8,0.8,0.8]},{"type":"modele","cle":"15-Reliques/cristal-ether","position":[3,1.0,24.2],"cadre":[0.8,0.8,0.8]},{"type":"forme","cle":"bloc","position":[-12.0,-0.2,-7.25],"dims":[1.2,0.2,11.5],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[-12.0,2.0,-7.25],"dims":[1.2,0.2,11.5],"plafond":true},{"type":"forme","cle":"bloc","position":[-12.6,0.0,-7.25],"dims":[0.2,2.0,11.5]},{"type":"forme","cle":"bloc","position":[-11.4,0.0,-7.25],"dims":[0.2,2.0,11.5]},{"type":"forme","cle":"bloc","position":[-12.0,-0.2,7.25],"dims":[1.2,0.2,11.5],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[-12.0,2.0,7.25],"dims":[1.2,0.2,11.5],"plafond":true},{"type":"forme","cle":"bloc","position":[-12.6,0.0,7.25],"dims":[0.2,2.0,11.5]},{"type":"forme","cle":"bloc","position":[-11.4,0.0,7.25],"dims":[0.2,2.0,11.5]},{"type":"forme","cle":"bloc","position":[14.5,-0.2,-24.0],"dims":[1,0.2,1.2],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[14.5,2.0,-24.0],"dims":[1,0.2,1.2],"plafond":true},{"type":"forme","cle":"bloc","position":[14.5,0.0,-24.6],"dims":[1.2,2.0,0.2]},{"type":"forme","cle":"bloc","position":[14.5,0.0,-23.4],"dims":[1.2,2.0,0.2]},{"type":"forme","cle":"bloc","position":[11.6,-0.2,-9.1],"dims":[1.2,0.2,7.8],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[11.6,2.0,-9.1],"dims":[1.2,0.2,7.8],"plafond":true},{"type":"forme","cle":"bloc","position":[11.6,0.0,-5.2],"dims":[1.4,2.0,0.2]},{"type":"forme","cle":"bloc","position":[11,0.0,-9.1],"dims":[0.2,2.0,7.8]},{"type":"forme","cle":"bloc","position":[12.2,0.0,-9.7],"dims":[0.2,2.0,6.6]},{"type":"forme","cle":"bloc","position":[14.6,-0.2,-5.8],"dims":[4.8,0.2,1.2],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[14.6,2.0,-5.8],"dims":[4.8,0.2,1.2],"plafond":true},{"type":"forme","cle":"bloc","position":[14.6,0.0,-6.4],"dims":[5.0,2.0,0.2]},{"type":"forme","cle":"bloc","position":[14.6,0.0,-5.2],"dims":[5.0,2.0,0.2]},{"type":"forme","cle":"bloc","position":[33.6,-0.2,-8.55],"dims":[1.2,0.2,3.1],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[33.6,2.0,-8.55],"dims":[1.2,0.2,3.1],"plafond":true},{"type":"forme","cle":"bloc","position":[33.6,0.0,-10.1],"dims":[1.4,2.0,0.2]},{"type":"forme","cle":"bloc","position":[33,0.0,-8.55],"dims":[0.2,2.0,3.1]},{"type":"forme","cle":"bloc","position":[34.2,0.0,-7.95],"dims":[0.2,2.0,1.9]},{"type":"forme","cle":"bloc","position":[37.6,-0.2,-9.5],"dims":[6.8,0.2,1.2],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[37.6,2.0,-9.5],"dims":[6.8,0.2,1.2],"plafond":true},{"type":"forme","cle":"bloc","position":[37.6,0.0,-10.1],"dims":[7.0,2.0,0.2]},{"type":"forme","cle":"bloc","position":[37.6,0.0,-8.9],"dims":[7.0,2.0,0.2]},{"type":"forme","cle":"etiquette","position":[-12,2.5,-7],"texte":"Conduit","police":0.4},{"type":"forme","cle":"etiquette","position":[-12,2.5,7],"texte":"Conduit","police":0.4},{"type":"forme","cle":"etiquette","position":[14.5,2.5,-24],"texte":"Conduit","police":0.4},{"type":"forme","cle":"etiquette","position":[14.6,2.5,-5.8],"texte":"Conduit","police":0.4},{"type":"forme","cle":"etiquette","position":[37.5,2.5,-9.5],"texte":"Conduit","police":0.4},{"type":"forme","cle":"bloc","position":[-4.0,-0.2,26.75],"dims":[4,0.2,3.5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[-4.0,3,26.75],"dims":[4,0.2,3.5],"plafond":true},{"type":"forme","cle":"bloc","position":[-5.55,0.0,28.5],"dims":[1.1,3,0.2]},{"type":"forme","cle":"bloc","position":[-4.0,2.6,28.5],"dims":[2.0,0.4,0.2]},{"type":"forme","cle":"bloc","position":[-2.45,0.0,28.5],"dims":[1.1,3,0.2]},{"type":"forme","cle":"bloc","position":[-6,0.0,26.75],"dims":[0.2,3,3.5]},{"type":"forme","cle":"bloc","position":[-2,0.0,26.75],"dims":[0.2,3,3.5]},{"type":"forme","cle":"etiquette","position":[-4.0,4.0,26.75],"texte":"Sas","police":0.6},{"type":"forme","cle":"bloc","position":[-4.0,-0.2,30.25],"dims":[3.0,0.2,3.5],"teinte":"rouge"},{"type":"forme","cle":"bloc","position":[19.75,-0.2,33.5],"dims":[50.5,0.2,3],"teinte":"rouge"},{"type":"forme","cle":"etiquette","position":[20,1.4,33.5],"texte":"5 · Le vide : la coque extérieure","police":0.8,"teinte":"ambre"},{"type":"modele","cle":"12-Exterieur/rocher-spatial","position":[24,6,46],"cadre":[4,4,4]},{"type":"modele","cle":"12-Exterieur/debris-2","position":[6,4,52],"cadre":[9,5,9]},{"type":"forme","cle":"bloc","position":[13.0,-0.2,0.0],"dims":[8,0.2,3.0],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[13.0,3.5,0.0],"dims":[8,0.2,3.0],"plafond":true},{"type":"forme","cle":"bloc","position":[13.0,0.0,-1.5],"dims":[8.2,3.5,0.2]},{"type":"forme","cle":"bloc","position":[13.0,0.0,1.5],"dims":[8.2,3.5,0.2]},{"type":"forme","cle":"bloc","position":[26.0,-0.2,0.0],"dims":[18,0.2,14],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[26.0,4,0.0],"dims":[18,0.2,14],"plafond":true},{"type":"forme","cle":"bloc","position":[20.7,0.0,-7],"dims":[7.6,4,0.2]},{"type":"forme","cle":"bloc","position":[26.0,3.2,-7],"dims":[3.0,0.8,0.2]},{"type":"forme","cle":"bloc","position":[30.25,0.0,-7],"dims":[5.5,4,0.2]},{"type":"forme","cle":"bloc","position":[33.6,2.0,-7],"dims":[1.2,2.0,0.2]},{"type":"forme","cle":"bloc","position":[34.65,0.0,-7],"dims":[0.9,4,0.2]},{"type":"forme","cle":"bloc","position":[20.7,0.0,7],"dims":[7.6,4,0.2]},{"type":"forme","cle":"bloc","position":[26.0,3.2,7],"dims":[3.0,0.8,0.2]},{"type":"forme","cle":"bloc","position":[31.3,0.0,7],"dims":[7.6,4,0.2]},{"type":"forme","cle":"bloc","position":[17,0.0,-6.7],"dims":[0.2,4,0.6]},{"type":"forme","cle":"bloc","position":[17,2.0,-5.8],"dims":[0.2,2.0,1.2]},{"type":"forme","cle":"bloc","position":[17,0.0,-3.35],"dims":[0.2,4,3.7]},{"type":"forme","cle":"bloc","position":[17,3.2,0.0],"dims":[0.2,0.8,3.0]},{"type":"forme","cle":"bloc","position":[17,0.0,4.25],"dims":[0.2,4,5.5]},{"type":"forme","cle":"bloc","position":[35,0.0,-4.25],"dims":[0.2,4,5.5]},{"type":"forme","cle":"bloc","position":[35,3.2,0.0],"dims":[0.2,0.8,3.0]},{"type":"forme","cle":"bloc","position":[35,0.0,4.25],"dims":[0.2,4,5.5]},{"type":"forme","cle":"etiquette","position":[26.0,5.0,0.0],"texte":"Salle informatique","police":1.8},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[19.5,0.0,-4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[19.5,0.0,4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[21.5,0.0,-4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[21.5,0.0,4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[30.5,0.0,-4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[30.5,0.0,4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[32.5,0.0,-4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/baie-serveur","position":[32.5,0.0,4.8],"cadre":[0.8,2.2,1.2]},{"type":"modele","cle":"09-Informatique/cables","position":[21,1.0,-6.7],"cadre":[2,0,2]},{"type":"modele","cle":"09-Informatique/terminal","position":[33.5,0.0,-2.8],"cadre":[1.6,0,1.8]},{"type":"modele","cle":"09-Informatique/console-murale","position":[17.4,1.0,4],"cadre":[1.4,1.4,0.4],"rotation":[0,90,0]},{"type":"forme","cle":"etiquette","position":[26,2.9,-4.8],"texte":"Serveurs en court-circuit · pirater portes et carte","police":0.4},{"type":"forme","cle":"bloc","position":[26.0,-0.2,-9.5],"dims":[3.0,0.2,5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[26.0,3.5,-9.5],"dims":[3.0,0.2,5],"plafond":true},{"type":"forme","cle":"bloc","position":[24.5,0.0,-9.5],"dims":[0.2,3.5,5]},{"type":"forme","cle":"bloc","position":[27.5,0.0,-9.5],"dims":[0.2,3.5,5]},{"type":"forme","cle":"bloc","position":[26.0,-0.2,-20.0],"dims":[22,0.2,16],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[26.0,4.5,-20.0],"dims":[22,0.2,16],"plafond":true},{"type":"forme","cle":"bloc","position":[26.0,0.0,-28],"dims":[22.2,4.5,0.2]},{"type":"forme","cle":"bloc","position":[19.7,0.0,-12],"dims":[9.6,4.5,0.2]},{"type":"forme","cle":"bloc","position":[26.0,3.2,-12],"dims":[3.0,1.3,0.2]},{"type":"forme","cle":"bloc","position":[32.3,0.0,-12],"dims":[9.6,4.5,0.2]},{"type":"forme","cle":"bloc","position":[15,0.0,-26.3],"dims":[0.2,4.5,3.4]},{"type":"forme","cle":"bloc","position":[15,2.0,-24.0],"dims":[0.2,2.5,1.2]},{"type":"forme","cle":"bloc","position":[15,0.0,-17.7],"dims":[0.2,4.5,11.4]},{"type":"forme","cle":"bloc","position":[37,0.0,-20.0],"dims":[0.2,4.5,16]},{"type":"forme","cle":"etiquette","position":[26.0,5.5,-20.0],"texte":"Blocs de cellules : l'émeute","police":1.8},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[16.233,0.0,-27.1],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/toilettes","position":[18.083,0.0,-27.4],"cadre":[0.6,0.8,0.7]},{"type":"modele","cle":"05-Cellules/porte-cellule","position":[16.833,0.0,-25],"cadre":[3.5666666666666664,3.0,0]},{"type":"forme","cle":"bloc","position":[18.667,0.0,-26.5],"dims":[0.2,3.0,3]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[19.9,0.0,-27.1],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/toilettes","position":[21.75,0.0,-27.4],"cadre":[0.6,0.8,0.7]},{"type":"modele","cle":"05-Cellules/lavabo","position":[21.85,0.4,-26.2],"cadre":[0.6,1.0,0.5]},{"type":"forme","cle":"bloc","position":[19.283,0.0,-25],"dims":[1.233,3.0,0.2]},{"type":"forme","cle":"bloc","position":[20.5,2.4,-25],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[21.717,0.0,-25],"dims":[1.233,3.0,0.2]},{"type":"forme","cle":"bloc","position":[22.333,0.0,-26.5],"dims":[0.2,3.0,3]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[23.567,0.0,-27.1],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/toilettes","position":[25.417,0.0,-27.4],"cadre":[0.6,0.8,0.7]},{"type":"modele","cle":"05-Cellules/porte-cellule","position":[24.167,0.0,-25],"cadre":[3.5666666666666664,3.0,0]},{"type":"forme","cle":"bloc","position":[26.0,0.0,-26.5],"dims":[0.2,3.0,3]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[27.233,0.0,-27.1],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/toilettes","position":[29.083,0.0,-27.4],"cadre":[0.6,0.8,0.7]},{"type":"modele","cle":"05-Cellules/lavabo","position":[29.183,0.4,-26.2],"cadre":[0.6,1.0,0.5]},{"type":"forme","cle":"bloc","position":[26.617,0.0,-25],"dims":[1.233,3.0,0.2]},{"type":"forme","cle":"bloc","position":[27.833,2.4,-25],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[29.05,0.0,-25],"dims":[1.233,3.0,0.2]},{"type":"forme","cle":"bloc","position":[29.667,0.0,-26.5],"dims":[0.2,3.0,3]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[30.9,0.0,-27.1],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/toilettes","position":[32.75,0.0,-27.4],"cadre":[0.6,0.8,0.7]},{"type":"forme","cle":"bloc","position":[30.283,0.0,-25],"dims":[1.233,3.0,0.2]},{"type":"forme","cle":"bloc","position":[31.5,2.4,-25],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[32.717,0.0,-25],"dims":[1.233,3.0,0.2]},{"type":"forme","cle":"bloc","position":[33.333,0.0,-26.5],"dims":[0.2,3.0,3]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[34.567,0.0,-27.1],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/toilettes","position":[36.417,0.0,-27.4],"cadre":[0.6,0.8,0.7]},{"type":"modele","cle":"05-Cellules/lavabo","position":[36.517,0.4,-26.2],"cadre":[0.6,1.0,0.5]},{"type":"modele","cle":"05-Cellules/porte-cellule","position":[35.167,0.0,-25],"cadre":[3.5666666666666664,3.0,0]},{"type":"forme","cle":"bloc","position":[26,3.0,-26.5],"dims":[22,0.2,3],"plafond":true},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[16.233,0.0,-12.9],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[19.9,0.0,-12.9],"cadre":[2.1,1.9,2.1]},{"type":"forme","cle":"bloc","position":[18.667,0.0,-13.5],"dims":[0.2,3.0,3]},{"type":"forme","cle":"bloc","position":[22.333,0.0,-13.5],"dims":[0.2,3.0,3]},{"type":"forme","cle":"bloc","position":[15.567,0.0,-15],"dims":[1.333,3.0,0.2]},{"type":"forme","cle":"bloc","position":[16.833,2.4,-15],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[18.667,0.0,-15],"dims":[2.467,3.0,0.2]},{"type":"forme","cle":"bloc","position":[20.5,2.4,-15],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[21.767,0.0,-15],"dims":[1.333,3.0,0.2]},{"type":"forme","cle":"bloc","position":[18.667,3.0,-13.5],"dims":[7.333,0.2,3],"plafond":true},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[30.9,0.0,-12.9],"cadre":[2.1,1.9,2.1]},{"type":"modele","cle":"05-Cellules/lit-superpose","position":[34.567,0.0,-12.9],"cadre":[2.1,1.9,2.1]},{"type":"forme","cle":"bloc","position":[29.667,0.0,-13.5],"dims":[0.2,3.0,3]},{"type":"forme","cle":"bloc","position":[33.333,0.0,-13.5],"dims":[0.2,3.0,3]},{"type":"forme","cle":"bloc","position":[30.233,0.0,-15],"dims":[1.333,3.0,0.2]},{"type":"forme","cle":"bloc","position":[31.5,2.4,-15],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[33.333,0.0,-15],"dims":[2.467,3.0,0.2]},{"type":"forme","cle":"bloc","position":[35.167,2.4,-15],"dims":[1.2,0.6,0.2]},{"type":"forme","cle":"bloc","position":[36.433,0.0,-15],"dims":[1.333,3.0,0.2]},{"type":"forme","cle":"bloc","position":[33.333,3.0,-13.5],"dims":[7.333,0.2,3],"plafond":true},{"type":"forme","cle":"bloc","position":[26,0.0,-19.5],"dims":[3,1.0,1.2]},{"type":"modele","cle":"09-Informatique/terminal","position":[26,1.0,-19.5],"cadre":[0.6,0.6,0.6]},{"type":"modele","cle":"03-Gardes/droide-securite","position":[23.6,0.0,-19.5],"cadre":[0,2.1,0]},{"type":"modele","cle":"02-Prisonniers/detenu-brute","position":[20,0.0,-21],"cadre":[0,1.95,0]},{"type":"modele","cle":"02-Prisonniers/detenu-vieux","position":[33,0.0,-26.6],"cadre":[0,1.75,0]},{"type":"modele","cle":"03-Gardes/garde","position":[27.8,0.0,-18],"cadre":[0,1.85,0],"rotation":[0,180,0]},{"type":"forme","cle":"humain","position":[18,0.0,-19],"teinte":"jaune"},{"type":"forme","cle":"humain","position":[22,0.0,-22.5],"teinte":"jaune"},{"type":"forme","cle":"humain","position":[24,0.0,-17],"teinte":"jaune"},{"type":"forme","cle":"humain","position":[31,0.0,-21.5],"teinte":"jaune"},{"type":"forme","cle":"humain","position":[28.5,0.0,-20.8],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[30,0.0,-17.5],"teinte":"bleu"},{"type":"modele","cle":"13-Armes/cle-a-molette","position":[23,0.0,-20],"cadre":[0.45,0,0]},{"type":"forme","cle":"etiquette","position":[23,0.7,-20],"texte":"Arme de fortune","police":0.35,"teinte":"ambre"},{"type":"forme","cle":"etiquette","position":[26,3.4,-21],"texte":"2 · Émeute : première arme","police":0.6,"teinte":"ambre"},{"type":"forme","cle":"bloc","position":[26.0,-0.2,9.5],"dims":[3.0,0.2,5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[26.0,3.5,9.5],"dims":[3.0,0.2,5],"plafond":true},{"type":"forme","cle":"bloc","position":[24.5,0.0,9.5],"dims":[0.2,3.5,5]},{"type":"forme","cle":"bloc","position":[27.5,0.0,9.5],"dims":[0.2,3.5,5]},{"type":"forme","cle":"bloc","position":[26.0,-0.2,19.5],"dims":[22,0.2,15],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[26.0,6,19.5],"dims":[22,0.2,15],"plafond":true},{"type":"forme","cle":"bloc","position":[19.7,0.0,12],"dims":[9.6,6,0.2]},{"type":"forme","cle":"bloc","position":[26.0,3.2,12],"dims":[3.0,2.8,0.2]},{"type":"forme","cle":"bloc","position":[32.3,0.0,12],"dims":[9.6,6,0.2]},{"type":"forme","cle":"bloc","position":[26.0,0.0,27],"dims":[22.2,6,0.2]},{"type":"forme","cle":"bloc","position":[15,0.0,19.5],"dims":[0.2,6,15]},{"type":"forme","cle":"bloc","position":[37,0.0,19.5],"dims":[0.2,6,15]},{"type":"forme","cle":"etiquette","position":[26.0,7.0,19.5],"texte":"Ateliers : travail forcé, air toxique","police":1.8},{"type":"forme","cle":"bloc","position":[20,0.0,17],"dims":[4,0.9,1.4]},{"type":"forme","cle":"bloc","position":[20,0.0,22],"dims":[4,0.9,1.4]},{"type":"forme","cle":"bloc","position":[32,0.0,17],"dims":[4,0.9,1.4]},{"type":"forme","cle":"bloc","position":[32,0.0,22],"dims":[4,0.9,1.4]},{"type":"modele","cle":"06-Couloirs/tuyaux","position":[26,0.0,26.0],"cadre":[0,0,6],"rotation":[0,90,0]},{"type":"modele","cle":"10-Hangar/caisses","position":[35,0.0,25],"cadre":[2,2,2]},{"type":"modele","cle":"10-Hangar/caisses","position":[17,0.0,25],"cadre":[2,2,2]},{"type":"modele","cle":"02-Prisonniers/detenu-atelier","position":[20,0.0,15.8],"cadre":[0,2.8,0]},{"type":"modele","cle":"02-Prisonniers/detenu-atelier","position":[32,0.0,20.4],"cadre":[0,2.8,0]},{"type":"forme","cle":"humain","position":[24,0.0,18],"teinte":"jaune"},{"type":"forme","cle":"humain","position":[29,0.0,23],"teinte":"jaune"},{"type":"forme","cle":"etiquette","position":[26,2.6,20],"texte":"Détenus alliés possibles","police":0.45},{"type":"forme","cle":"bloc","position":[37.5,-0.2,0.0],"dims":[5,0.2,3.0],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[37.5,3.5,0.0],"dims":[5,0.2,3.0],"plafond":true},{"type":"forme","cle":"bloc","position":[37.5,0.0,-1.5],"dims":[5.2,3.5,0.2]},{"type":"forme","cle":"bloc","position":[37.5,0.0,1.5],"dims":[5.2,3.5,0.2]},{"type":"forme","cle":"etiquette","position":[38.2,2.9,0],"texte":"Porte scellée : le vide derrière","police":0.4,"teinte":"rouge"},{"type":"forme","cle":"bloc","position":[52.0,-0.2,0.0],"dims":[24,0.2,9.0],"teinte":"rouge"},{"type":"forme","cle":"bloc","position":[42.85,0.0,-4.5],"dims":[5.9,4,0.2]},{"type":"forme","cle":"bloc","position":[47.0,3.0,-4.5],"dims":[2.4,1.0,0.2]},{"type":"forme","cle":"bloc","position":[56.15,0.0,-4.5],"dims":[15.9,4,0.2]},{"type":"forme","cle":"bloc","position":[44.95,0.0,4.5],"dims":[10.1,4,0.2]},{"type":"forme","cle":"bloc","position":[52.0,3.6,4.5],"dims":[4.0,0.4,0.2]},{"type":"forme","cle":"bloc","position":[59.05,0.0,4.5],"dims":[10.1,4,0.2]},{"type":"forme","cle":"bloc","position":[40,0.0,-3.0],"dims":[0.2,4,3.0]},{"type":"forme","cle":"bloc","position":[40,3.2,0.0],"dims":[0.2,0.8,3.0]},{"type":"forme","cle":"bloc","position":[40,0.0,0.0],"dims":[0.08,3.2,3.0],"teinte":"scelle"},{"type":"forme","cle":"bloc","position":[40,0.0,3.0],"dims":[0.2,4,3.0]},{"type":"forme","cle":"etiquette","position":[52.0,5.0,0.0],"texte":"Coursive éventrée : ouverte sur le vide","police":1.5,"teinte":"rouge"},{"type":"forme","cle":"bloc","position":[47.5,4,0],"dims":[15,0.2,9],"plafond":true},{"type":"modele","cle":"12-Exterieur/gravats-breche","position":[59,0.0,0],"cadre":[4,3,4]},{"type":"modele","cle":"12-Exterieur/debris-1","position":[70,1.5,-1],"cadre":[7,4,7]},{"type":"modele","cle":"04-Pirates/pirate-eva","position":[56,0.0,2.5],"cadre":[0,1.9,0]},{"type":"modele","cle":"09-Informatique/cables","position":[48,1.6,-4.2],"cadre":[3,0,3]},{"type":"forme","cle":"etiquette","position":[52,3.0,0],"texte":"5 · Ou par ici, en combinaison","police":0.55,"teinte":"ambre"},{"type":"forme","cle":"bloc","position":[53.0,-0.2,-16.25],"dims":[24,0.2,23.5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[53.0,10,-16.25],"dims":[24,0.2,23.5],"plafond":true},{"type":"forme","cle":"bloc","position":[53.0,0.0,-28],"dims":[24.2,10,0.2]},{"type":"forme","cle":"bloc","position":[41,0.0,-19.05],"dims":[0.2,10,17.9]},{"type":"forme","cle":"bloc","position":[41,2.0,-9.5],"dims":[0.2,8.0,1.2]},{"type":"forme","cle":"bloc","position":[41,0.0,-6.7],"dims":[0.2,10,4.4]},{"type":"forme","cle":"bloc","position":[65,0.0,-16.25],"dims":[0.2,10,23.5]},{"type":"forme","cle":"etiquette","position":[53.0,11.0,-16.25],"texte":"Salle des machines","police":2.2},{"type":"forme","cle":"bloc","position":[40.95,0.0,-4.5],"dims":[0.1,10,0.2]},{"type":"forme","cle":"bloc","position":[52.5,4.0,-4.5],"dims":[23.0,6.0,0.2]},{"type":"forme","cle":"bloc","position":[64.05,0.0,-4.5],"dims":[0.1,10,0.2]},{"type":"forme","cle":"bloc","position":[64.5,0.0,-4.5],"dims":[1,10,0.2]},{"type":"modele","cle":"08-Machines/reacteur","position":[53,0.0,-16.5],"cadre":[7,8,7]},{"type":"forme","cle":"bloc","position":[53.5,3.7,-26.6],"dims":[22,0.3,2.4]},{"type":"forme","cle":"bloc","position":[45.15,0.0,-24.6],"dims":[0.3,0.25,1.6]},{"type":"forme","cle":"bloc","position":[45.45,0.0,-24.6],"dims":[0.3,0.5,1.6]},{"type":"forme","cle":"bloc","position":[45.75,0.0,-24.6],"dims":[0.3,0.75,1.6]},{"type":"forme","cle":"bloc","position":[46.05,0.0,-24.6],"dims":[0.3,1.0,1.6]},{"type":"forme","cle":"bloc","position":[46.35,0.0,-24.6],"dims":[0.3,1.25,1.6]},{"type":"forme","cle":"bloc","position":[46.65,0.0,-24.6],"dims":[0.3,1.5,1.6]},{"type":"forme","cle":"bloc","position":[46.95,0.0,-24.6],"dims":[0.3,1.75,1.6]},{"type":"forme","cle":"bloc","position":[47.25,0.0,-24.6],"dims":[0.3,2.0,1.6]},{"type":"forme","cle":"bloc","position":[47.55,0.0,-24.6],"dims":[0.3,2.25,1.6]},{"type":"forme","cle":"bloc","position":[47.85,0.0,-24.6],"dims":[0.3,2.5,1.6]},{"type":"forme","cle":"bloc","position":[48.15,0.0,-24.6],"dims":[0.3,2.75,1.6]},{"type":"forme","cle":"bloc","position":[48.45,0.0,-24.6],"dims":[0.3,3.0,1.6]},{"type":"forme","cle":"bloc","position":[48.75,0.0,-24.6],"dims":[0.3,3.25,1.6]},{"type":"forme","cle":"bloc","position":[49.05,0.0,-24.6],"dims":[0.3,3.5,1.6]},{"type":"forme","cle":"bloc","position":[49.35,0.0,-24.6],"dims":[0.3,3.75,1.6]},{"type":"forme","cle":"bloc","position":[49.65,0.0,-24.6],"dims":[0.3,4.0,1.6]},{"type":"modele","cle":"08-Machines/generateur","position":[45,0.0,-10],"cadre":[3,3,3]},{"type":"modele","cle":"08-Machines/generateur","position":[61,0.0,-10],"cadre":[3,3,3]},{"type":"modele","cle":"08-Machines/coeur-fusion","position":[57,0.0,-23],"cadre":[2.5,3.5,2.5]},{"type":"modele","cle":"08-Machines/pylone-energie","position":[46,0.0,-19],"cadre":[2.5,4.5,2.5]},{"type":"modele","cle":"08-Machines/pylone-energie","position":[59.5,0.0,-15],"cadre":[2.5,4.5,2.5]},{"type":"modele","cle":"06-Couloirs/tuyaux","position":[63.2,0.0,-18],"cadre":[0,0,10]},{"type":"modele","cle":"09-Informatique/terminal","position":[56,4.0,-26.6],"cadre":[1.2,0,1.4]},{"type":"forme","cle":"etiquette","position":[56,6.0,-26.6],"texte":"3 · Rétablir le courant de la chambre des reliques","police":0.5,"teinte":"ambre"},{"type":"forme","cle":"humain","position":[50,0.0,-9],"teinte":"orange"},{"type":"forme","cle":"humain","position":[56,0.0,-11],"teinte":"orange"},{"type":"forme","cle":"humain","position":[48,0.0,-13],"teinte":"orange"},{"type":"forme","cle":"bloc","position":[54.0,-0.2,18.25],"dims":[28,0.2,27.5],"teinte":"sol"},{"type":"forme","cle":"bloc","position":[54.0,12,18.25],"dims":[28,0.2,27.5],"plafond":true},{"type":"forme","cle":"bloc","position":[40.45,0.0,32],"dims":[1.1,12,0.2]},{"type":"forme","cle":"bloc","position":[42.0,2.6,32],"dims":[2.0,9.4,0.2]},{"type":"forme","cle":"bloc","position":[46.5,0.0,32],"dims":[7.0,12,0.2]},{"type":"forme","cle":"bloc","position":[57.0,9.0,32],"dims":[14.0,3,0.2]},{"type":"forme","cle":"bloc","position":[57.0,0.0,32],"dims":[14.0,9.0,0.08],"teinte":"champ"},{"type":"forme","cle":"bloc","position":[66.05,0.0,32],"dims":[4.1,12,0.2]},{"type":"forme","cle":"bloc","position":[40,0.0,18.25],"dims":[0.2,12,27.5]},{"type":"forme","cle":"bloc","position":[68,0.0,10.5],"dims":[0.2,12,12.0]},{"type":"forme","cle":"bloc","position":[68,3.0,18.0],"dims":[0.2,9,3.0]},{"type":"forme","cle":"bloc","position":[68,0.0,25.75],"dims":[0.2,12,12.5]},{"type":"forme","cle":"etiquette","position":[54.0,13.0,18.25],"texte":"Hangar","police":2.8},{"type":"forme","cle":"bloc","position":[39.95,0.0,4.5],"dims":[0.1,12,0.2]},{"type":"forme","cle":"bloc","position":[52.0,4.0,4.5],"dims":[24.0,8.0,0.2]},{"type":"forme","cle":"bloc","position":[64.05,0.0,4.5],"dims":[0.1,12,0.2]},{"type":"forme","cle":"bloc","position":[66,0.0,4.5],"dims":[4,12,0.2]},{"type":"forme","cle":"bloc","position":[42.0,3,30.25],"dims":[4,0.2,3.5],"plafond":true},{"type":"forme","cle":"bloc","position":[40.45,0.0,28.5],"dims":[1.1,3,0.2]},{"type":"forme","cle":"bloc","position":[42.0,2.6,28.5],"dims":[2.0,0.4,0.2]},{"type":"forme","cle":"bloc","position":[43.55,0.0,28.5],"dims":[1.1,3,0.2]},{"type":"forme","cle":"bloc","position":[44,0.0,30.25],"dims":[0.2,3,3.5]},{"type":"forme","cle":"etiquette","position":[42.0,4.0,30.25],"texte":"Sas","police":0.5},{"type":"modele","cle":"11-Vaisseaux/navette-a-voler","position":[56,0.0,20],"cadre":[11,5,14]},{"type":"forme","cle":"etiquette","position":[56,6.5,20],"texte":"La navette à voler","police":0.8,"teinte":"ambre"},{"type":"forme","cle":"etiquette","position":[52,4.5,10],"texte":"6 · Le hangar : voler la navette","police":0.7,"teinte":"ambre"},{"type":"modele","cle":"11-Vaisseaux/navette-transfert","position":[46.5,0.0,13],"cadre":[8,4,11]},{"type":"modele","cle":"11-Vaisseaux/capsule-sauvetage","position":[66.2,0.0,25],"cadre":[2.4,2.6,3]},{"type":"modele","cle":"11-Vaisseaux/capsule-sauvetage","position":[66.2,0.0,29],"cadre":[2.4,2.6,3]},{"type":"modele","cle":"10-Hangar/caisses","position":[60.5,0.0,13],"cadre":[2,2,2]},{"type":"modele","cle":"10-Hangar/caisses","position":[62.8,0.0,13],"cadre":[2,2,2]},{"type":"modele","cle":"10-Hangar/caisse-armes","position":[44.5,0.0,7],"cadre":[1.8,1.0,1.0]},{"type":"modele","cle":"10-Hangar/cellule-energie","position":[66.8,0.0,11.5],"cadre":[0,1.0,0]},{"type":"modele","cle":"10-Hangar/cellule-energie","position":[66.8,0.0,12.7],"cadre":[0,1.0,0]},{"type":"modele","cle":"10-Hangar/cellule-energie","position":[65.6,0.0,11.5],"cadre":[0,1.0,0]},{"type":"modele","cle":"10-Hangar/bidon-carburant","position":[41,0.0,20],"cadre":[0,0.8,0]},{"type":"modele","cle":"10-Hangar/bidon-carburant","position":[41,0.0,21],"cadre":[0,0.8,0]},{"type":"modele","cle":"10-Hangar/bidon-carburant","position":[41.8,0.0,20.5],"cadre":[0,0.8,0]},{"type":"forme","cle":"bloc","position":[48,0.0,23],"dims":[2.4,1.2,1]},{"type":"forme","cle":"bloc","position":[51,0.0,27],"dims":[2.4,1.2,1]},{"type":"forme","cle":"bloc","position":[45.5,0.0,22],"dims":[1,1.2,2.4]},{"type":"forme","cle":"bloc","position":[62,0.0,23],"dims":[2.4,1.2,1]},{"type":"forme","cle":"bloc","position":[64,0.0,26.5],"dims":[1,1.2,2.4]},{"type":"forme","cle":"bloc","position":[64,0.0,7],"dims":[6,3,4]},{"type":"forme","cle":"bloc","position":[57.55,0.0,7],"dims":[0.3,0.25,1.6]},{"type":"forme","cle":"bloc","position":[57.85,0.0,7],"dims":[0.3,0.5,1.6]},{"type":"forme","cle":"bloc","position":[58.15,0.0,7],"dims":[0.3,0.75,1.6]},{"type":"forme","cle":"bloc","position":[58.45,0.0,7],"dims":[0.3,1.0,1.6]},{"type":"forme","cle":"bloc","position":[58.75,0.0,7],"dims":[0.3,1.25,1.6]},{"type":"forme","cle":"bloc","position":[59.05,0.0,7],"dims":[0.3,1.5,1.6]},{"type":"forme","cle":"bloc","position":[59.35,0.0,7],"dims":[0.3,1.75,1.6]},{"type":"forme","cle":"bloc","position":[59.65,0.0,7],"dims":[0.3,2.0,1.6]},{"type":"forme","cle":"bloc","position":[59.95,0.0,7],"dims":[0.3,2.25,1.6]},{"type":"forme","cle":"bloc","position":[60.25,0.0,7],"dims":[0.3,2.5,1.6]},{"type":"forme","cle":"bloc","position":[60.55,0.0,7],"dims":[0.3,2.75,1.6]},{"type":"forme","cle":"bloc","position":[60.85,0.0,7],"dims":[0.3,3.0,1.6]},{"type":"forme","cle":"bloc","position":[64,3,9],"dims":[6,1.0,0.06],"teinte":"verre"},{"type":"modele","cle":"09-Informatique/terminal","position":[64.5,3,6.2],"cadre":[1.6,0,1.8]},{"type":"forme","cle":"etiquette","position":[64,5.2,7],"texte":"Poste de contrôle","police":0.5},{"type":"modele","cle":"04-Pirates/pirate-chef","position":[64.5,0.0,18],"cadre":[0,1.95,0],"rotation":[0,-90,0]},{"type":"forme","cle":"humain","position":[62,0.0,16.5],"teinte":"orange"},{"type":"forme","cle":"humain","position":[63,0.0,20.5],"teinte":"orange"},{"type":"forme","cle":"humain","position":[60,0.0,18],"teinte":"orange"},{"type":"forme","cle":"humain","position":[61.5,0.0,21.8],"teinte":"orange"},{"type":"forme","cle":"humain","position":[48,0,24.2],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[51,0,28.2],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[44.5,0,23.5],"teinte":"bleu"},{"type":"forme","cle":"humain","position":[63.5,3,8],"teinte":"bleu"},{"type":"forme","cle":"etiquette","position":[57,9.6,31.4],"texte":"Champ de force : sortie des navettes","police":0.6,"teinte":"ether"},{"type":"forme","cle":"etiquette","position":[57,10.8,34],"texte":"7 · Décoller, puis l'hyperespace","police":0.8,"teinte":"ambre"},{"type":"forme","cle":"bloc","position":[71.0,-0.2,18.0],"dims":[6,0.2,3.0],"teinte":"sombre"},{"type":"forme","cle":"bloc","position":[71.0,3,18.0],"dims":[6,0.2,3.0],"plafond":true},{"type":"forme","cle":"bloc","position":[71.0,0.0,16.5],"dims":[6.2,3,0.2]},{"type":"forme","cle":"bloc","position":[71.0,0.0,19.5],"dims":[6.2,3,0.2]},{"type":"forme","cle":"etiquette","position":[71.0,4.0,18.0],"texte":"Tube d'abordage","police":0.5},{"type":"modele","cle":"11-Vaisseaux/vaisseau-pirate","position":[86,0.0,18],"cadre":[24,10,18]},{"type":"forme","cle":"etiquette","position":[86,12,18],"texte":"Vaisseau pirate amarré","police":1.2,"teinte":"orange"}]}}/*MAQUETTES-FIN*/;
 
 const $ = s => document.querySelector(s);
 const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -184,7 +197,7 @@ const memoire = {
   ecrire(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch { } },
 };
 const CLE_SCENE = 'echos-atelier-prologue/scene', CLE_PREFS = 'echos-atelier-prologue/prefs';
-const prefs = Object.assign({ ambiance: 'atelier', aimant: true, accueilVu: false }, memoire.lire(CLE_PREFS, {}));
+const prefs = Object.assign({ ambiance: 'atelier', aimant: true, accueilVu: false, plafonds: false }, memoire.lire(CLE_PREFS, {}));
 const sauverPrefs = () => memoire.ecrire(CLE_PREFS, prefs);
 
 let minuteurToast;
@@ -526,7 +539,7 @@ lumiereSoleil.shadow.normalBias = 0.02;
 scene.add(ciel, plafonnier, plafonnier.target, lumiereSoleil, lumiereSoleil.target);
 
 // grille de 1 m : visible avec l'aimant, et toujours dans le vide
-const grille = new THREE.GridHelper(L, L, 0x8a93a3, 0x5a6170);
+const grille = new THREE.GridHelper(60, 60, 0x8a93a3, 0x5a6170);
 grille.material.transparent = true;
 grille.material.opacity = 0.22;
 grille.material.depthWrite = false;
@@ -537,7 +550,6 @@ let ambiance = 'atelier';
 function appliquerAmbiance(nom) {
   ambiance = ['atelier', 'panne', 'vide'].includes(nom) ? nom : 'atelier';
   $('#ambiance').value = ambiance;
-  hangar.visible = ambiance !== 'vide';
   plafonnier.visible = ambiance === 'atelier';
   lumiereSoleil.visible = ambiance === 'vide';
   balises.forEach(b => { b.lampe.visible = b.boitier.visible = ambiance === 'panne'; });
@@ -545,9 +557,24 @@ function appliquerAmbiance(nom) {
   ciel.color.set(cielHaut); ciel.groundColor.set(cielBas); ciel.intensity = force;
   for (const m of [matBande, matBandeFaible]) { m.emissive.set(ambiance === 'panne' ? 0xff2a1a : 0xffffff); m.emissiveIntensity = ambiance === 'panne' ? 1.6 : 3; }
   scene.environment = REFLETS[ambiance];
+  majDecor();
   majGrille();
   prefs.ambiance = ambiance;
   sauverPrefs();
+}
+
+// le hangar n'est là que dans le décor « hangar » ; dans l'espace, la lumière tombe presque à la verticale pour éclairer les coursives
+function majDecor() {
+  hangar.visible = etat.decor === 'hangar' && ambiance !== 'vide';
+  $('#decor').value = etat.decor;
+}
+function suivreOmbres() {
+  const c = visite ? camera.position : orbite.target;
+  const x = Math.round(c.x / 4) * 4, z = Math.round(c.z / 4) * 4;
+  plafonnier.target.position.set(x, 0, z);
+  if (etat.decor === 'espace') plafonnier.position.set(x + 4, 40, z + 5); else plafonnier.position.set(x + 13, 34, z + 15);
+  lumiereSoleil.target.position.set(x, 0, z);
+  lumiereSoleil.position.copy(SOLEIL).multiplyScalar(60).add(lumiereSoleil.target.position);
 }
 
 function animerAmbiance(t) {
@@ -573,24 +600,62 @@ function textureCarreaux() {
   g.fillStyle = '#7f838a'; g.fillRect(0, 63, 128, 1); g.fillRect(63, 0, 1, 128);
   return texture(c, true, 1, 1);
 }
-const matGris = new THREE.MeshStandardMaterial({ map: textureCarreaux(), roughness: 0.85, metalness: 0 });
-const matHumain = new THREE.MeshStandardMaterial({ color: 0x86efe6, transparent: true, opacity: 0.4, roughness: 0.6 });
+const carreaux = textureCarreaux();
+const matGris = new THREE.MeshStandardMaterial({ map: carreaux, roughness: 0.85, metalness: 0 });
+const transparent = options => new THREE.MeshStandardMaterial({ transparent: true, depthWrite: false, ...options });
+// le code couleur des formes grises : sol, coque, danger (le vide), objectif, relique, verre, porte scellée, champ de force
+const TEINTES = {
+  gris: matGris,
+  sol: new THREE.MeshStandardMaterial({ map: carreaux, color: 0xb4b8be, roughness: 0.9 }),
+  sombre: new THREE.MeshStandardMaterial({ map: carreaux, color: 0x62666e, roughness: 0.8, metalness: 0.2 }),
+  rouge: new THREE.MeshStandardMaterial({ map: carreaux, color: 0xff7a6a, roughness: 0.85 }),
+  ambre: new THREE.MeshStandardMaterial({ map: carreaux, color: 0xffc070, roughness: 0.8 }),
+  ether: new THREE.MeshStandardMaterial({ color: 0x9ff3ec, emissive: 0x2ad8cc, emissiveIntensity: 1.2, roughness: 0.3 }),
+  verre: transparent({ color: 0xa8d8ff, opacity: 0.2, roughness: 0.05, metalness: 0.1 }),
+  scelle: transparent({ color: 0xff4a3a, emissive: 0x801810, emissiveIntensity: 0.6, opacity: 0.45 }),
+  champ: transparent({ color: 0x5fd8ff, emissive: 0x2a8cff, emissiveIntensity: 0.8, opacity: 0.18, side: THREE.DoubleSide }),
+};
+const TRAVERSABLES = new Set(['scelle', 'champ']);   // on passe au travers en visite
+const CAMPS = { bleu: 0x5b9bf0, orange: 0xe0703a, jaune: 0xe8c547 };
+const matsHumain = {};
+const matHumain = (teinte = '') => matsHumain[teinte] ||= new THREE.MeshStandardMaterial({ color: CAMPS[teinte] ?? 0x86efe6, transparent: true, opacity: teinte in CAMPS ? 0.75 : 0.4, roughness: 0.6 });
+const COULEURS_TEXTE = { ambre: '#f2b26b', ether: '#86efe6', rouge: '#ff8a7a', bleu: '#8fbaf5', orange: '#f0a070', jaune: '#f0d670' };
 const matAttente = new THREE.MeshBasicMaterial({ color: 0x86efe6, wireframe: true, transparent: true, opacity: 0.35 });
 
 // une boîte dont les coordonnées de texture suivent les mètres : un carreau = 1 m, quelle que soit sa taille
-function boite(l, h, p, x = 0, y = 0, z = 0) {
+function boite(l, h, p, x = 0, y = 0, z = 0, mat = matGris) {
   const g = new THREE.BoxGeometry(l, h, p), uv = g.attributes.uv;
   const faces = [[p, h], [p, h], [l, p], [l, p], [l, h], [l, h]];
   for (let f = 0; f < 6; f++) for (let k = 0; k < 4; k++) { const i = f * 4 + k; uv.setXY(i, uv.getX(i) * faces[f][0], uv.getY(i) * faces[f][1]); }
-  const m = new THREE.Mesh(g, matGris);
+  const m = new THREE.Mesh(g, mat);
   m.position.set(x, y, z);
-  m.castShadow = m.receiveShadow = true;
+  m.castShadow = !mat.transparent;
+  m.receiveShadow = true;
   return m;
 }
-function silhouette() {
-  const corps = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.1, 6, 16), matHumain); corps.position.y = 0.77;
-  const tete = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), matHumain); tete.position.y = 1.67;
+function silhouette(teinte) {
+  const corps = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.1, 6, 16), matHumain(teinte)); corps.position.y = 0.77;
+  const tete = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 14), matHumain(teinte)); tete.position.y = 1.67;
   return [corps, tete];
+}
+// une étiquette qui flotte et fait toujours face à la caméra ; hauteur du texte : police (m)
+function etiquette(texte, teinte, police = 1) {
+  const [c, g] = toile(1024, 128);
+  g.font = '600 64px system-ui, -apple-system, "Segoe UI", sans-serif';
+  const l = Math.min(1000, Math.ceil(g.measureText(texte).width) + 56);
+  g.fillStyle = 'rgba(8, 9, 14, 0.78)';
+  g.beginPath(); if (g.roundRect) g.roundRect((1024 - l) / 2, 14, l, 100, 18); else g.rect((1024 - l) / 2, 14, l, 100); g.fill();
+  g.strokeStyle = COULEURS_TEXTE[teinte] || 'rgba(236, 230, 216, 0.5)'; g.lineWidth = 4; g.stroke();
+  g.fillStyle = COULEURS_TEXTE[teinte] || '#ece6d8';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(texte, 512, 66, 960);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = anisotropie;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, toneMapped: false }));
+  s.scale.set(police * 8, police, 1);
+  s.position.y = police / 2;
+  return s;
 }
 // origine de chaque forme : au sol, au centre
 const FORMES = {
@@ -602,8 +667,12 @@ const FORMES = {
   plateforme: { nom: 'Plateforme 3 × 3 m', taille: [3, 1.5, 3], creer: () => [boite(3, 1.5, 3, 0, 0.75)] },
   colonne: { nom: 'Colonne 6 m', taille: [0.6, 6, 0.6], creer: () => [boite(0.6, 6, 0.6, 0, 3)] },
   cube: { nom: 'Cube 1 m', taille: [1, 1, 1], creer: () => [boite(1, 1, 1, 0, 0.5)] },
-  humain: { nom: 'Silhouette 1,80 m', taille: [0.44, 1.8, 0.44], creer: silhouette },
+  humain: { nom: 'Silhouette 1,80 m', taille: [0.44, 1.8, 0.44], creer: p => silhouette(p.teinte) },
+  bloc: { nom: 'Bloc sur mesure', taille: [2, 2, 2], creer: p => { const [l, h, pr] = p.dims || [2, 2, 2]; return [boite(l, h, pr, 0, h / 2, 0, TEINTES[p.teinte] || matGris)]; } },
+  etiquette: { nom: 'Étiquette', taille: [3, 1, 0.1], creer: p => [etiquette(p.texte || 'Zone', p.teinte, p.police || 1)] },
 };
+const NOMS_TEINTES = { gris: 'Gris', sol: 'Sol', sombre: 'Coque', rouge: 'Danger (le vide)', ambre: 'Objectif', ether: 'Relique', verre: 'Verre', scelle: 'Porte scellée', champ: 'Champ de force' };
+const NOMS_CAMPS = { '': 'Repère', bleu: 'Garde', orange: 'Pirate', jaune: 'Détenu' };
 
 // ------------------------------------------------------------------ fichiers des modèles : servis par un serveur local, ou choisis sur le disque
 
@@ -749,6 +818,17 @@ const boutons = new Map();
 function construireBibliotheque() {
   const b = $('#bibliotheque');
   const titre = (t, p) => { const h = document.createElement('h2'); h.textContent = t; b.append(h); if (p) { const x = document.createElement('p'); x.textContent = p; b.append(x); } };
+  titre('Maquettes', 'Des niveaux déjà construits, à visiter ou à modifier.');
+  for (const [cle, mq] of Object.entries(MAQUETTES)) {
+    const bt = document.createElement('button');
+    bt.className = 'forme maquette';
+    bt.innerHTML = '<i></i>';
+    bt.append(mq.nom);
+    bt.title = mq.description;
+    bt.dataset.texte = `${mq.nom} ${mq.description}`;
+    bt.onclick = () => chargerMaquette(cle);
+    b.append(bt);
+  }
   titre('Formes grises', 'Pour tracer le niveau avant de poser les vrais modèles.');
   for (const [cle, f] of Object.entries(FORMES)) {
     const bt = document.createElement('button');
@@ -835,7 +915,8 @@ function charger(m) {
 
 // ------------------------------------------------------------------ la scène : une liste de pièces, enregistrée à chaque changement
 
-// pièce : { id, type: 'modele' | 'forme', cle, position [m], rotation [degrés, XYZ], echelle, taille [m, à l'échelle 1], animation }
+// pièce : { id, type: 'modele' | 'forme', cle, position [m], rotation [degrés, XYZ], echelle, taille [m, à l'échelle 1], animation,
+//   cadre [m] (modèle : mis à l'échelle pour tenir dans cette boîte, 0 = sans limite), dims [m] et plafond (bloc), teinte, texte et police (étiquette) }
 function propre(p) {
   if (!p || !['modele', 'forme'].includes(p.type) || typeof p.cle !== 'string') return null;
   if (p.type === 'forme' && !FORMES[p.cle]) return null;
@@ -843,19 +924,33 @@ function propre(p) {
   const q = { id: typeof p.id === 'string' ? p.id : nouvelId(), type: p.type, cle: p.cle, position: v(p.position, [0, 0, 0]), rotation: v(p.rotation, [0, 0, 0]), echelle: v(p.echelle, [1, 1, 1]) };
   if (v(p.taille)) q.taille = v(p.taille);
   if (Number.isInteger(p.animation)) q.animation = p.animation;
+  if (p.cle === 'bloc') q.dims = (v(p.dims) || [2, 2, 2]).map(x => Math.min(500, Math.max(0.01, x)));
+  if (p.plafond === true) q.plafond = true;
+  if (typeof p.teinte === 'string' && (p.teinte in TEINTES || p.teinte in CAMPS)) q.teinte = p.teinte;
+  if (typeof p.texte === 'string') q.texte = p.texte.slice(0, 80);
+  if (Number.isFinite(p.police)) q.police = Math.min(10, Math.max(0.2, p.police));
+  if (v(p.cadre) && p.cadre.some(x => x > 0)) q.cadre = v(p.cadre).map(x => Math.max(0, x));
   return q;
+}
+const signature = p => JSON.stringify([p.cle, p.dims, p.teinte, p.texte, p.police, p.cadre]);
+// facteur qui fait tenir le modèle dans son cadre (le plus petit des rapports, sur les côtés donnés)
+function facteurCadre(cadre, taille) {
+  if (!cadre || !taille) return 1;
+  const r = [0, 1, 2].filter(i => cadre[i] > 0 && taille[i] > 1e-6).map(i => cadre[i] / taille[i]);
+  return r.length ? Math.min(...r) : 1;
 }
 let compteurId = 0;
 const nouvelId = () => `p${Date.now().toString(36)}${(compteurId++).toString(36)}${Math.random().toString(36).slice(2, 5)}`;
 
-const etat = { pieces: (memoire.lire(CLE_SCENE, {}).pieces || []).map(propre).filter(Boolean) };
+const enregistree = memoire.lire(CLE_SCENE, {});
+const etat = { decor: enregistree.decor === 'espace' ? 'espace' : 'hangar', pieces: (enregistree.pieces || []).map(propre).filter(Boolean) };
 const objets = new Map();   // id → groupe dans la scène
 const pieceDe = id => etat.pieces.find(p => p.id === id);
 let historique = [], futur = [];
-const instantane = () => JSON.stringify(etat.pieces);
+const instantane = () => JSON.stringify({ decor: etat.decor, pieces: etat.pieces });
 let dernier = instantane();
 
-function sauver() { memoire.ecrire(CLE_SCENE, { version: 1, pieces: etat.pieces }); }
+function sauver() { memoire.ecrire(CLE_SCENE, { version: 2, decor: etat.decor, pieces: etat.pieces }); }
 function valider() {
   const s = instantane();
   if (s === dernier) return;
@@ -870,8 +965,12 @@ function revenir(depuis, vers) {
   if (!depuis.length) return false;
   vers.push(dernier);
   dernier = depuis.pop();
-  etat.pieces = JSON.parse(dernier);
+  const s = JSON.parse(dernier);
+  departMaquette = null;
+  etat.pieces = s.pieces;
+  etat.decor = s.decor;
   reconcilier();
+  majDecor();
   sauver();
   majBoutons();
   return true;
@@ -882,25 +981,27 @@ const retablir = () => { if (revenir(futur, historique)) toast('Rétabli'); };
 function poser(o, p) {
   o.position.fromArray(p.position);
   o.rotation.set(p.rotation[0] * DEG, p.rotation[1] * DEG, p.rotation[2] * DEG);
-  o.scale.fromArray(p.echelle);
+  o.scale.fromArray(p.echelle).multiplyScalar(o.userData.facteur || 1);
 }
 function relever(o, p) {
   p.position = o.position.toArray().map(x => arrondi(x));
   p.rotation = [o.rotation.x, o.rotation.y, o.rotation.z].map(r => arrondi(r / DEG, 2));
-  p.echelle = o.scale.toArray().map(x => arrondi(x, 4));
+  p.echelle = o.scale.toArray().map(x => arrondi(x / (o.userData.facteur || 1), 4));
 }
 
 function creerObjet(p) {
   const o = new THREE.Group();
-  o.userData = { id: p.id, cle: p.cle, type: p.type };
+  o.userData = { id: p.id, cle: p.cle, type: p.type, sig: signature(p), plafond: !!p.plafond };
   if (p.type === 'forme') {
-    FORMES[p.cle].creer().forEach(x => o.add(x));
-    o.userData.marchable = p.cle !== 'humain';
+    FORMES[p.cle].creer(p).forEach(x => o.add(x));
+    o.userData.marchable = !['humain', 'etiquette'].includes(p.cle) && !TRAVERSABLES.has(p.teinte);
     o.userData.faces = 0;
     o.traverse(n => { if (n.isMesh) o.userData.faces += n.geometry.index.count / 3; });
   } else {
-    // boîte d'attente à la taille du modèle, remplacée dès qu'il est chargé
-    const t = p.taille || [1, 1, 1];
+    // boîte d'attente à la taille du modèle (ou de son cadre), remplacée dès qu'il est chargé
+    const c = p.cadre, m = c ? Math.max(...c) : 1;
+    let t = p.taille || (c ? c.map(x => x || m * 0.4) : [1, 1, 1]);
+    if (p.taille && c) { o.userData.facteur = facteurCadre(c, p.taille); }
     const attente = new THREE.Mesh(new THREE.BoxGeometry(...t), matAttente);
     attente.position.y = t[1] / 2;
     attente.userData.attente = true;
@@ -913,7 +1014,10 @@ function creerObjet(p) {
 function retirer(o) {
   scene.remove(o);
   o.userData.mixer?.stopAllAction();
-  o.traverse(n => { if (n.userData.attente) n.geometry.dispose(); });
+  o.traverse(n => {
+    if (n.userData.attente || o.userData.type === 'forme') n.geometry?.dispose();
+    if (n.isSprite) { n.material.map.dispose(); n.material.dispose(); }
+  });
 }
 
 async function remplir(o) {
@@ -927,7 +1031,9 @@ async function remplir(o) {
     copie.position.copy(d.decalage);
     for (const c of o.children.filter(c => c.userData.attente)) { o.remove(c); c.geometry.dispose(); }
     o.add(copie);
-    Object.assign(o.userData, { rempli: true, faces: d.faces, animations: d.animations });
+    const p = pieceDe(o.userData.id);
+    Object.assign(o.userData, { rempli: true, faces: d.faces, animations: d.animations, facteur: facteurCadre(p?.cadre, d.taille.toArray()) });
+    if (p) poser(o, p);
     if (d.animations.length) {
       o.userData.mixer = new THREE.AnimationMixer(copie);
       jouer(o, pieceDe(o.userData.id)?.animation ?? 0);
@@ -956,12 +1062,33 @@ function reconcilier() {
   for (const [id, o] of objets) if (!ids.has(id)) { retirer(o); objets.delete(id); }
   for (const p of etat.pieces) {
     let o = objets.get(p.id);
-    if (!o || o.userData.cle !== p.cle) { if (o) retirer(o); o = creerObjet(p); objets.set(p.id, o); }
+    if (!o || o.userData.sig !== signature(p)) { if (o) retirer(o); o = creerObjet(p); objets.set(p.id, o); }
+    o.userData.plafond = !!p.plafond;
     poser(o, p);
     if (o.userData.mixer && o.userData.anim !== (p.animation ?? 0)) jouer(o, p.animation ?? 0);
   }
-  if (selection && !objets.has(selection.userData.id)) selectionner(null);
-  else if (selection) { cadreSelection.setFromObject(selection); majFiche(); }
+  majPlafonds();
+  if (selection) {
+    const o = objets.get(selection.userData.id);
+    if (!o) selectionner(null);
+    else if (o !== selection) selectionner(o);
+    else { cadreSelection.setFromObject(selection); majFiche(); }
+  }
+}
+
+// plafonds cachés en vue de dessus (pour voir dans les salles), toujours là en visite
+let plafondsVisibles = !!prefs.plafonds;
+function majPlafonds() {
+  for (const o of objets.values()) if (o.userData.plafond) o.visible = plafondsVisibles || visite;
+  $('#btn-plafonds').classList.toggle('actif', plafondsVisibles);
+  if (selection && !selection.visible) selectionner(null);
+}
+function basculerPlafonds() {
+  plafondsVisibles = !plafondsVisibles;
+  prefs.plafonds = plafondsVisibles;
+  sauverPrefs();
+  majPlafonds();
+  toast(plafondsVisibles ? 'Plafonds affichés' : 'Plafonds cachés (ils restent en visite)');
 }
 
 // ------------------------------------------------------------------ poser, choisir, déplacer
@@ -977,7 +1104,7 @@ transform.addEventListener('dragging-changed', e => {
 transform.addEventListener('objectChange', () => { if (selection) { relever(selection, pieceDe(selection.userData.id)); planifierMesures(); } });
 
 function majGrille() {
-  grille.visible = aimant || ambiance === 'vide';
+  grille.visible = !visite && (aimant || ambiance === 'vide' || etat.decor === 'espace');
   transform.setTranslationSnap(aimant ? 0.5 : null);
   transform.setRotationSnap(aimant ? 15 * DEG : null);
   transform.setScaleSnap(aimant ? 0.1 : null);
@@ -1048,12 +1175,33 @@ async function ajouter({ type, cle }) {
     }
   } else {
     taille = FORMES[cle].taille;
+    if (cle === 'bloc') { p.dims = [2, 2, 2]; p.teinte = 'gris'; }
+    if (cle === 'etiquette') { p.texte = 'Nouvelle zone'; p.police = 1; }
   }
   p.position = pointDePose(taille).toArray().map(x => arrondi(x));
   etat.pieces.push(p);
   reconcilier();
   selectionner(objets.get(p.id));
   valider();
+  if (innerWidth <= 760) document.body.classList.remove('panneau-ouvert');
+}
+
+let departMaquette = null;
+function chargerMaquette(cle) {
+  const mq = MAQUETTES[cle];
+  etat.pieces = mq.pieces.map(propre).filter(Boolean);
+  etat.decor = mq.decor === 'espace' ? 'espace' : 'hangar';
+  selectionner(null);
+  reconcilier();
+  majDecor();
+  majGrille();
+  valider();
+  if (mq.vue) { camera.position.fromArray(mq.vue.camera); orbite.target.fromArray(mq.vue.cible); orbite.update(); }
+  // tant que la vue n'a pas bougé, la visite part du point de départ de la maquette
+  departMaquette = mq.depart ? { cible: orbite.target.clone(), position: new THREE.Vector3().fromArray(mq.depart.position), lacet: mq.depart.lacet * DEG } : null;
+  plafondsVisibles = false;
+  majPlafonds();
+  toast(`${mq.nom} : ${etat.pieces.length} pièces. Appuie sur V : la visite part de la cellule du héros. ⌘Z pour revenir.`);
   if (innerWidth <= 760) document.body.classList.remove('panneau-ouvert');
 }
 
@@ -1093,7 +1241,7 @@ function viser(x, y) {
   let meilleur = null, distance = Infinity;
   const point = new THREE.Vector3(), b = new THREE.Box3();
   for (const o of objets.values()) {
-    if (!visee.ray.intersectBox(b.setFromObject(o), point)) continue;
+    if (!o.visible || !visee.ray.intersectBox(b.setFromObject(o), point)) continue;
     const touche = visee.intersectObject(o, true)[0];
     if (touche && touche.distance < distance) { distance = touche.distance; meilleur = o; }
   }
@@ -1167,9 +1315,17 @@ function majFiche() {
   if (!p || visite) { f.hidden = true; return; }
   const o = selection, { t, texte, alerte } = mesures(o, p);
   let titre, usage, credit = '';
+  let reglages = '';
   if (p.type === 'forme') {
     titre = FORMES[p.cle].nom;
-    usage = p.cle === 'humain' ? 'Repère d\'échelle : un humain de 1,80 m.' : 'Forme grise : elle sert à essayer le plan du niveau. On marche dessus en visite.';
+    usage = { humain: 'Repère d\'échelle : un humain de 1,80 m. Sa couleur dit son camp.', etiquette: 'Étiquette : le nom d\'une zone ou d\'une étape.' }[p.cle] || 'Forme grise : elle sert à essayer le plan du niveau. On marche dessus en visite.';
+    const choix = (noms, actuel) => `<select data-champ="teinte">${Object.entries(noms).map(([k, n]) => `<option value="${k}"${k === (actuel || '') ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+    if (p.cle === 'bloc') reglages = `<div class="ligne">${['L', 'H', 'P'].map((n, i) => `<label>${n} <input data-dim="${i}" type="number" min="0.05" step="0.1" value="${p.dims[i]}"></label>`).join('')} m ${choix(NOMS_TEINTES, p.teinte || 'gris')}
+      <label><input data-champ="plafond" type="checkbox"${p.plafond ? ' checked' : ''}> plafond</label></div>`;
+    if (p.cle === 'etiquette') reglages = `<div class="ligne"><input data-champ="texte" type="text" maxlength="80" value="${esc(p.texte || '')}" style="width: 220px">
+      <label>taille <input data-champ="police" type="number" min="0.2" max="10" step="0.1" value="${p.police || 1}"> m</label>
+      ${choix({ '': 'Blanc', ambre: 'Ambre', ether: 'Éther', rouge: 'Rouge', bleu: 'Bleu', orange: 'Orange', jaune: 'Jaune' }, p.teinte)}</div>`;
+    if (p.cle === 'humain') reglages = `<div class="ligne">Camp ${choix(NOMS_CAMPS, p.teinte)}</div>`;
   } else {
     const m = PAR_CLE.get(p.cle);
     titre = m ? m.nom : p.cle;
@@ -1179,7 +1335,7 @@ function majFiche() {
   }
   f.hidden = false;
   f.innerHTML = `<h3>${esc(titre)}</h3><div class="usage">${esc(usage)}</div>${credit}
-    <div class="meta mesures">${esc(texte)}</div>${alerte ? `<div class="alerte">${esc(alerte)}</div>` : ''}
+    <div class="meta mesures">${esc(texte)}</div>${alerte ? `<div class="alerte">${esc(alerte)}</div>` : ''}${reglages}
     <div class="ligne">
       <label>Hauteur <input id="champ-hauteur" type="number" min="0.01" step="0.05" value="${t.y.toFixed(2)}"> m</label>
       ${p.type === 'modele' && PERSONNAGES.test(p.cle) && Math.abs(t.y - 1.8) > 0.02 ? '<button data-act="humain" title="Mettre le personnage à la taille d\'un humain">1,80 m</button>' : ''}
@@ -1190,6 +1346,17 @@ function majFiche() {
       <button data-act="supprimer" class="danger" title="Supprimer (⌫)">Supprimer</button>
     </div><div class="ligne anims"></div>`;
   $('#champ-hauteur').addEventListener('change', e => reglerHauteur(o, p, parseFloat(String(e.target.value).replace(',', '.'))));
+  // les réglages recréent la pièce (reconcilier compare sa signature)
+  f.querySelectorAll('[data-dim], [data-champ]').forEach(el => el.addEventListener('change', () => {
+    const lire = x => parseFloat(String(x).replace(',', '.'));
+    if (el.dataset.dim !== undefined) { const v = lire(el.value); if (v > 0) p.dims[+el.dataset.dim] = arrondi(v, 3); }
+    else if (el.dataset.champ === 'teinte') { if (el.value) p.teinte = el.value; else delete p.teinte; }
+    else if (el.dataset.champ === 'plafond') { if (el.checked) { p.plafond = true; if (!plafondsVisibles) toast('Plafond : caché en vue de dessus. P pour afficher les plafonds.'); } else delete p.plafond; }
+    else if (el.dataset.champ === 'texte') p.texte = el.value.slice(0, 80);
+    else if (el.dataset.champ === 'police') { const v = lire(el.value); if (v > 0) p.police = Math.min(10, Math.max(0.2, v)); }
+    reconcilier();
+    valider();
+  }));
   const clips = o.userData.animations || [];
   if (clips.length) {
     const zone = f.querySelector('.anims');
@@ -1252,8 +1419,9 @@ function basculerVisite(v = !visite) {
     const d = orbite.target.clone().sub(camera.position);
     lacet = Math.atan2(-d.x, -d.z);
     tangage = 0;
-    // on entre là où l'on regardait, un pas en arrière
-    const depart = orbite.target.clone().addScaledVector(new THREE.Vector3(-Math.sin(lacet), 0, -Math.cos(lacet)), -2);
+    // on entre là où l'on regardait, ou au départ de la maquette si la vue n'a pas bougé depuis son chargement
+    let depart = orbite.target.clone();
+    if (departMaquette && orbite.target.distanceTo(departMaquette.cible) < 0.01) { depart = departMaquette.position.clone(); lacet = departMaquette.lacet; }
     camera.position.set(depart.x, 0, depart.z);
     pied = 0;
     pied = hauteurSol(depart.x, depart.z);
@@ -1262,6 +1430,8 @@ function basculerVisite(v = !visite) {
     transform.detach();
     cadreSelection.visible = false;
     $('#fiche').hidden = true;
+    majPlafonds();
+    majGrille();
     demanderVerrou();
     toast('Visite : ZQSD pour marcher, Échap pour revenir');
   } else {
@@ -1272,7 +1442,9 @@ function basculerVisite(v = !visite) {
     camera.position.addScaledVector(devant, -2).add(new THREE.Vector3(0, 1.5, 0));
     orbite.enabled = true;
     orbite.update();
-    selectionner(selection);
+    majPlafonds();
+    majGrille();
+    selectionner(selection && selection.visible ? selection : null);
   }
   redimensionner();
 }
@@ -1318,7 +1490,8 @@ function exporter() {
   const utilises = [...new Set(etat.pieces.filter(p => p.type === 'modele').map(p => p.cle))].map(c => PAR_CLE.get(c)).filter(Boolean);
   const doc = {
     format: 'echos-ether/atelier', version: 1, date: new Date().toISOString(),
-    repere: 'Mètres, Y vers le haut, repère glTF (droitier). Rotations en degrés, ordre XYZ. Origine de chaque pièce : centre du bas de sa boîte englobante à l\'échelle 1 (le modèle est décalé pour y poser ses pieds).',
+    repere: 'Mètres, Y vers le haut, repère glTF (droitier). Rotations en degrés, ordre XYZ. Origine de chaque pièce : centre du bas de sa boîte englobante à l\'échelle 1 (le modèle est décalé pour y poser ses pieds). Un modèle avec un cadre est d\'abord réduit ou agrandi, sans déformation, pour tenir dans le cadre (0 = côté libre), puis multiplié par echelle. Un bloc mesure dims (L, H, P).',
+    decor: etat.decor,
     pieces: etat.pieces,
     credits: utilises.map(credit),
   };
@@ -1337,10 +1510,13 @@ async function importer(fichier) {
     const pieces = (Array.isArray(doc) ? doc : doc.pieces || []).map(propre).filter(Boolean);
     if (!pieces.length) { toast('Ce fichier ne contient aucune pièce de l\'atelier.'); return; }
     etat.pieces = pieces;
+    etat.decor = doc.decor === 'espace' ? 'espace' : 'hangar';
     selectionner(null);
     reconcilier();
+    majDecor();
     valider();
     cadrer(null);
+    departMaquette = doc.depart && Array.isArray(doc.depart.position) ? { cible: orbite.target.clone(), position: new THREE.Vector3().fromArray(doc.depart.position), lacet: (doc.depart.lacet || 0) * DEG } : null;
     toast(`${pieces.length} pièces importées. ⌘Z pour revenir en arrière.`);
   } catch (e) {
     toast(`Fichier illisible : ${e.message}`);
@@ -1358,6 +1534,8 @@ $('#btn-annuler').onclick = annuler;
 $('#btn-retablir').onclick = retablir;
 $('#btn-visite').onclick = () => basculerVisite(true);
 $('#ambiance').onchange = e => appliquerAmbiance(e.target.value);
+$('#decor').onchange = e => { etat.decor = e.target.value === 'espace' ? 'espace' : 'hangar'; majDecor(); majGrille(); valider(); };
+$('#btn-plafonds').onclick = basculerPlafonds;
 $('#btn-exporter').onclick = exporter;
 $('#btn-importer').onclick = () => $('#champ-scene').click();
 $('#btn-effacer').onclick = effacer;
@@ -1395,6 +1573,7 @@ addEventListener('keydown', e => {
   else if (k === 'm') basculerAimant();
   else if (k === 'f') cadrer();
   else if (k === 'v') basculerVisite(true);
+  else if (k === 'p') basculerPlafonds();
   else if (k === 'escape') selectionner(null);
 });
 addEventListener('keyup', e => touches.delete(e.code));
@@ -1409,6 +1588,8 @@ renderer.setAnimationLoop(() => {
   for (const o of objets.values()) o.userData.mixer?.update(dt);
   if (visite) marcher(Math.min(brut, 0.1)); else orbite.update();
   if (cadreSelection.visible) cadreSelection.update();
+  suivreOmbres();
+  grille.position.set(Math.round(orbite.target.x), 0.003, Math.round(orbite.target.z));
   animerAmbiance(t);
   renderer.render(scene, camera);
   images++;
@@ -1448,7 +1629,7 @@ $('#source').textContent = 'Recherche des modèles…';
 })();
 
 // pour les tests automatiques
-window.atelier = { etat, objets, MODELES, camera, orbite, transform, selectionner, ajouter, basculerVisite, appliquerAmbiance, viser, cadrer, get selection() { return selection; } };
+window.atelier = { mesurer: async cle => (await charger(PAR_CLE.get(cle))).taille.toArray(), etat, objets, MODELES, MAQUETTES, camera, orbite, transform, selectionner, ajouter, basculerVisite, appliquerAmbiance, chargerMaquette, basculerPlafonds, viser, cadrer, get selection() { return selection; } };
 </script>
 </body>
 </html>

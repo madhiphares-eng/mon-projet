@@ -1,6 +1,6 @@
 # Modèles 3D du prologue : l'évasion du vaisseau-prison
 
-75 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 2,6 Go.
+75 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 1 Go une fois téléchargés.
 Tous sont sous licence **CC BY** (créditer l'auteur, usage commercial permis), vérifiée par l'API Sketchfab le 28 octobre 2026.
 Ils viennent de Sketchfab, qui demande un **compte gratuit** pour télécharger.
 
@@ -67,6 +67,27 @@ cd ~/jeu && python3 -m http.server 8766
 ```
 
 Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu/prologue` se chargent tout seuls. Sans serveur, on peut aussi ouvrir le fichier directement, puis choisir le dossier `prologue` (ou le glisser sur la page). Rien n'est envoyé sur Internet.
+
+**La maquette du vaisseau-prison.** Dans l'atelier, section *Maquettes* : « Vaisseau-prison (prologue) ».
+- **Le niveau entier, à l'échelle réelle** : environ 130 × 65 m, d'après le [plan](prologue/plan-vaisseau-prison.svg).
+  - Les salles : passerelle, officiers, consigne, laboratoire et la cellule du héros, cœur-relique, chambre des reliques scellée, blocs de cellules, salle informatique, ateliers, salle des machines, coursive éventrée, hangar.
+  - Autour : les conduits de maintenance, la coque extérieure et le vaisseau pirate amarré.
+- **Le code couleur** :
+  - murs gris, sols plus clairs ;
+  - rouge : le vide ;
+  - rouge transparent : une porte scellée (on la traverse en visite) ;
+  - bleu : un champ de force ;
+  - silhouettes : bleu pour les gardes, orange pour les pirates, jaune pour les détenus ;
+  - étiquettes ambre : les étapes 1 à 7 du chemin principal.
+- **121 modèles posés.** Chacun a un *cadre* : l'atelier le met à l'échelle pour y tenir, quelle que soit l'unité de son fichier.
+- **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule du héros, et les plafonds apparaissent.
+- **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier et le fichier `docs/prologue/maquette-vaisseau-prison.json`, à reconstruire dans Unity.
+
+**Défauts repérés** (le 29 octobre 2026, avec les 75 modèles téléchargés) :
+- **Unités** : beaucoup de fichiers ne sont pas en mètres. Par exemple, le lit mesure 17 unités, la navette 266 et un pirate 30 000. L'atelier compense avec les cadres ; dans Unity, il faudra régler l'échelle à l'import.
+- **`pirate`** : sa boîte englobante est faussée par une pièce parasite immense. Mis à 1,80 m, le personnage devient minuscule. À nettoyer dans Blender ; une silhouette le remplace dans la maquette.
+- **`detenu-atelier`** : quelque chose dépasse de sa tête. Il faut un cadre de 2,8 m pour un corps de 1,80 m.
+- **`tenue-detenu`** : 2,35 m de haut dans son fichier (bras en croix).
 
 Chaque modèle a son `LICENCE.txt`. Les crédits à citer dans le jeu sont regroupés dans `CREDITS-PROLOGUE.txt`, à la racine du projet.
 On peut relancer le script sans risque : ce qui est déjà téléchargé est sauté.
