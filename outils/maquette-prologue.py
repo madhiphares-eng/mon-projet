@@ -239,6 +239,8 @@ bloc(0, 0, 2.4, 2.4, 0.8, 0, 'ether')                          # le socle
 for (x, z, l, p) in ((0, -2.6, 5.5, 0.3), (0, 2.6, 5.5, 0.3), (-2.6, 0, 0.3, 5.5), (2.6, 0, 0.3, 5.5)):
     bloc(x, z, l, p, 0.04, 0, 'ether')
 modele('15-Reliques/coeur-relique', 0, 0, [3, 3.5, 3], 1.3)
+for (x, z, a) in ((0, -1.22, 'x'), (0, 1.22, 'x'), (-1.22, 0, 'z'), (1.22, 0, 'z')):
+    neon(x, z, 0.8, 2.44, a, 'cyan', section=(0.04, 0.06))      # le bord du socle : le cœur éclairé par en dessous
 modele('15-Reliques/anneau-relais', 0, 0, [5, 5, 5], 4.6)
 for x, z in ((-4.5, -4.5), (4.5, -4.5), (-4.5, 4.5), (4.5, 4.5)):
     modele('08-Machines/pylone-energie', x, z, [2.5, 4, 2.5])

@@ -2955,6 +2955,66 @@
 ]
 },
 {
+"type": "forme",
+"cle": "neon",
+"position": [
+0,
+0.8,
+-1.22
+],
+"dims": [
+2.44,
+0.04,
+0.06
+],
+"teinte": "cyan"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+0,
+0.8,
+1.22
+],
+"dims": [
+2.44,
+0.04,
+0.06
+],
+"teinte": "cyan"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+-1.22,
+0.8,
+0
+],
+"dims": [
+0.06,
+0.04,
+2.44
+],
+"teinte": "cyan"
+},
+{
+"type": "forme",
+"cle": "neon",
+"position": [
+1.22,
+0.8,
+0
+],
+"dims": [
+0.06,
+0.04,
+2.44
+],
+"teinte": "cyan"
+},
+{
 "type": "modele",
 "cle": "15-Reliques/anneau-relais",
 "position": [
