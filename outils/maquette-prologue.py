@@ -33,10 +33,10 @@ def bloc(x, z, l, p, h, y=0.0, teinte=None, plafond=False):
     pieces.append(q)
 
 
-def modele(cle, x, z, cadre, y=0.0, rot=0):
+def modele(cle, x, z, cadre, y=0.0, rot=0, rotx=0):
     q = {'type': 'modele', 'cle': cle, 'position': [r(x), r(y), r(z)], 'cadre': cadre}
-    if rot:
-        q['rotation'] = [0, rot, 0]
+    if rot or rotx:
+        q['rotation'] = [rotx, rot, 0]
     pieces.append(q)
 
 
@@ -146,8 +146,8 @@ bloc(-20, -24.9, 4, 2, 0.6)                                    # râtelier
 modele('10-Hangar/caisse-armes', -20, -22.4, [1.8, 1.0, 1.0])
 modele('14-Accessoires/caisse-munitions', -22.6, -22.4, [0, 0, 0.8])
 bloc(-23, -17, 2, 1, 0.9)
-modele('13-Armes/fusil-gardes', -23, -17, [1.0, 0, 0], 0.9)
-modele('13-Armes/pistolet-gardes', -22.3, -16.8, [0.25, 0, 0], 0.9)
+modele('13-Armes/fusil-gardes', -23.3, -17, [1.0, 1.0, 1.0], 0.9, 90)
+modele('13-Armes/pistolet-gardes', -22.3, -16.8, [0.25, 0.25, 0.25], 0.9)
 bloc(-29.5, -15.5, 2, 1, 0.9)                                  # bureau, et le badge posé dessus
 bloc(-29.5, -15.5, 0.3, 0.2, 0.05, 0.9, 'ambre')
 etiquette('Badge de la Conservatrice', -29.5, -15.5, 1.5, 0.45, 'ambre')
@@ -288,7 +288,7 @@ for x, z in ((18, -19), (22, -22.5), (24, -17), (31, -21.5)):
     humain(x, z, 'jaune')
 for x, z in ((28.5, -20.8), (30, -17.5)):
     humain(x, z, 'bleu')
-modele('13-Armes/cle-a-molette', 23, -20, [0.45, 0, 0])
+modele('13-Armes/cle-a-molette', 23, -20, [0.45, 0.45, 0.45], 0.02, 0, 90)   # couchée au sol
 etiquette('Arme de fortune', 23, -20, 0.7, 0.35, 'ambre')
 etiquette('2 · Émeute : première arme', 26, -21, 3.4, 0.6, 'ambre')
 
