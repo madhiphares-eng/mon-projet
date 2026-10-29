@@ -367,6 +367,32 @@ Chacun se vérifie sur une capture d'écran.
 - **La règle de lumière** (le froid montre le chemin, le chaud montre ce qui sert) vaut dans tout le jeu.
 - **Sur les planètes**, la palette s'enrichit des couleurs du désert : sable `#c9a26b`, roche `#7a5a3a`. Le cyan reste réservé.
 
+## 16. Les rendus de vérification
+
+La maquette du Colosse a été construite d'après le [plan du niveau](PLAN-NIVEAU.md), puis rendue dans l'atelier depuis ses six points de vue clés. Les tests du § 13 ont été passés image par image.
+
+![Les points de vue clés](da/colosse-vues.jpg)
+
+| Vue | Ce qui passe | Ce qui reste, pour Unity |
+|---|---|---|
+| 1. La révélation du cœur | Le faisceau cyan est le point le plus clair du cadre. Le cyan est réservé au cœur. Le puits de 16 m donne l'échelle. | Le modèle du cœur reste petit à la base du faisceau : en prendre un plus imposant. |
+| 2. La nef des cellules | Les cinq niveaux se lisent en lignes de lumière qui fuient vers le fond : le pilier « écrasant » passe. L'arme de fortune ressort en ambre. | Une vraie brume volumétrique sous les lignes froides ; plus de détenus dans la foule. |
+| 3. La salle des machines | Le sodium domine, le rouge ne marque que le verrou. La console à 8 m est visible et étiquetée. Les deux couches se lisent. | La vapeur dans les faisceaux. |
+| 4. La chambre des reliques | Le noir domine ; la capsule est sous la seule lumière froide ; le cyan n'est que sur les Bâtisseurs. | Des glyphes gravés sur les stèles et la capsule (le modèle est à remplacer, § 12). |
+| 5. La sortie sur la coque | Le vide se lit : le noir, les balises rouges du chemin. | Le hangar ne se devine qu'à ses balises et au projecteur du palier. Il faut le soleil dur et la planète ocre en dessous, impossibles dans l'atelier. |
+| 6. Le hangar, d'en haut | On voit l'aire d'envol éclairée par les projecteurs, à travers la rambarde ajourée. | Le modèle de la navette est sombre : un liseré clair sur sa coque la détacherait mieux du sol. |
+
+**Les limites de l'atelier** :
+- La maquette y est rendue sans carte graphique, avec au plus huit lumières actives, celles qui entourent le visiteur. Elle est donc plus sombre et moins nuancée que ne le sera Unity.
+- Les réglages définitifs de lumière se feront dans Unity HDRP, avec le profil du § 14.
+
+**Ce que l'atelier a gagné pour tenir la bible** :
+- **Deux matières** : la tôle vert-de-gris et la rouille.
+- **La lumière** : froide à 6 500 K et sodium à 2 200 K. Le champ de force passe au blanc froid, le verre devient neutre. Les projecteurs éclairent de loin.
+- **La recoloration des lumières** de huit modèles.
+- **Des rambardes ajourées** qui arrêtent le visiteur sans cacher la vue.
+- **Une visite qui peut partir d'une galerie** en hauteur.
+
 ---
 
 ## Annexe : la critique et les trois pistes

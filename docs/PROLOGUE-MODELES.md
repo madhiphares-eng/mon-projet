@@ -98,16 +98,9 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
 - **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule d'observation, et les plafonds apparaissent.
 - **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier, le fichier `docs/prologue/maquette-vaisseau-prison.json` (à reconstruire dans Unity) et le plan à l'échelle `docs/prologue/plan-niveau.svg`.
 
-![La maquette vue de dessus, en veille de nuit](prologue/maquette-vue-ensemble.jpg)
-![Le réveil : la porte de la cellule d'isolement](prologue/maquette-reveil.jpg)
-![La coursive principale, habillée du vrai couloir](prologue/maquette-couloir.jpg)
-![Les blocs de cellules à hauteur d'homme](prologue/maquette-cellules.jpg)
-![La salle des machines, éclairée en ambre](prologue/maquette-machines.jpg)
-![Le cœur-relique sur son socle de pierre noire](prologue/maquette-coeur.jpg)
-![Le hangar](prologue/maquette-hangar.jpg)
-![La chambre des reliques](prologue/maquette-reliques.jpg)
+![Les points de vue clés du Colosse](prologue/da/colosse-vues.jpg)
 
-Toutes les vues sur une seule image : [`maquette-planche.jpg`](prologue/maquette-planche.jpg).
+Les six points de vue clés du plan, rendus dans l'atelier, et ce qu'ils vérifient de la bible : [`BIBLE-DA.md`, § 16](prologue/BIBLE-DA.md#16-les-rendus-de-vérification). Le plan à l'échelle : [`plan-niveau.svg`](prologue/plan-niveau.svg). Les images de la maquette précédente (`maquette-*.jpg`) sont gardées pour comparer.
 
 **Remettre les fichiers à leur taille réelle.** Beaucoup de fichiers ne sont pas en mètres : le lit mesure 17 unités, la navette 266, un pirate 30 000. Le script `outils/normaliser-prologue.py` réécrit les 75 fichiers en mètres, pieds au sol et centrés, et retire les pièces parasites. Ensuite, Unity et Blender les ouvrent directement à la bonne taille. Les originaux sont gardés en `.original`.
 

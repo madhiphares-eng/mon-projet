@@ -196,13 +196,21 @@ def tuyaux(axe, ligne, a, b, sens, ys=(3.35, 3.7)):
 def garde_corps(axe, ligne, a, b, y, trous=()):
     """Un garde-corps de 1,1 m, interrompu là où arrive un escalier ou un pont (trous : (début, fin))."""
     bornes = [a] + [v for t in sorted(trous) for v in t] + [b]
+    def barre(u0, u1, yb, h, ep, teinte='acier'):
+        if axe == 'z':
+            bloc((u0 + u1) / 2, ligne, u1 - u0, ep, h, yb, teinte)
+        else:
+            bloc(ligne, (u0 + u1) / 2, ep, u1 - u0, h, yb, teinte)
     for u0, u1 in zip(bornes[::2], bornes[1::2]):
         if u1 - u0 < 0.05:
             continue
-        if axe == 'z':
-            bloc((u0 + u1) / 2, ligne, u1 - u0, 0.06, 1.1, y)
-        else:
-            bloc(ligne, (u0 + u1) / 2, 0.06, u1 - u0, 1.1, y)
+        barre(u0, u1, y + 1.02, 0.08, 0.08)                    # la main courante
+        barre(u0, u1, y + 0.5, 0.05, 0.05)                     # la lisse du milieu
+        barre(u0, u1, y, 1.1, 0.02, 'invisible')               # ce qui arrête le visiteur : on voit au travers
+        n = max(1, round((u1 - u0) / 4))
+        for k in range(n + 1):
+            u = u0 + k * (u1 - u0) / n
+            barre(u - 0.03, u + 0.03, y, 1.02, 0.06)           # les poteaux, tous les 4 m environ
 
 
 def dalle(x0, x1, z0, z1, y, ep=0.3, teinte='tole'):
@@ -807,7 +815,7 @@ def plan_svg():
             continue
         y = pz(z0 + 0.3 * (z1 - z0))
         o.append(f'<text x="{cx:.1f}" y="{y + 4:.1f}" font-size="{13 if (x1 - x0) > 12 else 10}" font-weight="600" text-anchor="middle" fill="#ece6d8">{nom}</text>')
-        if h:
+        if h and x1 - x0 >= 12:
             o.append(f'<text x="{cx:.1f}" y="{y + 18:.1f}" font-size="10" text-anchor="middle" fill="#a7a3b4">{(x1 - x0):g} × {(z1 - z0):g} m · {h:g} m de haut</text>')
     for x, z, t in ((0, -36.5, 'Départ'), (30, 50.5, 'La coque extérieure (le vide)'), (140, 0, 'Le saut'), (104, -32, 'Tube d\'abordage')):
         o.append(f'<text x="{px(x):.0f}" y="{pz(z):.0f}" font-size="11" text-anchor="middle" fill="#a7a3b4">{t}</text>')
