@@ -94,7 +94,7 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
   - blanc froid transparent : un champ de force ;
   - silhouettes : acier bleuté pour les gardes, orange pour les pirates, ocre pour les détenus ;
   - étiquettes ambre : les étapes 1 à 6 du chemin principal.
-- **180 modèles posés**, chacun à sa taille réelle, et 192 néons. Le contrôle ne trouve aucun chevauchement.
+- **180 modèles posés**, chacun à sa taille réelle, et 209 néons. Le contrôle ne trouve aucun chevauchement.
 - **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule d'observation, et les plafonds apparaissent.
 - **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier, le fichier `docs/prologue/maquette-vaisseau-prison.json` (à reconstruire dans Unity) et le plan à l'échelle `docs/prologue/plan-niveau.svg`.
 
