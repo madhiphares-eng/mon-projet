@@ -5932,23 +5932,34 @@
 ]
 },
 {
-"type": "modele",
-"cle": "06-Couloirs/tuyaux",
+"type": "forme",
+"cle": "bloc",
 "position": [
 26,
-0.0,
-26.0
+2.2,
+26.75
 ],
-"cadre": [
-0,
-0,
-6
+"dims": [
+20,
+0.3,
+0.3
 ],
-"rotation": [
-0,
-90,
-0
-]
+"teinte": "sombre"
+},
+{
+"type": "forme",
+"cle": "bloc",
+"position": [
+26,
+2.8,
+26.75
+],
+"dims": [
+20,
+0.3,
+0.3
+],
+"teinte": "sombre"
 },
 {
 "type": "modele",
@@ -6848,18 +6859,49 @@
 ]
 },
 {
-"type": "modele",
-"cle": "06-Couloirs/tuyaux",
+"type": "forme",
+"cle": "bloc",
 "position": [
-63.2,
-0.0,
--18
+64.7,
+2.0,
+-16
 ],
-"cadre": [
-0,
-0,
-10
-]
+"dims": [
+0.4,
+0.4,
+20
+],
+"teinte": "sombre"
+},
+{
+"type": "forme",
+"cle": "bloc",
+"position": [
+64.7,
+2.8,
+-16
+],
+"dims": [
+0.4,
+0.4,
+20
+],
+"teinte": "sombre"
+},
+{
+"type": "forme",
+"cle": "bloc",
+"position": [
+64.7,
+3.6,
+-16
+],
+"dims": [
+0.4,
+0.4,
+20
+],
+"teinte": "sombre"
 },
 {
 "type": "modele",

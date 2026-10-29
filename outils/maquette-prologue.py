@@ -296,7 +296,8 @@ espace(24.5, 27.5, 7, 12, HC, 'eo')
 espace(15, 37, 12, 27, 6, portes={'n': [porte(26, 3, 3.2)]}, nom='Ateliers : travail forcé, air toxique')
 for x, z in ((20, 17), (20, 22), (32, 17), (32, 22)):
     bloc(x, z, 4, 1.4, 0.9)                                    # établis
-modele('06-Couloirs/tuyaux', 26, 26.0, [0, 0, 6], rot=90)
+for y in (2.2, 2.8):                                           # conduites le long du mur (le pack de tuyaux n'est qu'un catalogue de pièces)
+    bloc(26, 26.75, 20, 0.3, 0.3, y, 'sombre')
 modele('10-Hangar/caisses', 35, 25, [2, 2, 2])
 modele('10-Hangar/caisses', 17, 25, [2, 2, 2])
 modele('02-Prisonniers/detenu-atelier', 20, 15.8, [0, 2.8, 0])     # sa boîte dépasse de la tête : 2,8 m pour un corps de 1,80 m
@@ -328,7 +329,8 @@ modele('08-Machines/generateur', 61, -10, [3, 3, 3])
 modele('08-Machines/coeur-fusion', 57, -23, [2.5, 3.5, 2.5])
 for x, z in ((46, -19), (59.5, -15)):
     modele('08-Machines/pylone-energie', x, z, [2.5, 4.5, 2.5])
-modele('06-Couloirs/tuyaux', 63.2, -18, [0, 0, 10])
+for y in (2.0, 2.8, 3.6):
+    bloc(64.7, -16, 0.4, 20, 0.4, y, 'sombre')
 modele('09-Informatique/terminal', 56, -26.6, [1.2, 0, 1.4], 4.0)
 etiquette('3 · Rétablir le courant de la chambre des reliques', 56, -26.6, 6.0, 0.5, 'ambre')
 for x, z in ((50, -9), (56, -11), (48, -13)):
