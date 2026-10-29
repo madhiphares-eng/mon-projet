@@ -43,6 +43,7 @@ Pas de magenta, pas de vert, pas de bleu vif. Les seules exceptions sont les feu
 
 - **Style unifié** (bouton dans la barre) : tous les modèles passent par le même étalonnage, moins saturé et un peu plus froid. Des modèles d'auteurs différents finissent ainsi par se ressembler.
 - **Recoloration par modèle** : le réglage `da` de [`tailles-modeles.json`](tailles-modeles.json) corrige ceux qui détonnent. Par exemple, le lit superposé en bois passe en acier gris, et le prisme orange devient cyan.
+- **Les volumes de la maquette** (murs, plafonds, sols) ne sont plus en gris uni : les murs sont en **acier à plaques**, les sols en **tôle**. Les modèles détaillés ne détonnent plus à côté des blocs.
 - Dans Unity, on fera la même chose avec un réglage de couleurs commun (*color grading*) et des matériaux retouchés.
 
 ## 5. Les 75 modèles face à la palette

@@ -10,7 +10,8 @@ Usage :
   python3 normaliser-prologue.py ~/jeu/prologue            (Mac ou Linux)
   py normaliser-prologue.py C:\\Projets\\EchosEther\\Assets\\_Projet\\Externes\\Prologue   (Windows)
 
-Les fichiers d'origine sont gardés à côté (<nom>.glb.original). Relancer le script ne change rien aux fichiers déjà faits.
+Les fichiers d'origine sont gardés à côté (<nom>.glb.original). Relancer le script ne change rien aux fichiers déjà faits,
+sauf si leur réglage ou leur mesure a changé dans les tables : il repart alors de l'original.
 Il lit tailles-modeles.json et mesures-modeles.json dans docs/prologue/ s'il est lancé depuis le dépôt, sinon il les télécharge.
 Python 3 seulement, sans rien installer.
 """
@@ -22,7 +23,7 @@ import sys
 import urllib.request
 
 DEPOT = 'https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/docs/prologue/'
-VERSION = 1
+VERSION = 2
 
 
 def table(nom):
@@ -72,12 +73,20 @@ def facteur(cadre, taille):
 
 
 def normaliser(chemin, reglage, mesure):
+    signature = {'cadre': reglage['cadre'], 'retirer': reglage.get('retirer', []), 'mesure': mesure['taille']}
+    source = chemin
     gltf, binaire = lire(chemin)
+    fait = gltf.get('asset', {}).get('extras', {}).get('echos_normalise')
+    if fait:
+        if all(fait.get(k) == v for k, v in signature.items()):
+            return 'déjà fait'
+        if not os.path.exists(chemin + '.original'):
+            return "déjà fait avec un ancien réglage, mais l'original (.original) manque pour recommencer"
+        source = chemin + '.original'           # le réglage a changé : on repart de l'original
+        gltf, binaire = lire(source)
+    if mesure.get('octets') and os.path.getsize(source) != mesure['octets']:
+        return f"ignoré : le fichier n'est pas celui qui a été mesuré ({os.path.getsize(source)} octets au lieu de {mesure['octets']})"
     extras = gltf.setdefault('asset', {}).setdefault('extras', {})
-    if 'echos_normalise' in extras:
-        return 'déjà fait'
-    if mesure.get('octets') and os.path.getsize(chemin) != mesure['octets']:
-        return f"ignoré : le fichier n'est pas celui qui a été mesuré ({os.path.getsize(chemin)} octets au lieu de {mesure['octets']})"
     noeuds = gltf.get('nodes', [])
     # retirer les pièces parasites : on les détache de leur parent (leurs données restent, inutilisées)
     a_retirer = {i for i, n in enumerate(noeuds) if n.get('name') in reglage.get('retirer', [])}
@@ -93,7 +102,7 @@ def normaliser(chemin, reglage, mesure):
     noeuds.append({'name': 'echos_taille_reelle', 'scale': [f, f, f], 'translation': [-f * v for v in centre], 'children': scene['nodes']})
     gltf['nodes'] = noeuds
     scene['nodes'] = [len(noeuds) - 1]
-    extras['echos_normalise'] = {'version': VERSION, 'facteur': f, 'taille_m': [round(v * f, 3) for v in mesure['taille']]}
+    extras['echos_normalise'] = {'version': VERSION, 'facteur': f, 'taille_m': [round(v * f, 3) for v in mesure['taille']], **signature}
     if not os.path.exists(chemin + '.original'):
         shutil.copy2(chemin, chemin + '.original')
     ecrire(chemin, gltf, binaire)

@@ -235,7 +235,7 @@ espace(-9, -6, -6, 6, HC, 'o', {'o': [passage(0)]})
 espace(6, 9, -6, 6, HC, 'e', {'e': [passage(0)]})
 espace(-6, 6, -6, 6, 10, portes={'o': [porte(0)], 'e': [porte(0)], 'n': [(0, 8, 3.0, 'fenetre', 1.0)], 's': [(0, 8, 3.0, 'fenetre', 1.0)]},
        sol='tole', nom='Cœur-relique (hyperespace)', police=2.2, teinte_nom='ether')
-bloc(0, 0, 2.4, 2.4, 0.8, 0, 'ether')                          # le socle
+bloc(0, 0, 2.4, 2.4, 0.8, 0, 'sombre')                         # le socle : pierre noire des Bâtisseurs, lignes cyan
 for (x, z, l, p) in ((0, -2.6, 5.5, 0.3), (0, 2.6, 5.5, 0.3), (-2.6, 0, 0.3, 5.5), (2.6, 0, 0.3, 5.5)):
     bloc(x, z, l, p, 0.04, 0, 'ether')
 modele('15-Reliques/coeur-relique', 0, 0, [3, 3.5, 3], 1.3)

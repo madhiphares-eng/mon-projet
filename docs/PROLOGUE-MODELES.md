@@ -81,13 +81,14 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
   - Les salles : passerelle, officiers, consigne, laboratoire et la cellule du héros, cœur-relique, chambre des reliques scellée, blocs de cellules, salle informatique, ateliers, salle des machines, coursive éventrée, hangar.
   - Autour : les conduits de maintenance, la coque extérieure et le vaisseau pirate amarré.
 - **Le code couleur** :
-  - murs gris, sols plus clairs ;
-  - rouge : le vide ;
+  - murs en acier à plaques, sols en tôle : les matières du vaisseau, dans la palette de la [direction artistique](prologue/DA-vaisseau-prison.md) ;
+  - néons blancs pour la lumière de travail, cyan pour la technologie et les reliques, ambre pour les machines et la signalétique ;
+  - néons rouges : l'alarme, une porte verrouillée, le vide (les lignes au sol de la coque extérieure et de la coursive éventrée) ;
   - rouge transparent : une porte scellée (on la traverse en visite) ;
   - bleu : un champ de force ;
   - silhouettes : bleu pour les gardes, orange pour les pirates, jaune pour les détenus ;
   - étiquettes ambre : les étapes 1 à 7 du chemin principal.
-- **Plus de 200 modèles posés**, et 260 néons.
+- **Plus de 200 modèles posés**, et 274 néons.
   - Les vrais modèles habillent le niveau : le couloir détaillé dans les coursives principales, les dalles de sol dans la passerelle, la salle des machines et le hangar, les portes de sas rondes, les cloisons étanches et les portes coulissantes.
   - Chaque modèle est à sa taille réelle, quelle que soit l'unité de son fichier.
   - Le contrôle ne trouve aucun chevauchement.
