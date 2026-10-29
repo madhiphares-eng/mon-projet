@@ -95,11 +95,16 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
 - **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule du héros, et les plafonds apparaissent.
 - **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier et le fichier `docs/prologue/maquette-vaisseau-prison.json`, à reconstruire dans Unity.
 
-![La maquette vue de dessus, avec les 75 modèles](prologue/maquette-vue-ensemble.jpg)
+![La maquette vue de dessus, en veille de nuit](prologue/maquette-vue-ensemble.jpg)
 ![Le réveil : la porte de la cellule d'isolement](prologue/maquette-reveil.jpg)
+![La coursive principale, habillée du vrai couloir](prologue/maquette-couloir.jpg)
 ![Les blocs de cellules à hauteur d'homme](prologue/maquette-cellules.jpg)
+![La salle des machines, éclairée en ambre](prologue/maquette-machines.jpg)
+![Le cœur-relique sur son socle de pierre noire](prologue/maquette-coeur.jpg)
 ![Le hangar](prologue/maquette-hangar.jpg)
 ![La chambre des reliques](prologue/maquette-reliques.jpg)
+
+Toutes les vues sur une seule image : [`maquette-planche.jpg`](prologue/maquette-planche.jpg).
 
 **Remettre les fichiers à leur taille réelle.** Beaucoup de fichiers ne sont pas en mètres : le lit mesure 17 unités, la navette 266, un pirate 30 000. Le script `outils/normaliser-prologue.py` réécrit les 75 fichiers en mètres, pieds au sol et centrés, et retire les pièces parasites. Ensuite, Unity et Blender les ouvrent directement à la bonne taille. Les originaux sont gardés en `.original`.
 
