@@ -1,6 +1,6 @@
 # Modèles 3D du prologue : l'évasion du vaisseau-prison
 
-75 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 1 Go une fois téléchargés.
+88 modèles gratuits choisis pour le prologue (voir [`PREPRODUCTION.md`](PREPRODUCTION.md)), environ 1 Go une fois téléchargés.
 Tous sont sous licence **CC BY** (créditer l'auteur, usage commercial permis), vérifiée par l'API Sketchfab le 28 octobre 2026.
 Ils viennent de Sketchfab, qui demande un **compte gratuit** pour télécharger.
 
@@ -190,7 +190,8 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 ## Ce qu'il faudra faire ensuite (le Claude du PC, avec Blender MCP)
 
 - **Alléger les modèles très lourds** : le pirate d'abordage en combinaison (700 000 faces), le pirate masqué (900 000), la rangée de serveurs, le kit d'intérieur, la capsule du Veilleur. Objectif : moins de 100 000 faces par personnage.
-- **Retirer les écussons et marquages réels** : la tenue anti-émeute du garde porte des insignes de police, à remplacer par ceux de la prison.
+- **Retirer les inscriptions** : « police » sur le torse de l'androïde anti-émeute, « security » sur le drone.
+- **Corriger le squelette de `detenu-corvee-toxique`** : ses échelles (×100 et ×0,01) sont empilées ; dans Blender, appliquer les échelles puis réexporter.
 - **Squelettes et animations** : les personnages sans squelette passent par [Mixamo](https://www.mixamo.com) (gratuit), comme les autres pour leurs animations.
 - **Unifier les matériaux** : mêmes métaux usés, même palette, pour que 50 auteurs donnent un seul vaisseau.
 - **La combinaison de Veilleur** est provisoire : c'est une pièce signature du jeu (voir `PREPRODUCTION.md`). En attendant sa version définitive, on re-texture une combinaison sobre avec des lignes de glyphes lumineuses.
@@ -213,16 +214,31 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 |---|---|---|---:|---|
 | `detenu-brute` | [Balthazar (rigged & animated)](https://sketchfab.com/3d-models/balthazar-rigged-animated-dbf9fe0cb81d4758ad2525a56d10e2fc) | Jungle Jim | 110 940, 1 anim. | Codétenu costaud, hostile ou allié |
 | `detenu-vieux` | [Realistic Old Russian Guy (animated)](https://sketchfab.com/3d-models/realistic-old-russian-guy-animated-6b8009a6e4f747f59ccadb121adc3679) | Jungle Jim | 53 891, 1 anim. | Vieux détenu (indices, dialogues) |
-| `detenu-atelier` | [Employee](https://sketchfab.com/3d-models/employee-9d1098bc72a74bb1b6371aef4b987100) | dotflare | 34 718, 4 anim. | Détenu des ateliers toxiques, masque à gaz |
+| `detenu-atelier` | [Employee](https://sketchfab.com/3d-models/employee-9d1098bc72a74bb1b6371aef4b987100) | dotflare | 34 718, 4 anim. | **Retiré** : hommage déclaré au personnage d'un autre jeu ; remplacé par `detenu-corvee-toxique` |
+| `detenu-tshirt` | [Prisoner](https://sketchfab.com/3d-models/prisoner-d7378649f56e48e5ae1eeb2ba9e6fbdf) | PropShop™ | 19 292 | Détenu en t-shirt orange, squelette Mixamo : le plus simple à animer, pour peupler la nef |
+| `detenu-figurant` | [Prisoner Hostage Low Poly Character](https://sketchfab.com/3d-models/prisoner-hostage-low-poly-character-dae7e2ff73cd4ece8d7655d1f4fcbb1b) | 00amza | 2 283, 1 anim. | Détenu très léger (2 000 faces) en combinaison orange : figurants lointains, foule des cellules |
+| `detenu-corvee-toxique` | [Hazmat Suit 3](https://sketchfab.com/3d-models/hazmat-suit-3-b4a96fe273c0431fabd54c9d65926d59) | 07productionz | 55 150 | Détenu de corvée en combinaison étanche orange : ateliers toxiques (remplace detenu-atelier) |
 
-## Les gardes (`03-Gardes`)
+## La sécurité : des androïdes (`03-Gardes`)
 
-![Les gardes](prologue/03-Gardes.jpg)
+![La sécurité](prologue/03-Gardes.jpg)
+
+La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [bible](prologue/BIBLE-DA.md), § 4). Le garde humain reste dans la liste pour mémoire, mais il n'est plus placé dans la maquette. Chaque personnage a été testé : voir [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md).
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
-| `garde` | [S.W.A.T. Operator](https://sketchfab.com/3d-models/swat-operator-9e82fabf26194896b5ad4a364d864eab) | SpatialNeglect | 106 714, 1 anim. | Garde de la prison en tenue anti-émeute (écussons à remplacer) |
+| `garde` | [S.W.A.T. Operator](https://sketchfab.com/3d-models/swat-operator-9e82fabf26194896b5ad4a364d864eab) | SpatialNeglect | 106 714, 1 anim. | **Retiré** : garde humain, la sécurité n'est faite que d'androïdes |
 | `droide-securite` | [Sci-fi O.B. Robot Unit TH-ICC02 (animated)](https://sketchfab.com/3d-models/sci-fi-ob-robot-unit-th-icc02-animated-6c0764c2bc4c4aaa8e03ba1653f455a6) | Jungle Jim | 124 648, 1 anim. | Droïde de sécurité |
+| `androide-sentinelle` | [Old War Droid Alfa 01](https://sketchfab.com/3d-models/old-war-droid-alfa-01-4005a85c15a0414aa85e22f0d28ff4c2) | Doğancan ÖZGÖKÇELER | 27 706, 1 anim. | Androïde de patrouille, le garde de base de l'Empire (squelette humain, animé) |
+| `androide-antiemeute` | [Robot Police Unit (animated)](https://sketchfab.com/3d-models/robot-police-unit-animated-36bc284bf5b84a6597db8f6db053c095) | Jungle Jim | 20 053, 1 anim. | Androïde anti-émeute de la nef : épais, casque fermé (inscription à retirer) |
+| `androide-patrouille` | [Robot](https://sketchfab.com/3d-models/robot-c46bd21f1d284ae0b4bda7ac577448c2) | Daniel Gryningstjerna | 67 748, 1 anim. | Androïde de patrouille, variante (animé pièce par pièce) |
+| `androide-soldat` | [Robo-soldier](https://sketchfab.com/3d-models/robo-soldier-e5ce9b92325d45d6b75799716a28844e) | efforya | 21 262 | Androïde lourd de poste fixe (statue : squelette à faire) |
+| `androide-fantassin` | [Robot Soldier](https://sketchfab.com/3d-models/robot-soldier-d6fe9e661705423b934ba2fe4490b2b4) | Moonlightlll | 32 286 | Androïde armé, posé (décor ou squelette à faire) |
+| `androide-lourd` | [Security robot](https://sketchfab.com/3d-models/security-robot-fb51a6bcaeae4d11a73b42e7fbf2ff82) | 3DWorkbench | 241 406 | Androïde lourd qui garde la porte du hangar (à alléger : 240 000 faces) |
+| `androide-medical` | [Medical Android](https://sketchfab.com/3d-models/medical-android-c856a602428944a98f222c83658222a4) | efforya | 21 106 | Androïde médical du laboratoire et de l'infirmerie (le cyan de sa visière est retiré : il est aux Bâtisseurs) |
+| `androide-vieux-modele` | [RoboPolice](https://sketchfab.com/3d-models/robopolice-643353e8aebf4a00b074cd92e764e09f) | ilasolomon | 26 380 | Ancien modèle d'androïde, rouillé : en pièces dans les ateliers |
+| `drone-securite` | [Security drone](https://sketchfab.com/3d-models/security-drone-be23629d02374192a5a52e1c7dc5ba78) | Catbot | 5 726 | Drone de surveillance armé : le regard qui vient d'en haut, dans la nef et les machines |
+| `marcheur-blinde` | [Medium Mech Striker](https://sketchfab.com/3d-models/medium-mech-striker-27ba717c173a40b7841d2f2c6a89d823) | MSGDI | 10 778, 41 anim. | Marcheur blindé du hangar (41 animations : marche, course, coups, chute) |
 
 ## Les pirates (`04-Pirates`)
 

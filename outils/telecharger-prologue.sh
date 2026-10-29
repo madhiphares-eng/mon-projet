@@ -56,8 +56,21 @@ MODELES=$(cat <<'LISTE'
 02-Prisonniers|dbf9fe0cb81d4758ad2525a56d10e2fc|detenu-brute|"Balthazar (rigged & animated)" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/dbf9fe0cb81d4758ad2525a56d10e2fc
 02-Prisonniers|6b8009a6e4f747f59ccadb121adc3679|detenu-vieux|"Realistic Old Russian Guy (animated)" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/6b8009a6e4f747f59ccadb121adc3679
 02-Prisonniers|9d1098bc72a74bb1b6371aef4b987100|detenu-atelier|"Employee" par dotflare (sketchfab.com/Dotflare), CC Attribution, https://sketchfab.com/3d-models/9d1098bc72a74bb1b6371aef4b987100
+02-Prisonniers|d7378649f56e48e5ae1eeb2ba9e6fbdf|detenu-tshirt|"Prisoner" par PropShop™ (sketchfab.com/syedabbas0815), CC Attribution, https://sketchfab.com/3d-models/d7378649f56e48e5ae1eeb2ba9e6fbdf
+02-Prisonniers|dae7e2ff73cd4ece8d7655d1f4fcbb1b|detenu-figurant|"Prisoner Hostage Low Poly Character" par 00amza (sketchfab.com/00amza), CC Attribution, https://sketchfab.com/3d-models/dae7e2ff73cd4ece8d7655d1f4fcbb1b
+02-Prisonniers|b4a96fe273c0431fabd54c9d65926d59|detenu-corvee-toxique|"Hazmat Suit 3" par 07productionz (sketchfab.com/impulsio), CC Attribution, https://sketchfab.com/3d-models/b4a96fe273c0431fabd54c9d65926d59
 03-Gardes|9e82fabf26194896b5ad4a364d864eab|garde|"S.W.A.T. Operator" par SpatialNeglect (sketchfab.com/jeandiz), CC Attribution, https://sketchfab.com/3d-models/9e82fabf26194896b5ad4a364d864eab
 03-Gardes|6c0764c2bc4c4aaa8e03ba1653f455a6|droide-securite|"Sci-fi O.B. Robot Unit TH-ICC02 (animated)" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/6c0764c2bc4c4aaa8e03ba1653f455a6
+03-Gardes|4005a85c15a0414aa85e22f0d28ff4c2|androide-sentinelle|"Old War Droid Alfa 01" par Doğancan ÖZGÖKÇELER (sketchfab.com/Donjuan301), CC Attribution, https://sketchfab.com/3d-models/4005a85c15a0414aa85e22f0d28ff4c2
+03-Gardes|36bc284bf5b84a6597db8f6db053c095|androide-antiemeute|"Robot Police Unit (animated)" par Jungle Jim (sketchfab.com/jungle_jim), CC Attribution, https://sketchfab.com/3d-models/36bc284bf5b84a6597db8f6db053c095
+03-Gardes|c46bd21f1d284ae0b4bda7ac577448c2|androide-patrouille|"Robot" par Daniel Gryningstjerna (sketchfab.com/dangry), CC Attribution, https://sketchfab.com/3d-models/c46bd21f1d284ae0b4bda7ac577448c2
+03-Gardes|e5ce9b92325d45d6b75799716a28844e|androide-soldat|"Robo-soldier" par efforya (sketchfab.com/efforya), CC Attribution, https://sketchfab.com/3d-models/e5ce9b92325d45d6b75799716a28844e
+03-Gardes|d6fe9e661705423b934ba2fe4490b2b4|androide-fantassin|"Robot Soldier" par Moonlightlll (sketchfab.com/Moonlightlll), CC Attribution, https://sketchfab.com/3d-models/d6fe9e661705423b934ba2fe4490b2b4
+03-Gardes|fb51a6bcaeae4d11a73b42e7fbf2ff82|androide-lourd|"Security robot" par 3DWorkbench (sketchfab.com/3DWorkbench), CC Attribution, https://sketchfab.com/3d-models/fb51a6bcaeae4d11a73b42e7fbf2ff82
+03-Gardes|c856a602428944a98f222c83658222a4|androide-medical|"Medical Android" par efforya (sketchfab.com/efforya), CC Attribution, https://sketchfab.com/3d-models/c856a602428944a98f222c83658222a4
+03-Gardes|643353e8aebf4a00b074cd92e764e09f|androide-vieux-modele|"RoboPolice" par ilasolomon (sketchfab.com/ilasolomon), CC Attribution, https://sketchfab.com/3d-models/643353e8aebf4a00b074cd92e764e09f
+03-Gardes|be23629d02374192a5a52e1c7dc5ba78|drone-securite|"Security drone" par Catbot (sketchfab.com/SteelBlue8), CC Attribution, https://sketchfab.com/3d-models/be23629d02374192a5a52e1c7dc5ba78
+03-Gardes|27ba717c173a40b7841d2f2c6a89d823|marcheur-blinde|"Medium Mech Striker" par MSGDI (sketchfab.com/MSGDI), CC Attribution, https://sketchfab.com/3d-models/27ba717c173a40b7841d2f2c6a89d823
 04-Pirates|f94ee65527b14bdcb5bafd1ad573c8ca|pirate-chef|"Space Pirate" par Odlab (sketchfab.com/Odlab), CC Attribution, https://sketchfab.com/3d-models/f94ee65527b14bdcb5bafd1ad573c8ca
 04-Pirates|f029fe3297434ed6b5d03c3ffbc0585d|pirate|"Scavenger" par Vasian-Digital3D (sketchfab.com/Vasian-Digital3D), CC Attribution, https://sketchfab.com/3d-models/f029fe3297434ed6b5d03c3ffbc0585d
 04-Pirates|9e77c91967ca4263ad347b395f53c1cb|pirate-masque|"post apo character" par Am I dead? (sketchfab.com/eqisX), CC Attribution, https://sketchfab.com/3d-models/9e77c91967ca4263ad347b395f53c1cb

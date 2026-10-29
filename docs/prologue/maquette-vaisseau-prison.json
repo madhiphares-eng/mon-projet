@@ -1132,14 +1132,18 @@
 ]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-medical",
 "position": [
 6,
 0.0,
 -26
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.85,
+0
+]
 },
 {
 "type": "forme",
@@ -1833,24 +1837,32 @@
 "teinte": "blanc"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-sentinelle",
 "position": [
 -8,
 0.0,
 -3
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.95,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-antiemeute",
 "position": [
 8,
 0.0,
 3
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.0,
+0
+]
 },
 {
 "type": "forme",
@@ -9463,7 +9475,7 @@
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-atelier",
+"cle": "02-Prisonniers/detenu-tshirt",
 "position": [
 -50,
 0.0,
@@ -9471,109 +9483,177 @@
 ],
 "cadre": [
 0,
-1.85,
+1.78,
 0
 ]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-tshirt",
 "position": [
 -28,
 0.0,
 1.5
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.78,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -33,
 0.0,
 -3
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.75,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-brute",
 "position": [
 -41,
 0.0,
 3.5
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.95,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -47,
 0.0,
 1
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.75,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-tshirt",
 "position": [
 -55,
 0.0,
 -3.5
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.78,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -58,
 0.0,
 2
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.75,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-patrouille",
 "position": [
 -30,
 9,
 -7
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.9,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-sentinelle",
 "position": [
 -52,
 9,
 7
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.95,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-antiemeute",
 "position": [
 -38,
 13.5,
 -7
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.0,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-patrouille",
 "position": [
 -25,
 4.5,
 7
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.9,
+0
+]
+},
+{
+"type": "modele",
+"cle": "03-Gardes/drone-securite",
+"position": [
+-40,
+10,
+0
+],
+"cadre": [
+0,
+0.9,
+0
+]
+},
+{
+"type": "modele",
+"cle": "03-Gardes/drone-securite",
+"position": [
+-56,
+15,
+-4
+],
+"cadre": [
+0,
+0.9,
+0
+]
 },
 {
 "type": "modele",
@@ -10820,24 +10900,32 @@
 "teinte": "ambre"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-sentinelle",
 "position": [
 -32,
 0.0,
 -27
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.95,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-antiemeute",
 "position": [
 -24,
 0.0,
 -30
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.0,
+0
+]
 },
 {
 "type": "forme",
@@ -12067,34 +12155,46 @@
 "teinte": "ambre"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/droide-securite",
 "position": [
 -86,
 0.5,
 -3
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.1,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/droide-securite",
 "position": [
 -89,
 0.5,
 3.5
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.1,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/droide-securite",
 "position": [
 -82,
 0,
 6
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.1,
+0
+]
 },
 {
 "type": "forme",
@@ -13176,7 +13276,7 @@
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-atelier",
+"cle": "02-Prisonniers/detenu-tshirt",
 "position": [
 -54,
 0.0,
@@ -13184,17 +13284,36 @@
 ],
 "cadre": [
 0,
-1.85,
+1.78,
 0
 ]
 },
 {
 "type": "modele",
-"cle": "02-Prisonniers/detenu-atelier",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -47,
 0.0,
 28.6
+],
+"cadre": [
+0,
+1.75,
+0
+],
+"rotation": [
+0,
+180,
+0
+]
+},
+{
+"type": "modele",
+"cle": "03-Gardes/androide-vieux-modele",
+"position": [
+-52,
+0.0,
+37.6
 ],
 "cadre": [
 0,
@@ -13208,34 +13327,76 @@
 ]
 },
 {
+"type": "modele",
+"cle": "03-Gardes/androide-soldat",
+"position": [
+-58,
+0.0,
+37.6
+],
+"cadre": [
+0,
+2.0,
+0
+],
+"rotation": [
+0,
+180,
+0
+]
+},
+{
 "type": "forme",
-"cle": "humain",
+"cle": "etiquette",
+"position": [
+-55,
+2.8,
+37.6
+],
+"texte": "Androïdes en réparation",
+"police": 0.42
+},
+{
+"type": "modele",
+"cle": "02-Prisonniers/detenu-brute",
 "position": [
 -61,
 0.0,
 26
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.95,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-figurant",
 "position": [
 -50,
 0.0,
 26
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.75,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "02-Prisonniers/detenu-tshirt",
 "position": [
 -44,
 0.0,
 21
 ],
-"teinte": "jaune"
+"cadre": [
+0,
+1.78,
+0
+]
 },
 {
 "type": "forme",
@@ -14840,24 +15001,32 @@
 "teinte": "ambre"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-patrouille",
 "position": [
 -29,
 0.0,
 41
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.9,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-sentinelle",
 "position": [
 -18,
 0.0,
 34
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.95,
+0
+]
 },
 {
 "type": "forme",
@@ -18553,6 +18722,20 @@
 ],
 "texte": "M · Salle des machines",
 "police": 2.2
+},
+{
+"type": "modele",
+"cle": "03-Gardes/drone-securite",
+"position": [
+24,
+6,
+5
+],
+"cadre": [
+0,
+0.9,
+0
+]
 },
 {
 "type": "modele",
@@ -24904,54 +25087,151 @@
 "teinte": "acier"
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-antiemeute",
 "position": [
 64,
 0.0,
 -3
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.0,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-patrouille",
 "position": [
 69,
 0.0,
 3
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.9,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-sentinelle",
 "position": [
 63,
 0.0,
 12
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.95,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-antiemeute",
 "position": [
 70,
 0.0,
 13
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+2.0,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
 },
 {
-"type": "forme",
-"cle": "humain",
+"type": "modele",
+"cle": "03-Gardes/androide-patrouille",
 "position": [
 62,
 12,
 -5
 ],
-"teinte": "bleu"
+"cadre": [
+0,
+1.9,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
+},
+{
+"type": "modele",
+"cle": "03-Gardes/androide-lourd",
+"position": [
+60.8,
+0.0,
+4.5
+],
+"cadre": [
+0,
+2.6,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
+},
+{
+"type": "modele",
+"cle": "03-Gardes/marcheur-blinde",
+"position": [
+77,
+0.0,
+1
+],
+"cadre": [
+0,
+3.2,
+0
+],
+"rotation": [
+0,
+90,
+0
+]
+},
+{
+"type": "modele",
+"cle": "03-Gardes/drone-securite",
+"position": [
+84,
+8,
+-14
+],
+"cadre": [
+0,
+0.9,
+0
+]
 },
 {
 "type": "modele",

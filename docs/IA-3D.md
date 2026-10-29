@@ -68,7 +68,7 @@ L'IA donne des **ébauches** : formes lourdes, maillage désordonné, textures p
 ## 6. Les 9 modèles du prologue à refaire
 
 La [bible du prologue](prologue/BIBLE-DA.md) (§ 12) en désigne neuf :
-- **les personnages** : le garde, la combinaison du Veilleur, le vieux détenu ;
+- **les personnages** : l’androïde de l’Empire (il remplace le garde humain : la sécurité n’est faite que d’androïdes), la combinaison du Veilleur, le vieux détenu ;
 - **le mobilier et les machines** : la porte de cellule, le lit, la console ;
 - **le reste** : la capsule du Veilleur, le vaisseau pirate, les débris de coque.
 

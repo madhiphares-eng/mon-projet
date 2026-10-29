@@ -49,7 +49,7 @@ Une zone prise par les pirates gagne 30 points de Chantier : bâches, soudures, 
 | 2. Les cellules s'ouvrent | Panique, petitesse | La nef des cellules sur cinq niveaux, toutes les portes qui s'ouvrent ensemble, les gyrophares qui balaient le vide central. |
 | 3. L'équipement | Tension, puis émerveillement | Au bout des ateliers sales et chauds, une porte blindée ; derrière, le noir et une lueur cyan. |
 | 4. Le vide | Silence, vertige | La coque à perte de vue sous les bottes, le soleil blanc et dur, la planète ocre en dessous. |
-| 5. Le hangar | Pression, choix | Une nef de 30 m de haut, la navette au centre sous les projecteurs, les pirates d'un côté, les gardes de l'autre. |
+| 5. Le hangar | Pression, choix | Une nef de 30 m de haut, la navette au centre sous les projecteurs, les pirates d'un côté, les androïdes de l'autre. |
 | 6. L'hyperespace | Délivrance | Les étoiles s'étirent, le cyan envahit l'écran ; le Colosse rapetisse derrière. |
 
 ## 3. Les trois piliers visuels
@@ -64,9 +64,38 @@ Une zone prise par les pirates gagne 30 points de Chantier : bâches, soudures, 
 
 | Famille | Formes | Silhouette | Ce qui la distingue au premier coup d'œil |
 |---|---|---|---|
-| **L'Empire** | Rectangles et trapèzes aux angles chanfreinés à 45°, jamais d'angle vif ni de courbe. Base plus large que le sommet. | Lourde, carrée, symétrique. Gardes : casque fermé, épaules larges. | Le gris sombre et une seule touche de rouge. |
+| **L'Empire** | Rectangles et trapèzes aux angles chanfreinés à 45°, jamais d'angle vif ni de courbe. Base plus large que le sommet. | Lourde, carrée, symétrique. Sa sécurité n'est faite que d'androïdes : tête sans visage, épaules larges, articulations visibles. | Le gris sombre et une seule touche de rouge. |
 | **Les pirates et les détenus** | Asymétrie, superposition, récupération : sacs, bâches, câbles qui pendent, plaques soudées de travers. | Irrégulière, chargée d'un côté. Détenus : combinaison unie, sans protection. | Le chaud : orange, rouille. |
 | **Les Bâtisseurs** | Monolithes noirs et lisses, arêtes vives et fines, proportions élancées (1 pour 3 à 1 pour 5). Les arcs et les cercles parfaits sont à eux seuls : la seule courbe du vaisseau. | Verticale, fine, sans détail en surface. | Les glyphes cyan gravés en lignes fines. Aucune usure : l'Éther fige le temps. |
+
+### La sécurité : des androïdes, jamais d'humains
+
+L'Empire ne confie pas la garde du Colosse à des hommes : **toute la sécurité est faite d'androïdes et de drones**. Les seuls humains à bord sont les détenus, les pirates et, dans les zones facultatives, les officiers.
+
+**Pourquoi** :
+- **L'histoire** : l'Empire craint la relique ; il garde le vaisseau avec des machines qui n'ont ni peur ni pitié. Le héros, lui, est la seule chose « vivante » que le cœur reconnaît.
+- **Le jeu** : une machine se lit et se prévoit. Ses rondes sont régulières, son capteur rouge montre où elle regarde, une console piratée ou une panne de courant peut l'arrêter. La panne du cœur peut les figer toutes d'un coup : une fenêtre pour s'évader.
+- **La lisibilité** : androïdes froids et symétriques contre pirates chauds et asymétriques. On sait qui est qui à 40 m, en silhouette.
+
+**Leurs règles de forme** :
+- une tête **sans visage** : visière étroite ou capteur unique, jamais d'yeux ni de bouche ;
+- des **articulations visibles** (coudes, genoux, cou mécanique), pour qu'on ne les prenne jamais pour des humains en armure ;
+- l'acier sombre de l'Empire, une seule touche de **rouge** : le capteur, ou un liseré ;
+- **jamais de cyan** (il est aux Bâtisseurs) ni d'orange (il est aux détenus) : les modèles qui en ont sont recolorés ;
+- l'usure suit la règle du Chantier : sous 1,5 m, frottements et éclats ; au-dessus, l'acier reste propre.
+
+**La famille**, du plus courant au plus rare :
+
+| Rôle | Modèle | Où |
+|---|---|---|
+| Patrouille, le garde de base | `androide-sentinelle`, `androide-patrouille` | Partout, par deux |
+| Anti-émeute | `androide-antiemeute` | Nef des cellules, hangar |
+| Garde rapprochée des officiers | `droide-securite` | Poste de garde de la nef, passerelle |
+| Soins et expériences | `androide-medical` | Laboratoire, infirmerie |
+| Surveillance aérienne | `drone-securite` | Au-dessus de la nef, des machines, du hangar : le regard vient d'en haut |
+| Garde lourd d'une porte | `androide-lourd` | La porte du hangar |
+| Marcheur blindé | `marcheur-blinde` | Le hangar : la menace finale avant la navette |
+| En réparation | `androide-soldat`, `androide-vieux-modele` | Les ateliers : les détenus les démontent |
 
 ## 5. Les valeurs et la lisibilité
 
@@ -77,7 +106,7 @@ Une zone prise par les pirates gagne 30 points de Chantier : bâches, soudures, 
 - **Où va l'œil** : la sortie ou le prochain objectif est toujours la zone la plus claire du cadre, ou la seule zone chaude.
 - **Ce qui est utilisable** : un liseré ou une bande jaune `#e3b23c`, et un petit îlot de lumière chaude. Le jaune ne sert qu'à deux choses : le danger (les bandes au sol) et ce qu'on peut saisir (poignées, leviers, panneaux, cellules d'énergie).
 - **Les camps** se lisent en silhouette et en couleur :
-  - les gardes sont sombres avec du rouge ;
+  - les androïdes de la sécurité sont sombres, avec un seul capteur ou liseré rouge ;
   - les pirates sont chauds et asymétriques ;
   - les détenus sont en orange uni.
 
@@ -214,9 +243,11 @@ Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits 
   - les glyphes qu'il lit sans effort ;
   - sa capsule.
 
-## 12. Les 75 modèles face à la bible
+## 12. Les 88 modèles face à la bible
 
-**Bilan** : 36 gardés, 24 recolorés, 9 à remplacer, 6 écartés. 60 modèles servent tout de suite.
+**Bilan** : 39 gardés, 33 recolorés, 9 à remplacer, 7 écartés. 72 modèles servent tout de suite.
+
+Les 13 derniers (10 androïdes et drones, 3 détenus) ont été ajoutés quand la sécurité est devenue entièrement robotique (§ 4). Chaque personnage a été testé dans le banc des personnages (`vitrine/banc-pnj.html`) : squelette, animations, taille, voir [`PERSONNAGES.md`](PERSONNAGES.md).
 
 | Modèle | Verdict | Pourquoi |
 |---|---|---|
@@ -224,9 +255,22 @@ Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits 
 | `combinaison-veilleur` | À remplacer | Sans langage des Bâtisseurs : à refaire en noir lisse, glyphes cyan. |
 | `detenu-brute` | Gardé |  |
 | `detenu-vieux` | À remplacer | Torse nu : à rhabiller en combinaison orange. |
-| `detenu-atelier` | Gardé | Combinaison orange et masque : le Chantier même. |
-| `garde` | À remplacer | Tenue d'intervention d'aujourd'hui : armure fermée sombre à liseré rouge. |
-| `droide-securite` | Recoloré | Orange → acier sombre et rouge de l'Empire. |
+| `detenu-atelier` | Écarté | Hommage déclaré au personnage d'un autre jeu : on ne le garde pas, même sous licence libre. |
+| `detenu-tshirt` | Gardé | T-shirt orange, squelette Mixamo : le détenu de base. |
+| `detenu-figurant` | Gardé | Combinaison orange, 2 000 faces : la foule, au loin. |
+| `detenu-corvee-toxique` | Gardé | Combinaison étanche orange : les ateliers toxiques, une fois son squelette corrigé dans Blender. |
+| `garde` | À remplacer | Un garde humain : la sécurité n'est faite que d'androïdes. Remplacé par l'androïde de l'Empire (IA) et, en attendant, par les androïdes ci-dessous. |
+| `droide-securite` | Recoloré | Orange → acier sombre et rouge de l'Empire. La garde rapprochée des officiers. |
+| `androide-sentinelle` | Recoloré | Sans visage, articulations visibles : le garde de base. Désaturé. |
+| `androide-antiemeute` | Recoloré | Bleu → acier. L'inscription « police » du torse est à effacer. |
+| `androide-patrouille` | Recoloré | Désaturé. Animé pièce par pièce. |
+| `androide-soldat` | Recoloré | Vert militaire → acier. En réparation dans les ateliers. |
+| `androide-fantassin` | Recoloré | Vert militaire → acier. Posé avec son arme : décor, ou squelette à faire. |
+| `androide-lourd` | Recoloré | Argent et bleu → acier sombre. À alléger (240 000 faces). |
+| `androide-medical` | Recoloré | Le cyan de sa visière est retiré : il est aux Bâtisseurs. |
+| `androide-vieux-modele` | Gardé | Rouillé : un ancien modèle, démonté dans les ateliers. |
+| `drone-securite` | Recoloré | Vert → acier, l'inscription « security » à effacer. |
+| `marcheur-blinde` | Recoloré | Bleu et blanc → acier sombre, un capteur rouge. |
 | `pirate-chef` | Gardé |  |
 | `pirate` | Gardé |  |
 | `pirate-masque` | Gardé |  |
@@ -303,7 +347,7 @@ Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits 
 | 1 | **Le kit du Colosse**, en formes simples : panneau mural de 4 × 4 m chanfreiné, portique-nervure de 4 m, poutre de plafond, passerelle de 2,5 m avec garde-corps, escalier, porte de nef de 8 × 10 m | Le modeler soi-même, dans Unity (ProBuilder) ou Blender. Textures gratuites sur ambientCG (licence CC0) : métal peint, plaques, grilles. |
 | 1 | **Le kit du Chantier** : lampe grillagée, chemin de câbles, caillebotis, bâche, plaque soudée. Les tuyaux, on les a déjà. | Poly Haven et ambientCG (CC0), ou une IA 3D |
 | 1 | **Les décalques** : bandes de danger, pochoirs, coulures de rouille, traces de mains | Des images faites dans Krita ou GIMP, et ambientCG (CC0). Dans Unity, des projecteurs de décalques. |
-| 2 | **Le garde de l'Empire** | IA 3D (voir [`IA-3D.md`](../IA-3D.md)), puis squelette avec Mixamo |
+| 2 | **L'androïde de l'Empire**, le garde de base, à la forme exacte de la bible | IA 3D (voir [`IA-3D.md`](../IA-3D.md)), puis squelette avec Mixamo. En attendant : `androide-sentinelle` |
 | 2 | **La porte de cellule** et **le lit de détenu** | IA 3D |
 | 2 | **La console de l'Empire**, qui remplace le terminal | IA 3D |
 | 3 | **La capsule** et **la combinaison du Veilleur** | IA 3D |
@@ -312,7 +356,7 @@ Le [plan du niveau](PLAN-NIVEAU.md) et la maquette de l'atelier sont construits 
 **Les 9 modèles à remplacer** ont chacun leur fiche dans [`ia/fiches.json`](ia/fiches.json) et se fabriquent avec `outils/generer-modeles-ia.py` (voir [`IA-3D.md`](../IA-3D.md), § 6). Dès qu'ils existent, la maquette les utilise d'elle-même.
 
 **Prompts pour l'IA 3D**, en anglais (les outils le comprennent mieux), sans aucun nom d'œuvre ni de marque :
-- **Garde** : `heavy armored prison guard, full closed helmet with a narrow visor, dark gunmetal plate armor with one thin red stripe, angular chamfered plates, worn and scratched, realistic, full body, T-pose`
+- **Androïde de l'Empire** : `humanoid security android, faceless head with one narrow red sensor slit, broad shoulders, visible mechanical joints, dark gunmetal chamfered armor plates, one thin red stripe, worn lower legs, realistic, full body, T-pose`
 - **Porte de cellule** : `heavy solid steel prison cell door, small sliding hatch at eye level, chamfered edges, dark painted steel, chipped paint, rust streaks, realistic`
 - **Lit** : `steel prison bunk bed welded to a wall, thin mattress, grey wool blanket, worn, realistic`
 - **Console** : `industrial wall console, dark gunmetal casing with chamfered corners, small amber monochrome screen, heavy toggle switches, worn, realistic`

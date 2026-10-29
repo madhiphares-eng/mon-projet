@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banc des personnages</title>
+<style>
+  :root { --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --rouge: #e0705a; --vert: #8fd19e; --fond: rgba(6, 7, 12, 0.86); --trait: rgba(236, 230, 216, 0.16); }
+  html, body { margin: 0; height: 100%; background: #0b0c10; color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #panneau { position: fixed; right: 0; top: 0; bottom: 0; width: 470px; overflow-y: auto; background: var(--fond); border-left: 1px solid var(--trait); padding: 14px 16px 24px; box-sizing: border-box; font-size: 13px; }
+  h1 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 4px; color: var(--ambre); }
+  h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--brume); margin: 16px 0 4px; font-weight: 600; }
+  .perso { border-top: 1px solid var(--trait); padding: 8px 0; cursor: pointer; }
+  .perso:hover { background: rgba(236, 230, 216, 0.04); }
+  .perso b { font-size: 14px; }
+  .perso .meta { color: var(--brume); }
+  .perso .anims button { background: none; border: 1px solid var(--trait); color: var(--ivoire); font: inherit; font-size: 12px; padding: 2px 7px; margin: 4px 4px 0 0; cursor: pointer; }
+  .perso .anims button.actif { border-color: var(--ambre); color: var(--ambre); }
+  .ok { color: var(--vert); } .attention { color: var(--ambre); } .ko { color: var(--rouge); }
+  #ouvrir { margin: 8px 0; }
+  #ouvrir label { display: inline-block; border: 1px solid var(--ambre); color: var(--ambre); padding: 5px 10px; cursor: pointer; }
+  #ouvrir input { display: none; }
+  #etat { color: var(--brume); }
+  .tout { background: none; border: 1px solid var(--trait); color: var(--ivoire); font: inherit; padding: 3px 9px; cursor: pointer; }
+  @media (max-width: 760px) { #panneau { top: auto; height: 50%; width: 100%; border-left: 0; border-top: 1px solid var(--trait); } }
+</style>
+</head>
+<body>
+<div id="panneau">
+  <h1>Banc des personnages</h1>
+  <div id="etat">Choisis le dossier du prologue (celui qui contient 02-Prisonniers, 03-Gardes…).</div>
+  <div id="ouvrir"><label>Choisir le dossier<input type="file" id="dossier" webkitdirectory multiple></label></div>
+  <div id="liste"></div>
+</div>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import * as Squelettes from 'three/addons/utils/SkeletonUtils.js';
+
+// Les personnages du prologue. camp : detenu, androide, pirate, heros. hauteur : la taille voulue en jeu (m).
+// ecarte : gardé pour mémoire mais retiré du jeu (raison donnée).
+const PNJ = [
+  { cle: '01-Joueur/tenue-detenu', camp: 'heros', hauteur: 1.8, titre: 'Prisoner', auteur: 'asadkhan1881' },
+  { cle: '02-Prisonniers/detenu-brute', camp: 'detenu', hauteur: 1.95, titre: 'Balthazar (rigged & animated)', auteur: 'Jungle Jim' },
+  { cle: '02-Prisonniers/detenu-vieux', camp: 'detenu', hauteur: 1.75, titre: 'Realistic Old Russian Guy (animated)', auteur: 'Jungle Jim', note: 'torse nu : à rhabiller en combinaison orange' },
+  { cle: '02-Prisonniers/detenu-atelier', camp: 'detenu', hauteur: 1.85, titre: 'Employee', auteur: 'Dotflare', ecarte: 'hommage à un jeu existant (personnage d’un autre jeu)' },
+  { cle: '02-Prisonniers/detenu-tshirt', camp: 'detenu', hauteur: 1.78, titre: 'Prisoner', auteur: 'syedabbas0815' },
+  { cle: '02-Prisonniers/detenu-figurant', camp: 'detenu', hauteur: 1.75, titre: 'Prisoner Hostage Low Poly Character', auteur: '00amza' },
+  { cle: '02-Prisonniers/detenu-corvee-toxique', camp: 'detenu', hauteur: 1.8, titre: 'Hazmat Suit 3', auteur: 'impulsio', note: 'squelette mal exporté (échelles ×100 et ×0,01 empilées) : le corps s’affiche mal ; à repasser dans Blender (appliquer les échelles) avant Unity' },
+  { cle: '03-Gardes/garde', camp: 'androide', hauteur: 1.85, titre: 'S.W.A.T. Operator', auteur: 'SpatialNeglect', ecarte: 'garde humain : la sécurité est faite d’androïdes' },
+  { cle: '03-Gardes/droide-securite', camp: 'androide', hauteur: 2.1, titre: 'Sci-fi O.B. Robot Unit TH-ICC02 (animated)', auteur: 'Jungle Jim' },
+  { cle: '03-Gardes/androide-antiemeute', camp: 'androide', hauteur: 2.0, titre: 'Robot Police Unit (animated)', auteur: 'Jungle Jim' },
+  { cle: '03-Gardes/androide-sentinelle', camp: 'androide', hauteur: 1.95, titre: 'Old War Droid Alfa 01', auteur: 'Donjuan301' },
+  { cle: '03-Gardes/androide-patrouille', camp: 'androide', hauteur: 1.9, titre: 'Robot', auteur: 'dangry' },
+  { cle: '03-Gardes/androide-soldat', camp: 'androide', hauteur: 2.0, titre: 'Robo-soldier', auteur: 'efforya' },
+  { cle: '03-Gardes/androide-fantassin', camp: 'androide', hauteur: 1.95, titre: 'Robot Soldier', auteur: 'Moonlightlll' },
+  { cle: '03-Gardes/androide-lourd', camp: 'androide', hauteur: 2.6, titre: 'Security robot', auteur: '3DWorkbench' },
+  { cle: '03-Gardes/androide-medical', camp: 'androide', hauteur: 1.85, titre: 'Medical Android', auteur: 'efforya' },
+  { cle: '03-Gardes/androide-vieux-modele', camp: 'androide', hauteur: 1.85, titre: 'RoboPolice', auteur: 'ilasolomon' },
+  { cle: '03-Gardes/drone-securite', camp: 'androide', hauteur: 0.9, titre: 'Security drone', auteur: 'SteelBlue8', vol: 2.2 },
+  { cle: '03-Gardes/marcheur-blinde', camp: 'androide', hauteur: 3.2, titre: 'Medium Mech Striker', auteur: 'MSGDI' },
+  { cle: '04-Pirates/pirate', camp: 'pirate', hauteur: 1.85, titre: 'Scavenger', auteur: 'Vasian-Digital3D' },
+  { cle: '04-Pirates/pirate-eva', camp: 'pirate', hauteur: 1.9, titre: 'Mercenary Astronaut', auteur: 'Peter_D' },
+  { cle: '04-Pirates/pirate-chef', camp: 'pirate', hauteur: 1.95, titre: 'Space Pirate', auteur: 'Odlab' },
+  { cle: '04-Pirates/pirate-masque', camp: 'pirate', hauteur: 1.85, titre: 'post apo character', auteur: 'Am I dead?' },
+];
+const CAMPS = { heros: 'Le héros', detenu: 'Détenus', androide: 'Sécurité : androïdes', pirate: 'Pirates' };
+const ORDRE = ['heros', 'detenu', 'androide', 'pirate'];
+
+const params = new URLSearchParams(location.search);
+const RACINE = params.get('racine');           // ex. ?racine=http://localhost:8000/prologue/
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x15171c);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 400);
+const rendu = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+rendu.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendu.outputColorSpace = THREE.SRGBColorSpace;
+rendu.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.prepend(rendu.domElement);
+const orbite = new OrbitControls(camera, rendu.domElement);
+scene.add(new THREE.HemisphereLight(0xdfe6f0, 0x2a2622, 1.4));
+const soleil = new THREE.DirectionalLight(0xffffff, 2.2); soleil.position.set(4, 8, 6); scene.add(soleil);
+const contre = new THREE.DirectionalLight(0x9fb4d0, 1.2); contre.position.set(-5, 4, -6); scene.add(contre);
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(200, 40), new THREE.MeshStandardMaterial({ color: 0x2a2d33, roughness: 0.9 }));
+sol.rotation.x = -Math.PI / 2; scene.add(sol);
+const grille = new THREE.GridHelper(200, 200, 0x3a3f48, 0x30343b); grille.position.y = 0.002; scene.add(grille);
+
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const chargeur = new GLTFLoader().setDRACOLoader(draco);
+let fichiers = null;                            // chemin relatif → File (dossier choisi)
+const horloge = new THREE.Clock();
+const bancs = [];                               // un par personnage chargé
+let figer = null;                               // fraction de la durée pour les captures (null = lecture normale)
+
+let plein = false;
+function redimensionner() {
+  const l = plein ? innerWidth : innerWidth - (innerWidth > 760 ? 470 : 0), h = plein || innerWidth > 760 ? innerHeight : innerHeight / 2;
+  rendu.setSize(l, h); camera.aspect = l / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', redimensionner); redimensionner();
+
+function url(cle) {
+  const nom = cle.split('/')[1], chemin = `${cle}/${nom}.glb`;
+  if (fichiers) { const f = fichiers.get(chemin); return f ? URL.createObjectURL(f) : null; }
+  return RACINE ? new URL(chemin, RACINE).href : null;
+}
+
+// --- les mesures -----------------------------------------------------------------
+const reIgnorer = /(end|nub|_end|top_end|null|ik|pole|target|ctrl|twist|roll)$/i;
+function trouverOs(os, motifs) { return os.find(b => motifs.every(m => m.test(b.name))); }
+const GAUCHE = /(left|_l$|\.l$|_l_|^l_|\bl\b|lft)/i;
+function osHumains(os) {
+  const n = b => b.name.replace(/^mixamorig[:_]?/i, '');
+  const avec = re => os.filter(b => re.test(n(b)) && !reIgnorer.test(n(b)));
+  return {
+    hanches: avec(/hips|pelvis|root|cog/i)[0],
+    tete: avec(/head/i)[0],
+    brasG: avec(/(upper_?arm|arm)/i).filter(b => !/fore|lower/i.test(n(b))).find(b => GAUCHE.test(n(b))),
+    mainG: avec(/hand|wrist/i).find(b => GAUCHE.test(n(b))),
+    jambeG: avec(/(up_?leg|thigh|upperleg|leg)/i).find(b => GAUCHE.test(n(b))),
+  };
+}
+function boite(objet) { objet.updateMatrixWorld(true); return new THREE.Box3().setFromObject(objet, true); }
+
+async function charger(p) {
+  const lien = url(p.cle);
+  if (!lien) return { ...p, absent: true };
+  const t0 = performance.now();
+  const gltf = await new Promise((ok, ko) => chargeur.load(lien, ok, undefined, ko)).catch(e => ({ erreur: e.message || String(e) }));
+  if (gltf.erreur) return { ...p, erreur: gltf.erreur };
+  const racine = gltf.scene;
+  let faces = 0, maillages = 0, souples = 0;
+  const textures = new Set(), materiaux = new Set(), os = new Set();
+  racine.traverse(o => {
+    if (!o.isMesh) return;
+    maillages++; if (o.isSkinnedMesh) { souples++; o.skeleton.bones.forEach(b => os.add(b)); }
+    const g = o.geometry; faces += (g.index ? g.index.count : g.attributes.position.count) / 3;
+    o.frustumCulled = false;
+    for (const m of [].concat(o.material)) { materiaux.add(m); for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap']) if (m[k]?.image) textures.add(m[k].image); }
+  });
+  const listeOs = [...os];
+  const b0 = boite(racine), taille0 = b0.getSize(new THREE.Vector3());
+  const hum = osHumains(listeOs);
+  // pose de départ : angle du bras gauche avec l'horizontale (T ≈ 0°, A ≈ 35-50°, bras le long du corps ≈ 80-90°)
+  let pose = '—';
+  if (hum.brasG && hum.mainG) {
+    const a = hum.brasG.getWorldPosition(new THREE.Vector3()), m = hum.mainG.getWorldPosition(new THREE.Vector3());
+    const d = m.sub(a), ang = THREE.MathUtils.radToDeg(Math.atan2(Math.abs(d.y), Math.hypot(d.x, d.z)));
+    pose = ang < 20 ? `T (${ang.toFixed(0)}°)` : ang < 60 ? `A (${ang.toFixed(0)}°)` : `bras baissés (${ang.toFixed(0)}°)`;
+  }
+  // les animations : est-ce que ça bouge, est-ce que ça avance, est-ce que ça boucle
+  const mixeur = new THREE.AnimationMixer(racine);
+  const anims = [];
+  // on suit tous les nœuds (os ou pièces rigides : beaucoup de robots sont animés pièce par pièce, sans squelette)
+  const noeuds = []; racine.traverse(o => { if (o !== racine) noeuds.push(o); });
+  const pas = Math.max(1, Math.floor(noeuds.length / 400));
+  const suivis = noeuds.filter((o, i) => i % pas === 0);
+  const positions = () => suivis.map(b => b.getWorldPosition(new THREE.Vector3()));
+  const repos = positions();
+  const dim0 = Math.max(taille0.x, taille0.y, taille0.z) || 1;
+  for (const clip of gltf.animations) {
+    const action = mixeur.clipAction(clip); action.reset().play();
+    const echant = [], boites = [];
+    for (let i = 0; i <= 8; i++) {
+      mixeur.setTime(clip.duration * i / 8); racine.updateMatrixWorld(true);
+      echant.push(positions()); if (i % 4 === 0) boites.push(boite(racine));
+    }
+    action.stop();
+    let mouvement = 0, ecartBoucle = 0, ecartRepos = 0;
+    for (let k = 0; k < suivis.length; k++) {
+      for (const e of echant) mouvement = Math.max(mouvement, e[k].distanceTo(echant[0][k]));
+      ecartBoucle = Math.max(ecartBoucle, echant[8][k].distanceTo(echant[0][k]));
+      ecartRepos = Math.max(ecartRepos, echant[0][k].distanceTo(repos[k]));
+    }
+    const c0 = boites[0].getCenter(new THREE.Vector3()), c2 = boites[2].getCenter(new THREE.Vector3());
+    const avance = Math.hypot(c2.x - c0.x, c2.z - c0.z);
+    const ech = Math.max(...boites.map(b => { const t = b.getSize(new THREE.Vector3()); return Math.max(t.x, t.y, t.z); })) / dim0;
+    anims.push({ nom: clip.name || 'sans nom', duree: +clip.duration.toFixed(2), pistes: clip.tracks.length,
+      mouvement: +(mouvement / Math.max(taille0.y, 1e-6)).toFixed(3), avance: +(avance / Math.max(taille0.y, 1e-6)).toFixed(3),
+      boucle: +(ecartBoucle / Math.max(taille0.y, 1e-6)).toFixed(3), quittePose: +(ecartRepos / Math.max(taille0.y, 1e-6)).toFixed(3), echelle: +ech.toFixed(2) });
+  }
+  mixeur.stopAllAction(); racine.updateMatrixWorld(true);
+  // mise à la taille voulue, pieds au sol (sur la pose de repos)
+  const b1 = boite(racine), h1 = b1.getSize(new THREE.Vector3()).y || 1;
+  const facteur = p.hauteur / h1;
+  const groupe = new THREE.Group(); groupe.add(racine);
+  racine.scale.multiplyScalar(facteur);
+  const b2 = boite(groupe), c2 = b2.getCenter(new THREE.Vector3());
+  racine.position.set(-c2.x, -b2.min.y + (p.vol || 0), -c2.z);
+  const r = {
+    ...p, objet: groupe, mixeur, clips: gltf.animations, actif: -1,
+    faces: Math.round(faces), maillages, souples, os: listeOs.length, materiaux: materiaux.size, textures: textures.size,
+    texMax: Math.max(0, ...[...textures].map(i => Math.max(i.width || 0, i.height || 0))),
+    mixamo: listeOs.some(b => /^mixamorig/i.test(b.name)),
+    humanoide: !!(hum.hanches && hum.tete && hum.brasG && hum.jambeG),
+    tailleBrute: taille0.toArray().map(v => +v.toFixed(3)), minBrut: b0.min.toArray().map(v => +v.toFixed(5)), maxBrut: b0.max.toArray().map(v => +v.toFixed(5)), facteur: +facteur.toFixed(4), pose, anims,
+    chargement: Math.round(performance.now() - t0),
+  };
+  r.verdict = juger(r);
+  return r;
+}
+
+function juger(r) {
+  const notes = [];
+  let niveau = 'ok';
+  const pire = n => { if (n === 'ko' || (n === 'attention' && niveau === 'ok')) niveau = n; };
+  if (r.ecarte) { notes.push(`écarté : ${r.ecarte}`); pire('ko'); }
+  if (r.note) { notes.push(r.note); pire('attention'); }
+  const vivantes = r.anims.filter(a => a.mouvement > 0.01);
+  if (!r.souples) {
+    if (r.vol) notes.push('pas de squelette : normal pour un drone (il flotte, ses pièces tournent par script)');
+    else if (vivantes.length) notes.push('pas de squelette, mais animé pièce par pièce : utilisable tel quel, pas de Mixamo');
+    else { notes.push('pas de squelette : statue, à faire rigger (Mixamo)'); pire('attention'); }
+  }
+  else if (!r.humanoide) notes.push(`squelette non humain (${r.os} os) : il ne prend pas les animations Mixamo, seulement les siennes`);
+  else notes.push(`squelette humain, ${r.os} os${r.mixamo ? ', nommé façon Mixamo (animations Mixamo directes)' : ' (Unity : à régler en Humanoid à l’import)'}`);
+  if (!r.anims.length) { notes.push('aucune animation'); if (r.souples) pire('attention'); }
+  else if (!vivantes.length) {
+    notes.push(r.anims.every(a => a.duree < 0.05) ? 'son « animation » n’est qu’une pose fixe (une image)' : 'les animations ne bougent pas'); pire('attention');
+  }
+  else notes.push(`${vivantes.length} animation${vivantes.length > 1 ? 's' : ''} qui bouge${vivantes.length > 1 ? 'nt' : ''} sur ${r.anims.length}`);
+  for (const a of r.anims) {
+    if (a.echelle > 1.6) { notes.push(`« ${a.nom} » grossit le modèle (×${a.echelle}) : unités à corriger`); pire('attention'); }
+    if (a.avance > 0.3) notes.push(`« ${a.nom} » avance de ${(a.avance * r.hauteur).toFixed(1)} m (root motion) : à garder pour la marche, ou à mettre sur place`);
+  }
+  const brute = Math.max(...r.tailleBrute);
+  if (brute > 20 || brute < 0.2) { notes.push(`unités d’origine : ${brute.toFixed(2)} de haut → facteur ${r.facteur} à l’import`); pire('attention'); }
+  if (r.faces > 100000) { notes.push(`${Math.round(r.faces / 1000)} k faces : à alléger (budget 60 k)`); pire('attention'); }
+  else if (r.faces > 60000) { notes.push(`${Math.round(r.faces / 1000)} k faces : un peu au-dessus du budget (60 k)`); }
+  return { niveau, notes };
+}
+
+// --- la rangée -------------------------------------------------------------------------
+function ranger() {
+  let x = 0, campPrec = null;
+  const etiquettes = [];
+  for (const r of bancs) {
+    if (!r.objet) continue;
+    if (campPrec && campPrec !== r.camp) x += 1.6;
+    campPrec = r.camp;
+    const larg = Math.max(0.9, boite(r.objet).getSize(new THREE.Vector3()).x);
+    r.objet.position.x = x + larg / 2; r.x = x + larg / 2;
+    scene.add(r.objet); x += larg + 0.5;
+  }
+  // silhouette de 1,80 m au début de la rangée
+  if (!scene.getObjectByName('repere')) {
+  const repere = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 1.36, 4, 12), new THREE.MeshStandardMaterial({ color: 0x86efe6, transparent: true, opacity: 0.35 }));
+  repere.position.set(-1, 0.9, 0); repere.name = 'repere'; scene.add(repere);
+  }
+  // on cadre le début de la rangée (le héros et les détenus) ; un clic sur un nom cadre le personnage
+  const vu = Math.min(x, 16);
+  camera.position.set(vu / 2 - 1, 2.2, vu * 0.95 + 3); orbite.target.set(vu / 2 - 1, 1.0, 0); orbite.update();
+}
+
+function jouer(r, i) {
+  r.mixeur.stopAllAction(); r.actif = i;
+  if (i >= 0 && r.clips[i]) r.mixeur.clipAction(r.clips[i]).reset().play();
+  majListe();
+}
+
+function majListe() {
+  const liste = document.querySelector('#liste'); liste.innerHTML = '';
+  const tout = document.createElement('button'); tout.textContent = 'Tout voir'; tout.className = 'tout'; tout.onclick = () => { window.banc.seul(null); ranger(); }; liste.append(tout);
+  for (const camp of ORDRE) {
+    const du = bancs.filter(r => r.camp === camp); if (!du.length) continue;
+    const h = document.createElement('h2'); h.textContent = CAMPS[camp] + ' ›'; h.title = 'Ne montrer que ce camp'; h.style.cursor = 'pointer'; h.onclick = () => window.banc.camp(camp); liste.append(h);
+    for (const r of du) {
+      const d = document.createElement('div'); d.className = 'perso';
+      const nom = r.cle.split('/')[1];
+      if (r.absent || r.erreur) { d.innerHTML = `<b>${nom}</b> <span class="ko">${r.absent ? 'absent du dossier' : 'erreur : ' + r.erreur}</span>`; liste.append(d); continue; }
+      d.innerHTML = `<b>${nom}</b> <span class="${r.verdict.niveau}">●</span><div class="meta">« ${r.titre} », ${r.auteur} · ${Math.round(r.faces / 1000)} k faces · ${r.textures} textures (max ${r.texMax} px) · pose ${r.pose}</div>
+        <div>${r.verdict.notes.map(n => '– ' + n).join('<br>')}</div>
+        <div class="anims">${r.anims.map((a, i) => `<button data-i="${i}" class="${r.actif === i ? 'actif' : ''}">${a.nom} · ${a.duree} s${a.mouvement > 0.01 ? '' : ' (immobile)'}</button>`).join('')}</div>`;
+      d.querySelectorAll('button').forEach(b => b.onclick = e => { e.stopPropagation(); jouer(r, +b.dataset.i); });
+      d.onclick = () => cadrer(r);
+      liste.append(d);
+    }
+  }
+}
+
+function cadrer(r) {
+  const b = boite(r.objet), c = b.getCenter(new THREE.Vector3()), t = b.getSize(new THREE.Vector3());
+  const d = Math.max(t.y, t.x) * 1.9 + 0.8;
+  camera.position.set(c.x + d * 0.35, c.y + t.y * 0.15, d); orbite.target.copy(c); orbite.update();
+}
+
+async function lancer() {
+  document.querySelector('#etat').textContent = 'Chargement…';
+  for (const r of bancs.splice(0)) if (r.objet) scene.remove(r.objet);
+  for (const p of PNJ) {
+    const r = await charger(p);
+    bancs.push(r);
+    document.querySelector('#etat').textContent = `Chargement… ${bancs.length} / ${PNJ.length}`;
+  }
+  bancs.sort((a, b) => ORDRE.indexOf(a.camp) - ORDRE.indexOf(b.camp));
+  ranger();
+  for (const r of bancs) if (r.clips?.length) jouer(r, 0);
+  const n = bancs.filter(r => r.objet).length;
+  document.querySelector('#etat').textContent = `${n} personnages chargés sur ${PNJ.length}. Clique un nom pour le cadrer, un bouton pour changer d’animation.`;
+  majListe();
+  window.banc.pret = true;
+}
+
+document.querySelector('#dossier').addEventListener('change', e => {
+  fichiers = new Map();
+  for (const f of e.target.files) {
+    const morceaux = f.webkitRelativePath.split('/');
+    const i = morceaux.findIndex(m => /^0[1-4]-/.test(m));
+    if (i >= 0) fichiers.set(morceaux.slice(i).join('/'), f);
+  }
+  lancer();
+});
+
+(function boucle() {
+  requestAnimationFrame(boucle);
+  const dt = horloge.getDelta();
+  for (const r of bancs) {
+    if (!r.mixeur || r.actif < 0) continue;
+    if (figer === null) r.mixeur.update(dt);
+    else r.mixeur.setTime(r.clips[r.actif].duration * figer);
+  }
+  rendu.render(scene, camera);
+})();
+
+// pour les tests automatiques
+window.banc = {
+  pret: false, bancs, cadrer: i => cadrer(bancs[i]), figer: f => { figer = f; },
+  rapport: () => bancs.map(({ objet, mixeur, clips, ...r }) => r),
+  vue: (x, y, z, cx, cy, cz) => { camera.position.set(x, y, z); orbite.target.set(cx, cy, cz); orbite.update(); },
+  jouer: (i, a) => jouer(bancs[i], a),
+  plein: () => { plein = true; document.querySelector('#panneau').style.display = 'none'; redimensionner(); },
+  camp: camp => {
+    const du = bancs.filter(r => r.objet && r.camp === camp);
+    bancs.forEach(r => { if (r.objet) r.objet.visible = du.includes(r); });
+    const b = new THREE.Box3(); du.forEach(r => b.union(boite(r.objet)));
+    const c = b.getCenter(new THREE.Vector3()), t = b.getSize(new THREE.Vector3());
+    const d = Math.max(t.x / camera.aspect, t.y) * 1.25 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) + 1;
+    camera.position.set(c.x, c.y + t.y * 0.1, d); orbite.target.copy(c); orbite.update();
+  },
+  seul: i => bancs.forEach((r, j) => { if (r.objet) r.objet.visible = i === null || i === j; }),
+};
+if (RACINE) lancer();
+</script>
+</body>
+</html>

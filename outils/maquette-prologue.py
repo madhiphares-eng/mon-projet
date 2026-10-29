@@ -16,6 +16,10 @@ de 0 à 4 m le Chantier (tôle vert-de-gris, tuyaux, lampes au sodium), dans la 
 import json
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import plans_colosse  # noqa: E402  (les plans détaillés)
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TAILLES = {k: v for k, v in json.load(open(os.path.join(RACINE, 'docs', 'prologue', 'tailles-modeles.json'), encoding='utf-8')).items() if not k.startswith('_')}
@@ -60,16 +64,33 @@ def modele(cle, x, z, cadre=None, y=0.0, rot=0, rotx=0, echelle=None):
     pieces.append(q)
 
 
-def humain(x, z, camp=None, y=0.0, rot=0):
-    """Une silhouette de 1,80 m : bleu les gardes, orange les pirates, jaune les détenus.
-    Quand le garde de l'Empire a été refait avec l'IA, il remplace les silhouettes des gardes."""
-    if camp == 'bleu' and ia('03-Gardes/garde-empire'):
-        modele('03-Gardes/garde-empire', x, z, y=y, rot=rot)
+# la sécurité de l'Empire n'emploie que des androïdes (bible, § 4) ; les détenus sont de vrais modèles, les pirates restent des silhouettes
+GARDES = ['03-Gardes/androide-sentinelle', '03-Gardes/androide-antiemeute', '03-Gardes/androide-patrouille']
+DETENUS = ['02-Prisonniers/detenu-tshirt', '02-Prisonniers/detenu-figurant', '02-Prisonniers/detenu-brute', '02-Prisonniers/detenu-figurant']
+_tour = {'bleu': 0, 'jaune': 0}
+
+
+def humain(x, z, camp=None, y=0.0, rot=0, qui=None):
+    """Un personnage : bleu un androïde de la sécurité, jaune un détenu (modèles pris à tour de rôle, ou qui),
+    orange une silhouette de pirate de 1,80 m. Quand l'androïde de l'Empire a été refait avec l'IA, il devient le garde de base."""
+    if camp in ('bleu', 'jaune') or qui:
+        if not qui:
+            liste = GARDES if camp == 'bleu' else DETENUS
+            if camp == 'bleu' and ia('03-Gardes/androide-empire'):
+                liste = ['03-Gardes/androide-empire']
+            qui = liste[_tour[camp] % len(liste)]
+            _tour[camp] += 1
+        modele(qui, x, z, y=y, rot=rot)
         return
     q = {'type': 'forme', 'cle': 'humain', 'position': [r(x), r(y), r(z)]}
     if camp:
         q['teinte'] = camp
     pieces.append(q)
+
+
+def drone(x, z, y):
+    """Un drone de surveillance, en vol : le regard qui vient d'en haut."""
+    modele('03-Gardes/drone-securite', x, z, y=y)
 
 
 def etiquette(texte, x, z, y, police=1.0, teinte=None):
@@ -327,7 +348,7 @@ modele('09-Informatique/cables', -6, -30.5, [2, 0, 2])
 for x in (-4.5, 4.5):
     bloc(x, -15.2, 1.2, 0.6, 1.0)
     modele('09-Informatique/console-murale', x, -15.2, [1.0, 1.0, 0.3], 1.0)
-humain(6, -26, 'bleu')
+humain(6, -26, 'bleu', qui='03-Gardes/androide-medical')
 for x, z in ((-11.5, -33.5), (11.5, -14.5)):
     gyrophare(x, z, 6.5)                                       # après la panne, tout devient rouge
 
@@ -413,7 +434,7 @@ bloc(-22, -3.5, 3, 1.2, 1.1)                                   # le poste de gar
 console(-22, -3.5, 1.1, 0, y_mural=0.0) if not ia('09-Informatique/console-empire') else console(-22, -2.4)
 modele('03-Gardes/droide-securite', -24.5, -2, [0, 2.1, 0], rot=-90)
 modele('02-Prisonniers/detenu-brute', -36, 2.5)
-modele('02-Prisonniers/detenu-atelier', -50, -2.5)
+modele('02-Prisonniers/detenu-tshirt', -50, -2.5)
 for x, z in ((-28, 1.5), (-33, -3), (-41, 3.5), (-47, 1), (-55, -3.5), (-58, 2)):
     if (x, z) == (-47, 1) and ia('02-Prisonniers/detenu-vieux-ia'):
         modele('02-Prisonniers/detenu-vieux-ia', x, z, rot=90)
@@ -421,6 +442,8 @@ for x, z in ((-28, 1.5), (-33, -3), (-41, 3.5), (-47, 1), (-55, -3.5), (-58, 2))
         humain(x, z, 'jaune')
 for x, z, y in ((-30, -7, 9), (-52, 7, 9), (-38, -7, 13.5), (-25, 7, 4.5)):
     humain(x, z, 'bleu', y)
+drone(-40, 0, 10)
+drone(-56, -4, 15)
 modele('13-Armes/cle-a-molette', -27, -1, [0.45, 0.45, 0.45], 0.02, 0, 90)   # l'arme de fortune, au sol
 etiquette('Arme de fortune', -27, -1, 0.7, 0.35, 'ambre')
 for s in (-3, 3):
@@ -474,7 +497,7 @@ for x, z in ((-92, -6), (-92, 6), (-88, -8.6), (-88, 8.6)):
 modele('09-Informatique/console-murale', -84, 0, [1.2, 1.2, 0.3], 0.5, 90)
 etiquette('Commande du hangar : ouvrir la porte des gardes', -84, 0, 2.6, 0.45, 'ambre')
 for x, z in ((-86, -3), (-89, 3.5), (-82, 6)):
-    humain(x, z, 'bleu', 0.5 if -90 <= x <= -82 and -5 <= z <= 5 else 0)
+    humain(x, z, 'bleu', 0.5 if -90 <= x <= -82 and -5 <= z <= 5 else 0, qui='03-Gardes/droide-securite')   # la garde rapprochée des officiers
 ligne_froide(-94, -78, -5, 7.6)
 ligne_froide(-94, -78, 5, 7.6)
 
@@ -497,8 +520,11 @@ for x, z in ((-64, 37), (-64, 34.5), (-40.5, 37.5)):
 modele('10-Hangar/caisse-armes', -44, 37.5, [1.8, 1.0, 1.0])
 for x, z in ((-40.5, 30), (-40.5, 31.2)):
     modele('10-Hangar/cellule-energie', x, z, [0, 1.0, 0])
-modele('02-Prisonniers/detenu-atelier', -54, 20.6)
-modele('02-Prisonniers/detenu-atelier', -47, 28.6, rot=180)
+modele('02-Prisonniers/detenu-tshirt', -54, 20.6)
+modele('02-Prisonniers/detenu-figurant', -47, 28.6, rot=180)
+modele('03-Gardes/androide-vieux-modele', -52, 37.6, rot=180)          # des androïdes en réparation, que les détenus démontent
+modele('03-Gardes/androide-soldat', -58, 37.6, rot=180)
+etiquette('Androïdes en réparation', -55, 37.6, 2.8, 0.42)
 for x, z in ((-61, 26), (-50, 26), (-44, 21)):
     humain(x, z, 'jaune')
 etiquette('Détenus alliés possibles', -52, 26, 2.8, 0.45)
@@ -617,6 +643,7 @@ espace(10, 14, -2, 2, HC, 'ns', chantier=True, couche='coursive')
 neon(12, 0, HC - 0.3, 3.0, 'x', 'blanc', section=(0.08, 0.14))
 espace(14, 38, -12, 12, 16, portes={'o': [(0, 4, HC, 'porte', 0.0)], 'e': [scellee(0, 3.0, 3.2)]}, nom='M · Salle des machines', police=2.2,
        sol=None, chantier=True, nervures=True, couche='chantier')
+drone(24, 5, 6)
 dalles(14, 38, -12, 12)
 for y in (4, 8):                                               # les passerelles à 4 et 8 m, le long des murs nord et sud
     for s in (-1, 1):
@@ -699,8 +726,11 @@ for z in (13, 16.5):
 for x, z, l, p in ((68, -2, 1, 3), (72, 5, 3, 1), (66, 9, 3, 1), (106, -6, 3, 1), (110, 2, 1, 3), (104, 8, 3, 1)):
     bloc(x, z, l, p, 1.2)                                      # abris
 for x, z in ((64, -3), (69, 3), (63, 12), (70, 13)):
-    humain(x, z, 'bleu')
-humain(HX0 + 4, -5, 'bleu', 12)
+    humain(x, z, 'bleu', rot=90)
+humain(HX0 + 4, -5, 'bleu', 12, rot=90)
+modele('03-Gardes/androide-lourd', 60.8, 4.5, rot=90)                  # il garde la porte du hangar
+modele('03-Gardes/marcheur-blinde', 77, 1, rot=90)
+drone(84, -14, 8)
 for x, z in ((64, 11), (66.2, 11)):
     modele('10-Hangar/caisses', x, z, [2, 2, 2])
 modele('10-Hangar/caisse-armes', 64, 6, [1.8, 1.0, 1.0])
@@ -823,9 +853,10 @@ def plan_svg():
         o.append(f'<path d="{d}" fill="none" {styles[genre]} stroke-linejoin="round"/>')
     camps = {'bleu': '#c8322a', 'orange': '#ff8a3a', 'jaune': '#d9b04a'}
     for q in pieces:
-        if q['cle'] == 'humain':
+        camp = plans_colosse.camp_de(q)
+        if camp:
             x, y, z = q['position']
-            o.append(f'<circle cx="{px(x):.1f}" cy="{pz(z):.1f}" r="3.4" fill="{camps.get(q.get("teinte"), "#888")}" stroke="#0e1016"/>')
+            o.append(f'<circle cx="{px(x):.1f}" cy="{pz(z):.1f}" r="3.4" fill="{camps[camp]}" stroke="#0e1016"/>')
     for num, nom, (x, z), (tx, tz) in VUES:
         import math
         a = math.atan2(tz - z, tx - x)
@@ -851,7 +882,7 @@ def plan_svg():
            ('<line x1="0" y1="0" x2="34" y2="0" stroke="#ffb35c" stroke-width="2" stroke-dasharray="2 4"/>', 'Raccourci (s\'ouvre d\'un côté)'),
            ('<line x1="0" y1="0" x2="34" y2="0" stroke="#6b6878" stroke-width="1.6" stroke-dasharray="3 4"/>', 'Zones facultatives'),
            ('<circle cx="8" cy="0" r="8" fill="#e8eef6"/>', 'Point de vue clé'),
-           ('<circle cx="6" cy="0" r="4" fill="#c8322a"/><circle cx="18" cy="0" r="4" fill="#ff8a3a"/><circle cx="30" cy="0" r="4" fill="#d9b04a"/>', 'Gardes, pirates, détenus'),
+           ('<circle cx="6" cy="0" r="4" fill="#c8322a"/><circle cx="18" cy="0" r="4" fill="#ff8a3a"/><circle cx="30" cy="0" r="4" fill="#d9b04a"/>', 'Androïdes, pirates, détenus'),
            ('<rect x="0" y="-5" width="34" height="10" fill="#ff4a3a"/>', 'Porte scellée')]
     for i, (s, t) in enumerate(leg):
         o.append(f'<g transform="translate({M + i * 205},{ly:.0f})">{s}<text x="42" y="4" font-size="12" fill="#a7a3b4">{t}</text></g>')
@@ -861,6 +892,10 @@ def plan_svg():
 
 
 open(os.path.join(RACINE, 'docs', 'prologue', 'plan-niveau.svg'), 'w', encoding='utf-8').write(plan_svg())
+
+# les plans détaillés par secteur et les coupes (docs/prologue/plans/)
+MESURES = {k: v for k, v in json.load(open(os.path.join(RACINE, 'docs', 'prologue', 'mesures-modeles.json'), encoding='utf-8')).items() if not k.startswith('_')}
+plans_colosse.tout(RACINE, pieces, ZONES, CHEMINS, VUES, TAILLES, MESURES)
 
 
 def modeles_par_zone():

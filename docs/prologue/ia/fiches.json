@@ -3,11 +3,11 @@
 "modeles": [
   {
     "remplace": "03-Gardes/garde",
-    "cle": "03-Gardes/garde-empire",
-    "titre": "Garde de l'Empire",
-    "usage": "Garde de la prison : armure fermée sombre, un seul liseré rouge",
-    "prompt": "Full body concept of a heavily armored prison guard standing in a T-pose, front view, full closed helmet with a narrow horizontal visor, dark gunmetal angular plate armor with chamfered edges, one thin red stripe across the chest and the helmet, worn and scratched metal, heavy boots and gloves, no weapon, isolated on a plain light grey background, even studio lighting, realistic, high detail",
-    "cadre": [0, 1.85, 0], "faces": 50000, "personnage": true
+    "cle": "03-Gardes/androide-empire",
+    "titre": "Androïde de l'Empire",
+    "usage": "Androïde de la sécurité, le garde de base : sans visage, acier sombre, un seul capteur rouge",
+    "prompt": "Full body concept of a humanoid security android standing in a T-pose, front view, faceless head with one narrow horizontal red sensor slit, broad shoulders, visible mechanical joints at the neck, elbows and knees, dark gunmetal angular armor plates with chamfered edges, one thin red stripe on the chest, worn and scratched metal on the lower legs, no weapon, isolated on a plain light grey background, even studio lighting, realistic, high detail",
+    "cadre": [0, 1.95, 0], "faces": 50000, "personnage": true
   },
   {
     "remplace": "01-Joueur/combinaison-veilleur",
