@@ -114,7 +114,7 @@ def neon(x, z, y, l, axe='x', teinte='blanc', plafond=False, section=(0.06, 0.12
     pieces.append(q)
 
 
-def eclairer(x0, x1, z0, z1, h, teinte='blanc', pas=4.0, ecart=5.0, longueur=1.6):
+def eclairer(x0, x1, z0, z1, h, teinte='blanc', pas=4.0, ecart=5.0, longueur=1.6, y=None):
     """Des néons au plafond, alignés sur le grand côté : une rangée par tranche de ecart mètres. Ils restent visibles en vue de dessus : c'est le plan des lumières."""
     long_x = (x1 - x0) >= (z1 - z0)
     a0, a1, b0, b1 = (x0, x1, z0, z1) if long_x else (z0, z1, x0, x1)
@@ -125,7 +125,7 @@ def eclairer(x0, x1, z0, z1, h, teinte='blanc', pas=4.0, ecart=5.0, longueur=1.6
         for k in range(n):
             a = a0 + (k + 0.5) * (a1 - a0) / n
             x, z = (a, b) if long_x else (b, a)
-            neon(x, z, h - 0.1, min(longueur, (a1 - a0) / n - 0.4), 'x' if long_x else 'z', teinte)
+            neon(x, z, h - 0.1 if y is None else y, min(longueur, (a1 - a0) / n - 0.4), 'x' if long_x else 'z', teinte)
 
 
 def dalles(x0, x1, z0, z1, y=-0.04):
@@ -424,7 +424,7 @@ for x in (43, 47, 51):
 
 espace(41, 65, -28, -4.5, 10, 'neo', {'o': [trappe(-9.5)]}, sol=None, nom='Salle des machines', police=2.2)
 dalles(41, 65, -28, -4.5)
-eclairer(41, 65, -28, -4.5, 10, 'ambre', ecart=6, longueur=2.4)
+eclairer(41, 65, -28, -4.5, 10, 'ambre', ecart=6, longueur=2.4, y=7.0)
 modele('06-Couloirs/porte-coulissante', 41.5, -20.5)            # porte vers les soutes (décor)
 mur('z', -4.5, 41, 64, 10, [(52.5, 23, 4.0, 'porte', 0.0)])   # au-dessus de la coursive éventrée
 bloc(64.5, -4.5, 1, E, 10)
@@ -446,7 +446,10 @@ for x, z in ((50, -9), (56, -11), (48, -13)):
 
 espace(40, 68, 4.5, 32, 12, 'seo', {'s': [porte(42, 3.0, 2.6), (57, 14, 9, 'champ', 0.0)], 'e': [porte(18, 3, 3)]}, sol=None, nom='Hangar', police=2.8)
 dalles(40, 68, 4.5, 32)
-eclairer(40, 68, 4.5, 32, 12, 'blanc', ecart=6, longueur=3.2)
+eclairer(40, 68, 4.5, 32, 12, 'blanc', ecart=6, longueur=3.2, y=7.0)   # rampes suspendues
+for z in (10, 17, 24):
+    neon(40.15, z, 5.0, 3, 'z', 'blanc', section=(0.1, 0.12))   # projecteurs muraux
+    neon(67.85, z, 5.0, 3, 'z', 'blanc', section=(0.1, 0.12))
 modele('06-Couloirs/porte-coulissante', 40.5, 14)               # porte vers les ateliers de maintenance (décor)
 modele('12-Exterieur/porte-sas', 42, 32)
 for x in (50.05, 63.95):
