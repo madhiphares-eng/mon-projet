@@ -12,6 +12,8 @@
 >    - Chaque bloc est un cube de dimensions `dims` (en mètres), posé par le bas à `position`.
 >    - Chaque modèle de `Externes/Prologue/<cle>` est mis à l'échelle sans déformation pour tenir dans son `cadre` (un 0 laisse ce côté libre), puis posé par le bas, centré.
 >    - Le champ `repere` du fichier décrit tout. Attention : c'est le repère glTF, droitier, alors qu'Unity est gaucher. Retourne l'axe comme le fait glTFast à l'import des modèles.
+>    - Avant l'import, remets les modèles à leur taille réelle : `py outils\normaliser-prologue.py Assets\_Projet\Externes\Prologue` (Python 3 gratuit, python.org). Ils seront alors en mètres, pieds au sol.
+>    - Respecte la [direction artistique](prologue/DA-vaisseau-prison.md) : un réglage de couleurs commun (*color grading* HDRP), et les recolorations `da` de [`prologue/tailles-modeles.json`](prologue/tailles-modeles.json).
 >
 > Le reste de ce fichier décrit l'ancienne version, toujours valable pour les outils.
 

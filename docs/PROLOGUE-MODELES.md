@@ -57,8 +57,16 @@ Puis ouvrir http://localhost:8766/galerie-prologue.html (flèches ← → pour p
 **Créer avec, sur le Mac : l'atelier.** `vitrine/atelier-prologue.html` est un petit éditeur 3D dans le navigateur. Il se passe dans le hangar du vaisseau-prison, avec la planète derrière le champ de force.
 - **Poser** : clic sur un modèle ou une forme grise (sol, mur, porte, coursive, escalier, plateforme, colonne, silhouette de 1,80 m).
 - **Arranger** : déplacer, tourner, changer la taille. L'aimant cale les pièces sur une grille de 50 cm et par pas de 15°. On peut dupliquer, supprimer, annuler (⌘Z), et régler la hauteur d'une pièce en mètres. Un bouton met les personnages à 1,80 m.
-- **Trois ambiances** : lumière de travail, panne avec alarme rouge, vide spatial.
-- **Visiter** (V) : marcher à hauteur d'homme avec ZQSD. On marche sur les formes grises et elles arrêtent le passage ; on traverse encore les modèles.
+- **Quatre ambiances** :
+  - lumière de travail ;
+  - panne avec alarme rouge ;
+  - vide spatial ;
+  - néons, de nuit : les néons rayonnent et éclairent autour d'eux.
+- **Visiter** (V) : marcher à hauteur d'homme avec ZQSD. Les murs et les modèles arrêtent le passage. On passe par les portes ouvertes, les couloirs habillés et les sols.
+- **Taille réelle** : un modèle posé depuis la liste prend tout de suite sa vraie taille ([`prologue/tailles-modeles.json`](prologue/tailles-modeles.json)).
+- **Style unifié** : le même étalonnage des couleurs pour tous les modèles, et une recoloration pour ceux qui détonnent. C'est la [direction artistique](prologue/DA-vaisseau-prison.md) du vaisseau-prison.
+- **Contrôle** : encadre en rouge les modèles qui se chevauchent ou entrent dans un mur.
+- **Néon**, **bloc sur mesure**, **étiquette** : de quoi tracer et éclairer un niveau.
 - **Enregistrer** : la scène s'enregistre toute seule dans le navigateur. « Exporter » la garde dans `scene-prologue.json`, avec les crédits des modèles utilisés : le Claude du PC pourra la reconstruire dans Unity.
 
 ```bash
@@ -79,7 +87,10 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
   - bleu : un champ de force ;
   - silhouettes : bleu pour les gardes, orange pour les pirates, jaune pour les détenus ;
   - étiquettes ambre : les étapes 1 à 7 du chemin principal.
-- **121 modèles posés.** Chacun a un *cadre* : l'atelier le met à l'échelle pour y tenir, quelle que soit l'unité de son fichier.
+- **Plus de 200 modèles posés**, et 260 néons.
+  - Les vrais modèles habillent le niveau : le couloir détaillé dans les coursives principales, les dalles de sol dans la passerelle, la salle des machines et le hangar, les portes de sas rondes, les cloisons étanches et les portes coulissantes.
+  - Chaque modèle est à sa taille réelle, quelle que soit l'unité de son fichier.
+  - Le contrôle ne trouve aucun chevauchement.
 - **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule du héros, et les plafonds apparaissent.
 - **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier et le fichier `docs/prologue/maquette-vaisseau-prison.json`, à reconstruire dans Unity.
 
@@ -89,11 +100,20 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
 ![Le hangar](prologue/maquette-hangar.jpg)
 ![La chambre des reliques](prologue/maquette-reliques.jpg)
 
-**Défauts repérés** (le 29 octobre 2026, avec les 75 modèles téléchargés) :
-- **Unités** : beaucoup de fichiers ne sont pas en mètres. Par exemple, le lit mesure 17 unités, la navette 266 et un pirate 30 000. L'atelier compense avec les cadres ; dans Unity, il faudra régler l'échelle à l'import.
-- **`pirate`** : sa boîte englobante est faussée par une pièce parasite immense. Mis à 1,80 m, le personnage devient minuscule. À nettoyer dans Blender ; une silhouette le remplace dans la maquette.
-- **`detenu-atelier`** : quelque chose dépasse de sa tête. Il faut un cadre de 2,8 m pour un corps de 1,80 m.
-- **`tenue-detenu`** : 2,35 m de haut dans son fichier (bras en croix).
+**Remettre les fichiers à leur taille réelle.** Beaucoup de fichiers ne sont pas en mètres : le lit mesure 17 unités, la navette 266, un pirate 30 000. Le script `outils/normaliser-prologue.py` réécrit les 75 fichiers en mètres, pieds au sol et centrés, et retire les pièces parasites. Ensuite, Unity et Blender les ouvrent directement à la bonne taille. Les originaux sont gardés en `.original`.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/outils/normaliser-prologue.py -o ~/jeu/normaliser-prologue.py
+python3 ~/jeu/normaliser-prologue.py ~/jeu/prologue
+```
+
+Sur le PC, avec Python installé : `py normaliser-prologue.py C:\Projets\EchosEther\Assets\_Projet\Externes\Prologue`.
+
+Ce qui a été corrigé, modèle par modèle (mesuré le 29 octobre 2026 avec les 75 modèles téléchargés) :
+- **`pirate`** : un portail de pierre géant était collé au personnage. Il est retiré.
+- **`pirate-chef`** : son socle de présentation est retiré.
+- **`detenu-atelier`** : un éclat de 2 cm flottait un mètre au-dessus de sa tête. Il est retiré.
+- **`tenue-detenu`** : 2,35 m de haut dans son fichier, bras en croix. Il est ramené à 1,80 m.
 
 Chaque modèle a son `LICENCE.txt`. Les crédits à citer dans le jeu sont regroupés dans `CREDITS-PROLOGUE.txt`, à la racine du projet.
 On peut relancer le script sans risque : ce qui est déjà téléchargé est sauté.
