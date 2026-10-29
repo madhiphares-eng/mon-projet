@@ -83,6 +83,12 @@ Puis ouvrir http://localhost:8766/atelier-prologue.html : les modèles de `~/jeu
 - **La visiter** : appuie sur V juste après l'avoir chargée. La visite part de la cellule du héros, et les plafonds apparaissent.
 - **La refaire** : `python3 outils/maquette-prologue.py`. Le script réécrit l'atelier et le fichier `docs/prologue/maquette-vaisseau-prison.json`, à reconstruire dans Unity.
 
+![La maquette vue de dessus, avec les 75 modèles](prologue/maquette-vue-ensemble.jpg)
+![Le réveil : la porte de la cellule d'isolement](prologue/maquette-reveil.jpg)
+![Les blocs de cellules à hauteur d'homme](prologue/maquette-cellules.jpg)
+![Le hangar](prologue/maquette-hangar.jpg)
+![La chambre des reliques](prologue/maquette-reliques.jpg)
+
 **Défauts repérés** (le 29 octobre 2026, avec les 75 modèles téléchargés) :
 - **Unités** : beaucoup de fichiers ne sont pas en mètres. Par exemple, le lit mesure 17 unités, la navette 266 et un pirate 30 000. L'atelier compense avec les cadres ; dans Unity, il faudra régler l'échelle à l'import.
 - **`pirate`** : sa boîte englobante est faussée par une pièce parasite immense. Mis à 1,80 m, le personnage devient minuscule. À nettoyer dans Blender ; une silhouette le remplace dans la maquette.
