@@ -65,7 +65,7 @@ namespace EchosEther.Prologue
                 var p = AnimationClipPlayable.Create(graphe, clips[i]);
                 graphe.Connect(p, 0, mixeur, i);
                 mixeur.SetInputWeight(i, 0f);
-                entrees[clips[i].name] = i;
+                entrees[NomCourt(clips[i].name)] = i;
                 while (poids.Count <= i) poids.Add(0f);
             }
             var sortie = AnimationPlayableOutput.Create(graphe, "Animation", animateur);
@@ -154,6 +154,9 @@ namespace EchosEther.Prologue
                 mixeur.SetInputWeight(i, poids[i]);
             }
         }
+
+        /// <summary>Le nom d'une animation sans le préfixe de l'export FBX (« Armature|Fusil_Visee » → « Fusil_Visee »).</summary>
+        public static string NomCourt(string nom) => nom.Substring(nom.LastIndexOf('|') + 1);
 
         void Jouer(string nom, float vitesse = 1f)
         {
