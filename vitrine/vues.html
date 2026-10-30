@@ -49,6 +49,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { Effets } from './effets-colosse.js';
+import { Prise, fabriquerArme, TENUES } from './prise-armes.js';
 
 const params = new URLSearchParams(location.search);
 const RACINE = params.get('racine') || new URL('../prologue-anim/', location.href).href;
@@ -218,18 +219,8 @@ const heros = { objet: new THREE.Group(), pos: v3(0, 0, 9), cap: Math.PI, vitess
 scene.add(heros.objet);
 const ombre = new THREE.Mesh(new THREE.CircleGeometry(0.5, 24), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45, depthWrite: false }));
 ombre.rotation.x = -Math.PI / 2; ombre.position.y = 0.01; scene.add(ombre);
-function fabriquerFusil() {
-  const g = new THREE.Group();
-  const m1 = new THREE.MeshStandardMaterial({ color: 0x2c3036, metalness: 0.7, roughness: 0.45 }), m2 = new THREE.MeshStandardMaterial({ color: 0x16181b, metalness: 0.3, roughness: 0.7 });
-  const piece = (l, h, p, x, y, z, m, rx = 0) => { const b = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), m); b.position.set(x, y, z); b.rotation.x = rx; g.add(b); };
-  piece(0.035, 0.11, 0.045, 0, -0.045, 0.05, m2, -0.35); piece(0.05, 0.075, 0.32, 0, 0.045, 0.10, m1); piece(0.04, 0.09, 0.26, 0, 0.02, -0.18, m2);
-  piece(0.05, 0.055, 0.24, 0, 0.04, 0.36, m2); piece(0.03, 0.15, 0.06, 0, -0.05, 0.17, m1, 0.25); piece(0.02, 0.025, 0.05, 0, 0.095, 0.06, m2);
-  const c = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.22, 10), m1); c.rotation.x = Math.PI / 2; c.position.set(0, 0.045, 0.58); g.add(c);
-  g.userData.bouche = v3(0, 0.045, 0.7);
-  return g;
-}
-const fusil = fabriquerFusil(); scene.add(fusil);
-let mainD = null, mainG = null, fusilMain = null, mixeur = null, mannequinPret = false;
+const fusil = fabriquerArme('fusil'); scene.add(fusil);           // le bot de prise y pose les mains (prise-armes.js)
+let mainD = null, prise = null, mixeur = null, mannequinPret = false;
 const chargeur = new GLTFLoader();
 const charger = chemin => new Promise((ok, ko) => chargeur.load(new URL(chemin, RACINE).href, ok, undefined, ko));
 Promise.all(['00-Animations/EE_Animations.glb', '00-Animations/UAL1_Standard.glb', '00-Animations/UAL2_Standard.glb'].map(c => charger(c).catch(() => null)))
@@ -240,7 +231,14 @@ Promise.all(['00-Animations/EE_Animations.glb', '00-Animations/UAL1_Standard.glb
       if (o.isMesh) { o.material = new THREE.MeshStandardMaterial({ color: 0xc8662a, roughness: 0.7, metalness: 0.05 }); o.frustumCulled = false; }  // la combinaison orange des détenus
     });
     heros.objet.add(corps);
-    mainD = corps.getObjectByName('hand_r'); mainG = corps.getObjectByName('hand_l');
+    mainD = corps.getObjectByName('hand_r');
+    // les os qui comptent pour la prise (noms du squelette du studio)
+    const os = n => corps.getObjectByName(n);
+    const carte = { hanches: os('pelvis'), cou: os('neck_01'), tete: os('Head'), cuisse_d: os('thigh_r'), cuisse_g: os('thigh_l') };
+    for (const [c, s] of [['d', 'r'], ['g', 'l']]) Object.assign(carte, { ['bras_' + c]: os('upperarm_' + s), ['avantbras_' + c]: os('lowerarm_' + s), ['main_' + c]: os('hand_' + s),
+      ['majeur1_' + c]: os('middle_01_' + s), ['index1_' + c]: os('index_01_' + s), ['auriculaire1_' + c]: os('pinky_01_' + s) });
+    heros.objet.updateMatrixWorld(true);
+    prise = new Prise(carte, heros.objet);
     mixeur = new THREE.AnimationMixer(corps);
     for (const g of [ual1, ual2, ee]) if (g) for (const clip of g.animations) heros.actions[clip.name] = mixeur.clipAction(clip);
     for (const nom of ['Fusil_Rechargement']) { const a = heros.actions[nom]; if (a) { a.setLoop(THREE.LoopOnce); a.clampWhenFinished = true; } }
@@ -260,16 +258,13 @@ function jouer(nom, vitesseAnim = 1, fondu = 0.22) {
   heros.actif = a;
 }
 function placerFusil() {
-  fusil.visible = heros.arme && mode === 'pied' && !!mainD;
+  fusil.visible = heros.arme && mode === 'pied' && !!prise;
   if (!fusil.visible) return;
-  const R = mainD.getWorldPosition(v3()), L = mainG.getWorldPosition(v3()), main = mainD.getWorldQuaternion(new THREE.Quaternion());
-  if (heros.actif !== heros.actions.Fusil_Rechargement || !fusilMain) {
-    const u = v3(0, 1, 0), l = v3(); let d = L.clone().sub(R).normalize();
-    for (let k = 0; k < 3; k++) { l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize(); d = L.clone().sub(R).addScaledVector(u, 0.06).addScaledVector(l, -0.035).normalize(); }
-    l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize();
-    fusilMain = main.clone().invert().multiply(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(l, u, d)));
-  }
-  fusil.position.copy(R); fusil.quaternion.copy(main).multiply(fusilMain);
+  // la tenue de l'animation qui joue : visée (crosse à l'épaule), arme basse, rechargement (la main gauche lâche l'arme)
+  const nom = Object.keys(heros.actions).find(n => heros.actions[n] === heros.actif) || '';
+  const tenue = TENUES[nom] || (heros.visee ? TENUES.Fusil_Visee : TENUES.Fusil_Repos);
+  const a = heros.actif, u = a ? (a.time % a.getClip().duration) / a.getClip().duration : 0;
+  prise.tenir(fusil, tenue, u);
 }
 
 // ------------------------------------------------------------------ les entrées (positions physiques : ZQSD en AZERTY = WASD en QWERTY)

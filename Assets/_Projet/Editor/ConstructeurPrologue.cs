@@ -142,9 +142,13 @@ namespace EchosEther.Editeur
                     new Vector3(0f, 0.9f, 0f), new Vector3(0.6f, 0.9f, 0.6f), Vector3.zero, "Silhouette (sans le mannequin du studio)");
                 Debug.LogWarning("Prologue : EE_Animations.fbx est introuvable dans le projet. Importer prologue/00-Animations (Humanoid) pour un héros animé.");
             }
-            var fusil = new GameObject("Fusil").AddComponent<FusilDeuxMains>();
+            // le fusil et le bot de prise : les mains vont d'elles-mêmes sur la poignée et le garde-main
+            var fusil = new GameObject("Fusil").AddComponent<ArmeTenue>();
             fusil.transform.SetParent(heros.transform, false);
-            fusil.animateur = animateur;
+            fusil.Fusil();
+            var prise = heros.AddComponent<PriseArme>();
+            prise.animateur = animateur;
+            prise.arme = fusil;
             controleur.fusil = fusil.gameObject;
 
             // ---- les caméras et la passerelle

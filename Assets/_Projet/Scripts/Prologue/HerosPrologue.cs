@@ -12,7 +12,7 @@ namespace EchosEther.Prologue
     /// visée par-dessus l'épaule, tir, rechargement. Il joue lui-même ses animations (graphe Playables, fondus enchaînés) :
     /// pas d'Animator Controller à monter. Il suffit de lui donner les clips de la bibliothèque (UAL1, UAL2, Humanoid)
     /// et du studio maison (EE_Animations) : clic droit sur le composant, « Trouver les animations du prologue ».
-    /// Le fusil (facultatif) est un enfant de la main droite ; sa bouche sert de départ aux tirs.
+    /// Le fusil (facultatif) porte une <see cref="ArmeTenue"/> ; <see cref="PriseArme"/> y pose les mains (le bot de prise).
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class HerosPrologue : MonoBehaviour
@@ -36,7 +36,8 @@ namespace EchosEther.Prologue
         public float Vitesse { get; private set; }
 
         CharacterController corps;
-        FusilDeuxMains tenue;
+        PriseArme prise;
+        float recul;
         float vy, attenteTir, rechargement, hauteurDebout;
         Vector3 direction;
         PlayableGraph graphe;
@@ -50,7 +51,15 @@ namespace EchosEther.Prologue
             corps = GetComponent<CharacterController>();
             hauteurDebout = corps.height;
             if (animateur == null) animateur = GetComponentInChildren<Animator>();
-            if (fusil != null) tenue = fusil.GetComponent<FusilDeuxMains>();
+            prise = GetComponent<PriseArme>();
+            if (prise != null && fusil != null && prise.arme == null) prise.arme = fusil.GetComponent<ArmeTenue>();
+            if (prise != null && (prise.clipsCalibrage == null || prise.clipsCalibrage.Length == 0) && clips != null)
+            {
+                // le bot calibre l'appui de la crosse sur les animations de visée
+                var visees = new List<AnimationClip>();
+                foreach (var c in clips) if (c != null && (NomCourt(c.name) == "Fusil_Visee" || NomCourt(c.name) == "Fusil_Marche_Visee" || NomCourt(c.name) == "Fusil_Accroupi_Visee")) visees.Add(c);
+                prise.clipsCalibrage = visees.ToArray();
+            }
         }
 
         void Start()
@@ -107,7 +116,16 @@ namespace EchosEther.Prologue
 
             if (vue != null) { vue.Visee = Visee; vue.Accroupi = Accroupi; vue.Course = sprint && Vitesse > vitesseCourse; }
             if (fusil != null) fusil.SetActive(arme);
-            if (tenue != null) tenue.rechargement = rechargement > 0f;
+            recul *= Mathf.Exp(-12f * dt);
+            if (prise != null)
+            {
+                prise.actif = arme;
+                prise.mode = Visee ? PriseArme.Mode.Epaule : PriseArme.Mode.Main;
+                // pendant le rechargement, la main gauche lâche l'arme (de 10 à 92 % de l'animation)
+                float u = rechargement > 0f ? 1f - rechargement / 2.4f : 1f;
+                prise.poidsGauche = rechargement > 0f ? 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.1f, 0.17f, u)) + Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.81f, 0.92f, u)) : 1f;
+                prise.tangage = recul;
+            }
 
             // le tir
             attenteTir -= dt;
@@ -120,7 +138,8 @@ namespace EchosEther.Prologue
         {
             attenteTir = 1f / Mathf.Max(0.1f, cadence);
             Vector3 cible = vue != null ? vue.PointVise(400f, cibles, out RaycastHit touche) : transform.position + transform.forward * 50f;
-            Transform b = bouche != null ? bouche : tenue != null ? tenue.bouche : null;
+            Transform b = bouche != null ? bouche : prise != null && prise.arme != null ? prise.arme.bouche : null;
+            recul = 4.9f;                                                     // le canon se relève, puis redescend
             Vector3 depart = b != null ? b.position : transform.position + Vector3.up * 1.4f;
             var champ = touche.collider != null ? touche.collider.GetComponentInParent<ChampDeForce>() : null;
             EffetsColosse.Tir(depart, cible, couleurTir, 90f, touche.collider != null ? touche.normal : Vector3.zero,

@@ -43,6 +43,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as Squelettes from 'three/addons/utils/SkeletonUtils.js';
+import { Prise, fabriquerArme, tenuePour, calibrerAppui, cout as coutPose } from './prise-armes.js';
 
 // Les personnages du prologue. camp : detenu, androide, pirate, heros. hauteur : la taille voulue en jeu (m).
 // ecarte : gardé pour mémoire mais retiré du jeu (raison donnée).
@@ -579,52 +580,92 @@ document.querySelector('#dossier').addEventListener('change', e => {
   lancer();
 });
 
-// --- le fusil tenu à deux mains (les animations Fusil_ du studio) -------------------------------------------------
-// Il est attaché au poignet droit, comme dans Unity. Son orientation par rapport à la main est mesurée sur les deux
-// mains (la gauche est sous le garde-main), puis gardée pour le rechargement, où la main gauche le quitte.
-const MANNEQUIN = 1.83;                            // la taille du mannequin du studio, en mètres
-function fabriquerFusil() {
-  const g = new THREE.Group();
-  const acier = new THREE.MeshStandardMaterial({ color: 0x2c3036, metalness: 0.7, roughness: 0.45 });
-  const noir = new THREE.MeshStandardMaterial({ color: 0x16181b, metalness: 0.3, roughness: 0.7 });
-  const rouge = new THREE.MeshStandardMaterial({ color: 0x8a1c1c, emissive: 0x6a1010, roughness: 0.5 });
-  const piece = (l, h, p, x, y, z, m, rx = 0) => { const b = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), m); b.position.set(x, y, z); b.rotation.x = rx; g.add(b); };
-  // z le long du canon, y le haut de l'arme ; l'origine est au poignet droit
-  piece(0.035, 0.11, 0.045, 0, -0.045, 0.05, noir, -0.35);       // la poignée
-  piece(0.05, 0.075, 0.32, 0, 0.045, 0.10, acier);                // la carcasse
-  piece(0.04, 0.09, 0.26, 0, 0.02, -0.18, noir);                  // la crosse
-  piece(0.05, 0.055, 0.24, 0, 0.04, 0.36, noir);                  // le garde-main
-  piece(0.03, 0.15, 0.06, 0, -0.05, 0.17, acier, 0.25);           // le chargeur
-  piece(0.02, 0.025, 0.05, 0, 0.095, 0.06, noir);                 // le viseur
-  piece(0.012, 0.012, 0.012, 0, 0.095, 0.09, rouge);              // sa diode
-  const canon = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.22, 10), acier);
-  canon.rotation.x = Math.PI / 2; canon.position.set(0, 0.045, 0.58); g.add(canon);
-  return g;
+// --- les armes : le bot de prise (prise-armes.js) -------------------------------------------------------------------
+// L'arme commande, les mains viennent sur elle : en visée, la crosse au creux de l'épaule et le canon droit devant ;
+// arme basse, l'arme suit la main droite. Les deux bras se replient par cinématique inverse jusqu'aux prises.
+// Chaque personnage est calibré par le bot à la première arme : sa paume (os de la main et des doigts), puis l'appui
+// de la crosse qui donne les plus belles poses de visée (bras pas tendus à fond, arme hors du corps).
+const INSTANTS_VISEE = [['Fusil_Visee', 0.2], ['Fusil_Visee', 0.7], ['Fusil_Marche_Visee', 0.25], ['Fusil_Marche_Visee', 0.75],
+  ['Fusil_Accroupi_Visee', 0.5], ['Fusil_Tir', 0.05]].map(([clip, u]) => ({ clip, u }));
+function poserA(r, clip, u) {
+  const c = recibler(r, clip);
+  if (!c) return null;
+  r.mixeur.stopAllAction();
+  r.mixeur.clipAction(c).reset().play();
+  r.mixeur.setTime(c.duration * u);
+  r.objet.updateMatrixWorld(true);
+  return tenuePour(clip);
 }
-function placerFusil(r) {
-  const C = r.reciblage?.cib?.carte;
-  const tenir = !!(C?.main_g && C?.main_d && r.biblioActif?.startsWith('Fusil_') && r.objet.visible);
-  if (!tenir) { if (r.fusil) r.fusil.visible = false; return; }
-  if (!r.fusil) { r.fusil = fabriquerFusil(); scene.add(r.fusil); }
-  const s = r.hauteur / MANNEQUIN;
-  const R = C.main_d.getWorldPosition(v()), L = C.main_g.getWorldPosition(v());
-  const main = C.main_d.getWorldQuaternion(q());
-  if (r.biblioActif !== 'Fusil_Rechargement' || !r.fusilMain) {
-    // le canon passe au-dessus et à droite du poignet gauche (studio : garde = poignée + 0,30 d - 0,06 u + 0,035 l)
-    const u = new THREE.Vector3(0, 1, 0);
-    let d = L.clone().sub(R).normalize(), l = v();
-    for (let k = 0; k < 3; k++) {
-      l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize();
-      d = L.clone().sub(R).addScaledVector(u, 0.06 * s).addScaledVector(l, -0.035 * s).normalize();
-    }
-    l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize();
-    const arme = q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(l, u, d));
-    r.fusilMain = main.clone().invert().multiply(arme);           // l'arme, vue depuis la main droite
+function preparerPrise(r) {
+  const C = r.reciblage.cib.carte, actif = r.biblioActif;
+  remettre(r); r.objet.updateMatrixWorld(true);                 // au repos : on mesure les mains et le regard
+  r.prise = new Prise(C, r.objet);
+  r.armes = {};
+  const fusil = fabriquerArme('fusil'); fusil.visible = false; scene.add(fusil); r.armes.fusil = fusil;
+  const instants = INSTANTS_VISEE.filter(i => biblio.sources.has(i.clip));
+  if (instants.length) r.calibrage = calibrerAppui(r.prise, fusil, i => poserA(r, i.clip, i.u), instants);
+  // le pistolet : il suit l'avant-bras, le bot vérifie seulement qu'il ne finit pas dans le corps
+  if (biblio.sources.has('Pistol_Aim_Neutral')) {
+    const pistolet = fabriquerArme('pistolet'); pistolet.visible = false; scene.add(pistolet); r.armes.pistolet = pistolet;
+    let pire = 9;
+    for (const u of [0.2, 0.7]) { const t = poserA(r, 'Pistol_Aim_Neutral', u); pire = Math.min(pire, r.prise.mesurer(pistolet, r.prise.tenir(pistolet, t, u)).traverse); }
+    if (pire < -0.02) r.prise.inapte = { ...(r.prise.inapte || {}), pistolet: true, raison: r.prise.inapte?.raison || 'le pistolet finit dans son corps' };
   }
-  r.fusil.position.copy(R);
-  r.fusil.quaternion.copy(main).multiply(r.fusilMain);
-  r.fusil.scale.setScalar(s);
-  r.fusil.visible = true;
+  if (actif) jouerBiblio(r, actif, true);
+}
+function placerArme(r) {
+  const tenue = r.biblioActif ? tenuePour(r.biblioActif) : null;
+  const C = r.reciblage?.cib?.carte;
+  const tenir = !!(tenue && C?.main_d && C?.bras_d && C?.main_g && r.objet.visible && armes);
+  if (r.armes) for (const a of Object.values(r.armes)) a.visible = false;
+  if (!tenir) return;
+  if (!r.prise) preparerPrise(r);
+  if (r.prise.inapte?.[tenue.arme]) return;     // le bot l'a jugé inapte à cette arme : pas de pose cassée à l'écran
+  if (!r.armes[tenue.arme]) { r.armes[tenue.arme] = fabriquerArme(tenue.arme); scene.add(r.armes[tenue.arme]); }
+  const arme = r.armes[tenue.arme];
+  const action = r.mixeur.existingAction(r.clipActif);
+  const u = action ? (action.time % r.clipActif.duration) / r.clipActif.duration : 0;
+  r.objet.updateMatrixWorld(true);
+  r.dernierePrise = r.prise.tenir(arme, tenue, u);
+  arme.visible = true;
+}
+let armes = true;                                // les armes et leur prise (désactivables pour comparer)
+
+// le bot : chaque personnage, chaque animation d'arme, huit instants ; il mesure ce qui ne va pas
+function controlerPrises(clips) {
+  const rapport = [];
+  for (const r of bancs) {
+    const C = r.reciblage?.cib?.carte;
+    if (!r.objet || !C?.main_d || !C?.main_g || r.ecarte) continue;
+    if (!r.prise) preparerPrise(r);
+    const perso = { cle: r.cle, nom: r.cle.split('/')[1], camp: r.camp, appui: r.prise.appui, doigts: !!r.prise.mains.d?.normale, inapte: r.prise.inapte, calibrage: r.calibrage, clips: {} };
+    for (const clip of clips) {
+      const tenue = tenuePour(clip);
+      if (!tenue || !biblio.sources.has(clip)) continue;
+      const arme = r.armes[tenue.arme] || (r.armes[tenue.arme] = fabriquerArme(tenue.arme), scene.add(r.armes[tenue.arme]), r.armes[tenue.arme]);
+      const pire = { mainDroite: 0, mainGauche: 0, etirementDroit: 0, etirementGauche: 0, coudeDroit: 180, coudeGauche: 180, traverse: 9, glisse: 0, cout: 0 };
+      for (let k = 0; k < 8; k++) {
+        const u = k / 8;
+        poserA(r, clip, u);
+        const res = r.prise.tenir(arme, tenue, u);
+        const m = r.prise.mesurer(arme, res);
+        pire.mainDroite = Math.max(pire.mainDroite, m.mainDroite);
+        if (m.mainGauche !== null && (!tenue.gauche || tenue.gauche(u) > 0.99)) pire.mainGauche = Math.max(pire.mainGauche, m.mainGauche);
+        pire.etirementDroit = Math.max(pire.etirementDroit, m.etirementDroit);
+        if (m.etirementGauche !== null) pire.etirementGauche = Math.max(pire.etirementGauche, m.etirementGauche);
+        pire.coudeDroit = Math.min(pire.coudeDroit, m.coudeDroit);
+        if (m.coudeGauche !== null) pire.coudeGauche = Math.min(pire.coudeGauche, m.coudeGauche);
+        pire.traverse = Math.min(pire.traverse, m.traverse);
+        pire.glisse = Math.max(pire.glisse, Math.abs(m.glisse));
+        pire.cout = Math.max(pire.cout, coutPose(m));
+      }
+      perso.clips[clip] = pire;
+    }
+    rapport.push(perso);
+    remettre(r);
+    if (r.biblioActif) jouerBiblio(r, r.biblioActif, true);
+  }
+  return rapport;
 }
 
 (function boucle() {
@@ -634,7 +675,7 @@ function placerFusil(r) {
     if (!r.mixeur || !r.clipActif) continue;
     if (figer === null) r.mixeur.update(dt);
     else r.mixeur.setTime(r.clipActif.duration * figer);
-    placerFusil(r);
+    placerArme(r);
   }
   rendu.render(scene, camera);
 })();
@@ -658,6 +699,9 @@ window.banc = {
     camera.position.set(c.x, c.y + t.y * 0.1, d); orbite.target.copy(c); orbite.update();
   },
   seul: i => bancs.forEach((r, j) => { if (r.objet) r.objet.visible = i === null || i === j; }),
+  controlerPrises: clips => controlerPrises(clips),
+  armes: oui => { armes = oui; },
+  prise: i => { const r = bancs[i]; return r.prise ? { appui: r.prise.appui, calibrage: r.calibrage, derniere: r.dernierePrise && r.prise.mesurer(Object.values(r.armes).find(a => a.visible) || r.armes.fusil, r.dernierePrise) } : null; },
 };
 if (RACINE) lancer();
 </script>
