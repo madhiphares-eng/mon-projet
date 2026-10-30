@@ -111,6 +111,8 @@ Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` j
 
 ![Les animations du studio sur les personnages](personnages/studio.jpg)
 
+En vidéo : [les 23 animations du studio](personnages/videos/studio-animations.mp4) (78 s). Les plans au fusil montrent les mains posées par le bot de prise, et les deux androïdes candidats dans leurs couleurs assombries.
+
 ## 4. Comment ça marche
 
 **Dans le banc et l'atelier (navigateur)**, chaque animation est recalculée pour chaque squelette, en moins d'un dixième de seconde :
