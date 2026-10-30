@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Essai des vues</title>
+<style>
+  :root { --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --rouge: #e0705a; --fond: rgba(6, 7, 12, 0.78); --trait: rgba(236, 230, 216, 0.16); }
+  html, body { margin: 0; height: 100%; background: #05060a; color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #aide { position: fixed; left: 12px; top: 12px; max-width: 360px; background: var(--fond); border: 1px solid var(--trait); padding: 10px 12px; font-size: 12.5px; line-height: 1.5; }
+  #aide h1 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 4px; color: var(--ambre); }
+  #aide kbd { border: 1px solid var(--trait); padding: 0 4px; font: inherit; font-size: 11.5px; color: var(--ivoire); }
+  #aide .mode { color: var(--ether); }
+  #viseur { position: fixed; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; display: none; }
+  #viseur::before, #viseur::after { content: ""; position: absolute; background: rgba(255, 240, 220, 0.85); }
+  #viseur::before { left: 8px; top: 0; width: 2px; height: 18px; } #viseur::after { top: 8px; left: 0; height: 2px; width: 18px; }
+  #tableau { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: none; background: var(--fond); border: 1px solid var(--trait); padding: 8px 14px; font-size: 13px; min-width: 260px; text-align: center; }
+  #tableau .barre { height: 6px; background: rgba(236, 230, 216, 0.12); margin-top: 6px; } #tableau .barre i { display: block; height: 100%; background: var(--ether); width: 0; }
+  #invite { position: fixed; left: 50%; top: 62%; transform: translateX(-50%); color: var(--ambre); font-size: 14px; letter-spacing: 1px; text-shadow: 0 1px 4px #000; display: none; }
+  #voile { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  @media (max-width: 560px) { #aide { left: 8px; right: 8px; max-width: none; font-size: 11.5px; } }
+</style>
+</head>
+<body>
+<div id="aide">
+  <h1>Essai des vues</h1>
+  <div class="mode" id="mode">À pied · vue 3e personne</div>
+  <div id="touches"></div>
+  <div style="color: var(--brume); margin-top: 4px;">Clic pour prendre la souris, Échap pour la rendre.</div>
+</div>
+<div id="viseur"></div>
+<div id="invite"></div>
+<div id="tableau"><span id="vitesse">0 m/s</span> · <span id="vueNom">poursuite</span><div class="barre"><i id="gaz"></i></div></div>
+<div id="voile"></div>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+// Échos d'Éther : l'essai des vues du prologue.
+//   À pied : la vue 3e personne (bras de caméra qui évite les murs, épaule droite ou gauche, visée par-dessus l'épaule).
+//   En navette : la vue poursuite (caméra sur ressort, champ de vision qui s'ouvre avec la vitesse) et la vue cockpit.
+// Le héros est le mannequin du studio (CC0), avec les animations de la bibliothèque et du studio maison.
+// ?racine=http://localhost:8766/prologue/ : là où se trouve 00-Animations/ (par défaut : ../prologue-anim/ du dépôt).
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { Effets } from './effets-colosse.js';
+
+const params = new URLSearchParams(location.search);
+const RACINE = params.get('racine') || new URL('../prologue-anim/', location.href).href;
+const v3 = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+const HAUT = v3(0, 1, 0);
+const lerp = THREE.MathUtils.lerp, borne = THREE.MathUtils.clamp;
+const amortir = (a, b, vitesse, dt) => lerp(a, b, 1 - Math.exp(-vitesse * dt));
+
+// ------------------------------------------------------------------ le rendu
+const rendu = new THREE.WebGLRenderer({ antialias: true });
+rendu.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendu.toneMapping = THREE.ACESFilmicToneMapping;
+rendu.toneMappingExposure = 1.25;
+document.body.appendChild(rendu.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020306);
+const camera = new THREE.PerspectiveCamera(62, 1, 0.05, 6000);
+const composeur = new EffectComposer(rendu);
+composeur.addPass(new RenderPass(scene, camera));
+composeur.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.7, 0.5, 0.7));
+composeur.addPass(new OutputPass());
+const fx = new Effets(scene, { lumieres: 4 });
+
+// ------------------------------------------------------------------ le hangar du Colosse (acier sombre, une touche de rouge)
+const solides = [];          // ce que la caméra ne traverse pas
+const obstacles = [];        // ce que le héros ne traverse pas : boîtes { x0, x1, z0, z1, y1 }
+const acier = new THREE.MeshStandardMaterial({ color: 0x2a2d33, metalness: 0.7, roughness: 0.5 });
+const acierClair = new THREE.MeshStandardMaterial({ color: 0x3d4148, metalness: 0.65, roughness: 0.45 });
+const jaune = new THREE.MeshStandardMaterial({ color: 0x8a6a1e, metalness: 0.4, roughness: 0.6 });
+function boite(l, h, p, x, y, z, m = acier, bloque = true, vise = true) {
+  const b = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), m);
+  b.position.set(x, y, z); scene.add(b);
+  if (vise) solides.push(b);
+  if (bloque) obstacles.push({ x0: x - l / 2, x1: x + l / 2, z0: z - p / 2, z1: z + p / 2, y1: y + h / 2 });
+  return b;
+}
+function solCanvas() {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  g.fillStyle = '#1c1e22'; g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(255,255,255,${Math.random() * 0.025})`; g.fillRect(Math.random() * 256, Math.random() * 256, 2 + Math.random() * 30, 1 + Math.random() * 3); }
+  g.strokeStyle = 'rgba(0,0,0,0.55)'; g.lineWidth = 3; g.strokeRect(0, 0, 256, 256);
+  g.strokeStyle = 'rgba(255,255,255,0.05)'; g.lineWidth = 1; g.strokeRect(3, 3, 250, 250);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(20, 15); t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+const LARGEUR = 40, PROFONDEUR = 30, HAUTEUR = 12;
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(LARGEUR, PROFONDEUR), new THREE.MeshStandardMaterial({ map: solCanvas(), metalness: 0.55, roughness: 0.65 }));
+sol.rotation.x = -Math.PI / 2; scene.add(sol); solides.push(sol);
+boite(LARGEUR, HAUTEUR, 0.6, 0, HAUTEUR / 2, PROFONDEUR / 2 + 0.3);                          // le mur du fond (derrière le héros)
+boite(0.6, HAUTEUR, PROFONDEUR, -LARGEUR / 2 - 0.3, HAUTEUR / 2, 0);
+boite(0.6, HAUTEUR, PROFONDEUR, LARGEUR / 2 + 0.3, HAUTEUR / 2, 0);
+boite(LARGEUR, 0.6, PROFONDEUR, 0, HAUTEUR + 0.3, 0, acier, false);                         // le plafond
+// la grande porte du hangar, ouverte sur l'espace : 18 m sur 8, tenue par un champ de force (l'air reste dedans)
+boite(11, HAUTEUR, 0.6, -14.5, HAUTEUR / 2, -PROFONDEUR / 2 - 0.3);
+boite(11, HAUTEUR, 0.6, 14.5, HAUTEUR / 2, -PROFONDEUR / 2 - 0.3);
+boite(18, HAUTEUR - 8, 0.6, 0, 8 + (HAUTEUR - 8) / 2, -PROFONDEUR / 2 - 0.3, acier, false);
+for (const x of [-9, 9]) boite(0.5, 8, 0.8, x, 4, -PROFONDEUR / 2, jaune, false);           // le chambranle, aux couleurs du chantier
+const sas = fx.champ(18, 8, { couleur: 0x4fc6ff, intensite: 0.45 });
+sas.position.set(0, 0, -PROFONDEUR / 2); scene.add(sas);
+// les piliers, les caisses, la passerelle
+for (const x of [-13, -7, 7, 13]) for (const z of [-6, 6]) boite(0.9, HAUTEUR, 0.9, x, HAUTEUR / 2, z, acierClair);
+[[-15, 9, 2.2, 1.6, 1.4], [-13.4, 9.6, 1.2, 1.2, 1.2], [-15.2, 9.2, 1.2, 1.1, 1.2, 1.6], [14, 10, 2.4, 2, 1.6], [16.5, 11, 1.4, 1.4, 1.4], [6, 11.5, 3, 1.2, 1.2]]
+  .forEach(([x, z, l, h, p, y]) => boite(l, h, p, x, y ?? h / 2, z, Math.random() < 0.5 ? acierClair : jaune));
+boite(LARGEUR, 0.25, 2.2, 0, 6.5, PROFONDEUR / 2 - 1.4, acierClair, false);                // la passerelle haute
+const lampes = [];
+for (const x of [-12, 0, 12]) for (const z of [-8, 2, 10]) {
+  const l = new THREE.PointLight(0xffa860, 110, 24, 1.5); l.position.set(x, HAUTEUR - 1.2, z); scene.add(l); lampes.push(l);
+  const b = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.12, 0.3), new THREE.MeshBasicMaterial({ color: 0xffc58a })); b.position.copy(l.position).y += 0.3; scene.add(b);
+}
+scene.add(new THREE.HemisphereLight(0x8090a8, 0x141418, 1.1));
+const gyro = fx.gyrophare(); gyro.position.set(-9, 8.6, -PROFONDEUR / 2 + 0.5); scene.add(gyro);
+fx.etincelles(v3(15.2, 2.6, -2.9), { direction: v3(-0.4, 0.2, 1), sol: 0 });
+boite(1.2, 1.6, 0.25, 15.6, 2.4, -3.1, acierClair, false);
+
+// ------------------------------------------------------------------ dehors : l'espace, une planète, des débris
+const etoiles = new THREE.BufferGeometry();
+const pe = new Float32Array(3000 * 3);
+for (let i = 0; i < 3000; i++) { const d = v3().randomDirection().multiplyScalar(2500); pe.set([d.x, d.y, d.z], i * 3); }
+etoiles.setAttribute('position', new THREE.BufferAttribute(pe, 3));
+scene.add(new THREE.Points(etoiles, new THREE.PointsMaterial({ color: 0xdfe8ff, size: 2.2, sizeAttenuation: false, fog: false })));
+const planete = new THREE.Mesh(new THREE.SphereGeometry(420, 64, 32), new THREE.ShaderMaterial({
+  uniforms: { soleil: { value: v3(0.6, 0.35, 0.7).normalize() } },
+  vertexShader: `varying vec3 vN; varying vec3 vV; void main() { vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(position, 1.0); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }`,
+  fragmentShader: `uniform vec3 soleil; varying vec3 vN; varying vec3 vV;
+    void main() { float l = smoothstep(-0.15, 1.0, dot(vN, soleil));
+      float bandes = 0.5 + 0.28 * sin(vN.y * 17.0 + sin(vN.x * 5.0 + vN.z * 3.0) * 1.2) + 0.12 * sin(vN.y * 46.0 + vN.x * 4.0);
+      vec3 c = mix(vec3(0.26, 0.17, 0.12), vec3(0.50, 0.37, 0.26), bandes) * (0.03 + 0.9 * l);
+      float bord = pow(1.0 - max(dot(vN, vV), 0.0), 3.0); c += vec3(0.35, 0.55, 0.9) * bord * (0.2 + l);
+      gl_FragColor = vec4(c, 1.0); }`,
+}));
+planete.position.set(-500, -260, -1700); scene.add(planete);
+const soleil = new THREE.DirectionalLight(0xfff1dc, 1.6); soleil.position.set(600, 350, 700); scene.add(soleil);
+const debris = new THREE.Group(); scene.add(debris);
+for (let i = 0; i < 70; i++) {
+  const d = new THREE.Mesh(new THREE.BoxGeometry(...[0, 0, 0].map(() => 0.5 + Math.random() * 4)), Math.random() < 0.2 ? jaune : acier);
+  d.position.set((Math.random() - 0.5) * 500, (Math.random() - 0.5) * 160, -60 - Math.random() * 700);
+  d.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
+  d.userData.tourne = v3().randomDirection().multiplyScalar(0.3);
+  debris.add(d);
+}
+// la poussière de l'espace, autour de la navette : c'est elle qui donne la sensation de vitesse
+const NPOUSS = 400, poussiere = new THREE.BufferGeometry(), pp = new Float32Array(NPOUSS * 3);
+poussiere.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+const nuage = new THREE.Points(poussiere, new THREE.PointsMaterial({ color: 0x9fb4d8, size: 0.09, transparent: true, opacity: 0.6, depthWrite: false }));
+nuage.frustumCulled = false; scene.add(nuage);
+
+// ------------------------------------------------------------------ la navette : coque, verrière, cockpit, deux propulseurs
+const navette = new THREE.Group(); scene.add(navette);
+{
+  const coque = new THREE.MeshStandardMaterial({ color: 0x4a4f58, metalness: 0.75, roughness: 0.38 });
+  const sombre = new THREE.MeshStandardMaterial({ color: 0x1d2025, metalness: 0.6, roughness: 0.5 });
+  const rouge = new THREE.MeshStandardMaterial({ color: 0x7a1414, emissive: 0x3a0505, roughness: 0.5 });
+  const piece = (geo, m, x, y, z, rx = 0, ry = 0, rz = 0) => { const p = new THREE.Mesh(geo, m); p.position.set(x, y, z); p.rotation.set(rx, ry, rz); navette.add(p); solides.push(p); return p; };
+  piece(new THREE.BoxGeometry(2.6, 1.7, 7.2), coque, 0, 0, 0);                              // le fuselage (l'avant est +Z)
+  piece(new THREE.CylinderGeometry(0.2, 1.3, 2.4, 6), coque, 0, -0.05, 4.7, Math.PI / 2, 0, Math.PI / 6);   // le nez
+  piece(new THREE.BoxGeometry(9.5, 0.22, 2.6), coque, 0, -0.35, -1.0);                      // les ailes
+  piece(new THREE.BoxGeometry(0.22, 1.6, 2.0), coque, 0, 1.4, -2.6, -0.35);                // la dérive
+  piece(new THREE.BoxGeometry(9.6, 0.06, 0.25), rouge, 0, -0.22, 0.1);                     // la bande rouge, la seule couleur de l'Empire
+  for (const x of [-1.7, 1.7]) { piece(new THREE.CylinderGeometry(0.55, 0.62, 2.6, 16), sombre, x, -0.2, -3.0, Math.PI / 2); }
+  for (const x of [-3.6, 3.6]) piece(new THREE.BoxGeometry(0.2, 0.5, 1.4), sombre, x, -0.6, -1.0);   // les patins
+  const verre = new THREE.MeshPhysicalMaterial({ color: 0x0b1420, metalness: 0.1, roughness: 0.08, transparent: true, opacity: 0.38, side: THREE.DoubleSide, depthWrite: false });
+  const verriere = piece(new THREE.SphereGeometry(1.05, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), verre, 0, 0.85, 1.8);
+  verriere.scale.set(1, 0.75, 1.7);
+  solides.splice(solides.indexOf(verriere), 1);              // la caméra passe à travers le verre
+  navette.userData.propulseurs = [-1.7, 1.7].map(x => { const p = fx.propulseur({ longueur: 3.2, rayon: 0.48 }); p.position.set(x, -0.2, -4.3); navette.add(p); return p; });
+  // l'intérieur du cockpit, montré seulement en vue cockpit
+  const cockpit = new THREE.Group(); navette.add(cockpit);
+  const ecran = (l, h, couleur) => {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d');
+    g.fillStyle = '#05070a'; g.fillRect(0, 0, 128, 64); g.strokeStyle = couleur; g.lineWidth = 2;
+    g.beginPath(); for (let x = 0; x < 128; x += 4) g.lineTo(x, 32 + Math.sin(x * 0.15) * 12 * Math.random()); g.stroke();
+    g.fillStyle = couleur; for (let i = 0; i < 6; i++) g.fillRect(6 + i * 20, 52, 12, 6 - (i % 3) * 2);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    return new THREE.Mesh(new THREE.PlaneGeometry(l, h), new THREE.MeshBasicMaterial({ map: t }));
+  };
+  // le pupitre : un plateau incliné vers le pilote, les écrans posés dessus (texte lisible depuis le siège)
+  const pupitre = new THREE.Group(); pupitre.position.set(0, 0.98, 2.45); pupitre.rotation.x = -0.6; cockpit.add(pupitre);
+  pupitre.add(new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.5), sombre));
+  [[-0.55, '#ffb35a'], [0, '#5ef2ff'], [0.55, '#ff5a4a']].forEach(([x, c]) => { const e = ecran(0.42, 0.22, c); e.position.set(x, 0.045, 0); e.rotation.set(-Math.PI / 2, 0, Math.PI); pupitre.add(e); });
+  const veilleuse = new THREE.PointLight(0x8fa8d0, 0.5, 2.5, 2); veilleuse.position.set(0, 1.5, 2.0); cockpit.add(veilleuse);   // l'éclairage du poste
+  for (const s of [-1, 1]) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 1.9), sombre); m.position.set(s * 0.72, 1.4, 2.05); m.rotation.z = s * 0.5; cockpit.add(m); }
+  const arceau = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.045, 6, 24, Math.PI), sombre); arceau.position.set(0, 0.8, 2.85); arceau.scale.set(1, 0.85, 1); cockpit.add(arceau);
+  cockpit.visible = false;
+  navette.userData.cockpit = cockpit;
+  navette.userData.place = v3(0, 1.28, 1.6);               // les yeux du pilote
+  navette.userData.porte = v3(-1.6, 0, 0.5);                // là où l'on monte à bord
+}
+navette.position.set(0, 1.1, -4);
+navette.rotation.y = Math.PI;                                  // le nez vers la porte du hangar
+// la navette posée gêne le passage : son fuselage et ses ailes (boîtes dans son repère, recalculées à chaque image)
+const GABARITS = [[-1.3, 1.3, -3.6, 5.6], [-4.75, 4.75, -2.3, 0.3]];
+const gabarits = GABARITS.map(() => ({ x0: 0, x1: 0, z0: 0, z1: 0, y1: 2 }));
+obstacles.push(...gabarits);
+function placerGabarits() {
+  GABARITS.forEach(([a, b, c, d], i) => {
+    const coins = [[a, c], [a, d], [b, c], [b, d]].map(([x, z]) => navette.localToWorld(v3(x, 0, z)));
+    const g = gabarits[i];
+    g.x0 = Math.min(...coins.map(p => p.x)); g.x1 = Math.max(...coins.map(p => p.x));
+    g.z0 = Math.min(...coins.map(p => p.z)); g.z1 = Math.max(...coins.map(p => p.z)); g.y1 = navette.position.y < 3 ? 2 : 0;
+  });
+}
+
+// ------------------------------------------------------------------ le héros : le mannequin, ses animations, son fusil
+const heros = { objet: new THREE.Group(), pos: v3(0, 0, 9), cap: Math.PI, vitesse: 0, accroupi: false, arme: true, visee: false, tir: 0, actions: {}, actif: null, rechargement: 0 };
+scene.add(heros.objet);
+const ombre = new THREE.Mesh(new THREE.CircleGeometry(0.5, 24), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45, depthWrite: false }));
+ombre.rotation.x = -Math.PI / 2; ombre.position.y = 0.01; scene.add(ombre);
+function fabriquerFusil() {
+  const g = new THREE.Group();
+  const m1 = new THREE.MeshStandardMaterial({ color: 0x2c3036, metalness: 0.7, roughness: 0.45 }), m2 = new THREE.MeshStandardMaterial({ color: 0x16181b, metalness: 0.3, roughness: 0.7 });
+  const piece = (l, h, p, x, y, z, m, rx = 0) => { const b = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), m); b.position.set(x, y, z); b.rotation.x = rx; g.add(b); };
+  piece(0.035, 0.11, 0.045, 0, -0.045, 0.05, m2, -0.35); piece(0.05, 0.075, 0.32, 0, 0.045, 0.10, m1); piece(0.04, 0.09, 0.26, 0, 0.02, -0.18, m2);
+  piece(0.05, 0.055, 0.24, 0, 0.04, 0.36, m2); piece(0.03, 0.15, 0.06, 0, -0.05, 0.17, m1, 0.25); piece(0.02, 0.025, 0.05, 0, 0.095, 0.06, m2);
+  const c = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.22, 10), m1); c.rotation.x = Math.PI / 2; c.position.set(0, 0.045, 0.58); g.add(c);
+  g.userData.bouche = v3(0, 0.045, 0.7);
+  return g;
+}
+const fusil = fabriquerFusil(); scene.add(fusil);
+let mainD = null, mainG = null, fusilMain = null, mixeur = null, mannequinPret = false;
+const chargeur = new GLTFLoader();
+const charger = chemin => new Promise((ok, ko) => chargeur.load(new URL(chemin, RACINE).href, ok, undefined, ko));
+Promise.all(['00-Animations/EE_Animations.glb', '00-Animations/UAL1_Standard.glb', '00-Animations/UAL2_Standard.glb'].map(c => charger(c).catch(() => null)))
+  .then(([ee, ual1, ual2]) => {
+    if (!ee) { fantome(); return; }
+    const corps = ee.scene;
+    corps.traverse(o => {
+      if (o.isMesh) { o.material = new THREE.MeshStandardMaterial({ color: 0xc8662a, roughness: 0.7, metalness: 0.05 }); o.frustumCulled = false; }  // la combinaison orange des détenus
+    });
+    heros.objet.add(corps);
+    mainD = corps.getObjectByName('hand_r'); mainG = corps.getObjectByName('hand_l');
+    mixeur = new THREE.AnimationMixer(corps);
+    for (const g of [ual1, ual2, ee]) if (g) for (const clip of g.animations) heros.actions[clip.name] = mixeur.clipAction(clip);
+    for (const nom of ['Fusil_Rechargement']) { const a = heros.actions[nom]; if (a) { a.setLoop(THREE.LoopOnce); a.clampWhenFinished = true; } }
+    mannequinPret = true;
+  });
+function fantome() {    // sans les fichiers d'animation : une silhouette simple, pour essayer quand même les vues
+  const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 1.1, 6, 12), new THREE.MeshStandardMaterial({ color: 0xc8662a }));
+  m.position.y = 0.85; heros.objet.add(m);
+}
+function jouer(nom, vitesseAnim = 1, fondu = 0.22) {
+  const a = heros.actions[nom];
+  if (!a) return;
+  a.timeScale = vitesseAnim;
+  if (heros.actif === a) return;
+  a.reset().play();
+  if (heros.actif) a.crossFadeFrom(heros.actif, fondu, true);
+  heros.actif = a;
+}
+function placerFusil() {
+  fusil.visible = heros.arme && mode === 'pied' && !!mainD;
+  if (!fusil.visible) return;
+  const R = mainD.getWorldPosition(v3()), L = mainG.getWorldPosition(v3()), main = mainD.getWorldQuaternion(new THREE.Quaternion());
+  if (heros.actif !== heros.actions.Fusil_Rechargement || !fusilMain) {
+    const u = v3(0, 1, 0), l = v3(); let d = L.clone().sub(R).normalize();
+    for (let k = 0; k < 3; k++) { l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize(); d = L.clone().sub(R).addScaledVector(u, 0.06).addScaledVector(l, -0.035).normalize(); }
+    l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize();
+    fusilMain = main.clone().invert().multiply(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(l, u, d)));
+  }
+  fusil.position.copy(R); fusil.quaternion.copy(main).multiply(fusilMain);
+}
+
+// ------------------------------------------------------------------ les entrées (positions physiques : ZQSD en AZERTY = WASD en QWERTY)
+const touches = new Set(), appuis = new Set();
+let sourisX = 0, sourisY = 0, clicG = false, clicD = false, clicGAppui = false;
+addEventListener('keydown', e => { if (!touches.has(e.code)) appuis.add(e.code); touches.add(e.code); if (['Space', 'Tab'].includes(e.code)) e.preventDefault(); });
+addEventListener('keyup', e => touches.delete(e.code));
+rendu.domElement.addEventListener('click', () => rendu.domElement.requestPointerLock?.());
+addEventListener('mousemove', e => { if (document.pointerLockElement || e.buttons) { sourisX += e.movementX; sourisY += e.movementY; } });
+addEventListener('mousedown', e => { if (e.button === 0) { clicG = true; clicGAppui = true; } if (e.button === 2) clicD = true; });
+addEventListener('mouseup', e => { if (e.button === 0) clicG = false; if (e.button === 2) clicD = false; });
+addEventListener('contextmenu', e => e.preventDefault());
+const tenue = c => touches.has(c), appui = c => appuis.has(c);
+
+// ------------------------------------------------------------------ à pied : le déplacement et la caméra 3e personne
+let mode = 'pied', vueNavette = 'poursuite';
+const cam = { lacet: Math.PI, tangage: -0.12, distance: 3.2, epaule: 1, decalage: 0.45, fov: 62, recul: 0 };
+const REGLAGES = {   // la caméra selon l'état : distance, décalage d'épaule, hauteur du pivot, champ de vision
+  normal: { distance: 3.3, decalage: 0.5, hauteur: 1.62, fov: 62 },
+  visee: { distance: 1.45, decalage: 0.62, hauteur: 1.58, fov: 48 },
+  accroupi: { distance: 2.8, decalage: 0.55, hauteur: 1.05, fov: 60 },
+  course: { distance: 3.7, decalage: 0.45, hauteur: 1.6, fov: 70 },
+};
+const rayon = new THREE.Raycaster();
+function bloquer(p, r = 0.36) {   // le héros (un cercle de rayon r) ne traverse pas les boîtes
+  for (const o of obstacles) {
+    if (o.y1 < 0.5) continue;
+    const cx = borne(p.x, o.x0, o.x1), cz = borne(p.z, o.z0, o.z1);
+    const dx = p.x - cx, dz = p.z - cz, d2 = dx * dx + dz * dz;
+    if (d2 >= r * r) continue;
+    if (d2 > 1e-8) { const d = Math.sqrt(d2); p.x = cx + dx / d * r; p.z = cz + dz / d * r; }
+    else { const g = [p.x - o.x0, o.x1 - p.x, p.z - o.z0, o.z1 - p.z], i = g.indexOf(Math.min(...g)); if (i === 0) p.x = o.x0 - r; if (i === 1) p.x = o.x1 + r; if (i === 2) p.z = o.z0 - r; if (i === 3) p.z = o.z1 + r; }
+  }
+  p.x = borne(p.x, -LARGEUR / 2 + r, LARGEUR / 2 - r); p.z = borne(p.z, -PROFONDEUR / 2 + r, PROFONDEUR / 2 - r);
+}
+const devantCam = () => v3(Math.sin(cam.lacet) * Math.cos(cam.tangage), Math.sin(cam.tangage), Math.cos(cam.lacet) * Math.cos(cam.tangage));
+const droiteCam = () => v3(-Math.cos(cam.lacet), 0, Math.sin(cam.lacet));
+function pied(dt) {
+  placerGabarits();
+  cam.lacet -= sourisX * 0.0025; cam.tangage = borne(cam.tangage - sourisY * 0.0022, -1.1, 0.9);
+  if (appui('KeyF')) heros.arme = !heros.arme;
+  if (appui('KeyC') || appui('ControlLeft')) heros.accroupi = !heros.accroupi;
+  if (appui('KeyX') || appui('Tab')) cam.epaule *= -1;                     // changer d'épaule
+  heros.visee = heros.arme && (clicD || tenue('KeyV'));
+  if (heros.arme && appui('KeyR') && heros.rechargement <= 0) { heros.rechargement = 2.4; }
+  heros.rechargement -= dt;
+  // le déplacement, par rapport à la caméra
+  const av = (tenue('KeyW') || tenue('ArrowUp') ? 1 : 0) - (tenue('KeyS') || tenue('ArrowDown') ? 1 : 0);
+  const la = (tenue('KeyD') || tenue('ArrowRight') ? 1 : 0) - (tenue('KeyA') || tenue('ArrowLeft') ? 1 : 0);
+  const fl = v3(Math.sin(cam.lacet), 0, Math.cos(cam.lacet)), dr = droiteCam();
+  const dir = fl.multiplyScalar(av).addScaledVector(dr, la);
+  const bouge = dir.lengthSq() > 0.01;
+  if (bouge) dir.normalize();
+  const sprint = tenue('ShiftLeft') && !heros.visee && !heros.accroupi && av > 0;
+  const vmax = heros.accroupi ? 1.25 : heros.visee ? 1.5 : sprint ? 5.6 : 3.1;
+  heros.vitesse = amortir(heros.vitesse, bouge ? vmax : 0, 9, dt);
+  if (bouge) heros.direction = dir.clone();
+  if (heros.direction) heros.pos.addScaledVector(heros.direction, heros.vitesse * dt);
+  bloquer(heros.pos);
+  // le héros se tourne vers sa marche, ou vers la visée
+  const capVoulu = heros.visee ? cam.lacet : bouge ? Math.atan2(dir.x, dir.z) : heros.cap;
+  let ecart = Math.atan2(Math.sin(capVoulu - heros.cap), Math.cos(capVoulu - heros.cap));
+  heros.cap += ecart * (1 - Math.exp(-(heros.visee ? 18 : 10) * dt));
+  heros.objet.position.copy(heros.pos); heros.objet.rotation.y = heros.cap;
+  ombre.position.set(heros.pos.x, 0.01, heros.pos.z);
+  // le tir
+  heros.tir -= dt;
+  if (heros.visee && clicG && heros.tir <= 0 && heros.rechargement <= 0) { tirer(); heros.tir = 0.14; }
+  // l'animation
+  const v = heros.vitesse;
+  if (heros.arme && heros.rechargement > 0) jouer('Fusil_Rechargement');
+  else if (heros.arme && heros.visee) {
+    if (heros.accroupi) jouer('Fusil_Accroupi_Visee');
+    else if (v > 0.3) jouer('Fusil_Marche_Visee', v / 1.5);
+    else jouer(heros.tir > 0 ? 'Fusil_Tir' : 'Fusil_Visee');
+  } else if (heros.accroupi) jouer(v > 0.3 ? 'Crouch_Fwd_Loop' : heros.arme ? 'Fusil_Accroupi_Visee' : 'Crouch_Idle_Loop', v > 0.3 ? v / 1.25 : 1);
+  else if (v > 4.3) jouer(heros.arme ? 'Fusil_Course' : 'Sprint_Loop', heros.arme ? v / 3.6 : v / 5.6);
+  else if (v > 2.0) jouer(heros.arme ? 'Fusil_Course' : 'Jog_Fwd_Loop', v / 3.1);
+  else if (v > 0.3) jouer(heros.arme ? 'Fusil_Marche' : 'Walk_Loop', v / 1.5);
+  else jouer(heros.arme ? 'Fusil_Repos' : 'Idle_Loop');
+  if (mixeur) mixeur.update(dt);
+  heros.objet.updateMatrixWorld(true);
+  placerFusil();
+  // la caméra : un bras qui part de l'épaule et se raccourcit devant les murs
+  const r = heros.visee ? REGLAGES.visee : heros.accroupi ? REGLAGES.accroupi : sprint ? REGLAGES.course : REGLAGES.normal;
+  cam.distance = amortir(cam.distance, r.distance, 7, dt);
+  cam.decalage = amortir(cam.decalage, r.decalage * cam.epaule, 8, dt);
+  cam.hauteur = amortir(cam.hauteur ?? r.hauteur, r.hauteur, 6, dt);
+  cam.fov = amortir(cam.fov, r.fov, 6, dt);
+  cam.recul = amortir(cam.recul, 0, 12, dt);
+  const pivot = heros.pos.clone().setY(cam.hauteur).addScaledVector(droiteCam(), cam.decalage);
+  const f = devantCam();
+  const voulu = pivot.clone().addScaledVector(f, -cam.distance).addScaledVector(HAUT, 0.12);
+  const versCam = voulu.clone().sub(pivot), longueur = versCam.length();
+  rayon.set(pivot, versCam.normalize()); rayon.far = longueur;
+  const coup = rayon.intersectObjects(solides, false)[0];
+  const libre = coup ? Math.max(0.25, coup.distance - 0.25) : longueur;
+  cam.libre = libre < (cam.libre ?? longueur) ? libre : amortir(cam.libre ?? longueur, libre, 4, dt);   // il rentre vite, ressort doucement
+  camera.position.copy(pivot).addScaledVector(versCam, cam.libre);
+  camera.up.copy(HAUT);
+  camera.lookAt(pivot.clone().addScaledVector(f, 20));
+  camera.rotateX(cam.recul);
+  camera.fov = cam.fov; camera.updateProjectionMatrix();
+  // monter à bord
+  const porte = navette.localToWorld(navette.userData.porte.clone()).setY(0);
+  const pres = porte.distanceTo(heros.pos) < 2.6;
+  invite(pres ? 'E : monter à bord de la navette' : '');
+  if (pres && appui('KeyE')) bascule(() => embarquer());
+}
+function tirer() {
+  rayon.setFromCamera(new THREE.Vector2(0, 0), camera); rayon.far = 400;
+  const coup = rayon.intersectObjects([...solides, sas], false)[0];
+  const cible = coup ? coup.point : camera.position.clone().addScaledVector(rayon.ray.direction, 400);
+  const bouche = fusil.visible ? fusil.localToWorld(fusil.userData.bouche.clone()) : heros.pos.clone().setY(1.4);
+  const normale = coup?.face ? coup.face.normal.clone().transformDirection(coup.object.matrixWorld) : undefined;
+  fx.tir(bouche, cible, { couleur: 0x4fd8ff, vitesse: 90, normale, sol: 0 });
+  if (coup?.object === sas) sas.toucher(cible);
+  cam.recul += 0.012;
+}
+
+// ------------------------------------------------------------------ en navette : le pilotage et les deux vues
+const vol = { vitesse: v3(), rotation: v3(), gaz: 0, assistance: true };
+function embarquer() {
+  mode = 'navette'; heros.objet.visible = false; ombre.visible = false; fusil.visible = false;
+  vol.gaz = 0; vol.vitesse.set(0, 0, 0); vol.rotation.set(0, 0, 0); vol.suivi = null; vol.recul = 0;
+  cam.libre = undefined;
+  navette.userData.cockpit.visible = vueNavette === 'cockpit';
+  camera.position.copy(navette.localToWorld(v3(0, 4, -14)));
+}
+function debarquer() {
+  mode = 'pied'; heros.objet.visible = true; ombre.visible = true;
+  heros.pos.copy(navette.localToWorld(navette.userData.porte.clone())).setY(0); bloquer(heros.pos);
+  navette.userData.cockpit.visible = false;
+  cam.lacet = heros.cap = navette.rotation.y + Math.PI / 2;
+}
+function piloter(dt) {
+  const n = navette;
+  if (appui('KeyV')) { vueNavette = vueNavette === 'poursuite' ? 'cockpit' : 'poursuite'; n.userData.cockpit.visible = vueNavette === 'cockpit'; }
+  // les gaz : Z/W et S, la postcombustion : Maj
+  if (tenue('KeyW') || tenue('ArrowUp')) vol.gaz = Math.min(1, vol.gaz + dt * 0.6);
+  if (tenue('KeyS') || tenue('ArrowDown')) vol.gaz = Math.max(0, vol.gaz - dt * 0.8);
+  const boost = tenue('ShiftLeft') ? 1 : 0;
+  // la souris tourne la navette (tangage, lacet) ; Q/A et D la font rouler ; Espace et C montent et descendent
+  const couple = v3(-sourisY * 0.0035, -sourisX * 0.0035, ((tenue('KeyA') || tenue('ArrowLeft')) ? -1 : 0) + ((tenue('KeyD') || tenue('ArrowRight')) ? 1 : 0));
+  vol.rotation.x += couple.x; vol.rotation.y += couple.y; vol.rotation.z += couple.z * dt * 2.6;
+  vol.rotation.multiplyScalar(Math.exp(-4 * dt));
+  n.rotateX(vol.rotation.x * dt * 6); n.rotateY(vol.rotation.y * dt * 6); n.rotateZ(vol.rotation.z * dt * 1.6);
+  const avant = v3(0, 0, 1).applyQuaternion(n.quaternion), haut = v3(0, 1, 0).applyQuaternion(n.quaternion);
+  const dansLeHangar = Math.abs(n.position.x) < LARGEUR / 2 && n.position.z > -PROFONDEUR / 2 && n.position.z < PROFONDEUR / 2;
+  const vmax = (dansLeHangar ? 14 : 70) * (1 + boost * 1.2);
+  const voulue = avant.clone().multiplyScalar(vol.gaz * vmax).addScaledVector(haut, ((tenue('Space') ? 1 : 0) - (tenue('KeyC') ? 1 : 0)) * 6);
+  vol.vitesse.lerp(voulue, 1 - Math.exp(-(vol.assistance ? 1.4 : 0.3) * dt));   // l'assistance de vol amortit la dérive
+  n.position.addScaledVector(vol.vitesse, dt);
+  if (dansLeHangar) {                                    // le sol et les murs du hangar
+    n.position.y = borne(n.position.y, 1.1, HAUTEUR - 2);
+    n.position.x = borne(n.position.x, -LARGEUR / 2 + 5, LARGEUR / 2 - 5);
+    if (n.position.z > PROFONDEUR / 2 - 5) n.position.z = PROFONDEUR / 2 - 5;
+  }
+  for (const p of n.userData.propulseurs) p.puissance = 0.15 + vol.gaz * 0.85 + boost * 0.4;
+  const v = vol.vitesse.length();
+  // la vue poursuite : une caméra sur ressort, derrière et au-dessus, qui suit le roulis et s'ouvre avec la vitesse
+  if (vueNavette === 'poursuite') {
+    vol.suivi = vol.suivi ? vol.suivi.slerp(n.quaternion, 1 - Math.exp(-4.5 * dt)) : n.quaternion.clone();   // l'orientation suit avec un temps de retard
+    vol.recul = amortir(vol.recul ?? 0, Math.min(6, v * 0.04) + boost * 1.5, 2, dt);                          // un peu plus loin quand ça va vite
+    camera.position.copy(n.position).add(v3(0, 3.0, -11.5 - vol.recul).applyQuaternion(vol.suivi));
+    camera.up.copy(v3(0, 1, 0).applyQuaternion(vol.suivi));
+    camera.lookAt(n.position.clone().add(v3(0, 1.0, 16).applyQuaternion(vol.suivi)));
+    camera.fov = amortir(camera.fov, 60 + Math.min(14, v * 0.15) + boost * 5, 3, dt);
+  } else {
+    // la vue cockpit : les yeux du pilote, un peu de retard de la tête aux accélérations
+    const accel = v3().subVectors(vol.vitesse, vol.vitessePrec || vol.vitesse).divideScalar(Math.max(dt, 1e-3));
+    vol.tete = (vol.tete || v3()).lerp(accel.clone().applyQuaternion(n.quaternion.clone().invert()).multiplyScalar(-0.0025), 1 - Math.exp(-5 * dt));
+    vol.tete.clampLength(0, 0.08);
+    camera.position.copy(n.localToWorld(n.userData.place.clone().add(vol.tete)));
+    camera.quaternion.copy(n.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0)));
+    camera.up.copy(haut);
+    camera.fov = amortir(camera.fov, 74 + boost * 6, 3, dt);
+  }
+  vol.vitessePrec = vol.vitesse.clone();
+  camera.updateProjectionMatrix();
+  // la poussière, recyclée dans un cube autour de la navette
+  for (let i = 0; i < NPOUSS; i++) {
+    let x = pp[i * 3] - n.position.x, y = pp[i * 3 + 1] - n.position.y, z = pp[i * 3 + 2] - n.position.z;
+    if (Math.abs(x) > 30 || Math.abs(y) > 30 || Math.abs(z) > 30 || (x === 0 && y === 0 && z === 0)) { x = (Math.random() - 0.5) * 60; y = (Math.random() - 0.5) * 60; z = (Math.random() - 0.5) * 60; }
+    pp[i * 3] = n.position.x + x; pp[i * 3 + 1] = n.position.y + y; pp[i * 3 + 2] = n.position.z + z;
+  }
+  poussiere.attributes.position.needsUpdate = true;
+  nuage.visible = !dansLeHangar;
+  // le tableau de bord
+  document.querySelector('#vitesse').textContent = `${v.toFixed(0)} m/s${boost ? ' · postcombustion' : ''}`;
+  document.querySelector('#vueNom').textContent = vueNavette === 'cockpit' ? 'vue cockpit' : 'vue poursuite';
+  document.querySelector('#gaz').style.width = (vol.gaz * 100) + '%';
+  const posee = dansLeHangar && n.position.y < 1.6 && v < 2;
+  invite(posee ? 'E : descendre de la navette' : dansLeHangar && v < 2 ? 'Z : mettre les gaz · la porte du hangar est droit devant' : '');
+  if (posee && appui('KeyE')) bascule(() => debarquer());
+}
+
+// ------------------------------------------------------------------ l'interface
+const TOUCHES = {
+  pied: '<kbd>Z Q S D</kbd> marcher · <kbd>Maj</kbd> courir · <kbd>C</kbd> s\'accroupir<br><kbd>clic droit</kbd> viser · <kbd>clic</kbd> tirer · <kbd>R</kbd> recharger<br><kbd>X</kbd> changer d\'épaule · <kbd>F</kbd> ranger le fusil · <kbd>E</kbd> monter à bord',
+  navette: '<kbd>Z</kbd> / <kbd>S</kbd> les gaz · <kbd>Maj</kbd> postcombustion<br><kbd>souris</kbd> tangage et lacet · <kbd>Q</kbd> <kbd>D</kbd> roulis<br><kbd>Espace</kbd> / <kbd>C</kbd> monter, descendre · <kbd>V</kbd> cockpit ou poursuite<br><kbd>E</kbd> descendre (posé dans le hangar)',
+};
+function invite(texte) { const e = document.querySelector('#invite'); e.textContent = texte; e.style.display = texte ? '' : 'none'; }
+function majInterface() {
+  document.querySelector('#mode').textContent = mode === 'pied' ? `À pied · vue 3e personne${heros.visee ? ' · visée' : ''}` : `Aux commandes de la navette · ${vueNavette === 'cockpit' ? 'vue cockpit' : 'vue poursuite'}`;
+  document.querySelector('#touches').innerHTML = TOUCHES[mode];
+  document.querySelector('#viseur').style.display = (mode === 'pied' && heros.visee) || (mode === 'navette' && vueNavette === 'cockpit') ? 'block' : 'none';
+  document.querySelector('#tableau').style.display = mode === 'navette' ? 'block' : 'none';
+}
+let enBascule = false;
+function bascule(action) {     // un fondu au noir, le temps de monter ou descendre
+  if (enBascule) return;
+  enBascule = true;
+  const voile = document.querySelector('#voile'); voile.style.opacity = 1;
+  if (window.vues?.rapide) { action(); voile.style.opacity = 0; enBascule = false; return; }
+  setTimeout(() => { action(); voile.style.opacity = 0; enBascule = false; }, 260);
+}
+function redimensionner() { rendu.setSize(innerWidth, innerHeight); composeur.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', redimensionner); redimensionner();
+
+// ------------------------------------------------------------------ la boucle
+function image(dt) {
+  if (mode === 'pied') pied(dt); else piloter(dt);
+  if (mode === 'pied') for (const p of navette.userData.propulseurs) p.puissance = 0;
+  for (const d of debris.children) { d.rotation.x += d.userData.tourne.x * dt; d.rotation.y += d.userData.tourne.y * dt; }
+  fx.maj(dt);
+  majInterface();
+  composeur.render();
+  sourisX = sourisY = 0; appuis.clear(); clicGAppui = false;
+}
+const horloge = new THREE.Clock();
+let fige = false;
+(function boucle() { requestAnimationFrame(boucle); if (!fige) image(Math.min(horloge.getDelta(), 0.05)); })();
+// pour les tests automatiques : piloter les entrées et avancer le temps image par image
+window.vues = {
+  get pret() { return mannequinPret; }, heros, navette, vol, cam, rapide: false,
+  get mode() { return mode; }, get vue() { return vueNavette; },
+  avancer(s, pas = 1 / 30) { fige = true; for (let t = 0; t < s; t += pas) image(pas); },
+  tenir(code, oui = true) { if (oui) { if (!touches.has(code)) appuis.add(code); touches.add(code); } else touches.delete(code); },
+  souris(dx, dy) { sourisX += dx; sourisY += dy; },
+  clic(droit, oui) { if (droit) clicD = oui; else { clicG = oui; if (oui) clicGAppui = true; } },
+  embarquer() { embarquer(); }, debarquer() { debarquer(); },
+};
+</script>
+</body>
+</html>
