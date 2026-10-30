@@ -43,7 +43,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as Squelettes from 'three/addons/utils/SkeletonUtils.js';
-import { Prise, fabriquerArme, tenuePour, calibrerAppui, cout as coutPose } from './prise-armes.js';
+import { Prise, fabriquerArme, tenuePour, calibrerAppui, jugerPeau, cout as coutPose } from './prise-armes.js';
 
 // Les personnages du prologue. camp : detenu, androide, pirate, heros. hauteur : la taille voulue en jeu (m).
 // ecarte : gardé pour mémoire mais retiré du jeu (raison donnée).
@@ -600,6 +600,7 @@ function preparerPrise(r) {
   const C = r.reciblage.cib.carte, actif = r.biblioActif;
   remettre(r); r.objet.updateMatrixWorld(true);                 // au repos : on mesure les mains et le regard
   r.prise = new Prise(C, r.objet);
+  r.prise.noterPeau();
   r.armes = {};
   const fusil = fabriquerArme('fusil'); fusil.visible = false; scene.add(fusil); r.armes.fusil = fusil;
   const instants = INSTANTS_VISEE.filter(i => biblio.sources.has(i.clip));
@@ -609,7 +610,9 @@ function preparerPrise(r) {
     const pistolet = fabriquerArme('pistolet'); pistolet.visible = false; scene.add(pistolet); r.armes.pistolet = pistolet;
     let pire = 9;
     for (const u of [0.2, 0.7]) { const t = poserA(r, 'Pistol_Aim_Neutral', u); pire = Math.min(pire, r.prise.mesurer(pistolet, r.prise.tenir(pistolet, t, u)).traverse); }
-    if (pire < -0.02) r.prise.inapte = { ...(r.prise.inapte || {}), pistolet: true, raison: r.prise.inapte?.raison || 'le pistolet finit dans son corps' };
+    const peau = jugerPeau(r.prise, [0.2, 0.7].map(u => () => r.prise.tenir(pistolet, poserA(r, 'Pistol_Aim_Neutral', u), u)));
+    const raison = pire < -0.02 ? 'le pistolet finit dans son corps' : peau.raison;
+    if (raison) r.prise.inapte = { ...(r.prise.inapte || {}), pistolet: true, raison: r.prise.inapte?.raison || raison };
   }
   if (actif) jouerBiblio(r, actif, true);
 }
@@ -643,7 +646,7 @@ function controlerPrises(clips) {
       const tenue = tenuePour(clip);
       if (!tenue || !biblio.sources.has(clip)) continue;
       const arme = r.armes[tenue.arme] || (r.armes[tenue.arme] = fabriquerArme(tenue.arme), scene.add(r.armes[tenue.arme]), r.armes[tenue.arme]);
-      const pire = { mainDroite: 0, mainGauche: 0, etirementDroit: 0, etirementGauche: 0, coudeDroit: 180, coudeGauche: 180, traverse: 9, glisse: 0, cout: 0 };
+      const pire = { mainDroite: 0, mainGauche: 0, etirementDroit: 0, etirementGauche: 0, coudeDroit: 180, coudeGauche: 180, traverse: 9, glisse: 0, cout: 0, peau: 0, dechirure: 0 };
       for (let k = 0; k < 8; k++) {
         const u = k / 8;
         poserA(r, clip, u);
@@ -658,6 +661,8 @@ function controlerPrises(clips) {
         pire.traverse = Math.min(pire.traverse, m.traverse);
         pire.glisse = Math.max(pire.glisse, Math.abs(m.glisse));
         pire.cout = Math.max(pire.cout, coutPose(m));
+        const pz = r.prise.peau();
+        if (pz) { pire.peau = Math.max(pire.peau, pz.mainDroite ?? 9, pz.mainGauche ?? 9); pire.dechirure = Math.max(pire.dechirure, pz.dechirure); }
       }
       perso.clips[clip] = pire;
     }

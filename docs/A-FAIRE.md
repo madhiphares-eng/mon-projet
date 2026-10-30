@@ -83,4 +83,4 @@ Les 84 animations de la bibliothèque et les 23 du studio s'appliquent alors à 
 - **Les personnages** : 101 modèles triés ; 84 animations reciblées sur 35 personnages ; un squelette automatique pour les statues ; la recoloration selon la bible.
 - **Les animations maison** : 23 animations fabriquées par `outils/studio-animations.py` (fusil à deux mains, androïdes, détenus, espèces).
 - **Les vues et les effets** : la vue 3e personne, la navette (cockpit, poursuite), neuf effets (fumées, flammes et explosions simulées) ; dans le navigateur et dans Unity.
-- **Le bot de prise des armes** : les mains exactement sur l'arme, pour tous les personnages, avec un contrôle automatique.
+- **Le bot de prise des armes** : les mains exactement sur l'arme, pour tous les personnages, avec un contrôle automatique des os et de la peau.

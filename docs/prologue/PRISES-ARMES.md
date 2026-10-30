@@ -1,6 +1,6 @@
 # Le bot de prise des armes
 
-> Version 1, 30 octobre 2026. Les mains se posent exactement sur l'arme, quel que soit le personnage, sans réglage à la main, et un bot vérifie chaque personnage dans chaque animation d'arme.
+> Version 2, 30 octobre 2026. Les mains se posent exactement sur l'arme, quel que soit le personnage, sans réglage à la main, et un bot vérifie chaque personnage dans chaque animation d'arme : ses os, et depuis la version 2, sa peau.
 >
 > Code du navigateur : [`vitrine/prise-armes.js`](../../vitrine/prise-armes.js), utilisé par le banc des personnages et l'essai des vues. Code Unity : `PriseArme` et `ArmeTenue` dans `Assets/_Projet/Scripts/Prologue/`.
 
@@ -22,7 +22,11 @@
    - l'extension des bras ;
    - l'angle des coudes ;
    - la distance entre l'arme et le torse.
-5. **Résultat : 20 personnages parfaits sur 24 armables**, 2 bons et 2 inaptes au fusil (§ 3).
+5. **Il contrôle aussi la peau** (version 2). Des os parfaitement posés ne suffisent pas : chez certains personnages, la peau ne suit pas le squelette, et l'arme flotte devant des mains restées ailleurs. Le bot note au repos les sommets de chaque main visible ; dans chaque pose, il mesure de combien ils se sont écartés de leur os.
+   - Chez les personnages bien faits, l'écart reste sous 5 cm (les doigts qui se plient).
+   - Chez les autres, il va de 29 à 61 cm : ce sont les statues dont le squelette a été posé automatiquement, et le héros provisoire.
+   - Au-delà de 10 cm, le personnage est déclaré inapte.
+6. **Résultat : 13 personnages parfaits sur 24 armables**, 2 bons et 9 inaptes (§ 3). Les deux androïdes candidats (le bleu et l'orange) sont parfaits.
    - Arme basse, si le fusil frôle le ventre d'un personnage corpulent, il l'écarte du corps.
    - Un corps qui ne peut pas tenir un fusil proprement est déclaré inapte : le banc ne le lui donne pas, plutôt que de montrer une pose cassée.
 
@@ -52,37 +56,39 @@
 
 ## 3. Le rapport du bot (navigateur, 24 personnages armables)
 
-Appui de la crosse en centimètres (gauche / avant / bas, pour un bras de 55 cm). Les autres colonnes donnent le pire sur toutes les animations d'arme.
+Appui de la crosse en centimètres (gauche / avant / bas, pour un bras de 55 cm). Les autres colonnes donnent le pire sur toutes les animations d'arme. « Peau des mains » : l'écart moyen entre la peau d'une main et son os (en centimètres, pour un personnage de 1,83 m).
 
-| Personnage | Camp | Appui | Main la plus éloignée de sa prise | Bras le plus tendu | Glissement de la main gauche | Verdict |
-|---|---|---|---|---|---|---|
-| `tenue-detenu` | heros | 6 / 0 / 0 | 0 mm | 84 % | 18 cm | Parfait |
-| `detenu-brute` | detenu | 6 / 0 / 0 | 0 mm | 92 % | 13 cm | Parfait |
-| `detenu-vieux` | detenu | 8 / 0 / 0 | 0 mm | 92 % | 18 cm | Parfait |
-| `detenu-tshirt` | detenu | 6 / 0 / 0 | 0 mm | 93 % | 15 cm | Parfait |
-| `detenu-figurant` | detenu | 8 / 0 / 0 | 0 mm | 94 % | 18 cm | Parfait |
-| `saurien-pale` | espece | 6 / 0 / 3 | 0 mm | 93 % | 7 cm | Parfait |
-| `saurien-guerrier` | espece | 6 / 6 / 0 | 0 mm | 80 % | 1 cm | Parfait |
-| `crocodilien` | espece | 8 / 9 / 0 | 166 mm | 136 % | 18 cm | Inapte au fusil : le fusil entre dans son corps |
-| `ceratopsien` | espece | 6 / 0 / 0 | 0 mm | 95 % | 18 cm | Parfait |
-| `gris-marcheur` | espece | 8 / 0 / 0 | 0 mm | 95 % | 13 cm | Parfait |
-| `gris-anime` | espece | 8 / 0 / 0 | 0 mm | 92 % | 13 cm | Parfait |
-| `gris-vert` | espece | 8 / 0 / 0 | 0 mm | 91 % | 13 cm | Parfait |
-| `gris-leger` | espece | 8 / 0 / 0 | 5 mm | 91 % | 2 cm | Bon (contact du fusil contre la poitrine en course, l'arme en travers) |
-| `longiligne-rouge` | espece | 6 / 6 / 0 | 0 mm | 90 % | 5 cm | Parfait |
-| `cephalopode` | espece | 6 / 6 / 0 | 0 mm | 83 % | 1 cm | Parfait |
-| `ichtyen` | espece | 6 / 0 / 0 | 0 mm | 96 % | 7 cm | Parfait |
-| `mercenaire-alien` | espece | 6 / 0 / 0 | 0 mm | 87 % | 15 cm | Parfait |
-| `droide-securite` | androide | 8 / 6 / 0 | 0 mm | 94 % | 18 cm | Parfait |
-| `androide-antiemeute` | androide | 8 / 3 / 0 | 0 mm | 90 % | 10 cm | Parfait |
-| `androide-sentinelle` | androide | 8 / 0 / -3 | 0 mm | 92 % | 18 cm | Parfait |
-| `androide-lourd` | androide | 6 / 6 / 0 | 0 mm | 95 % | 5 cm | Parfait |
-| `androide-medical` | androide | 6 / 0 / -3 | 113 mm | 146 % | 18 cm | Inapte au fusil : ses bras sont trop courts pour son corps |
-| `pirate-eva` | pirate | 6 / 0 / 0 | 0 mm | 96 % | 18 cm | Bon (contact du fusil contre la poitrine en course, l'arme en travers) |
-| `pirate-masque` | pirate | 6 / 6 / 0 | 0 mm | 80 % | 1 cm | Parfait |
+| Personnage | Camp | Appui | Main la plus éloignée de sa prise | Peau des mains | Bras le plus tendu | Glissement de la main gauche | Verdict |
+|---|---|---|---|---|---|---|---|
+| `tenue-detenu` | heros | 6 / 0 / 0 | 0 mm | 29 cm | 84 % | 18 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
+| `detenu-brute` | detenu | 6 / 0 / 0 | 0 mm | 1 cm | 92 % | 13 cm | Parfait |
+| `detenu-vieux` | detenu | 8 / 0 / 0 | 0 mm | 1 cm | 92 % | 18 cm | Parfait |
+| `detenu-tshirt` | detenu | 6 / 0 / 0 | 0 mm | 1 cm | 93 % | 15 cm | Parfait |
+| `detenu-figurant` | detenu | 8 / 0 / 0 | 0 mm | 2 cm | 94 % | 18 cm | Parfait |
+| `saurien-pale` | espece | 6 / 0 / 3 | 0 mm | 3 cm | 93 % | 7 cm | Parfait |
+| `saurien-guerrier` | espece | 6 / 6 / 0 | 0 mm | 53 cm | 80 % | 1 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
+| `crocodilien` | espece | 8 / 9 / 0 | 166 mm | aucune | 136 % | 18 cm | Inapte au fusil et au pistolet : le fusil entre dans son corps |
+| `ceratopsien` | espece | 6 / 0 / 0 | 0 mm | 55 cm | 95 % | 18 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
+| `gris-marcheur` | espece | 8 / 0 / 0 | 0 mm | 3 cm | 95 % | 13 cm | Parfait |
+| `gris-anime` | espece | 8 / 0 / 0 | 0 mm | 0 cm | 92 % | 13 cm | Parfait |
+| `gris-vert` | espece | 8 / 0 / 0 | 0 mm | 3 cm | 91 % | 13 cm | Parfait |
+| `gris-leger` | espece | 8 / 0 / 0 | 5 mm | 0 cm | 91 % | 2 cm | Bon (contact du fusil contre la poitrine en course, l'arme en travers) |
+| `longiligne-rouge` | espece | 6 / 6 / 0 | 0 mm | 3 cm | 90 % | 5 cm | Parfait |
+| `cephalopode` | espece | 6 / 6 / 0 | 0 mm | 54 cm | 83 % | 1 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
+| `ichtyen` | espece | 6 / 0 / 0 | 0 mm | 53 cm | 96 % | 7 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
+| `mercenaire-alien` | espece | 6 / 0 / 0 | 0 mm | 2 cm | 87 % | 15 cm | Parfait |
+| `droide-securite` | androide | 8 / 6 / 0 | 0 mm | 2 cm | 94 % | 18 cm | Parfait |
+| `androide-antiemeute` | androide | 8 / 3 / 0 | 0 mm | 2 cm | 90 % | 10 cm | Parfait |
+| `androide-sentinelle` | androide | 8 / 0 / -3 | 0 mm | 2 cm | 92 % | 18 cm | Parfait |
+| `androide-lourd` | androide | 6 / 6 / 0 | 0 mm | 50 cm | 95 % | 5 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
+| `androide-medical` | androide | 6 / 0 / -3 | 113 mm | 61 cm | 146 % | 18 cm | Inapte au fusil et au pistolet : ses bras sont trop courts pour son corps |
+| `pirate-eva` | pirate | 6 / 0 / 0 | 0 mm | 5 cm | 96 % | 18 cm | Bon (contact du fusil contre la poitrine en course, l'arme en travers) |
+| `pirate-masque` | pirate | 6 / 6 / 0 | 0 mm | 50 cm | 80 % | 1 cm | Inapte au fusil et au pistolet : la peau de ses mains ne suit pas ses os |
 
-- **Le crocodilien** a le torse d'un quadrupède et des bras courts : un fusil épaulé lui rentre dans le corps. Il lui faut une arme à sa forme : une arme intégrée, ou un pistolet (son pistolet est accepté).
-- **L'androïde médical** a des bras trop courts pour épauler. Il peut tenir un pistolet ; c'est un androïde de soin, ce n'est pas un défaut.
+- **Le crocodilien** a le torse d'un quadrupède et des bras courts : un fusil épaulé lui rentre dans le corps. Et ses mains n'ont pas de peau autour de leurs os : il lui faut une arme à sa forme, modelée avec lui.
+- **L'androïde médical** a des bras trop courts pour épauler, et la peau de ses mains ne suit pas : c'est un androïde de soin, il reste sans arme.
+- **Les statues liées automatiquement** (`saurien-guerrier`, `ceratopsien`, `cephalopode`, `ichtyen`, `pirate-masque`, `androide-lourd`) : leurs poids de peau, posés par `rigger-statues.py`, laissent les mains en arrière quand les bras se lèvent. Elles restent bonnes pour marcher, se tenir debout, regarder ; pour tenir une arme, il faudra refaire leurs poids dans Blender (ou des modèles faits pour ça, sur Meshy).
+- **Le héros provisoire** (`tenue-detenu`) : même défaut. Il sera remplacé par le vrai héros ; d'ici là, l'essai des vues prend le mannequin du studio, qui tient son fusil sans défaut.
 - **Le gris léger et la pirate en combinaison** : en course, le fusil tenu en travers touche la poitrine. C'est normal pour cette tenue.
 - Les 11 personnages restants (statues sans bras, robots non humanoïdes, personnages écartés) ne prennent pas d'arme.
 

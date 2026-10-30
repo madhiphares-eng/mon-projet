@@ -92,7 +92,7 @@ Avec `--planches dossier/`, il dessine aussi une planche de contrôle par animat
 - attacher le modèle du fusil à l'os de la **main droite** (*hand_r*, ou *Right Hand* de l'avatar Humanoid), la poignée dans la paume, le canon dans l'axe de l'avant-bras ;
 - la main gauche tombe alors d'elle-même sur le garde-main. Pour un fusil plus long ou plus court, on la recale par cinématique inverse (`OnAnimatorIK`, `SetIKPosition(AvatarIKGoal.LeftHand, …)` sur un repère du garde-main).
 
-Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` joue, et un pistolet pour les animations `Pistol_`. Les mains y sont posées par le **bot de prise** ([`PRISES-ARMES.md`](PRISES-ARMES.md)) : 20 personnages sur 24 sont parfaits, et 2 sont déclarés inaptes au fusil.
+Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` joue, et un pistolet pour les animations `Pistol_`. Les mains y sont posées par le **bot de prise** ([`PRISES-ARMES.md`](PRISES-ARMES.md)) : 13 personnages sur 24 sont parfaits, 2 bons, et 9 sont déclarés inaptes : le bot vérifie aussi que leur peau suit leurs mains (les statues liées automatiquement et le héros provisoire ne la suivent pas).
 
 **Les PNJ dans Unity**, sans Animator Controller :
 - le composant `AnimationPNJ` (dans `Assets/_Projet/Scripts/Prologue/`) fait jouer à un personnage une animation en boucle, ou une suite d'animations avec des fondus enchaînés. Par exemple, `Androide_Garde` puis `Androide_Scan` pour une sentinelle, `Detenu_A_Genoux` pour un détenu sous la menace ;

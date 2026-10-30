@@ -360,6 +360,55 @@ export class Prise {
     return { droite, gauche, poidsGauche, mode: tenue.mode };
   }
 
+  // ---------------------------------------------------------------- la peau suit-elle les os ? (pour le bot)
+  // Les os peuvent tenir l'arme à la perfection pendant que la peau ne suit pas : une main dont les sommets sont liés à
+  // d'autres os, ou des poids automatiques qui déchirent le maillage dès que les bras se lèvent. Au repos, on note les
+  // sommets de chaque main visible et un échantillon d'arêtes ; dans une pose, on regarde où ils sont passés.
+  noterPeau() {
+    const peaux = [];
+    this.racine.traverse(n => { if (n.isSkinnedMesh) peaux.push(n); });
+    this.racine.updateMatrixWorld(true);
+    const mains = { d: [], g: [] }, aretes = [], inv = {}, paumes = {};
+    for (const c of ['d', 'g']) if (this.mains[c]) { inv[c] = this.carte['main_' + c].matrixWorld.clone().invert(); paumes[c] = this.paume(c); }
+    for (const m of peaux) {
+      const n = m.geometry.attributes.position.count, pas = Math.max(1, Math.floor(n / 60000));
+      for (let i = 0; i < n; i += pas) {
+        const w = m.getVertexPosition(i, v()).applyMatrix4(m.matrixWorld);
+        for (const c in paumes) if (w.distanceTo(paumes[c]) < this.mains[c].longueur * 0.75) mains[c].push({ m, i, local: w.clone().applyMatrix4(inv[c]) });
+      }
+      const ind = m.geometry.index, nt = Math.floor((ind ? ind.count : n) / 3), pasT = Math.max(1, Math.floor(nt / 1500));
+      for (let t = 0; t < nt; t += pasT) {
+        const a = ind ? ind.getX(3 * t) : 3 * t, b = ind ? ind.getX(3 * t + 1) : 3 * t + 1;
+        const l = m.getVertexPosition(a, v()).distanceTo(m.getVertexPosition(b, v()));
+        if (l > 1e-6) aretes.push({ m, a, b, l });
+      }
+    }
+    this.notesPeau = { mains, aretes };
+  }
+
+  // l'écart moyen entre la peau de chaque main et son os (en mètres du mannequin ; null : aucune peau autour de l'os),
+  // et la part des arêtes étirées au-delà du double ou écrasées de plus de moitié (la peau qui se déchire)
+  peau() {
+    const N = this.notesPeau;
+    if (!N) return null;
+    this.racine.updateMatrixWorld(true);
+    const p = v(), attendu = v();
+    const main = c => {
+      const l = N.mains[c];
+      if (!l.length) return null;
+      const M = this.carte['main_' + c].matrixWorld;
+      let s = 0;
+      for (const x of l) s += x.m.getVertexPosition(x.i, p).applyMatrix4(x.m.matrixWorld).distanceTo(attendu.copy(x.local).applyMatrix4(M));
+      return s / l.length / this.k;
+    };
+    let dechirees = 0;
+    for (const e of N.aretes) {
+      const r = e.m.getVertexPosition(e.a, p).distanceTo(e.m.getVertexPosition(e.b, attendu)) / e.l;
+      if (r > 2 || r < 0.5) dechirees++;
+    }
+    return { mainDroite: main('d'), mainGauche: main('g'), dechirure: N.aretes.length ? dechirees / N.aretes.length : 0 };
+  }
+
   // ---------------------------------------------------------------- le contrôle d'une pose (pour le bot)
   mesurer(arme, resultat) {
     const C = this.carte, def = arme.userData.def;
@@ -386,6 +435,25 @@ export function cout(m) {
   c += (m.mainDroite + (m.mainGauche ?? 0)) * 30;
   c += Math.abs(m.glisse) * 4;
   return c;
+}
+
+// la peau dans des poses (des fonctions qui posent le personnage, arme en main) : le pire écart des mains, la pire déchirure,
+// et la raison d'écarter ce personnage s'il y en a une (null pour un personnage sans peau notée).
+// Le verdict tient à l'écart des mains : sous 5 cm pour tous les personnages bien liés à leur squelette, de 29 à 61 cm pour
+// ceux dont la peau ne suit pas (les statues liées automatiquement). La déchirure, elle, est donnée pour information :
+// les plis des articulations l'élèvent aussi chez les bons personnages.
+export const SEUIL_PEAU_MAIN = 0.1;
+export function jugerPeau(prise, poses) {
+  if (!prise.notesPeau) return { pirePeau: null, pireDechirure: null, raison: null };
+  let pirePeau = 0, pireDechirure = 0;
+  for (const poser of poses) {
+    poser();
+    const m = prise.peau();
+    pirePeau = Math.max(pirePeau, m.mainDroite ?? 9, m.mainGauche ?? 9);
+    pireDechirure = Math.max(pireDechirure, m.dechirure);
+  }
+  const raison = pirePeau > SEUIL_PEAU_MAIN ? 'la peau de ses mains ne suit pas ses os' : null;
+  return { pirePeau, pireDechirure, raison };
 }
 
 // le bot : pour un personnage, cherche l'appui de la crosse qui donne les plus belles poses de visée.
@@ -420,5 +488,9 @@ export function calibrerAppui(prise, arme, poser, instants) {
   meilleur.pireMain = pireMain; meilleur.pireEtirement = pireEtirement; meilleur.pireTorse = pireTorse;
   meilleur.apte = pireMain < 0.03 * prise.k && pireEtirement < 1.06 && pireTorse > -0.05;
   prise.inapte = meilleur.apte ? null : { fusil: true, raison: pireTorse <= -0.05 ? 'le fusil entre dans son corps' : 'ses bras sont trop courts pour son corps' };
+  // la peau : les os tiennent l'arme, mais la peau suit-elle ?
+  const peau = jugerPeau(prise, poses.map((p, j) => () => { poser(instants[j]); prise.tenir(arme, p.tenue, p.u); }));
+  Object.assign(meilleur, peau);
+  if (meilleur.apte && peau.raison) { meilleur.apte = false; prise.inapte = { fusil: true, raison: peau.raison }; }
   return meilleur;
 }
