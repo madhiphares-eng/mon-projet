@@ -1,6 +1,8 @@
 # À faire : les priorités
 
 > 30 octobre 2026. Ce qui compte le plus, dans l'ordre. Chaque étape débloque la suivante.
+>
+> Pour voir où en est chaque domaine, avec les images et les vidéos : la [bibliothèque en ligne](https://claude.ai/artifact/2XjoRvcY5gDL4CoV8Khjhj).
 
 ## 1. Récupérer les nouveautés sur le Mac (5 minutes)
 

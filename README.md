@@ -2,10 +2,8 @@
 
 Jeu d'action et d'aventure à la troisième personne, réaliste (Unity 6 HDRP). Il commence par un **prologue** : amnésique, le héros s'évade du Colosse, un vaisseau-prison de l'Empire attaqué par des pirates, et vole une navette. Ensuite, la galaxie est ouverte. Le projet complet : [`docs/PREPRODUCTION.md`](docs/PREPRODUCTION.md).
 
-- **Voir les avancées** : la bibliothèque en ligne (personnages, animations, effets, sons, décors, cinématiques, gameplay), lien ci-dessous.
+- **Voir les avancées** : la [bibliothèque en ligne](https://claude.ai/artifact/2XjoRvcY5gDL4CoV8Khjhj) (personnages, animations, effets, vues, niveau, direction artistique, et ce qui vient : sons, décors, cinématiques, gameplay). Elle est mise à jour à chaque étape.
 - **Ce qu'il reste à faire, dans l'ordre** : [`docs/A-FAIRE.md`](docs/A-FAIRE.md).
-
-<!--BIBLIOTHEQUE-->
 
 ## Où trouver quoi
 
