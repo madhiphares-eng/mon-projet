@@ -85,17 +85,40 @@ export const Textures = {
   }),
 };
 
+// ------------------------------------------------------------------ les flipbooks (Unity Labs, CC0), dans le dossier effets/ à côté de ce module
+// Des simulations de fumée, de flammes et d'explosion faites dans Houdini : bien plus riches qu'une texture dessinée.
+export const FLIPBOOKS = {
+  volutes: { fichier: 'fumee_volutes_8x8.webp', colonnes: 8, lignes: 8 },
+  volutes2: { fichier: 'fumee_volutes2_8x8.webp', colonnes: 8, lignes: 8 },
+  fumeeFine: { fichier: 'fumee_fine_20x4.webp', colonnes: 20, lignes: 4 },
+  explosion: { fichier: 'explosion_5x5.webp', colonnes: 5, lignes: 5 },
+  bouleFeu: { fichier: 'boule_feu_8x8.webp', colonnes: 8, lignes: 8 },
+  flamme: { fichier: 'flamme_16x4.webp', colonnes: 16, lignes: 4 },
+};
+const cacheFlipbooks = new Map();
+function chargerFlipbook(fichier) {
+  if (!cacheFlipbooks.has(fichier)) cacheFlipbooks.set(fichier, new Promise(ok => {
+    new THREE.TextureLoader().load(new URL('./effets/' + fichier, import.meta.url).href, t => {
+      t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; ok(t);
+    }, undefined, () => ok(null));           // sans le fichier : on garde l'effet fait par le code
+  }));
+  return cacheFlipbooks.get(fichier);
+}
+
 // ------------------------------------------------------------------ les particules : des quads instanciés, face à la caméra
 const VERTEX_PARTICULES = /* glsl */`
   attribute vec3 iCentre;
   attribute vec3 iVitesse;
   attribute vec4 iCouleur;
   attribute vec3 iForme;      // x : taille, y : rotation, z : étirement selon la vitesse (0 : rond)
+  attribute float iImage;     // l'image du flipbook (avec sa fraction, pour le fondu entre deux images)
   varying vec2 vUv;
   varying vec4 vCouleur;
+  varying float vImage;
   void main() {
     vUv = uv;
     vCouleur = iCouleur;
+    vImage = iImage;
     vec4 c = viewMatrix * vec4(iCentre, 1.0);
     vec2 coin = position.xy;
     float taille = iForme.x;
@@ -113,15 +136,27 @@ const VERTEX_PARTICULES = /* glsl */`
   }`;
 const FRAGMENT_PARTICULES = /* glsl */`
   uniform sampler2D carte;
+  uniform vec2 grille;        // colonnes, lignes du flipbook (0 : une seule image)
   varying vec2 vUv;
   varying vec4 vCouleur;
+  varying float vImage;
+  vec2 case_(float i) {
+    float c = mod(i, grille.x), l = floor(i / grille.x);
+    return (vUv + vec2(c, grille.y - 1.0 - l)) / grille;
+  }
   void main() {
-    vec4 t = texture2D(carte, vUv);
+    vec4 t;
+    if (grille.x > 0.0) {
+      float n = grille.x * grille.y, i = floor(vImage), f = vImage - i;
+      t = mix(texture2D(carte, case_(mod(i, n))), texture2D(carte, case_(mod(i + 1.0, n))), f);   // fondu entre deux images
+    } else t = texture2D(carte, vUv);
     gl_FragColor = vec4(vCouleur.rgb * t.rgb, vCouleur.a * t.a);
   }`;
 
 class Systeme {
-  constructor(scene, carte, additif, capacite = 600) {
+  // flipbook : { fichier, colonnes, lignes } ; la texture se charge à côté de ce module (dossier effets/).
+  // En attendant (ou sans le fichier), le système garde la texture faite par le code.
+  constructor(scene, carte, additif, capacite = 600, flipbook = null) {
     const base = new THREE.PlaneGeometry(1, 1);
     const g = new THREE.InstancedBufferGeometry();
     g.index = base.index;
@@ -132,10 +167,12 @@ class Systeme {
     this.couleur = new THREE.InstancedBufferAttribute(new Float32Array(capacite * 4), 4).setUsage(THREE.DynamicDrawUsage);
     this.forme = new THREE.InstancedBufferAttribute(new Float32Array(capacite * 3), 3).setUsage(THREE.DynamicDrawUsage);
     g.setAttribute('iCentre', this.centre); g.setAttribute('iVitesse', this.vitesse);
-    g.setAttribute('iCouleur', this.couleur); g.setAttribute('iForme', this.forme);
+    this.image = new THREE.InstancedBufferAttribute(new Float32Array(capacite), 1).setUsage(THREE.DynamicDrawUsage);
+    g.setAttribute('iCouleur', this.couleur); g.setAttribute('iForme', this.forme); g.setAttribute('iImage', this.image);
     g.instanceCount = 0;
+    this.images = 1;
     const m = new THREE.ShaderMaterial({
-      uniforms: { carte: { value: carte } }, vertexShader: VERTEX_PARTICULES, fragmentShader: FRAGMENT_PARTICULES,
+      uniforms: { carte: { value: carte }, grille: { value: new THREE.Vector2(0, 0) } }, vertexShader: VERTEX_PARTICULES, fragmentShader: FRAGMENT_PARTICULES,
       transparent: true, depthWrite: false, blending: additif ? THREE.AdditiveBlending : THREE.NormalBlending,
     });
     this.mesh = new THREE.Mesh(g, m);
@@ -144,6 +181,13 @@ class Systeme {
     scene.add(this.mesh);
     this.capacite = capacite;
     this.vivantes = [];
+    if (flipbook) chargerFlipbook(flipbook.fichier).then(t => {
+      if (!t) return;
+      m.uniforms.carte.value = t;
+      m.uniforms.grille.value.set(flipbook.colonnes, flipbook.lignes);
+      this.images = flipbook.colonnes * flipbook.lignes;
+      this.flipbook = true;
+    });
   }
   // p : { pos, vel, vie, taille: [début, fin], couleur: [Color début, Color fin], alpha, gravite, frein, sol, rebond, etire, rot, vrot, monte }
   ajouter(p) {
@@ -176,11 +220,14 @@ class Systeme {
       this.vitesse.setXYZ(n, p.vel.x, p.vel.y, p.vel.z);
       this.couleur.setXYZW(n, c.r, c.g, c.b, (p.alpha ?? 1) * fondu);
       this.forme.setXYZ(n, taille, p.rot, p.etire || 0);
+      // l'image du flipbook : jouée une fois sur la vie de la particule, ou en boucle à p.ips images par seconde
+      const N = this.images;
+      this.image.setX(n, N <= 1 ? 0 : p.ips ? (p.age * p.ips + (p.decalage ?? 0)) % N : Math.min(k * (N - 1), N - 1.001));
       L[n++] = p;
     }
     L.length = n;
     this.mesh.geometry.instanceCount = n;
-    for (const a of [this.centre, this.vitesse, this.couleur, this.forme]) { a.needsUpdate = true; a.clearUpdateRanges?.(); }
+    for (const a of [this.centre, this.vitesse, this.couleur, this.forme, this.image]) { a.needsUpdate = true; a.clearUpdateRanges?.(); }
   }
 }
 
@@ -305,6 +352,13 @@ export class Effets {
     this.traits = new Systeme(scene, Textures.etincelle(), true, 800);
     this.fumees = new Systeme(scene, Textures.fumee(), false, 500);
     this.eclairs = new Systeme(scene, Textures.eclair(), true, 60);
+    // les flipbooks (Unity Labs, CC0) : de vraies fumées, flammes et explosions simulées
+    this.volutes = new Systeme(scene, Textures.fumee(), false, 400, FLIPBOOKS.volutes);
+    this.fumeeFine = new Systeme(scene, Textures.fumee(), false, 300, FLIPBOOKS.fumeeFine);
+    this.explosions = new Systeme(scene, Textures.fumee(), false, 40, FLIPBOOKS.explosion);
+    this.feux = new Systeme(scene, Textures.lueur(), true, 80, FLIPBOOKS.bouleFeu);
+    this.flammes = new Systeme(scene, Textures.lueur(), false, 200, FLIPBOOKS.flamme);   // en fondu : la forme des flammes reste lisible
+    this.systemes = [this.lueurs, this.traits, this.fumees, this.eclairs, this.volutes, this.fumeeFine, this.explosions, this.feux, this.flammes];
     this.animes = [];                    // ce qui a une méthode maj(dt, temps)
     this.ephemeres = [];                 // ce qui disparaît seul : { maj(dt) → false quand fini }
     // un petit lot de lumières pour les éclairs (tirs, courts-circuits) : créées une fois, jamais retirées,
@@ -326,7 +380,7 @@ export class Effets {
       f.age += dt;
       f.l.intensity = f.age < f.vie ? f.fort * Math.pow(1 - f.age / f.vie, 2) : 0;
     }
-    this.lueurs.maj(dt); this.traits.maj(dt); this.fumees.maj(dt); this.eclairs.maj(dt);
+    for (const sys of this.systemes) sys.maj(dt);
   }
 
   flash(position, couleur, force = 30, vie = 0.08, portee = 6) {
@@ -344,9 +398,9 @@ export class Effets {
         couleur: [chaud, Math.random() < 0.5 ? c : froid], alpha: 1.6, gravite: 1, frein: 0.6, sol, rebond: 0.35, entree: 0.01, sortie: 0.6 });
     }
     this.lueurs.ajouter({ pos: position.clone(), vel: v3(), vie: 0.12, taille: [0.6, 0.2], couleur: [chaud, c], alpha: 1.5, entree: 0.01 });
-    for (let i = 0; i < 3; i++) {
-      this.fumees.ajouter({ pos: position.clone().add(v3(hasard(-0.05, 0.05), 0, hasard(-0.05, 0.05))), vel: dansLeCone(direction, 0.6).multiplyScalar(0.4),
-        vie: hasard(1.2, 2), taille: [0.12, 0.7], couleur: [new THREE.Color(0x4a4a4e), new THREE.Color(0x2c2c30)], alpha: 0.35, monte: 0.25, frein: 1.5, vrot: hasard(-0.6, 0.6) });
+    for (let i = 0; i < 2; i++) {
+      this.fumeeFine.ajouter({ pos: position.clone().add(v3(hasard(-0.05, 0.05), 0, hasard(-0.05, 0.05))), vel: dansLeCone(direction, 0.6).multiplyScalar(0.35),
+        vie: hasard(1.6, 2.4), taille: [0.25, 0.9], couleur: [new THREE.Color(0x6a6a70), new THREE.Color(0x3a3a3e)], alpha: 0.55, monte: 0.3, frein: 1.5, rot: hasard(-0.3, 0.3), entree: 0.05 });
     }
     this.flash(position, c, 25 * force, 0.09, 5);
   }
@@ -365,7 +419,7 @@ export class Effets {
   }
 
   // ---------------------------------------------------------------- vapeur et fumée
-  vapeur(position, direction = v3(0, 1, 0), { debit = 34, vitesse = 2.2, couleur = 0xc8ccd2, taille = 1, opacite = 0.16 } = {}) {
+  vapeur(position, direction = v3(0, 1, 0), { debit = 18, vitesse = 2.2, couleur = 0xc8ccd2, taille = 1, opacite = 0.16 } = {}) {
     const e = { position: position.clone(), direction: direction.clone().normalize(), reste: 0, actif: true, debit };
     const c0 = coul(couleur), c1 = coul(couleur).multiplyScalar(0.8);
     e.maj = dt => {
@@ -373,10 +427,10 @@ export class Effets {
       e.reste += dt * e.debit;
       while (e.reste >= 1) {
         e.reste -= 1;
-        // un jet serré à la sortie, qui ralentit, s'élargit et monte en se diluant
-        this.fumees.ajouter({ pos: e.position.clone().addScaledVector(e.direction, Math.random() * 0.1), vel: dansLeCone(e.direction, 0.14).multiplyScalar(vitesse * hasard(0.85, 1.15)),
-          vie: hasard(1.4, 2.0), taille: [0.06 * taille, 0.95 * taille], couleur: [c0, c1], alpha: opacite, monte: 0.45, frein: 1.4,
-          vrot: hasard(-0.8, 0.8), entree: 0.06, sortie: 0.35 });
+        // un jet serré à la sortie, qui ralentit, s'élargit et monte en se diluant (volutes simulées, jouées sur la vie)
+        this.volutes.ajouter({ pos: e.position.clone().addScaledVector(e.direction, Math.random() * 0.1), vel: dansLeCone(e.direction, 0.14).multiplyScalar(vitesse * hasard(0.85, 1.15)),
+          vie: hasard(1.4, 2.0), taille: [0.15 * taille, 1.3 * taille], couleur: [c0, c1], alpha: Math.min(1, opacite * 3), monte: 0.45, frein: 1.4,
+          vrot: hasard(-0.5, 0.5), entree: 0.06, sortie: 0.45 });
       }
     };
     this.animes.push(e);
@@ -411,8 +465,8 @@ export class Effets {
         couleur: [blanc, c], alpha: 1.5, gravite: 0.8, sol, rebond: 0.3, entree: 0.01 });
     }
     this.lueurs.ajouter({ pos: point.clone().addScaledVector(normale, 0.03), vel: v3(), vie: 0.18, taille: [0.8, 0.2], couleur: [blanc, c], alpha: 1.4, entree: 0.01 });
-    this.fumees.ajouter({ pos: point.clone().addScaledVector(normale, 0.05), vel: normale.clone().multiplyScalar(0.6), vie: 1.4, taille: [0.15, 0.8],
-      couleur: [new THREE.Color(0x55555a), new THREE.Color(0x303034)], alpha: 0.3, monte: 0.2, frein: 1.5 });
+    this.fumeeFine.ajouter({ pos: point.clone().addScaledVector(normale, 0.05), vel: normale.clone().multiplyScalar(0.5), vie: 1.8, taille: [0.25, 0.9],
+      couleur: [new THREE.Color(0x6a6a70), new THREE.Color(0x3a3a3e)], alpha: 0.5, monte: 0.3, frein: 1.5, rot: hasard(-0.3, 0.3), entree: 0.05 });
     this.flash(point, c, 30, 0.1, 5);
     // la brûlure, qui refroidit lentement
     const b = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), new THREE.MeshBasicMaterial({ map: Textures.brulure(), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
@@ -431,6 +485,77 @@ export class Effets {
       this.scene.remove(b); b.geometry.dispose(); b.material.dispose(); braise.material.dispose();
       return false;
     } });
+  }
+
+  // ---------------------------------------------------------------- l'explosion (grenade, réservoir, vaisseau)
+  explosion(position, { taille = 1, sol = 0 } = {}) {
+    const blanc = new THREE.Color(0xffffff), orange = new THREE.Color(0xff8a30), braise = new THREE.Color(0xff4a10);
+    // la boule de feu simulée, puis sa fumée noire : trois nuages un peu décalés
+    for (let i = 0; i < 3; i++) {
+      const d = i ? v3(hasard(-0.5, 0.5), hasard(0, 0.4), hasard(-0.5, 0.5)).multiplyScalar(taille) : v3();
+      this.explosions.ajouter({ pos: position.clone().add(d), vel: v3(0, 0.5 * taille, 0), vie: hasard(1.3, 1.7), taille: [(i ? 1.8 : 2.6) * taille, (i ? 2.6 : 3.6) * taille],
+        couleur: [blanc, blanc], alpha: 1, entree: 0.001, sortie: 0.8, rot: hasard(0, 6.283), vrot: hasard(-0.3, 0.3) });
+    }
+    this.feux.ajouter({ pos: position.clone(), vel: v3(), vie: 0.3, taille: [1.2 * taille, 2.2 * taille], couleur: [blanc, orange], alpha: 0.8, entree: 0.001, sortie: 0.3 });
+    for (let i = 0; i < 46; i++) {
+      this.traits.ajouter({ pos: position.clone(), vel: v3().randomDirection().add(v3(0, 0.5, 0)).normalize().multiplyScalar(hasard(5, 15) * Math.sqrt(taille)),
+        vie: hasard(0.5, 1.4), taille: [0.03, 0.012], etire: 0.05, couleur: [blanc, braise], alpha: 1.8, gravite: 1, frein: 0.4, sol, rebond: 0.3, entree: 0.01 });
+    }
+    for (let i = 0; i < 18; i++) {           // des débris incandescents
+      this.lueurs.ajouter({ pos: position.clone(), vel: v3().randomDirection().add(v3(0, 0.8, 0)).multiplyScalar(hasard(3, 7) * Math.sqrt(taille)),
+        vie: hasard(1.2, 2.4), taille: [0.09, 0.03], couleur: [orange, braise], alpha: 1.4, gravite: 1, frein: 0.3, sol, rebond: 0.25, entree: 0.01 });
+    }
+    this.flash(position, 0xffa040, 60 * taille, 0.35, 14 * taille);
+    // l'onde de choc, au sol
+    const onde = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: Textures.anneau(), color: 0xffb070, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    onde.rotation.x = -Math.PI / 2; onde.position.set(position.x, sol + 0.03, position.z); this.scene.add(onde);
+    let age = 0, fumee = 0;
+    this.ephemeres.push({ maj: dt => {
+      age += dt;
+      onde.scale.setScalar((0.5 + age * 14) * taille); onde.material.opacity = Math.max(0, 1 - age / 0.45);
+      // puis la colonne de fumée qui monte
+      if (age > 0.35 && fumee < 6) {
+        fumee++;
+        this.volutes.ajouter({ pos: position.clone().add(v3(hasard(-0.4, 0.4), 0.3, hasard(-0.4, 0.4)).multiplyScalar(taille)), vel: v3(hasard(-0.2, 0.2), hasard(0.8, 1.4), hasard(-0.2, 0.2)),
+          vie: hasard(3, 4.5), taille: [1.2 * taille, 3.2 * taille], couleur: [new THREE.Color(0x8a827a), new THREE.Color(0x56514c)], alpha: 0.75, frein: 0.4, rot: hasard(0, 6.283), vrot: hasard(-0.2, 0.2), entree: 0.15 });
+      }
+      if (age < 0.6) return true;
+      this.scene.remove(onde); onde.geometry.dispose(); onde.material.dispose();
+      return false;
+    } });
+  }
+
+  // ---------------------------------------------------------------- le feu (débris qui brûlent, conduite de gaz)
+  feu(position, { taille = 1, lumiere = true } = {}) {
+    const e = { position: position.clone(), actif: true, reste: 0, braises: 0, fumee: 0 };
+    const jaune = new THREE.Color(0xffc890).multiplyScalar(1.9), orange = new THREE.Color(0xff7a30).multiplyScalar(1.5), rouge = new THREE.Color(0xc0300c);
+    let lum = null;
+    if (lumiere) { lum = new THREE.PointLight(0xff8a3a, 0, 7 * taille, 2); lum.position.copy(position).y += 0.6 * taille; this.scene.add(lum); }
+    e.maj = (dt, t) => {
+      if (lum) lum.intensity = e.actif ? 12 * taille * (0.75 + 0.25 * Math.sin(t * 23) * Math.sin(t * 7.1)) : 0;
+      if (!e.actif) return;
+      // des flammes simulées qui se chevauchent, chacune en boucle sur le flipbook (64 images à 30 par seconde)
+      e.reste += dt * 5;
+      while (e.reste >= 1) {
+        e.reste -= 1;
+        this.flammes.ajouter({ pos: e.position.clone().add(v3(hasard(-0.12, 0.12), 0.45, hasard(-0.12, 0.12)).multiplyScalar(taille)), vel: v3(0, 0.1, 0),
+          vie: hasard(0.8, 1.1), taille: [1.3 * taille, 1.45 * taille], couleur: [jaune, orange], alpha: 0.9, ips: 30, decalage: hasard(0, 64), rot: hasard(-0.15, 0.15), entree: 0.25, sortie: 0.6 });
+      }
+      e.braises += dt * 14;
+      while (e.braises >= 1) {
+        e.braises -= 1;
+        this.lueurs.ajouter({ pos: e.position.clone().add(v3(hasard(-0.2, 0.2), hasard(0.2, 0.6), hasard(-0.2, 0.2)).multiplyScalar(taille)),
+          vel: v3(hasard(-0.4, 0.4), hasard(0.8, 2), hasard(-0.4, 0.4)), vie: hasard(1, 2), taille: [0.035, 0.01], couleur: [orange, rouge], alpha: 1.6, frein: 0.6, entree: 0.05 });
+      }
+      e.fumee += dt * 3;
+      while (e.fumee >= 1) {
+        e.fumee -= 1;
+        this.fumeeFine.ajouter({ pos: e.position.clone().add(v3(hasard(-0.1, 0.1), 1.0 * taille, hasard(-0.1, 0.1))), vel: v3(hasard(-0.1, 0.1), hasard(0.6, 1), hasard(-0.1, 0.1)),
+          vie: hasard(2.5, 3.5), taille: [0.5 * taille, 2.2 * taille], couleur: [new THREE.Color(0x5a5550), new THREE.Color(0x3a3734)], alpha: 0.5, frein: 0.3, rot: hasard(-0.3, 0.3), entree: 0.1 });
+      }
+    };
+    this.animes.push(e);
+    return e;
   }
 
   // ---------------------------------------------------------------- le propulseur (navette, vaisseau pirate)

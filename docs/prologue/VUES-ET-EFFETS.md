@@ -1,6 +1,6 @@
 # Les vues et les effets du prologue
 
-> Version 1, 30 octobre 2026. Ce qui est fait : la vue 3e personne, les deux vues de la navette (cockpit et poursuite), et les effets visuels du Colosse. Chaque partie existe en deux versions :
+> Version 2, 30 octobre 2026. Ce qui est fait : la vue 3e personne, les deux vues de la navette (cockpit et poursuite), et les effets visuels du Colosse. Chaque partie existe en deux versions :
 > - **dans le navigateur**, pour essayer tout de suite ;
 > - **dans Unity** (HDRP), en C#.
 >
@@ -15,10 +15,10 @@
 2. **La navette a deux vues** (V pour passer de l'une à l'autre) :
    - **poursuite** : derrière et au-dessus. La navette pivote dans l'image avant que la caméra ne la rattrape, et le champ de vision s'ouvre avec la vitesse ;
    - **cockpit** : les yeux du pilote, avec le pupitre, les écrans et la verrière. La tête encaisse les accélérations.
-3. **Le héros tient un fusil à deux mains.** Il joue les 23 animations du studio maison (voir [`PERSONNAGES.md`](PERSONNAGES.md), § 3). Le fusil est orienté par les deux mains, ce qui marche sur n'importe quel personnage Humanoid.
-4. **Sept effets, tous faits par le code.** Les textures, les particules et les shaders sont fabriqués par le programme : aucun fichier à télécharger, aucune licence à citer.
-   - Le pack de particules de Kenney (CC0) était prévu, mais son site refuse maintenant les téléchargements automatiques.
-   - Les textures maison le remplacent.
+3. **Le héros tient un fusil à deux mains.** Il joue les 23 animations du studio maison (voir [`PERSONNAGES.md`](PERSONNAGES.md), § 3). Les mains sont posées sur l'arme par le **bot de prise** (voir [`PRISES-ARMES.md`](PRISES-ARMES.md)).
+4. **Neuf effets.**
+   - **Les fumées, les flammes et les explosions sont de vraies simulations** : les flipbooks de Unity Labs, faits dans Houdini et publiés en CC0 (domaine public, utilisables dans un jeu vendu).
+   - Le reste est fait par le code : étincelles, tirs, champ de force, propulseur, rayon d'éther, gyrophare.
 
 ![Les vues](vues/vues.jpg)
 
@@ -28,7 +28,8 @@ Sur le Mac, dans le dossier du jeu (celui qui contient `prologue/00-Animations`,
 
 ```
 cd ~/jeu
-for f in vues.html banc-effets.html effets-colosse.js; do curl -fsSLO https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/$f; done
+for f in vues.html banc-effets.html banc-pnj.html effets-colosse.js prise-armes.js; do curl -fsSLO https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/$f; done
+mkdir -p effets && for f in fumee_volutes_8x8 fumee_volutes2_8x8 fumee_fine_20x4 explosion_5x5 boule_feu_8x8 flamme_16x4; do curl -fsSL -o effets/$f.webp https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/effets/$f.webp; done
 python3 -m http.server 8766
 ```
 
@@ -70,6 +71,32 @@ Sans les fichiers d'animation, la page des vues marche quand même : le héros e
 | **Propulseur** | Une flamme de plasma : deux cônes turbulents, les « diamants » du jet, une lueur, des grains ; il suit les gaz | La navette, le vaisseau pirate | `fx.propulseur()`, puis `.puissance` | `Propulseur` |
 | **Rayon d'éther** | Une colonne de lumière cyan, des grains qui montent en spirale, une onde au sol toutes les 1,6 s | La chambre des reliques (la capsule du Veilleur) | `fx.rayonEther(hauteur)` | `RayonEther` |
 | **Gyrophare** | Deux faisceaux opposés qui tournent dans la poussière, et la lumière qui balaie les murs | L'alarme, quand l'évasion est découverte | `fx.gyrophare()`, puis `.actif` | `Gyrophare` |
+| **Explosion** | La boule de feu simulée et sa fumée noire, l'éclair, des étincelles et des débris incandescents, l'onde au sol, puis la colonne de fumée qui monte | Les grenades, les réservoirs, l'abordage des pirates | `fx.explosion(position, { taille })` | `EffetsColosse.Explosion(…)` |
+| **Feu** | Des flammes simulées qui se chevauchent, des braises qui montent, une fumée sombre, une lumière qui vacille | Les débris après l'explosion, une conduite de gaz percée | `fx.feu(position, { taille })`, puis `.actif` | `Feu` |
+
+**Les flipbooks** sont dans `vitrine/effets/` (WebP, pour le navigateur) et `Assets/_Projet/Resources/Effets/` (PNG, pour Unity) :
+
+| Fichier | Ce que c'est | Sert à |
+|---|---|---|
+| `fumee_volutes`, `fumee_volutes2` | Des volutes de fumée (8 × 8 images) | La vapeur, la colonne de fumée des explosions |
+| `fumee_fine` | Un filet de fumée (20 × 4) | Les courts-circuits, les impacts, le feu |
+| `explosion` | Une explosion, du feu à la fumée (5 × 5) | L'explosion |
+| `boule_feu` | Une boule de feu (8 × 8) | Le cœur de l'explosion |
+| `flamme` | Une flamme en boucle (16 × 4) | Le feu |
+
+Ils viennent de Unity Labs Paris (2016), sous licence CC0. La mention « Flipbooks VFX : Unity Labs (CC0) » dans les crédits est facultative.
+
+Sans ces fichiers, chaque effet garde sa texture faite par le code.
+
+**Pour aller plus loin**, deux sources de très bonne qualité, à récupérer à la main :
+- **Unity Spaceship Demo** ([github.com/Unity-Technologies/SpaceshipDemo](https://github.com/Unity-Technologies/SpaceshipDemo)) :
+  - des effets VFX Graph de science-fiction, en HDRP : étincelles, vapeur, hologrammes, réacteurs, arcs électriques ;
+  - licence *Unity Companion License* : utilisable dans un jeu fait avec Unity, donc dans le nôtre ;
+  - c'est le meilleur gisement pour la version Unity, à ouvrir sur le PC.
+- **CGHEVEN** ([cgheven.com](https://cgheven.com), section *Flipbooks*) :
+  - des flipbooks gratuits en CC0 : éclairs de bouche réalistes (*Muzzle Flash 01*), jets de vapeur continus (*Steam Jet*), fuites d'énergie (*Energy Leaks*, parfaites pour l'éther) ;
+  - leur téléchargement passe par le site (bouton *Download*, sans compte) ;
+  - à déposer ensuite dans `vitrine/effets/` et `Resources/Effets/`.
 
 Les couleurs suivent la [bible](BIBLE-DA.md) :
 - le rouge est réservé à l'Empire (tirs, alarme) ;
@@ -98,12 +125,13 @@ Les couleurs suivent la [bible](BIBLE-DA.md) :
 | Composant | Rôle |
 |---|---|
 | `CameraTroisiemePersonne` | Sur la caméra à pied. `cible` = le héros. `murs` = ce que la caméra ne traverse pas. Les quatre réglages (normal, visée, accroupi, course) se changent dans l'inspecteur. |
-| `HerosPrologue` | Sur le héros, avec un `CharacterController`. Il joue lui-même ses animations : un graphe Playables, sans Animator Controller à monter. Pour lui donner ses clips : clic droit sur le composant → « Trouver les animations du prologue ». `fusil` = l'objet qui porte `FusilDeuxMains`. |
-| `FusilDeuxMains` | Le fusil, collé au poignet droit et orienté par les deux mains. Sans modèle enfant, il fabrique un fusil simple : il suffit de mettre le vrai modèle en enfant, la poignée à l'origine et le canon vers +Z. |
+| `HerosPrologue` | Sur le héros, avec un `CharacterController`. Il joue lui-même ses animations : un graphe Playables, sans Animator Controller à monter. Pour lui donner ses clips : clic droit sur le composant → « Trouver les animations du prologue ». `fusil` = l'objet qui porte `ArmeTenue`. |
+| `PriseArme`, `ArmeTenue` | Le bot de prise : les mains se posent exactement sur la poignée et le garde-main, quel que soit le personnage (voir [`PRISES-ARMES.md`](PRISES-ARMES.md)). |
+| `Feu` | Un feu : flammes simulées, braises, fumée, lumière. |
 | `ControleVaisseau` | Sur le vaisseau, avec un `Rigidbody` sans gravité. Il règle les gaz, la postcombustion, l'assistance de vol et la vitesse bridée dans la zone du hangar. `place` = les yeux du pilote, `porte` = là où l'on monte. |
 | `CameraVaisseau` | Sur la caméra de vol : les vues poursuite et cockpit. `interieur` = l'intérieur du cockpit, montré seulement en vue cockpit. |
 | `PasserelleVaisseau` | Le passage à pied ↔ à bord : E près de la porte, E une fois posé. Il bascule les caméras et les commandes. |
-| `EffetsColosse` | Les textures, matériaux et maillages des effets, et les effets ponctuels (`Gerbe`, `Tir`, `Impact`). |
+| `EffetsColosse` | Les textures, matériaux, maillages et flipbooks des effets, et les effets ponctuels (`Gerbe`, `Tir`, `Impact`, `Explosion`). |
 
 **Les shaders** sont dans `Assets/_Projet/Resources/` (HDRP) :
 - `Particule` : additif ou fondu, avec particules molles ;

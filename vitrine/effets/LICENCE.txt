@@ -1,0 +1,4 @@
+Flipbooks de fumée, de flammes, de boule de feu et d'explosion : Unity Labs Paris (Unity Technologies), 2016,
+publiés sous licence CC0 (domaine public) : https://unity.com/blog/engine-platform/free-vfx-image-sequences-flipbooks
+Fichiers d'origine : WispySmoke01, WispySmoke03, CandleSmoke01, Explosion02, FireBall01, Flame02 (versions TGA), convertis en WebP.
+Aucune obligation ; mention facultative dans les crédits : « Flipbooks VFX : Unity Labs (CC0) ».

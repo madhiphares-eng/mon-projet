@@ -15,6 +15,7 @@ namespace EchosEther.Prologue
     /// FuiteVapeur, Propulseur, ChampDeForce, RayonEther, Gyrophare.
     /// Même rendu que l'aperçu du navigateur (vitrine/effets-colosse.js, vitrine/banc-effets.html).
     /// Shaders : Resources/Particule.shader, Volume.shader, ChampDeForce.shader (HDRP, additifs ou fondus).
+    /// Fumées, flammes et explosions : les flipbooks de Unity Labs (CC0, Resources/Effets), simulés dans Houdini.
     /// </summary>
     public static class EffetsColosse
     {
@@ -94,6 +95,40 @@ namespace EchosEther.Prologue
             t.SetPixels(pixels);
             t.Apply(true, true);
             return t;
+        }
+
+        // ------------------------------------------------------------------ flipbooks (Unity Labs, CC0)
+
+        /// <summary>Un flipbook de Resources/Effets : nom, colonnes, lignes. Absent : null (l'effet garde sa texture faite par le code).</summary>
+        public static Texture2D Flipbook(string nom, int colonnes, int lignes)
+        {
+            var t = Resources.Load<Texture2D>($"Effets/{nom}_{colonnes}x{lignes}");
+            if (t != null) t.wrapMode = TextureWrapMode.Clamp;
+            return t;
+        }
+
+        /// <summary>Fait jouer un flipbook à un système de particules : une fois sur la vie de chaque particule, ou en boucle (ips images par seconde).</summary>
+        public static void JouerFlipbook(ParticleSystem ps, Texture2D flipbook, int colonnes, int lignes, float ips = 0f)
+        {
+            if (flipbook == null) return;
+            var rendu = ps.GetComponent<ParticleSystemRenderer>();
+            rendu.sharedMaterial.SetTexture("_MainTex", flipbook);
+            var planche = ps.textureSheetAnimation;
+            planche.enabled = true;
+            planche.numTilesX = colonnes;
+            planche.numTilesY = lignes;
+            planche.animation = ParticleSystemAnimationType.WholeSheet;
+            if (ips > 0f)
+            {
+                planche.timeMode = ParticleSystemAnimationTimeMode.FPS;
+                planche.fps = ips;
+            }
+            else
+            {
+                planche.timeMode = ParticleSystemAnimationTimeMode.Lifetime;
+                planche.frameOverTime = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 0f, 1f, 1f));
+                planche.cycleCount = 1;
+            }
         }
 
         // ------------------------------------------------------------------ matériaux
@@ -259,8 +294,8 @@ namespace EchosEther.Prologue
             }
             p.Emettre(p.lueurs, position, Vector3.zero, 0.12f, 0.6f, chaud);
             for (int i = 0; i < 3; i++)
-                p.Emettre(p.fumees, position + Random.insideUnitSphere * 0.05f, DansLeCone(direction, 30f) * 0.4f + Vector3.up * 0.3f,
-                    Random.Range(1.2f, 2f), 0.7f, new Color(0.29f, 0.29f, 0.31f, 0.35f));
+                p.Emettre(p.fumeeFine, position + Random.insideUnitSphere * 0.05f, DansLeCone(direction, 30f) * 0.35f + Vector3.up * 0.3f,
+                    Random.Range(1.6f, 2.4f), 0.9f, new Color(0.42f, 0.42f, 0.44f, 0.55f));
             EffetsCombat.Flash(position, couleur, 6000f * force, 0.09f, 5f);
         }
 
@@ -293,8 +328,34 @@ namespace EchosEther.Prologue
                 p.Emettre(p.etincelles, point, DansLeCone(normale, 55f) * Random.Range(2f, 6f), Random.Range(0.2f, 0.55f), 0.02f,
                     Random.value < 0.5f ? blanc : couleur);
             p.Emettre(p.lueurs, point + normale * 0.03f, Vector3.zero, 0.18f, 0.8f, Color.Lerp(couleur, blanc, 0.5f));
-            p.Emettre(p.fumees, point + normale * 0.05f, normale * 0.6f, 1.4f, 0.8f, new Color(0.33f, 0.33f, 0.35f, 0.3f));
+            p.Emettre(p.fumeeFine, point + normale * 0.05f, normale * 0.5f, 1.8f, 0.9f, new Color(0.42f, 0.42f, 0.44f, 0.5f));
             EffetsCombat.Flash(point, couleur, 5000f, 0.1f, 5f);
+        }
+
+        /// <summary>
+        /// Une explosion (grenade, réservoir, vaisseau) : la boule de feu simulée et sa fumée noire, un éclair, des étincelles,
+        /// des débris incandescents, l'onde au sol, puis la colonne de fumée qui monte.
+        /// </summary>
+        public static void Explosion(Vector3 position, float taille = 1f)
+        {
+            var p = Pilote.I;
+            for (int i = 0; i < 3; i++)
+            {
+                Vector3 d = i == 0 ? Vector3.zero : new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0f, 0.4f), Random.Range(-0.5f, 0.5f)) * taille;
+                p.Emettre(p.explosions, position + d, Vector3.up * 0.5f * taille, Random.Range(1.3f, 1.7f), (i == 0 ? 3.2f : 2.3f) * taille, Color.white);
+            }
+            p.Emettre(p.boulesFeu, position, Vector3.zero, 0.3f, 1.9f * taille, new Color(1f, 0.85f, 0.6f));
+            var orange = new Color(1f, 0.54f, 0.19f);
+            for (int i = 0; i < 46; i++)
+                p.Emettre(p.etincelles, position, (Random.onUnitSphere + Vector3.up * 0.5f).normalized * Random.Range(5f, 15f) * Mathf.Sqrt(taille),
+                    Random.Range(0.5f, 1.4f), 0.03f, Random.value < 0.5f ? Color.white : orange);
+            for (int i = 0; i < 18; i++)
+                p.Emettre(p.debris, position, (Random.onUnitSphere + Vector3.up * 0.8f) * Random.Range(3f, 7f) * Mathf.Sqrt(taille), Random.Range(1.2f, 2.4f), 0.09f, orange);
+            EffetsCombat.Flash(position, orange, 60000f * taille, 0.35f, 14f * taille);
+            EffetsCombat.Anneau(position + Vector3.down * Mathf.Max(0f, position.y - 0.03f), Vector3.up, 6f * taille, orange, 0.45f);
+            for (int i = 0; i < 6; i++)
+                p.Prevoir(0.35f + i * 0.05f, () => p.Emettre(p.volutes, position + new Vector3(Random.Range(-0.4f, 0.4f), 0.3f, Random.Range(-0.4f, 0.4f)) * taille,
+                    new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(0.8f, 1.4f), Random.Range(-0.2f, 0.2f)), Random.Range(3f, 4.5f), 3.2f * taille, new Color(0.54f, 0.51f, 0.48f, 0.75f)));
         }
 
         /// <summary>Une direction tirée au hasard dans un cône (demi-ouverture en degrés).</summary>
@@ -307,7 +368,7 @@ namespace EchosEther.Prologue
 
         // ------------------------------------------------------------------ le pilote : les systèmes partagés, les impacts à venir
 
-        sealed class Pilote : MonoBehaviour
+        public sealed class Pilote : MonoBehaviour
         {
             static Pilote instance;
 
@@ -320,7 +381,7 @@ namespace EchosEther.Prologue
                 }
             }
 
-            public ParticleSystem etincelles, traits, lueurs, fumees, eclairs;
+            public ParticleSystem etincelles, traits, lueurs, fumees, eclairs, volutes, fumeeFine, explosions, boulesFeu, flammes, debris;
             readonly List<(float quand, Action action)> prevus = new List<(float, Action)>();
 
             void Awake()
@@ -348,6 +409,28 @@ namespace EchosEther.Prologue
                 var frein = fumees.limitVelocityOverLifetime;
                 frein.enabled = true;
                 frein.drag = 1.5f;
+                // les flipbooks : fumées, explosion, boule de feu, flammes (sans eux, la texture faite par le code)
+                volutes = Systeme(transform, "Volutes", Particules(TextureFumee, false, 0.4f), false, -0.04f,
+                    Degrade(Color.white, new Color(0.8f, 0.8f, 0.8f), 0.06f, 0.55f), AnimationCurve.Linear(0f, 0.4f, 1f, 1f), 400);
+                JouerFlipbook(volutes, Flipbook("fumee_volutes", 8, 8), 8, 8);
+                var freinVolutes = volutes.limitVelocityOverLifetime; freinVolutes.enabled = true; freinVolutes.drag = 1.2f;
+                fumeeFine = Systeme(transform, "Fumée fine", Particules(TextureFumee, false, 0.4f), false, -0.03f,
+                    Degrade(Color.white, new Color(0.7f, 0.7f, 0.72f), 0.05f, 0.5f), AnimationCurve.Linear(0f, 0.3f, 1f, 1f), 300);
+                JouerFlipbook(fumeeFine, Flipbook("fumee_fine", 20, 4), 20, 4);
+                var freinFine = fumeeFine.limitVelocityOverLifetime; freinFine.enabled = true; freinFine.drag = 1.5f;
+                explosions = Systeme(transform, "Explosions", Particules(TextureFumee, false, 0.3f), false, 0f,
+                    Degrade(Color.white, Color.white, 0.001f, 0.8f), AnimationCurve.Linear(0f, 0.75f, 1f, 1f), 40);
+                JouerFlipbook(explosions, Flipbook("explosion", 5, 5), 5, 5);
+                boulesFeu = Systeme(transform, "Boules de feu", Particules(TextureLueur, true, 0.2f), false, 0f,
+                    Degrade(Color.white, new Color(1f, 0.5f, 0.2f), 0.001f, 0.3f), AnimationCurve.Linear(0f, 0.55f, 1f, 1f), 40);
+                JouerFlipbook(boulesFeu, Flipbook("boule_feu", 8, 8), 8, 8);
+                var materiauFlammes = Particules(TextureLueur, false, 0.15f);
+                materiauFlammes.SetFloat("_Intensite", 1.8f);                 // des flammes plus claires que le blanc : le bloom les fait briller
+                flammes = Systeme(transform, "Flammes", materiauFlammes, false, 0f,
+                    Degrade(Color.white, new Color(1f, 0.6f, 0.3f), 0.25f, 0.6f), AnimationCurve.Linear(0f, 0.9f, 1f, 1f), 200);
+                JouerFlipbook(flammes, Flipbook("flamme", 16, 4), 16, 4, 30f);
+                debris = Systeme(transform, "Débris incandescents", Particules(TextureLueur, true, 0f), false, 1f,
+                    Degrade(Color.white, new Color(1f, 0.3f, 0.06f), 0.01f, 0.6f), AnimationCurve.Linear(0f, 1f, 1f, 0.3f), 200);
                 eclairs = Systeme(transform, "Éclairs", Particules(TextureEclair, true, 0f), false, 0f,
                     Degrade(Color.white, new Color(1f, 0.5f, 0.3f), 0.01f, 0.3f), baisse, 60);
             }

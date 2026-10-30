@@ -22,13 +22,14 @@
 <body>
 <div id="panneau">
   <h1>Banc des effets</h1>
-  <p>Les effets du Colosse, fabriqués par le code (<code>effets-colosse.js</code>). Clic et molette pour tourner autour.</p>
+  <p>Les effets du Colosse (<code>effets-colosse.js</code>) : fumées, flammes et explosions simulées (flipbooks Unity Labs, CC0), le reste fait par le code. Clic et molette pour tourner autour.</p>
   <div>
     <button data-vue="0">Tout</button><button data-vue="1">Étincelles</button><button data-vue="2">Vapeur</button>
     <button data-vue="3">Champ</button><button data-vue="4">Propulseur</button><button data-vue="5">Relique</button>
+    <button data-vue="6">Feu</button><button data-vue="7">Explosion</button>
   </div>
   <div>
-    <button id="tirer">Tirer sur le champ</button><button id="couper">Couper le champ</button><button id="alarme">Alarme</button>
+    <button id="tirer">Tirer sur le champ</button><button id="couper">Couper le champ</button><button id="alarme">Alarme</button><button id="boum">Explosion</button>
   </div>
   <label>Puissance du propulseur <input id="puissance" type="range" min="0" max="1.4" step="0.01" value="0.8"></label>
 </div>
@@ -65,7 +66,7 @@ composeur.addPass(new OutputPass());
 scene.add(new THREE.HemisphereLight(0x8090a8, 0x101014, 0.7));
 const acier = new THREE.MeshStandardMaterial({ color: 0x2a2d33, metalness: 0.75, roughness: 0.48 });
 const acierClair = new THREE.MeshStandardMaterial({ color: 0x3b3f46, metalness: 0.7, roughness: 0.4 });
-const sol = new THREE.Mesh(new THREE.PlaneGeometry(26, 10), new THREE.MeshStandardMaterial({ color: 0x1b1d21, metalness: 0.6, roughness: 0.62 }));
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(30, 10), new THREE.MeshStandardMaterial({ color: 0x1b1d21, metalness: 0.6, roughness: 0.62 }));
 sol.rotation.x = -Math.PI / 2; scene.add(sol);
 const fond = new THREE.Mesh(new THREE.BoxGeometry(26, 5, 0.3), acier); fond.position.set(0, 2.5, -2.15); scene.add(fond);
 const plafond = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 4.6), acier); plafond.position.set(0, 4.6, -0.2); scene.add(plafond);
@@ -128,14 +129,28 @@ const glyphes = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.012, 6, 6), new T
 const rayon = fx.rayonEther(4.4, { position: new THREE.Vector3(8, 0.4, -0.6) }); scene.add(rayon);
 etiqueter("Relique : rayon d'éther", 8, 0.25, 0.4);
 
+// 6. des débris qui brûlent, au bout du couloir
+for (const [x, z, r] of [[-11.6, -1.2, 0.5], [-11.0, -0.6, 0.25], [-12.1, -0.4, 0.8]]) {
+  const d = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.35, 0.6), acierClair); d.position.set(x, 0.17, z); d.rotation.set(r * 0.3, r, r * 0.5); scene.add(d);
+}
+fx.feu(new THREE.Vector3(-11.5, 0.1, -0.8));
+etiqueter('Feu', -11.5, 0.25, 0.4);
+
+// 7. l'aire des explosions (une grenade, un réservoir)
+const fut = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1, 16), new THREE.MeshStandardMaterial({ color: 0x7a1a14, metalness: 0.5, roughness: 0.6 }));
+fut.position.set(13.2, 0.5, -1.2); scene.add(fut);
+const boum = () => fx.explosion(new THREE.Vector3(13 + THREE.MathUtils.randFloat(-0.4, 0.4), 0.6, -0.2), { taille: 1 });
+etiqueter('Explosion', 13, 0.25, 0.4);
+
 // --- les vues --------------------------------------------------------------------------------------------------------
-const VUES = [[0, 3.2, 12.5, 0, 1.8, -0.8], [-6.9, 2.1, 2.2, -8, 1.9, -1.6], [-2.8, 2.2, 3.6, -3.8, 2.4, -1.3], [1.6, 1.7, 4.2, 0, 1.5, -0.9], [5.6, 2.2, 3.6, 4.2, 1.6, -0.6], [9.8, 2.2, 4.4, 8, 2.0, -0.6]];
+const VUES = [[0, 3.6, 15.5, 0, 1.8, -0.8], [-6.9, 2.1, 2.2, -8, 1.9, -1.6], [-2.8, 2.2, 3.6, -3.8, 2.4, -1.3], [1.6, 1.7, 4.2, 0, 1.5, -0.9], [5.6, 2.2, 3.6, 4.2, 1.6, -0.6], [9.8, 2.2, 4.4, 8, 2.0, -0.6], [-10.2, 1.5, 2.6, -11.6, 0.9, -0.8], [14.6, 2.2, 6.0, 12.6, 1.6, -0.6]];
 const vue = i => { const [x, y, z, a, b, c] = VUES[i]; camera.position.set(x, y, z); orbite.target.set(a, b, c); orbite.update(); };
 vue(0);
 document.querySelectorAll('[data-vue]').forEach(b => b.onclick = () => vue(+b.dataset.vue));
 document.querySelector('#tirer').onclick = () => { for (let i = 0; i < 4; i++) setTimeout(tirer, i * 140); };
 document.querySelector('#couper').onclick = e => { champ.actif = !champ.actif; e.target.textContent = champ.actif ? 'Couper le champ' : 'Rallumer le champ'; };
 document.querySelector('#alarme').onclick = () => { gyro.actif = !gyro.actif; };
+document.querySelector('#boum').onclick = boum;
 document.querySelector('#puissance').oninput = e => { prop.puissance = +e.target.value; };
 
 function redimensionner() {
@@ -146,11 +161,13 @@ function redimensionner() {
 addEventListener('resize', redimensionner); redimensionner();
 
 const horloge = new THREE.Clock();
-let rafale = 0, figer = false;
+let rafale = 0, figer = false, explosionDans = 1.2;
 const p = new THREE.Vector3();
 function image(dt) {
   rafale -= dt;
   if (rafale < 0) { tirer(); rafale = Math.random() < 0.3 ? 0.15 : THREE.MathUtils.randFloat(0.8, 2.2); }
+  explosionDans -= dt;
+  if (explosionDans < 0) { boum(); explosionDans = THREE.MathUtils.randFloat(3.5, 5); }
   fx.maj(dt);
   orbite.update();
   composeur.render();
@@ -162,7 +179,7 @@ function image(dt) {
 }
 (function boucle() { requestAnimationFrame(boucle); if (!figer) image(horloge.getDelta()); })();
 // pour les tests automatiques : avancer le temps image par image, puis capturer
-window.effets = { vue, fx, champ, prop, gyro, tirer, cadrer: (x, y, z, a, b, c) => { camera.position.set(x, y, z); orbite.target.set(a, b, c); orbite.update(); }, avancer: (s, pas = 1 / 30) => { figer = true; for (let t = 0; t < s; t += pas) image(pas); }, reprendre: () => { figer = false; horloge.getDelta(); } };
+window.effets = { vue, fx, champ, prop, gyro, tirer, boum, cadrer: (x, y, z, a, b, c) => { camera.position.set(x, y, z); orbite.target.set(a, b, c); orbite.update(); }, avancer: (s, pas = 1 / 30) => { figer = true; for (let t = 0; t < s; t += pas) image(pas); }, reprendre: () => { figer = false; horloge.getDelta(); } };
 </script>
 </body>
 </html>

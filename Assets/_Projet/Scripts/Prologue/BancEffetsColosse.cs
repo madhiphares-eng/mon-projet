@@ -7,7 +7,7 @@ namespace EchosEther.Prologue
     /// Le banc des effets, dans Unity : à poser sur un objet vide d'une scène vide, puis Play.
     /// Il construit un bout de couloir du Colosse avec chaque effet dans son alcôve (comme vitrine/banc-effets.html) :
     /// court-circuit et gyrophare, fuite de vapeur, cellule à champ de force sous le feu d'une tourelle,
-    /// propulseur à l'essai, relique et son rayon d'éther.
+    /// propulseur à l'essai, relique et son rayon d'éther, feu, et une explosion toutes les quatre secondes environ.
     /// Touches (nouveau Input System) : T tire une rafale, C coupe ou rallume le champ, G arrête ou relance l'alarme,
     /// + et - règlent le propulseur. Sans clavier, la tourelle tire seule de temps en temps.
     /// </summary>
@@ -18,7 +18,7 @@ namespace EchosEther.Prologue
         Propulseur propulseur;
         Gyrophare gyrophare;
         Vector3 bouche;
-        float rafale;
+        float rafale, explosion = 1.2f;
 
         void Start()
         {
@@ -72,6 +72,12 @@ namespace EchosEther.Prologue
             propulseur.rayon = 0.32f;
             propulseur.puissance = 0.8f;
 
+            // 6. des débris qui brûlent, et l'aire des explosions
+            var feu = new GameObject("Feu").AddComponent<Feu>();
+            feu.transform.SetParent(transform, false);
+            feu.transform.localPosition = new Vector3(-11.5f, 0.1f, -0.8f);
+            Bloc(PrimitiveType.Cube, acierClair, new Vector3(-11.6f, 0.17f, -1.2f), new Vector3(0.9f, 0.35f, 0.6f), "Débris");
+
             // 5. la relique, sur son socle de pierre noire
             Bloc(PrimitiveType.Cylinder, Formes.Opaque(new Color(0.06f, 0.065f, 0.08f), 0.2f, 0.75f), new Vector3(8f, 0.2f, -0.6f), new Vector3(1.6f, 0.2f, 1.6f), "Socle");
             var rayon = new GameObject("Rayon d'éther").AddComponent<RayonEther>();
@@ -99,6 +105,12 @@ namespace EchosEther.Prologue
 
         void Update()
         {
+            explosion -= Time.deltaTime;
+            if (explosion < 0f)
+            {
+                EffetsColosse.Explosion(transform.TransformPoint(new Vector3(13f + Random.Range(-0.4f, 0.4f), 0.6f, -0.2f)));
+                explosion = Random.Range(3.5f, 5f);
+            }
             rafale -= Time.deltaTime;
             if (rafale < 0f)
             {
