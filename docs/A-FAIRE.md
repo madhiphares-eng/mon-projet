@@ -1,6 +1,6 @@
 # À faire : les priorités
 
-> 29 octobre 2026. Ce qui compte le plus, dans l'ordre. Chaque étape débloque la suivante.
+> 30 octobre 2026. Ce qui compte le plus, dans l'ordre. Chaque étape débloque la suivante.
 
 ## 1. Récupérer les nouveautés sur le Mac (5 minutes)
 
@@ -26,6 +26,22 @@ Puis ouvre dans Chrome : http://localhost:8766/banc-pnj.html?racine=http://local
 - Le menu **« Faire jouer à tous… »** fait jouer une des 84 animations à tout le monde : marche, course, tir, coups, mort…
 - Clique sur un camp pour ne voir que lui, sur un nom pour le cadrer.
 
+Les **23 animations du studio maison** sont dans la même liste : `Fusil_Visee`, `Androide_Panne`, `Detenu_Reddition`, `Gris_Marche`… Quand une animation `Fusil_` joue, le banc met un fusil dans les mains.
+
+## 2 bis. Essayer les vues et les effets (2 minutes)
+
+Toujours dans `~/jeu` :
+```
+for f in vues.html banc-effets.html effets-colosse.js; do curl -fsSLO https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/vitrine/$f; done
+python3 -m http.server 8766
+```
+- **La vue 3e personne et la navette** : http://localhost:8766/vues.html?racine=http://localhost:8766/prologue/
+  - à pied : ZQSD, clic droit pour viser, clic pour tirer, X pour changer d'épaule ;
+  - E près de la navette pour monter à bord, Z pour les gaz, V pour passer du cockpit à la poursuite.
+- **Les effets** : http://localhost:8766/banc-effets.html (étincelles, vapeur, tirs, champ de force, propulseur, rayon d'éther, gyrophare).
+
+Tout est expliqué dans [`prologue/VUES-ET-EFFETS.md`](prologue/VUES-ET-EFFETS.md).
+
 ## 3. Fabriquer les 3 modèles les plus urgents, sur Meshy (pas Tripo)
 
 **Tripo gratuit interdit l'usage commercial.** Pour le jeu vendu, utilise Meshy gratuit (licence CC BY 4.0). Les prompts sont prêts dans [`prologue/ia/PROMPTS-MESHY.md`](prologue/ia/PROMPTS-MESHY.md). Les plus urgents :
@@ -44,9 +60,11 @@ Dans l'ordre, sur le dossier du prologue :
 
 Ensuite, dans Unity :
 - importer `00-Animations/UAL1_Standard.fbx` et `UAL2_Standard.fbx` en **Humanoid** ;
-- importer chaque personnage en **Humanoid** aussi.
+- importer `00-Animations/EE_Animations.fbx` (le studio maison) en **Humanoid** ;
+- importer chaque personnage en **Humanoid** aussi ;
+- menu **Echos d'Ether → Prologue → Créer la scène d'essai des vues** : le hangar, le héros, la navette et les effets, prêts à jouer.
 
-Les 84 animations s'appliquent alors à tous (détails dans [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md), § 4).
+Les 84 animations de la bibliothèque et les 23 du studio s'appliquent alors à tous (détails dans [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md), § 4).
 
 ## 5. Ensuite, quand tu as le temps
 
@@ -61,3 +79,5 @@ Les 84 animations s'appliquent alors à tous (détails dans [`prologue/PERSONNAG
 - **La DA** : la bible du Colosse, avec la sécurité 100 % androïdes et les autres espèces.
 - **Le niveau** : le plan, les 10 plans détaillés et coupes, la maquette sans chevauchement.
 - **Les personnages** : 101 modèles triés ; 84 animations reciblées sur 35 personnages ; un squelette automatique pour les statues ; la recoloration selon la bible.
+- **Les animations maison** : 23 animations fabriquées par `outils/studio-animations.py` (fusil à deux mains, androïdes, détenus, espèces).
+- **Les vues et les effets** : la vue 3e personne, la navette (cockpit, poursuite), sept effets ; dans le navigateur et dans Unity.
