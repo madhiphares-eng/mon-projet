@@ -5,7 +5,7 @@
 > - les androïdes : la sécurité de l'Empire n'emploie qu'eux (voir la [bible](BIBLE-DA.md), § 4) ;
 > - les autres espèces de la galaxie.
 >
-> Tous reçoivent la même **bibliothèque de 84 animations**, et les **23 animations du studio maison** (fusil, androïdes, détenus, espèces).
+> Tous reçoivent la même **bibliothèque de 84 animations**, et les **33 animations du studio maison** (fusil, androïdes, détenus, et l'attente et la démarche de chaque espèce).
 
 ## 1. Ce qu'il faut retenir
 
@@ -26,7 +26,7 @@
    - un grand alien rouge, un ichtyen à tête de poisson, un céphalopode, un mercenaire en armure ;
    - un spécimen biomécanique pour le décor du laboratoire.
    Un homme-oiseau en tenue de fantasy a été écarté.
-7. **23 animations maison** comblent les manques de la bibliothèque : le fusil à deux mains, la démarche des androïdes, leur panne et leur redémarrage, la peur des détenus, la démarche des gris et des sauriens. Elles sont fabriquées par `outils/studio-animations.py` (voir § 3).
+7. **33 animations maison** comblent les manques de la bibliothèque : le fusil à deux mains, la démarche des androïdes, leur panne et leur redémarrage, la peur et la fatigue des détenus, et l'attente et la démarche de chaque espèce (sauriens, ichtyen, gris, grands corps, longiligne, mutants). Elles sont fabriquées par `outils/studio-animations.py` (voir § 3, et [`ANIMATIONS.md`](ANIMATIONS.md), § 7).
 
 ![Les détenus, humains et autres espèces](personnages/rangee-detenu.jpg)
 ![Les autres espèces](personnages/rangee-espece.jpg)
@@ -51,7 +51,7 @@ La bibliothèque ne sait tenir qu'un pistolet. Le fusil, et tout ce qui est prop
 
 ## 3. Les animations du studio maison
 
-`outils/studio-animations.py` fabrique **23 animations propres au jeu**, sur le squelette de la bibliothèque. Il tourne en 40 secondes avec Blender en module Python (`pip install bpy pillow`, comme `rigger-statues.py`). Il écrit `prologue-anim/00-Animations/EE_Animations.glb` (pour le banc et l'atelier) et `EE_Animations.fbx` (pour Unity). Les scripts de téléchargement les copient dans `00-Animations/`, et le banc les ajoute à sa liste : tous les personnages les reçoivent, comme la bibliothèque.
+`outils/studio-animations.py` fabrique **33 animations propres au jeu**, sur le squelette de la bibliothèque. Il tourne en 40 secondes avec Blender en module Python (`pip install bpy pillow`, comme `rigger-statues.py`). Il écrit `prologue-anim/00-Animations/EE_Animations.glb` (pour le banc et l'atelier) et `EE_Animations.fbx` (pour Unity). Les scripts de téléchargement les copient dans `00-Animations/`, et le banc les ajoute à sa liste : tous les personnages les reçoivent, comme la bibliothèque.
 
 **Comment elles sont faites.** Chaque animation part d'une animation de la bibliothèque, puis le studio la retouche image par image :
 1. **le bas du corps** vient de la bibliothèque : attente, marche, course, accroupi, assis ;
@@ -87,6 +87,16 @@ Avec `--planches dossier/`, il dessine aussi une planche de contrôle par animat
 | **Espèces** | `Gris_Marche` | 1,9 s | Voûté, de petits pas lents, la grosse tête qui oscille, les bras longs et mous |
 | | `Gris_Curieux` | 6 s | Penche la tête d'un côté puis de l'autre, la main au menton |
 | | `Saurien_Marche` | 1,3 s | Penché en avant comme un prédateur, la tête à l'horizontale, les griffes en avant |
+| | `Saurien_Attente` | 6 s | À l'affût, genoux fléchis, griffes en avant ; la tête tourne par à-coups, comme celle d'un lézard |
+| | `Ichtyen_Attente` | 5 s | Voûté, les épaules remontées, la tête en avant qui « déglutit » |
+| | `Ichtyen_Marche` | 1,6 s | Il se dandine à petits pas, la tête qui pompe à chaque pas |
+| | `Lourd_Attente` | 5 s | Une respiration lourde qui soulève les épaules, les bras écartés du corps |
+| | `Lourd_Marche` | 1,7 s | Un pas pesant qui roule d'un côté à l'autre |
+| | `Longiligne_Attente` | 6 s | Droit, le menton haut, les mains dans le dos ; il observe la salle |
+| | `Longiligne_Marche` | 1,6 s | Une marche glissée, sans rebond, les mains dans le dos |
+| | `Mutant_Attente` | 5 s | Une épaule plus haute, la tête penchée, des spasmes, un souffle rauque |
+| | `Mutant_Marche` | 1,8 s | Il boite, la jambe gauche raide, le buste qui tombe sur le côté |
+| **Détenus** | `Detenu_Fatigue` | 6 s | Épuisé : les épaules tombées, la tête basse, le poids d'une jambe sur l'autre, un soupir |
 
 **Le fusil dans Unity.** Le fusil est tenu à droite :
 - la main droite est sur la poignée, la gauche sous le garde-main, 30 cm plus loin le long du canon ;
@@ -109,10 +119,11 @@ Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` j
 | `Detenu_Panique` | celle de `Sprint_Loop` |
 | `Detenu_Marche_Entravee` | environ 0,45 (pas courts et plus lents) |
 | `Gris_Marche` | environ 0,4 |
+| Les démarches des autres espèces | voir [`ANIMATIONS.md`](ANIMATIONS.md), § 7 (mesurées par le bot) |
 
 ![Les animations du studio sur les personnages](personnages/studio.jpg)
 
-En vidéo : [les 23 animations du studio](personnages/videos/studio-animations.mp4) (78 s). Les plans au fusil montrent les mains posées par le bot de prise, et les deux androïdes candidats dans leurs couleurs assombries.
+En vidéo : [les 23 premières animations du studio](personnages/videos/studio-animations.mp4) (78 s). Les plans au fusil montrent les mains posées par le bot de prise, et les deux androïdes candidats dans leurs couleurs assombries.
 
 ## 4. Comment ça marche
 

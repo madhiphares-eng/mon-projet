@@ -1,6 +1,6 @@
 # Les animations du prologue : le bot des mouvements
 
-> Version 1, 30 octobre 2026. Un bot regarde chaque personnage du prologue dans chaque animation au sol, mesure ce qui se voit mal (pieds dans le sol, corps qui flotte, boucle qui saute, pieds qui glissent), corrige ce qui peut l'être, et rend un rapport.
+> Version 1, 30 octobre 2026 (§ 7, les espèces, ajouté le même jour). Un bot regarde chaque personnage du prologue dans chaque animation au sol, mesure ce qui se voit mal (pieds dans le sol, corps qui flotte, boucle qui saute, pieds qui glissent), corrige ce qui peut l'être, et rend un rapport.
 >
 > Code du navigateur : [`vitrine/bot-mouvements.js`](../../vitrine/bot-mouvements.js), utilisé par le banc des personnages ([`vitrine/banc-pnj.html`](../../vitrine/banc-pnj.html)). Code Unity : `AncragePieds` dans `Assets/_Projet/Scripts/Prologue/`. Rapport complet : [`animations/rapport-mouvements.json`](animations/rapport-mouvements.json).
 
@@ -142,11 +142,42 @@ Le même bot, en jeu et sur un vrai sol. Le composant s'exécute après l'animat
 - **Le héros** : `ConstructeurPrologue` le lui ajoute avec `PriseArme`.
 - **Chaque PNJ animé** : `AnimationPNJ` l'ajoute tout seul au démarrage s'il manque (réglage `ancrerLesPieds`, coché par défaut). Les drones et les robots non humanoïdes sont ignorés.
 
-## 7. La suite des animations
+## 7. Chaque espèce : son attente, sa démarche
+
+Le studio maison (`outils/studio-animations.py`) fabrique maintenant **33 animations**, dont 10 nouvelles qui donnent à chaque espèce sa façon de se tenir et de marcher. Le bot des mouvements les a passées sur les 28 personnages : pieds au sol (0 cm en médiane, 3 cm au pire, sur le gris léger), aucun saut de boucle.
+
+| Espèce | Personnages | Attente | Démarche |
+|---|---|---|---|
+| Détenus | humains des cellules | `Detenu_Fatigue` : les épaules tombées, la tête basse, le poids d'une jambe sur l'autre, un soupir ; puis `Idle_Loop` | `Walk_Loop`, `Detenu_Marche_Entravee` |
+| Androïdes | toute la sécurité | `Androide_Garde`, puis `Androide_Scan` | `Androide_Marche` |
+| Gris | `gris-*` | `Gris_Curieux`, puis `Idle_Loop` | `Gris_Marche` |
+| Sauriens | `saurien-pale`, `saurien-guerrier`, `crocodilien` | `Saurien_Attente` : à l'affût, genoux fléchis, griffes en avant ; la tête tourne par à-coups, comme celle d'un lézard | `Saurien_Marche` |
+| Ichtyen | `ichtyen` | `Ichtyen_Attente` : voûté, épaules remontées, la tête en avant qui « déglutit » | `Ichtyen_Marche` : il se dandine, à petits pas |
+| Grands corps | `ceratopsien` | `Lourd_Attente` : une respiration lourde qui soulève les épaules, les bras écartés du corps | `Lourd_Marche` : un pas pesant qui roule d'un côté à l'autre |
+| Longiligne | `longiligne-rouge` | `Longiligne_Attente` : droit, le menton haut, les mains dans le dos, il observe la salle | `Longiligne_Marche` : une marche glissée, sans rebond, les mains dans le dos |
+| Mutants | `mutant-biomecanique`, `cephalopode` | `Mutant_Attente` : une épaule plus haute, la tête penchée, des spasmes, un souffle rauque | `Mutant_Marche` : il boite, la jambe gauche raide |
+| Humains libres | pirates, `mercenaire-alien` | `Idle_Loop`, `Idle_Talking_Loop` | `Walk_Loop` |
+
+![Les attentes et démarches des espèces](animations/especes.jpg)
+
+**Dans Unity**, `AnimationPNJ` reconnaît l'espèce d'un personnage d'après le nom de son modèle, dès qu'on l'ajoute (`ichtyen` → Ichtyen, `crocodilien` → Saurien, `androide-lourd` → Androïde…). Clic droit sur le composant, **« Prendre les animations de son espèce »** : ses animations d'attente sont trouvées et rangées toutes seules. Le tableau est dans `AnimationPNJ.Animations`, pour le changer à un seul endroit.
+
+Les démarches sont **sur place**, comme celles de la bibliothèque : le jeu fait avancer le personnage. Pour que les pieds ne patinent pas, il doit avancer à la vitesse de l'animation. Le bot la mesure sur les pieds posés de chaque personnage (la médiane des 28) :
+
+| Démarche | Vitesse, par rapport à `Walk_Loop` |
+|---|---|
+| `Saurien_Marche`, `Androide_Marche` | 1 (la même) |
+| `Longiligne_Marche` | 0,83 |
+| `Lourd_Marche` | 0,77 |
+| `Ichtyen_Marche` | 0,62 (des pas courts) |
+| `Mutant_Marche` | 0,51 (la jambe raide raccourcit le pas) |
+| `Gris_Marche` | 0,41 |
+
+## 8. La suite des animations
 
 | Étape | Quoi |
 |---|---|
 | Fait | Le bot des mouvements, l'ancrage en jeu, le rig des statues corrigé : 14 statues animées proprement, seul l'androïde-fantassin reste un décor |
-| À suivre | Les styles par espèce : une attente et une démarche propres à chaque espèce (gris, sauriens, ichtyen, céphalopode, androïdes), faites par le studio et contrôlées par le bot |
+| Fait | Une attente et une démarche propres à chaque espèce (§ 7), contrôlées par le bot |
 | À suivre | La vie : le regard qui suit le joueur, la respiration, les queues et les pièces qui suivent le mouvement |
 | À suivre | Les objets : portes, tourelles, drones, consoles, ventilateurs, pistons, grue, sas, avec trois états d'énergie (normal, alarme, panne) |

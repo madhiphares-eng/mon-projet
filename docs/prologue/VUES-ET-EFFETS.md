@@ -15,7 +15,7 @@
 2. **La navette a deux vues** (V pour passer de l'une à l'autre) :
    - **poursuite** : derrière et au-dessus. La navette pivote dans l'image avant que la caméra ne la rattrape, et le champ de vision s'ouvre avec la vitesse ;
    - **cockpit** : les yeux du pilote, avec le pupitre, les écrans et la verrière. La tête encaisse les accélérations.
-3. **Le héros tient un fusil à deux mains.** Il joue les 23 animations du studio maison (voir [`PERSONNAGES.md`](PERSONNAGES.md), § 3). Les mains sont posées sur l'arme par le **bot de prise** (voir [`PRISES-ARMES.md`](PRISES-ARMES.md)).
+3. **Le héros tient un fusil à deux mains.** Il joue les animations du studio maison (voir [`PERSONNAGES.md`](PERSONNAGES.md), § 3). Les mains sont posées sur l'arme par le **bot de prise** (voir [`PRISES-ARMES.md`](PRISES-ARMES.md)).
 4. **Neuf effets.**
    - **Les fumées, les flammes et les explosions sont de vraies simulations** : les flipbooks de Unity Labs, faits dans Houdini et publiés en CC0 (domaine public, utilisables dans un jeu vendu).
    - Le reste est fait par le code : étincelles, tirs, champ de force, propulseur, rayon d'éther, gyrophare.

@@ -18,7 +18,7 @@ Jeu d'action et d'aventure à la troisième personne, réaliste (Unity 6 HDRP). 
 | `vitrine/` | Les outils du navigateur : l'atelier (la maquette du Colosse), le banc des personnages, le banc des effets, l'essai des vues, la galerie des modèles |
 | `outils/` | Les scripts : téléchargement, taille réelle, recoloration, squelettes, studio d'animation, maquette |
 | `Assets/_Projet/` | Le code Unity. `Scripts/Prologue/` : le prologue. Le reste : des utilitaires communs et le code de l'ancien jeu, gardé dans le projet mais dont le prologue ne dépend pas |
-| `prologue-anim/` | La bibliothèque d'animations : 84 libres (Quaternius, CC0) et 23 du studio maison |
+| `prologue-anim/` | La bibliothèque d'animations : 84 libres (Quaternius, CC0) et 33 du studio maison |
 | `ressources/` | Le kit d'armes de Kenney (CC0), en copie de secours pour `outils/telecharger-assets.ps1` |
 | [`archives/`](archives/LISEZ-MOI.md) | L'ancien jeu (avant la refonte du 28 octobre 2026) et les prompts déjà exécutés |
 

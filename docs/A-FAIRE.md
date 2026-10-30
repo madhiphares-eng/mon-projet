@@ -28,7 +28,7 @@ Puis ouvre dans Chrome : http://localhost:8766/banc-pnj.html?racine=http://local
 - Le menu **« Faire jouer à tous… »** fait jouer une des 84 animations à tout le monde : marche, course, tir, coups, mort…
 - Clique sur un camp pour ne voir que lui, sur un nom pour le cadrer.
 
-Les **23 animations du studio maison** sont dans la même liste : `Fusil_Visee`, `Androide_Panne`, `Detenu_Reddition`, `Gris_Marche`… Quand une animation `Fusil_` ou `Pistol_` joue, le banc met l'arme dans les mains, et le **bot de prise** y pose exactement les deux mains ([`prologue/PRISES-ARMES.md`](prologue/PRISES-ARMES.md)).
+Les **33 animations du studio maison** sont dans la même liste : `Fusil_Visee`, `Androide_Panne`, `Detenu_Reddition`, `Gris_Marche`… Quand une animation `Fusil_` ou `Pistol_` joue, le banc met l'arme dans les mains, et le **bot de prise** y pose exactement les deux mains ([`prologue/PRISES-ARMES.md`](prologue/PRISES-ARMES.md)).
 
 ## 2 bis. Essayer les vues et les effets (2 minutes)
 
@@ -67,7 +67,7 @@ Ensuite, dans Unity :
 - importer chaque personnage en **Humanoid** aussi ;
 - menu **Echos d'Ether → Prologue → Créer la scène d'essai des vues** : le hangar, le héros, la navette et les effets, prêts à jouer.
 
-Les 84 animations de la bibliothèque et les 23 du studio s'appliquent alors à tous (détails dans [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md), § 4).
+Les 84 animations de la bibliothèque et les 33 du studio s'appliquent alors à tous (détails dans [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md), § 4).
 
 ## 5. Ensuite, quand tu as le temps
 
@@ -83,7 +83,7 @@ Les 84 animations de la bibliothèque et les 23 du studio s'appliquent alors à 
 - **La DA** : la bible du Colosse, avec la sécurité 100 % androïdes et les autres espèces.
 - **Le niveau** : le plan, les 10 plans détaillés et coupes, la maquette sans chevauchement.
 - **Les personnages** : 101 modèles triés ; 84 animations reciblées sur 35 personnages ; un squelette automatique pour les statues ; la recoloration selon la bible.
-- **Les animations maison** : 23 animations fabriquées par `outils/studio-animations.py` (fusil à deux mains, androïdes, détenus, espèces).
+- **Les animations maison** : 33 animations fabriquées par `outils/studio-animations.py` (fusil à deux mains, androïdes, détenus, l'attente et la démarche de chaque espèce).
 - **Les vues et les effets** : la vue 3e personne, la navette (cockpit, poursuite), neuf effets (fumées, flammes et explosions simulées) ; dans le navigateur et dans Unity.
 - **Le bot de prise des armes** : les mains exactement sur l'arme, pour tous les personnages, avec un contrôle automatique des os et de la peau.
-- **Le bot des mouvements** : les pieds au sol, sans flotter ni s'enfoncer, et des boucles sans à-coup, dans les 23 animations au sol des 28 personnages ; en jeu, `AncragePieds` pose les pieds sur le vrai sol ([`prologue/ANIMATIONS.md`](prologue/ANIMATIONS.md)).
+- **Le bot des mouvements** : les pieds au sol, sans flotter ni s'enfoncer, et des boucles sans à-coup, dans les animations au sol des 28 personnages ; en jeu, `AncragePieds` pose les pieds sur le vrai sol ([`prologue/ANIMATIONS.md`](prologue/ANIMATIONS.md)).

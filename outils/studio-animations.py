@@ -717,11 +717,241 @@ def recette_saurien_marche(arm):
     return f
 
 
+# ------------------------------------------------------------------ chaque espèce : son attente, sa démarche
+def suivre(u, cles):
+    """La valeur au temps u (0 à 1) d'une suite de clés (u, valeur), adoucie entre deux clés."""
+    for (u0, a0), (u1, a1) in zip(cles, cles[1:]):
+        if u0 <= u <= u1:
+            return a0 + (a1 - a0) * entre(u, u0, u1)
+    return cles[-1][1]
+
+
+def bosse(u, centre, largeur):
+    """Une bosse lisse autour de centre (0 à 1), qui boucle : 1 au centre, presque 0 à deux largeurs."""
+    d = min(abs(u - centre), 1 - abs(u - centre))
+    return math.exp(-(d / largeur) ** 2)
+
+
+def respirer(arm, souffle, epaules=1.0):
+    """La poitrine qui se soulève (souffle de 0 à 1) : le buste se redresse un peu, les épaules montent."""
+    tourner(arm, 'spine_02', GAUCHE, -2.5 * souffle)
+    tourner(arm, 'spine_03', GAUCHE, -1.5 * souffle)
+    for c, s in COTES:
+        tourner(arm, 'clavicle_' + c, AVANT, s * 3.0 * souffle * epaules)
+    tourner(arm, 'Head', GAUCHE, 2.0 * souffle)            # la tête garde son regard
+
+
+def hausser(arm, degres_g, degres_d):
+    """Monte (ou baisse, en négatif) chaque épaule."""
+    tourner(arm, 'clavicle_l', AVANT, degres_g)
+    tourner(arm, 'clavicle_r', AVANT, -degres_d)
+
+
+def mains_dans_le_dos(arm, balance=0.0):
+    """Les mains jointes dans le dos, au creux des reins, la droite tenant le poignet gauche."""
+    bassin = tete_de(arm, 'pelvis')
+    for c, s in COTES:
+        poignet = bassin - AVANT * 0.13 + HAUT * (0.04 + balance) + GAUCHE * s * (0.035 if c == 'l' else 0.05)
+        bras(arm, c, poignet, poignet + GAUCHE * s * 0.6 - AVANT * 0.4)
+        orienter(arm, c, -GAUCHE * s * 0.7 - HAUT * 0.5, -AVANT)
+        serrer(arm, c, 'garde' if c == 'r' else 'molle')
+
+
+def recette_saurien_attente(arm):
+    """Le prédateur à l'affût : genoux fléchis, griffes en avant ; la tête tourne par à-coups, comme celle d'un lézard."""
+    lacet = [(0.0, 0), (0.14, 0), (0.16, 24), (0.36, 24), (0.38, -12), (0.55, -12), (0.57, 6), (0.62, 6), (0.64, -28),
+             (0.82, -28), (0.84, 0), (1.0, 0)]
+    roulis = [(0.0, 0), (0.36, 0), (0.38, 8), (0.55, 8), (0.57, -6), (0.82, -6), (0.84, 0), (1.0, 0)]
+
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Idle_Loop', t))
+        pieds = pieds_au_sol(arm)
+        deplacer(arm, 'pelvis', Vector((0, -0.02, -0.07)))  # le bassin descend, un peu en avant
+        planter(arm, pieds)
+        tourner(arm, 'spine_01', GAUCHE, 16)
+        tourner(arm, 'spine_03', GAUCHE, 6)
+        respirer(arm, 0.5 - 0.5 * math.cos(u * 3 * 2 * math.pi), 0.5)
+        tourner(arm, 'Head', GAUCHE, -22)                  # la tête reste à l'horizontale
+        tourner(arm, 'Head', HAUT, suivre(u, lacet))
+        tourner(arm, 'Head', axe_de(arm, 'Head', 2), suivre(u, roulis))
+        for c, s in COTES:
+            tourner(arm, 'upperarm_' + c, GAUCHE, -14)
+            tourner(arm, 'lowerarm_' + c, GAUCHE, -42)      # les griffes en avant, prêtes
+            serrer(arm, c, 'garde', 0.8 + 0.2 * bosse(u, 0.16, 0.03))
+    return f
+
+
+def recette_ichtyen_attente(arm):
+    """L'homme-poisson : voûté, les épaules remontées, la tête en avant ; il déglutit, et se balance doucement."""
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Idle_Loop', t))
+        tourner(arm, 'spine_01', AVANT, 3 * math.sin(u * 2 * math.pi))
+        tourner(arm, 'spine_03', GAUCHE, 16)
+        tourner(arm, 'neck_01', GAUCHE, 10)
+        hausser(arm, 7, 7)
+        tourner(arm, 'Head', GAUCHE, -20)
+        tourner(arm, 'Head', axe_de(arm, 'Head', 0), 5 * math.sin(u * 4 * 2 * math.pi))   # il déglutit, la tête qui pompe
+        tourner(arm, 'Head', HAUT, 10 * math.sin(u * 2 * math.pi + 1.0))
+        for c, s in COTES:
+            tourner(arm, 'upperarm_' + c, GAUCHE, 12)       # les mains pendent en avant
+            tourner(arm, 'lowerarm_' + c, GAUCHE, -12)
+            serrer(arm, c, 'molle')
+    return f
+
+
+def recette_ichtyen_marche(arm):
+    """Il se dandine : des pas courts, le corps qui roule d'un pied sur l'autre, la tête qui pompe à chaque pas."""
+    repos = echantillon(arm, 'Idle_Loop', 0.0)
+    lent = 1.2
+
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Walk_Loop', t / lent))
+        melanger(arm, repos, JAMBES, 0.25)
+        melanger(arm, repos, BRAS, 0.5)
+        tourner(arm, 'spine_01', AVANT, 7 * math.sin(u * 2 * math.pi))
+        tourner(arm, 'spine_03', GAUCHE, 16)
+        tourner(arm, 'neck_01', GAUCHE, 8)
+        hausser(arm, 6, 6)
+        tourner(arm, 'Head', GAUCHE, -18 + 4 * math.sin(u * 4 * math.pi))
+        for c, s in COTES:
+            tourner(arm, 'upperarm_' + c, GAUCHE, 10)
+            serrer(arm, c, 'molle')
+    return f, duree('Walk_Loop') * lent
+
+
+def recette_lourd_attente(arm):
+    """Un grand corps (le cératopsien) : une respiration lourde qui soulève les épaules, les bras écartés du corps."""
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Idle_Loop', t))
+        pieds = pieds_au_sol(arm)
+        deplacer(arm, 'pelvis', Vector((0, 0, -0.03)))
+        planter(arm, pieds)
+        tourner(arm, 'spine_03', GAUCHE, 8)
+        respirer(arm, 0.5 - 0.5 * math.cos(u * 2 * 2 * math.pi), 1.8)
+        tourner(arm, 'Head', HAUT, 12 * math.sin(u * 2 * math.pi))
+        for c, s in COTES:
+            tourner(arm, 'upperarm_' + c, AVANT, s * 9)      # les bras écartés, trop massifs pour pendre
+            tourner(arm, 'lowerarm_' + c, GAUCHE, -12)
+            serrer(arm, c, 'poing', 0.7)
+    return f
+
+
+def recette_lourd_marche(arm):
+    """Un pas pesant : le corps roule d'un côté à l'autre, les épaules en avant, les bras écartés."""
+    repos = echantillon(arm, 'Idle_Loop', 0.0)
+    lent = 1.3
+
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Walk_Loop', t / lent))
+        melanger(arm, repos, BRAS, 0.45)
+        tourner(arm, 'spine_01', AVANT, 5 * math.sin(u * 2 * math.pi))
+        tourner(arm, 'spine_03', GAUCHE, 10)
+        hausser(arm, 3, 3)
+        tourner(arm, 'Head', GAUCHE, -8)
+        for c, s in COTES:
+            tourner(arm, 'upperarm_' + c, AVANT, s * 10)
+            tourner(arm, 'lowerarm_' + c, GAUCHE, -14)
+            serrer(arm, c, 'poing', 0.7)
+    return f, duree('Walk_Loop') * lent
+
+
+def recette_longiligne_attente(arm):
+    """Le grand alien : droit, le menton haut, les mains dans le dos ; il observe la salle lentement."""
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Idle_Loop', t))
+        tourner(arm, 'spine_01', GAUCHE, -3)
+        respirer(arm, 0.5 - 0.5 * math.cos(u * 2 * 2 * math.pi), 0.4)
+        tourner(arm, 'Head', GAUCHE, -5)
+        tourner(arm, 'Head', HAUT, 22 * math.sin(u * 2 * math.pi))
+        tourner(arm, 'Head', axe_de(arm, 'Head', 2), 6 * math.sin(u * 4 * math.pi))
+        mains_dans_le_dos(arm)
+    return f
+
+
+def recette_longiligne_marche(arm):
+    """Une marche glissée, sans rebond, les mains dans le dos, la tête immobile."""
+    repos = echantillon(arm, 'Idle_Loop', 0.0)
+    lent = 1.2
+
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Walk_Loop', t / lent))
+        pb = arm.pose.bones['pelvis']
+        pb.location = pb.location.lerp(repos['pelvis'][1], 0.5)   # le bassin glisse, sans rebondir
+        maj()
+        melanger(arm, repos, COLONNE, 0.6)
+        tourner(arm, 'spine_01', GAUCHE, -3)
+        tourner(arm, 'Head', GAUCHE, -4)
+        mains_dans_le_dos(arm, 0.008 * math.sin(u * 4 * math.pi))
+    return f, duree('Walk_Loop') * lent
+
+
+def recette_mutant_attente(arm):
+    """Un corps qui ne lui obéit plus : une épaule plus haute, la tête penchée, des spasmes, un souffle rauque."""
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Idle_Loop', t))
+        pieds = pieds_au_sol(arm)
+        deplacer(arm, 'pelvis', Vector((0.02, 0, -0.04)))
+        planter(arm, pieds)
+        spasme_tete, spasme_bras, spasme_dos = bosse(u, 0.22, 0.025), bosse(u, 0.55, 0.02), bosse(u, 0.8, 0.03)
+        tourner(arm, 'spine_01', AVANT, -4)
+        tourner(arm, 'spine_03', GAUCHE, 10 + 6 * spasme_dos)
+        respirer(arm, 0.5 - 0.5 * math.cos(u * 3 * 2 * math.pi), 0.8)
+        hausser(arm, 9 + 6 * spasme_bras, -3)
+        tourner(arm, 'Head', axe_de(arm, 'Head', 2), 14 + 18 * spasme_tete)
+        tourner(arm, 'Head', HAUT, -20 * spasme_tete + 8 * math.sin(u * 2 * math.pi))
+        tourner(arm, 'lowerarm_l', GAUCHE, -32 - 25 * spasme_bras)   # le bras gauche replié, en griffe
+        serrer(arm, 'l', 'garde', 0.8 + 0.2 * spasme_bras)
+        serrer(arm, 'r', 'molle')
+    return f
+
+
+def recette_mutant_marche(arm):
+    """Il boite : la jambe gauche raide, le buste qui tombe sur le côté à chaque pas, la tête penchée."""
+    repos = echantillon(arm, 'Idle_Loop', 0.0)
+    lent = 1.35
+
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Walk_Loop', t / lent))
+        melanger(arm, repos, ['thigh_l', 'calf_l', 'foot_l'], 0.4)  # la jambe gauche plie à peine
+        melanger(arm, repos, ['upperarm_r', 'lowerarm_r'], 0.6)
+        tourner(arm, 'spine_01', AVANT, 7 * math.sin(u * 2 * math.pi))
+        tourner(arm, 'spine_03', GAUCHE, 12)
+        hausser(arm, 9, -3)
+        tourner(arm, 'Head', axe_de(arm, 'Head', 2), 14)
+        tourner(arm, 'Head', GAUCHE, -10)
+        tourner(arm, 'lowerarm_l', GAUCHE, -35)
+        serrer(arm, 'l', 'garde')
+        serrer(arm, 'r', 'molle')
+    return f, duree('Walk_Loop') * lent
+
+
+def recette_detenu_fatigue(arm):
+    """Un détenu épuisé : les épaules tombées, la tête basse, le poids d'une jambe sur l'autre, un soupir."""
+    def f(t, u):
+        poser(arm, echantillon(arm, 'Idle_Loop', t))
+        pieds = pieds_au_sol(arm)
+        deplacer(arm, 'pelvis', GAUCHE * 0.03 * math.sin(u * 2 * math.pi) - HAUT * 0.015)
+        planter(arm, pieds)
+        soupir = bosse(u, 0.6, 0.06)
+        tourner(arm, 'spine_03', GAUCHE, 12 - 6 * soupir)
+        respirer(arm, soupir, 1.5)
+        hausser(arm, -5, -5)
+        tourner(arm, 'Head', axe_de(arm, 'Head', 0), 16 - 8 * soupir)
+        tourner(arm, 'Head', HAUT, 6 * math.sin(u * 2 * math.pi + 0.5))
+        for c, _ in COTES:
+            serrer(arm, c, 'molle')
+    return f
+
+
 # ------------------------------------------------------------------ le catalogue
 def catalogue(arm):
     marche, course, attente, accroupi = (duree(n) for n in ('Walk_Loop', 'Jog_Fwd_Loop', 'Idle_Loop', 'Crouch_Idle_Loop'))
     gris_marche, gris_duree = recette_gris_marche(arm)
     entrave, entrave_duree = recette_marche_entravee(arm)
+    ichtyen_marche, ichtyen_duree = recette_ichtyen_marche(arm)
+    lourd_marche, lourd_duree = recette_lourd_marche(arm)
+    longiligne_marche, longiligne_duree = recette_longiligne_marche(arm)
+    mutant_marche, mutant_duree = recette_mutant_marche(arm)
     return [
         # nom, durée (s), fonction, boucle
         ('Fusil_Repos', attente, recette_fusil(arm, 'Idle_Loop', 'repos', 0.3), True),
@@ -747,6 +977,16 @@ def catalogue(arm):
         ('Gris_Marche', gris_duree, gris_marche, True),
         ('Gris_Curieux', 6.0, recette_gris_curieux(arm), True),
         ('Saurien_Marche', marche, recette_saurien_marche(arm), True),
+        ('Saurien_Attente', 6.0, recette_saurien_attente(arm), True),
+        ('Ichtyen_Attente', 5.0, recette_ichtyen_attente(arm), True),
+        ('Ichtyen_Marche', ichtyen_duree, ichtyen_marche, True),
+        ('Lourd_Attente', 5.0, recette_lourd_attente(arm), True),
+        ('Lourd_Marche', lourd_duree, lourd_marche, True),
+        ('Longiligne_Attente', 6.0, recette_longiligne_attente(arm), True),
+        ('Longiligne_Marche', longiligne_duree, longiligne_marche, True),
+        ('Mutant_Attente', 5.0, recette_mutant_attente(arm), True),
+        ('Mutant_Marche', mutant_duree, mutant_marche, True),
+        ('Detenu_Fatigue', 6.0, recette_detenu_fatigue(arm), True),
     ]
 
 

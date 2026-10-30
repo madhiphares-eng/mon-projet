@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
@@ -9,10 +10,44 @@ namespace EchosEther.Prologue
     /// la salle, un détenu à genoux, un gris curieux… Les clips sont joués l'un après l'autre, en boucle, avec un fondu
     /// enchaîné. Un seul clip : il boucle. Le départ est décalé au hasard pour que deux PNJ ne bougent pas ensemble.
     /// Les clips viennent de la bibliothèque (UAL1, UAL2) et du studio maison (EE_Animations), importés en Humanoid.
+    /// Chaque espèce a son attente et sa démarche (docs/prologue/ANIMATIONS.md) : clic droit sur le composant,
+    /// « Prendre les animations de son espèce ».
     /// </summary>
     public class AnimationPNJ : MonoBehaviour
     {
+        public enum Espece { Humain, Detenu, Androide, Gris, Saurien, Ichtyen, Lourd, Longiligne, Mutant }
+
+        /// <summary>L'attente de chaque espèce (jouées l'une après l'autre), puis sa démarche.</summary>
+        public static readonly Dictionary<Espece, (string[] attentes, string marche)> Animations = new Dictionary<Espece, (string[], string)>
+        {
+            { Espece.Humain, (new[] { "Idle_Loop", "Idle_Talking_Loop" }, "Walk_Loop") },
+            { Espece.Detenu, (new[] { "Detenu_Fatigue", "Idle_Loop" }, "Walk_Loop") },
+            { Espece.Androide, (new[] { "Androide_Garde", "Androide_Scan" }, "Androide_Marche") },
+            { Espece.Gris, (new[] { "Gris_Curieux", "Idle_Loop" }, "Gris_Marche") },
+            { Espece.Saurien, (new[] { "Saurien_Attente" }, "Saurien_Marche") },
+            { Espece.Ichtyen, (new[] { "Ichtyen_Attente" }, "Ichtyen_Marche") },
+            { Espece.Lourd, (new[] { "Lourd_Attente" }, "Lourd_Marche") },
+            { Espece.Longiligne, (new[] { "Longiligne_Attente" }, "Longiligne_Marche") },
+            { Espece.Mutant, (new[] { "Mutant_Attente" }, "Mutant_Marche") },
+        };
+
+        /// <summary>L'espèce d'un personnage du prologue, d'après le nom de son modèle (detenu-tshirt, ichtyen, androide-lourd…).</summary>
+        public static Espece EspeceDe(string nom)
+        {
+            nom = nom.ToLowerInvariant();
+            if (nom.Contains("saurien") || nom.Contains("crocodilien")) return Espece.Saurien;
+            if (nom.Contains("ichtyen")) return Espece.Ichtyen;
+            if (nom.Contains("ceratopsien")) return Espece.Lourd;
+            if (nom.Contains("longiligne")) return Espece.Longiligne;
+            if (nom.Contains("mutant") || nom.Contains("cephalopode")) return Espece.Mutant;
+            if (nom.Contains("gris")) return Espece.Gris;
+            if (nom.Contains("androide") || nom.Contains("droide")) return Espece.Androide;
+            if (nom.Contains("detenu") || nom.Contains("tenue")) return Espece.Detenu;
+            return Espece.Humain;
+        }
+
         public Animator animateur;
+        public Espece espece;
         public AnimationClip[] clips;
         [Tooltip("Combien de fois chaque clip est joué avant de passer au suivant")] public int repetitions = 2;
         public float vitesse = 1f;
@@ -76,5 +111,26 @@ namespace EchosEther.Prologue
                 mixeur.SetInputWeight(i, Mathf.MoveTowards(w, i == courant ? 1f : 0f, pas));
             }
         }
+
+#if UNITY_EDITOR
+        void Reset() { espece = EspeceDe(name); }
+
+        [ContextMenu("Prendre les animations de son espèce")]
+        void PrendreAnimationsEspece()
+        {
+            var parNom = new Dictionary<string, AnimationClip>();
+            foreach (string fichier in new[] { "UAL1_Standard", "UAL2_Standard", "EE_Animations" })
+                foreach (string guid in UnityEditor.AssetDatabase.FindAssets(fichier + " t:Model"))
+                    foreach (var o in UnityEditor.AssetDatabase.LoadAllAssetsAtPath(UnityEditor.AssetDatabase.GUIDToAssetPath(guid)))
+                        if (o is AnimationClip c && !c.name.StartsWith("__preview__")) parNom[HerosPrologue.NomCourt(c.name)] = c;
+            var trouves = new List<AnimationClip>();
+            foreach (string n in Animations[espece].attentes)
+                if (parNom.TryGetValue(n, out var c)) trouves.Add(c);
+                else Debug.LogWarning($"{name} : l'animation {n} manque (importer EE_Animations.fbx en Humanoid).");
+            clips = trouves.ToArray();
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"{name} ({espece}) : {clips.Length} animations d'attente.");
+        }
+#endif
     }
 }
