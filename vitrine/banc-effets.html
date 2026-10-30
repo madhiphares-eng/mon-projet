@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banc des effets</title>
+<style>
+  :root { --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --fond: rgba(6, 7, 12, 0.82); --trait: rgba(236, 230, 216, 0.16); }
+  html, body { margin: 0; height: 100%; background: #07080b; color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #panneau { position: fixed; left: 12px; top: 12px; max-width: 340px; background: var(--fond); border: 1px solid var(--trait); padding: 10px 12px; font-size: 13px; box-sizing: border-box; }
+  h1 { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px; color: var(--ambre); }
+  p { margin: 4px 0 8px; color: var(--brume); }
+  button { background: none; border: 1px solid var(--trait); color: var(--ivoire); font: inherit; padding: 3px 9px; margin: 3px 3px 0 0; cursor: pointer; }
+  button:hover { border-color: var(--ambre); color: var(--ambre); }
+  label { display: block; margin-top: 8px; color: var(--brume); }
+  input[type=range] { width: 100%; }
+  .etiquette { position: fixed; transform: translate(-50%, 0); color: var(--ivoire); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 1px 3px #000; pointer-events: none; white-space: nowrap; }
+  @media (max-width: 560px) { #panneau { left: 8px; right: 8px; max-width: none; } }
+</style>
+</head>
+<body>
+<div id="panneau">
+  <h1>Banc des effets</h1>
+  <p>Les effets du Colosse, fabriqués par le code (<code>effets-colosse.js</code>). Clic et molette pour tourner autour.</p>
+  <div>
+    <button data-vue="0">Tout</button><button data-vue="1">Étincelles</button><button data-vue="2">Vapeur</button>
+    <button data-vue="3">Champ</button><button data-vue="4">Propulseur</button><button data-vue="5">Relique</button>
+  </div>
+  <div>
+    <button id="tirer">Tirer sur le champ</button><button id="couper">Couper le champ</button><button id="alarme">Alarme</button>
+  </div>
+  <label>Puissance du propulseur <input id="puissance" type="range" min="0" max="1.4" step="0.01" value="0.8"></label>
+</div>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { Effets } from './effets-colosse.js';
+
+const rendu = new THREE.WebGLRenderer({ antialias: true });
+rendu.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendu.toneMapping = THREE.ACESFilmicToneMapping;
+rendu.toneMappingExposure = 1.0;
+document.body.appendChild(rendu.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x07080b);
+scene.fog = new THREE.FogExp2(0x07080b, 0.045);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 200);
+const orbite = new OrbitControls(camera, rendu.domElement);
+orbite.enableDamping = true;
+const composeur = new EffectComposer(rendu);
+composeur.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.85, 0.55, 0.62);
+composeur.addPass(bloom);
+composeur.addPass(new OutputPass());
+
+// --- le couloir : de l'acier sombre, une seule touche de rouge (la bible) -----------------------------------------
+scene.add(new THREE.HemisphereLight(0x8090a8, 0x101014, 0.7));
+const acier = new THREE.MeshStandardMaterial({ color: 0x2a2d33, metalness: 0.75, roughness: 0.48 });
+const acierClair = new THREE.MeshStandardMaterial({ color: 0x3b3f46, metalness: 0.7, roughness: 0.4 });
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(26, 10), new THREE.MeshStandardMaterial({ color: 0x1b1d21, metalness: 0.6, roughness: 0.62 }));
+sol.rotation.x = -Math.PI / 2; scene.add(sol);
+const fond = new THREE.Mesh(new THREE.BoxGeometry(26, 5, 0.3), acier); fond.position.set(0, 2.5, -2.15); scene.add(fond);
+const plafond = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 4.6), acier); plafond.position.set(0, 4.6, -0.2); scene.add(plafond);
+for (let x = -12; x <= 12; x += 2) {                       // les poutres, tous les deux mètres
+  const p = new THREE.Mesh(new THREE.BoxGeometry(0.3, 4.6, 0.35), acierClair); p.position.set(x, 2.3, -1.9); scene.add(p);
+}
+for (let x = -11; x <= 11; x += 4) {                       // des lampes de chantier, au sodium (sous 4 m)
+  const l = new THREE.PointLight(0xffa860, 7, 8, 2); l.position.set(x, 3.6, -1.2); scene.add(l);
+  const b = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffc080 })); b.position.copy(l.position); scene.add(b);
+}
+
+const fx = new Effets(scene, { lumieres: 4 });
+const etiquettes = [];
+const etiqueter = (texte, x, y, z) => {
+  const e = document.createElement('div'); e.className = 'etiquette'; e.textContent = texte; document.body.appendChild(e);
+  etiquettes.push({ e, p: new THREE.Vector3(x, y, z) });
+};
+
+// 1. le panneau électrique en court-circuit, sous un gyrophare
+const panneau = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.4, 0.18), acierClair); panneau.position.set(-8, 1.9, -1.9); scene.add(panneau);
+const trou = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.05), new THREE.MeshStandardMaterial({ color: 0x050505, emissive: 0x401000, roughness: 1 })); trou.position.set(-8.1, 2.1, -1.79); scene.add(trou);
+fx.etincelles(new THREE.Vector3(-8.1, 2.1, -1.72), { direction: new THREE.Vector3(0.2, 0.3, 1), sol: 0 });
+const gyro = fx.gyrophare(); gyro.position.set(-8, 4.38, -1.2); scene.add(gyro);
+etiqueter('Court-circuit et alarme', -8, 0.25, 0.4);
+
+// 2. la conduite qui fuit
+const conduite = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 6, 20), acierClair); conduite.rotation.z = Math.PI / 2; conduite.position.set(-4, 3.4, -1.6); scene.add(conduite);
+const bride = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.12, 20), acier); bride.rotation.z = Math.PI / 2; bride.position.set(-4, 3.4, -1.6); scene.add(bride);
+fx.vapeur(new THREE.Vector3(-4, 3.3, -1.42), new THREE.Vector3(1, -0.25, 0.35), { vitesse: 2.4 });
+const veilleuse = new THREE.PointLight(0x6f8cff, 3, 5, 2); veilleuse.position.set(-7.0, 2.9, -0.6); scene.add(veilleuse);   // une veilleuse de secours
+fx.vapeur(new THREE.Vector3(-3.0, 0.05, -1.5), new THREE.Vector3(0, 1, 0.2), { debit: 6, vitesse: 0.5, taille: 1.6, opacite: 0.1, couleur: 0x9aa0a8 });   // la nappe au sol
+etiqueter('Fuite de vapeur', -4, 0.25, 0.4);
+
+// 3. la cellule et son champ de force, sous le feu d'une tourelle
+const cadre = new THREE.Group(); cadre.position.set(0, 0, -0.9); scene.add(cadre);
+for (const x of [-1.15, 1.15]) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3, 0.4), acierClair); m.position.set(x, 1.5, 0); cadre.add(m); }
+const linteau = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.3, 0.4), acierClair); linteau.position.set(0, 3.05, 0); cadre.add(linteau);
+const voyant = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), new THREE.MeshBasicMaterial({ color: 0xff3020 })); voyant.position.set(0, 3.05, 0.22); cadre.add(voyant);
+const champ = fx.champ(2.0, 2.9); champ.position.set(0, 0, 0); cadre.add(champ);
+etiqueter('Cellule : champ de force', 0, 0.25, 0.4);
+const bouche = new THREE.Vector3(1.8, 1.5, 4.5);
+const tirer = () => {
+  const cible = new THREE.Vector3(THREE.MathUtils.randFloat(-0.8, 0.8), THREE.MathUtils.randFloat(0.6, 2.4), -0.9);
+  fx.tir(bouche, cible, { vitesse: 45, normale: new THREE.Vector3(0, 0, 1) });
+  setTimeout(() => champ.actif && champ.toucher(cible), bouche.distanceTo(cible) / 45 * 1000);
+};
+
+// 4. le propulseur d'une navette, à l'essai
+const tuyere = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.3, 0.6, 24, 1, true), new THREE.MeshStandardMaterial({ color: 0x3b3f46, metalness: 0.85, roughness: 0.35, side: THREE.DoubleSide }));
+tuyere.rotation.z = Math.PI / 2; tuyere.position.set(3.3, 1.6, -0.6); scene.add(tuyere);
+const carter = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.0, 1.0), acierClair); carter.position.set(2.5, 1.6, -0.6); scene.add(carter);
+const socle = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 0.6), acier); socle.position.set(2.5, 0.55, -0.6); scene.add(socle);
+const prop = fx.propulseur({ longueur: 2.2, rayon: 0.32 }); prop.puissance = 0.8; prop.position.set(3.6, 1.6, -0.6); prop.rotation.y = -Math.PI / 2; scene.add(prop);
+etiqueter('Propulseur', 4, 0.25, 0.4);
+
+// 5. la relique : le rayon d'éther, sur son socle de pierre noire
+const pierre = new THREE.MeshStandardMaterial({ color: 0x101114, metalness: 0.2, roughness: 0.25 });
+const piedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.9, 0.4, 6), pierre); piedestal.position.set(8, 0.2, -0.6); scene.add(piedestal);
+const glyphes = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.012, 6, 6), new THREE.MeshBasicMaterial({ color: 0x5ef2ff })); glyphes.rotation.x = Math.PI / 2; glyphes.position.set(8, 0.41, -0.6); scene.add(glyphes);
+const rayon = fx.rayonEther(4.4, { position: new THREE.Vector3(8, 0.4, -0.6) }); scene.add(rayon);
+etiqueter("Relique : rayon d'éther", 8, 0.25, 0.4);
+
+// --- les vues --------------------------------------------------------------------------------------------------------
+const VUES = [[0, 3.2, 12.5, 0, 1.8, -0.8], [-6.9, 2.1, 2.2, -8, 1.9, -1.6], [-2.8, 2.2, 3.6, -3.8, 2.4, -1.3], [1.6, 1.7, 4.2, 0, 1.5, -0.9], [5.6, 2.2, 3.6, 4.2, 1.6, -0.6], [9.8, 2.2, 4.4, 8, 2.0, -0.6]];
+const vue = i => { const [x, y, z, a, b, c] = VUES[i]; camera.position.set(x, y, z); orbite.target.set(a, b, c); orbite.update(); };
+vue(0);
+document.querySelectorAll('[data-vue]').forEach(b => b.onclick = () => vue(+b.dataset.vue));
+document.querySelector('#tirer').onclick = () => { for (let i = 0; i < 4; i++) setTimeout(tirer, i * 140); };
+document.querySelector('#couper').onclick = e => { champ.actif = !champ.actif; e.target.textContent = champ.actif ? 'Couper le champ' : 'Rallumer le champ'; };
+document.querySelector('#alarme').onclick = () => { gyro.actif = !gyro.actif; };
+document.querySelector('#puissance').oninput = e => { prop.puissance = +e.target.value; };
+
+function redimensionner() {
+  rendu.setSize(innerWidth, innerHeight);
+  composeur.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+}
+addEventListener('resize', redimensionner); redimensionner();
+
+const horloge = new THREE.Clock();
+let rafale = 0, figer = false;
+const p = new THREE.Vector3();
+function image(dt) {
+  rafale -= dt;
+  if (rafale < 0) { tirer(); rafale = Math.random() < 0.3 ? 0.15 : THREE.MathUtils.randFloat(0.8, 2.2); }
+  fx.maj(dt);
+  orbite.update();
+  composeur.render();
+  for (const { e, p: q } of etiquettes) {
+    p.copy(q).project(camera);
+    e.style.display = p.z < 1 && Math.abs(p.x) < 1.1 ? '' : 'none';
+    e.style.left = ((p.x + 1) / 2 * innerWidth) + 'px'; e.style.top = ((1 - p.y) / 2 * innerHeight) + 'px';
+  }
+}
+(function boucle() { requestAnimationFrame(boucle); if (!figer) image(horloge.getDelta()); })();
+// pour les tests automatiques : avancer le temps image par image, puis capturer
+window.effets = { vue, fx, champ, prop, gyro, tirer, avancer: (s, pas = 1 / 30) => { figer = true; for (let t = 0; t < s; t += pas) image(pas); }, reprendre: () => { figer = false; horloge.getDelta(); } };
+</script>
+</body>
+</html>

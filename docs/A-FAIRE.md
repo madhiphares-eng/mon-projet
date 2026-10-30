@@ -46,14 +46,13 @@ Ensuite, dans Unity :
 - importer `00-Animations/UAL1_Standard.fbx` et `UAL2_Standard.fbx` en **Humanoid** ;
 - importer chaque personnage en **Humanoid** aussi.
 
-Les 84 animations s'appliquent alors à tous (détails dans [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md), § 3).
+Les 84 animations s'appliquent alors à tous (détails dans [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md), § 4).
 
 ## 5. Ensuite, quand tu as le temps
 
 | Quoi | Pourquoi |
 |---|---|
 | Les autres prompts Meshy : chef pirate animable, vieux détenu habillé, combinaison du Veilleur, porte, lit, console, capsule… | Remplacer tout ce que la bible marque « à remplacer » |
-| Des animations au fusil pour les pirates, sur Mixamo (gratuit, compte Adobe) | La bibliothèque libre n'a que le pistolet |
 | Le jeton Hugging Face dans les secrets de l'environnement cloud (`HF_TOKEN`) | Le Claude du cloud fabrique alors lui-même des modèles avec une IA libre, sans limite de licence |
 | Alléger les modèles trop lourds (pirates, androïde lourd, cératopsien) | Le budget est de 60 000 faces par personnage |
 

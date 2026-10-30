@@ -263,6 +263,10 @@
             try { [void](Telecharger "$DepotAnim/$f" (Join-Path $d $f)) } catch { [void]$Etat.Erreurs.Add("00-Animations/$f : introuvable dans le depot") }
         }
     }
+    # les animations du studio maison (outils/studio-animations.py) : fusil, androides, detenus, especes. Toujours la derniere version.
+    foreach ($f in 'EE_Animations.glb', 'EE_Animations.fbx') {
+        try { [void](Telecharger "$DepotAnim/$f" (Join-Path $d $f)) } catch { [void]$Etat.Erreurs.Add("00-Animations/$f : introuvable dans le depot") }
+    }
     try { [void](Telecharger "$Brut/prologue-anim/00-Animations/LICENCE.txt" (Join-Path $d 'LICENCE.txt')) } catch { }
 
     # credits regroupes

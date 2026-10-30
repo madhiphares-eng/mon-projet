@@ -224,6 +224,10 @@ d="$DEST/00-Animations"; mkdir -p "$d"
 for f in UAL1_Standard.glb UAL2_Standard.glb UAL1_Standard.fbx UAL2_Standard.fbx; do
     [ -f "$d/$f" ] || telecharger "$DEPOT_ANIM/$f" "$d/$f" || erreur "00-Animations/$f : introuvable dans le depot"
 done
+# les animations du studio maison (outils/studio-animations.py) : fusil, androides, detenus, especes. Toujours la derniere version.
+for f in EE_Animations.glb EE_Animations.fbx; do
+    telecharger "$DEPOT_ANIM/$f" "$d/$f" || erreur "00-Animations/$f : introuvable dans le depot"
+done
 curl -fsS --retry 3 -o "$d/LICENCE.txt" "https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/prologue-anim/00-Animations/LICENCE.txt" || true
 
 {

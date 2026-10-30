@@ -106,7 +106,7 @@ Le Colosse enferme les prisonniers de tout l'Empire : **les détenus et les pira
 - **Réalistes** : une anatomie crédible, des peaux et des écailles usées, jamais de style dessin animé.
 - **Lisibles en silhouette** : chaque espèce a une forme qui la distingue à 20 m (la tête énorme des « gris », la mâchoire du crocodilien, la collerette du cératopsien, la tête de poisson de l'ichtyen).
 - **Les couleurs** : les peaux restent naturelles (gris, vert olive, ocre, rouge sombre), **jamais de cyan** (il est aux Bâtisseurs). Les détenus habillés portent l'orange de la prison ; les pirates, le chaud et l'asymétrie de leur camp.
-- **Toutes reçoivent les mêmes animations** que les humains (la bibliothèque d'animations, voir [`PERSONNAGES.md`](PERSONNAGES.md)) : une démarche propre à chaque espèce viendra plus tard.
+- **Toutes reçoivent les mêmes animations** que les humains (la bibliothèque d'animations, voir [`PERSONNAGES.md`](PERSONNAGES.md)). Le studio maison leur ajoute une démarche à elles : les gris, voûtés, à petits pas ; les sauriens, penchés en avant comme des prédateurs.
 
 **Les espèces du prologue** :
 

@@ -1,11 +1,11 @@
 # Les personnages du prologue : animations, squelettes, espèces
 
-> Version 2, 29 octobre 2026. Les 36 personnages du prologue passés au **banc des personnages** ([`vitrine/banc-pnj.html`](../../vitrine/banc-pnj.html)). Ils comptent :
+> Version 3, 30 octobre 2026. Les 36 personnages du prologue passés au **banc des personnages** ([`vitrine/banc-pnj.html`](../../vitrine/banc-pnj.html)). Ils comptent :
 > - les humains ;
 > - les androïdes : la sécurité de l'Empire n'emploie qu'eux (voir la [bible](BIBLE-DA.md), § 4) ;
 > - les autres espèces de la galaxie.
 >
-> Tous reçoivent la même **bibliothèque de 84 animations**.
+> Tous reçoivent la même **bibliothèque de 84 animations**, et les **23 animations du studio maison** (fusil, androïdes, détenus, espèces).
 
 ## 1. Ce qu'il faut retenir
 
@@ -25,6 +25,7 @@
    - un grand alien rouge, un ichtyen à tête de poisson, un céphalopode, un mercenaire en armure ;
    - un spécimen biomécanique pour le décor du laboratoire.
    Un homme-oiseau en tenue de fantasy a été écarté.
+7. **23 animations maison** comblent les manques de la bibliothèque : le fusil à deux mains, la démarche des androïdes, leur panne et leur redémarrage, la peur des détenus, la démarche des gris et des sauriens. Elles sont fabriquées par `outils/studio-animations.py` (voir § 3).
 
 ![Les détenus, humains et autres espèces](personnages/rangee-detenu.jpg)
 ![Les autres espèces](personnages/rangee-espece.jpg)
@@ -45,9 +46,67 @@ Deux fichiers, *Universal Animation Library* 1 et 2 de Quaternius, en version St
 | Corps à corps | `Punch_Jab`, `Punch_Cross`, `Melee_Hook`, `Sword_*` (pour une barre de fer), `Shield_*` (un bouclier anti-émeute) |
 | Encaisser, tomber | `Hit_Chest`, `Hit_Head`, `Hit_Knockback`, `Death01`, `LayToIdle` (se relever : **le réveil du héros**), `Zombie_*` (un détenu blessé qui se traîne) |
 
-Pour le tir au fusil, il n'existe pas encore d'animation libre de bonne qualité. Les androïdes n'en ont pas besoin, puisque leur arme est dans l'avant-bras. Pour les pirates, Mixamo en a beaucoup (gratuit, compte Adobe).
+La bibliothèque ne sait tenir qu'un pistolet. Le fusil, et tout ce qui est propre au Colosse, vient du studio maison (§ 3).
 
-## 3. Comment ça marche
+## 3. Les animations du studio maison
+
+`outils/studio-animations.py` fabrique **23 animations propres au jeu**, sur le squelette de la bibliothèque. Il tourne en 40 secondes avec Blender en module Python (`pip install bpy pillow`, comme `rigger-statues.py`). Il écrit `prologue-anim/00-Animations/EE_Animations.glb` (pour le banc et l'atelier) et `EE_Animations.fbx` (pour Unity). Les scripts de téléchargement les copient dans `00-Animations/`, et le banc les ajoute à sa liste : tous les personnages les reçoivent, comme la bibliothèque.
+
+**Comment elles sont faites.** Chaque animation part d'une animation de la bibliothèque, puis le studio la retouche image par image :
+1. **le bas du corps** vient de la bibliothèque : attente, marche, course, accroupi, assis ;
+2. **le buste** est raidi, tourné ou affaissé ; la tête est ramenée à l'horizontale ou baissée ;
+3. **les mains** sont placées par cinématique inverse (bras à deux os, coude orienté), puis orientées (paume, doigts) et refermées selon une prise : poignée, garde-main, poing, main ouverte, main molle ;
+4. **les pieds** restent plantés au sol quand le bassin descend (panne, redémarrage) ;
+5. chaque image devient une vraie clé d'animation, à 30 images par seconde.
+
+Avec `--planches dossier/`, il dessine aussi une planche de contrôle par animation (face et profil, six instants).
+
+| Famille | Animation | Durée | Ce qu'elle montre |
+|---|---|---|---|
+| **Fusil** | `Fusil_Repos` | 2,5 s | Attente, l'arme basse, le canon vers le sol |
+| | `Fusil_Marche` | 1,3 s | Marche, l'arme basse |
+| | `Fusil_Course` | 0,9 s | Course, l'arme en travers de la poitrine |
+| | `Fusil_Visee` | 2,5 s | Visée épaulée : la crosse à l'épaule, la joue sur la crosse, le buste de trois quarts |
+| | `Fusil_Marche_Visee` | 1,3 s | Marche en visant, le buste stable |
+| | `Fusil_Tir` | 1 s | Une rafale de 5 coups : recul, le canon qui se relève, puis une pause |
+| | `Fusil_Accroupi_Visee` | 2,9 s | Visée accroupi, le regard droit |
+| | `Fusil_Rechargement` | 2,4 s | La main gauche retire le chargeur, le range à la ceinture, engage le neuf, le frappe, reprend le garde-main |
+| **Androïdes** | `Androide_Garde` | 8 s | Immobile, les mains jointes ; la tête tourne d'un coup sec, comme une caméra |
+| | `Androide_Marche` | 1,3 s | Marche raide : le buste droit, les bras presque immobiles, les poings fermés, un à-coup à chaque pas |
+| | `Androide_Scan` | 6 s | Balaye la salle à gauche puis à droite, s'arrête et « lit » par petits pas |
+| | `Androide_Panne` | 1,8 s | Les servos décrochent, puis il s'effondre debout et se tasse (une seule fois) |
+| | `Androide_Redemarrage` | 2,6 s | La tête se relève d'un coup, le corps se redresse par crans, un balayage de contrôle (une seule fois) |
+| **Détenus** | `Detenu_Reddition` | 3 s | Les mains en l'air, les paumes vers le garde, les épaules remontées, qui tremblent |
+| | `Detenu_Frappe_Porte` | 1,4 s | Frappe la porte de la cellule des deux poings, à tour de rôle |
+| | `Detenu_Protection` | 3 s | Recroquevillé, les mains sur la tête, les coudes devant le visage |
+| | `Detenu_Panique` | 0,7 s | Fuite, les mains sur la tête, un regard en arrière |
+| | `Detenu_Marche_Entravee` | 1,7 s | Les poignets liés devant le ventre, la tête basse, des pas courts |
+| | `Detenu_A_Genoux` | 4 s | À genoux, les mains sur la tête, les coudes ouverts |
+| | `Detenu_Desespoir` | 4 s | Assis, la tête dans les mains (sur un banc ou un lit) |
+| **Espèces** | `Gris_Marche` | 1,9 s | Voûté, de petits pas lents, la grosse tête qui oscille, les bras longs et mous |
+| | `Gris_Curieux` | 6 s | Penche la tête d'un côté puis de l'autre, la main au menton |
+| | `Saurien_Marche` | 1,3 s | Penché en avant comme un prédateur, la tête à l'horizontale, les griffes en avant |
+
+**Le fusil dans Unity.** Le fusil est tenu à droite :
+- la main droite est sur la poignée, la gauche sous le garde-main, 30 cm plus loin le long du canon ;
+- attacher le modèle du fusil à l'os de la **main droite** (*hand_r*, ou *Right Hand* de l'avatar Humanoid), la poignée dans la paume, le canon dans l'axe de l'avant-bras ;
+- la main gauche tombe alors d'elle-même sur le garde-main. Pour un fusil plus long ou plus court, on la recale par cinématique inverse (`OnAnimatorIK`, `SetIKPosition(AvatarIKGoal.LeftHand, …)` sur un repère du garde-main).
+
+Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` joue.
+
+**Les animations sont sur place**, comme celles de la bibliothèque : c'est le jeu qui fait avancer le personnage. Pour que les pieds ne glissent pas, la vitesse de déplacement suit celle de l'animation de départ :
+
+| Animation | Vitesse, par rapport à `Walk_Loop` |
+|---|---|
+| `Fusil_Marche`, `Fusil_Marche_Visee`, `Androide_Marche`, `Saurien_Marche` | la même |
+| `Fusil_Course` | celle de `Jog_Fwd_Loop` |
+| `Detenu_Panique` | celle de `Sprint_Loop` |
+| `Detenu_Marche_Entravee` | environ 0,45 (pas courts et plus lents) |
+| `Gris_Marche` | environ 0,4 |
+
+![Les animations du studio sur les personnages](personnages/studio.jpg)
+
+## 4. Comment ça marche
 
 **Dans le banc et l'atelier (navigateur)**, chaque animation est recalculée pour chaque squelette, en moins d'un dixième de seconde :
 1. Les os comptent : bassin, colonne, cou, tête, clavicules, bras, avant-bras, mains, doigts, cuisses, mollets, pieds, orteils. Ils sont reconnus par leur nom, quelle que soit la convention :
@@ -64,7 +123,7 @@ Pour le tir au fusil, il n'existe pas encore d'animation libre de bonne qualité
 2. Importer chaque personnage de la même façon (*Humanoid*, *Create From This Model*), après `normaliser-prologue.py`, `rigger-statues.py` et `recolorer-prologue.py`.
 3. Dans l'*Animator Controller* de n'importe quel personnage, on glisse n'importe quelle animation de la bibliothèque.
 
-## 4. Les statues qui ont reçu un squelette
+## 5. Les statues qui ont reçu un squelette
 
 `outils/rigger-statues.py` procède en quatre temps :
 1. Il pose le squelette de la bibliothèque dans le modèle.
@@ -93,7 +152,7 @@ Pour le tir au fusil, il n'existe pas encore d'animation libre de bonne qualité
 
 Leurs remplaçants sont à faire avec Meshy : voir [`ia/PROMPTS-MESHY.md`](ia/PROMPTS-MESHY.md).
 
-## 5. Personnage par personnage
+## 6. Personnage par personnage
 
 | Personnage | Camp | Squelette | Bibliothèque | Faces | Verdict |
 |---|---|---|---|---:|---|
@@ -125,7 +184,7 @@ Leurs remplaçants sont à faire avec Meshy : voir [`ia/PROMPTS-MESHY.md`](ia/PR
 
 Les images de chacun, à plusieurs moments de ses animations, sont dans [`personnages/`](personnages/).
 
-## 6. Où ils sont dans la maquette
+## 7. Où ils sont dans la maquette
 
 La maquette (`outils/maquette-prologue.py`) ne pose plus aucune silhouette : partout de vrais modèles, pris à tour de rôle.
 
@@ -140,12 +199,11 @@ La maquette (`outils/maquette-prologue.py`) ne pose plus aucune silhouette : par
 | Passerelle | 3 `droide-securite` | — |
 | Hangar | 5 androïdes, `androide-lourd` à la porte, `marcheur-blinde`, 1 drone | Le chef pirate, des pirates humains et aliens (mercenaire, saurien, céphalopode) |
 
-## 7. Ce qu'il reste à faire
+## 8. Ce qu'il reste à faire
 
 | Qui | Quoi |
 |---|---|
 | Toi, sur le Mac | Relancer `outils/telecharger-prologue.sh` : il ajoute les androïdes, les espèces et la bibliothèque d'animations. Puis, dans l'ordre : `normaliser-prologue.py`, `rigger-statues.py` (`pip install bpy scipy`), `recolorer-prologue.py` (`pip install pillow numpy`). |
 | Meshy (gratuit) | Les remplaçants et les pièces qui manquent : [`ia/PROMPTS-MESHY.md`](ia/PROMPTS-MESHY.md) (androïde de l'Empire, pirate, chef pirate animable, détenu de corvée, vieux détenu habillé…). |
-| Mixamo (gratuit) | Des animations au fusil pour les pirates. |
 | Le Claude du PC (Blender) | Corriger le squelette de la combinaison étanche ; alléger les modèles trop lourds ; effacer « police » et « security ». |
 | L'IA 3D (avec ton jeton) | L'androïde de l'Empire à la forme exacte de la bible, et le vieux détenu rhabillé ([`ia/fiches.json`](ia/fiches.json)). |

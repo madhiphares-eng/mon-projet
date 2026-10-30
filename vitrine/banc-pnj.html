@@ -271,7 +271,7 @@ function juger(r) {
 }
 
 // --- le reciblage : les animations de la bibliothèque (Quaternius, CC0) sur chaque squelette humain ----------------
-const BIBLIO = ['00-Animations/UAL1_Standard.glb', '00-Animations/UAL2_Standard.glb'];
+const BIBLIO = ['00-Animations/UAL1_Standard.glb', '00-Animations/UAL2_Standard.glb', '00-Animations/EE_Animations.glb'];   // EE : le studio maison (outils/studio-animations.py)
 const biblio = { clips: [], sources: new Map() };   // nom → { clip, source }
 const PARTIES = [   // [partie, motif sur le nom nettoyé, a un côté]
   ['hanches', /^(hips?|pelvis)$/, false], ['cou', /^neck(twist)?$/, false], ['tete', /^head$/, false],
@@ -579,6 +579,54 @@ document.querySelector('#dossier').addEventListener('change', e => {
   lancer();
 });
 
+// --- le fusil tenu à deux mains (les animations Fusil_ du studio) -------------------------------------------------
+// Il est attaché au poignet droit, comme dans Unity. Son orientation par rapport à la main est mesurée sur les deux
+// mains (la gauche est sous le garde-main), puis gardée pour le rechargement, où la main gauche le quitte.
+const MANNEQUIN = 1.83;                            // la taille du mannequin du studio, en mètres
+function fabriquerFusil() {
+  const g = new THREE.Group();
+  const acier = new THREE.MeshStandardMaterial({ color: 0x2c3036, metalness: 0.7, roughness: 0.45 });
+  const noir = new THREE.MeshStandardMaterial({ color: 0x16181b, metalness: 0.3, roughness: 0.7 });
+  const rouge = new THREE.MeshStandardMaterial({ color: 0x8a1c1c, emissive: 0x6a1010, roughness: 0.5 });
+  const piece = (l, h, p, x, y, z, m, rx = 0) => { const b = new THREE.Mesh(new THREE.BoxGeometry(l, h, p), m); b.position.set(x, y, z); b.rotation.x = rx; g.add(b); };
+  // z le long du canon, y le haut de l'arme ; l'origine est au poignet droit
+  piece(0.035, 0.11, 0.045, 0, -0.045, 0.05, noir, -0.35);       // la poignée
+  piece(0.05, 0.075, 0.32, 0, 0.045, 0.10, acier);                // la carcasse
+  piece(0.04, 0.09, 0.26, 0, 0.02, -0.18, noir);                  // la crosse
+  piece(0.05, 0.055, 0.24, 0, 0.04, 0.36, noir);                  // le garde-main
+  piece(0.03, 0.15, 0.06, 0, -0.05, 0.17, acier, 0.25);           // le chargeur
+  piece(0.02, 0.025, 0.05, 0, 0.095, 0.06, noir);                 // le viseur
+  piece(0.012, 0.012, 0.012, 0, 0.095, 0.09, rouge);              // sa diode
+  const canon = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.22, 10), acier);
+  canon.rotation.x = Math.PI / 2; canon.position.set(0, 0.045, 0.58); g.add(canon);
+  return g;
+}
+function placerFusil(r) {
+  const C = r.reciblage?.cib?.carte;
+  const tenir = !!(C?.main_g && C?.main_d && r.biblioActif?.startsWith('Fusil_') && r.objet.visible);
+  if (!tenir) { if (r.fusil) r.fusil.visible = false; return; }
+  if (!r.fusil) { r.fusil = fabriquerFusil(); scene.add(r.fusil); }
+  const s = r.hauteur / MANNEQUIN;
+  const R = C.main_d.getWorldPosition(v()), L = C.main_g.getWorldPosition(v());
+  const main = C.main_d.getWorldQuaternion(q());
+  if (r.biblioActif !== 'Fusil_Rechargement' || !r.fusilMain) {
+    // le canon passe au-dessus et à droite du poignet gauche (studio : garde = poignée + 0,30 d - 0,06 u + 0,035 l)
+    const u = new THREE.Vector3(0, 1, 0);
+    let d = L.clone().sub(R).normalize(), l = v();
+    for (let k = 0; k < 3; k++) {
+      l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize();
+      d = L.clone().sub(R).addScaledVector(u, 0.06 * s).addScaledVector(l, -0.035 * s).normalize();
+    }
+    l.crossVectors(u, d).normalize(); u.crossVectors(d, l).normalize();
+    const arme = q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(l, u, d));
+    r.fusilMain = main.clone().invert().multiply(arme);           // l'arme, vue depuis la main droite
+  }
+  r.fusil.position.copy(R);
+  r.fusil.quaternion.copy(main).multiply(r.fusilMain);
+  r.fusil.scale.setScalar(s);
+  r.fusil.visible = true;
+}
+
 (function boucle() {
   requestAnimationFrame(boucle);
   const dt = horloge.getDelta();
@@ -586,6 +634,7 @@ document.querySelector('#dossier').addEventListener('change', e => {
     if (!r.mixeur || !r.clipActif) continue;
     if (figer === null) r.mixeur.update(dt);
     else r.mixeur.setTime(r.clipActif.duration * figer);
+    placerFusil(r);
   }
   rendu.render(scene, camera);
 })();
