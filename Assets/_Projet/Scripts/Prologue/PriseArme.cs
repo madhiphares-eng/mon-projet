@@ -16,7 +16,8 @@ namespace EchosEther.Prologue
     /// sur sa prise (<see cref="ArmeTenue"/>) ; la main gauche glisse sur le rail du garde-main si le bras est court,
     /// et l'arme s'écarte du ventre si elle le frôle. La paume est mesurée sur le squelette (main, doigts) : rien à régler.
     /// Au démarrage, le bot cherche l'appui de crosse qui donne les plus belles visées pour ce corps (CalibrerAppui),
-    /// et « Contrôler les prises (bot) » écrit un rapport de toutes les animations d'arme.
+    /// puis vérifie que la peau des mains suit leurs os ; sinon, le personnage ne prend pas d'arme (PeauSuit).
+    /// « Contrôler les prises (bot) » écrit un rapport de toutes les animations d'arme.
     /// Même calcul que le navigateur (vitrine/prise-armes.js). S'exécute après l'animation (LateUpdate).
     /// </summary>
     [DefaultExecutionOrder(100)]
@@ -37,7 +38,7 @@ namespace EchosEther.Prologue
 
         const float LongueurBrasMannequin = 0.547f;
 
-        struct Paume { public Vector3 centre, doigts, normale; public bool aNormale; }
+        struct Paume { public Vector3 centre, doigts, normale; public bool aNormale; public float longueur; }
         public struct Bras { public float etirement, coude, ecart, glisse; }
 
         Transform brasD, avantD, mainD, brasG, avantG, mainG, hanches, cou;
@@ -72,6 +73,7 @@ namespace EchosEther.Prologue
             Vector3 face = cd != null && cg != null ? Vector3.Cross(cd.position - cg.position, Vector3.up) : transform.forward;
             face.y = 0f;
             devantLocal = transform.InverseTransformDirection(face.sqrMagnitude > 1e-8f ? face.normalized : transform.forward);
+            NoterPeau();
             pret = true;
             if (clipsCalibrage != null && clipsCalibrage.Length > 0 && arme != null) CalibrerAppui();
         }
@@ -98,6 +100,7 @@ namespace EchosEther.Prologue
             }
             p.centre = main.InverseTransformPoint(centre);
             p.doigts = Quaternion.Inverse(main.rotation) * doigts;
+            p.longueur = longueur;
             return p;
         }
 
@@ -301,8 +304,83 @@ namespace EchosEther.Prologue
                         if (total < meilleur) { meilleur = total; choix = essai; }
                     }
             appui = choix;
+            // la peau : les os tiennent l'arme, mais la peau des mains suit-elle ?
+            float pirePeau = 0f;
+            foreach (var clip in clipsCalibrage)
+            {
+                if (clip == null) continue;
+                foreach (float u in new[] { 0.2f, 0.7f }) { Echantillonner(clip, u); Tenir(appui); pirePeau = Mathf.Max(pirePeau, EcartPeau()); }
+            }
             mode = ancien;
-            Debug.Log($"Prise de {name} : appui de la crosse (gauche {appui.x:0.00}, bas {appui.y:0.00}, avant {appui.z:0.00}), coût {meilleur:0.00}.");
+            Debug.Log($"Prise de {name} : appui de la crosse (gauche {appui.x:0.00}, bas {appui.y:0.00}, avant {appui.z:0.00}), coût {meilleur:0.00}, peau des mains à {pirePeau * 100f:0} cm de leurs os.");
+            if (pirePeau > SeuilPeau)
+            {
+                PeauSuit = false;
+                actif = false;
+                if (arme != null) arme.gameObject.SetActive(false);
+                Debug.LogWarning($"Prise de {name} : la peau de ses mains ne suit pas ses os ({pirePeau * 100f:0} cm) ; il ne prend pas d'arme. Il faut refaire les poids de ses mains dans Blender.");
+            }
+        }
+
+        // ------------------------------------------------------------------ la peau suit-elle les os ? (le bot)
+        // Des os parfaitement posés ne suffisent pas : chez certains personnages, la peau ne suit pas le squelette (une main
+        // liée à d'autres os, des poids posés automatiquement), et l'arme flotte devant des mains restées ailleurs. Au repos,
+        // on note les sommets de chaque main visible ; dans une pose, on mesure de combien ils se sont écartés de leur os.
+        // Même mesure que le navigateur : sous 5 cm chez un personnage bien lié, de 29 à 61 cm chez les autres.
+        const float SeuilPeau = 0.1f;
+        struct SommetMain { public int peau, indice; public bool droite; public Vector3 local; }
+        SkinnedMeshRenderer[] peaux;
+        readonly List<SommetMain> sommetsMains = new List<SommetMain>();
+        readonly List<Vector3> sommets = new List<Vector3>();
+        Mesh cuisson;
+
+        /// <summary>Faux si le bot a vu que la peau des mains ne suit pas les os : le personnage ne prend pas d'arme.</summary>
+        public bool PeauSuit { get; private set; } = true;
+
+        // la peau déformée par les os d'aujourd'hui, en coordonnées du monde
+        void Cuire(SkinnedMeshRenderer r)
+        {
+            r.BakeMesh(cuisson, true);
+            cuisson.GetVertices(sommets);
+            var t = r.transform;
+            for (int i = 0; i < sommets.Count; i++) sommets[i] = t.position + t.rotation * sommets[i];
+        }
+
+        void NoterPeau()
+        {
+            peaux = animateur.GetComponentsInChildren<SkinnedMeshRenderer>();
+            cuisson = new Mesh();
+            sommetsMains.Clear();
+            Vector3 pd = CentrePaume(mainD, paumeD), pg = CentrePaume(mainG, paumeG);
+            float rd = paumeD.longueur * 0.75f, rg = paumeG.longueur * 0.75f;
+            for (int p = 0; p < peaux.Length; p++)
+            {
+                Cuire(peaux[p]);
+                for (int i = 0; i < sommets.Count; i++)
+                {
+                    if (Vector3.Distance(sommets[i], pd) < rd) sommetsMains.Add(new SommetMain { peau = p, indice = i, droite = true, local = mainD.InverseTransformPoint(sommets[i]) });
+                    else if (Vector3.Distance(sommets[i], pg) < rg) sommetsMains.Add(new SommetMain { peau = p, indice = i, droite = false, local = mainG.InverseTransformPoint(sommets[i]) });
+                }
+            }
+        }
+
+        /// <summary>Le plus grand écart moyen entre la peau d'une main et son os, en mètres du mannequin (9 : aucune peau autour).</summary>
+        public float EcartPeau()
+        {
+            if (peaux == null || peaux.Length == 0) return 0f;
+            float sd = 0f, sg = 0f; int nd = 0, ng = 0;
+            for (int p = 0; p < peaux.Length; p++)
+            {
+                Cuire(peaux[p]);
+                foreach (var m in sommetsMains)
+                {
+                    if (m.peau != p || m.indice >= sommets.Count) continue;
+                    float e = Vector3.Distance(sommets[m.indice], (m.droite ? mainD : mainG).TransformPoint(m.local));
+                    if (m.droite) { sd += e; nd++; } else { sg += e; ng++; }
+                }
+            }
+            if (nd == 0 || ng == 0) return 9f;
+            return Mathf.Max(sd / nd, sg / ng) / k;
         }
 
         /// <summary>Le bot : chaque animation d'arme du héros, huit instants ; le pire de chaque mesure, dans la console.</summary>
@@ -319,7 +397,7 @@ namespace EchosEther.Prologue
                 string nom = HerosPrologue.NomCourt(clip.name);
                 if (!nom.StartsWith("Fusil_")) continue;
                 mode = nom.Contains("Visee") || nom == "Fusil_Tir" ? Mode.Epaule : Mode.Main;
-                float pireEtirement = 0f, pireCoude = 180f, pireEcart = 0f, pireTorse = 9f;
+                float pireEtirement = 0f, pireCoude = 180f, pireEcart = 0f, pireTorse = 9f, pirePeau = 0f;
                 for (int i = 0; i < 8; i++)
                 {
                     Echantillonner(clip, i / 8f);
@@ -329,9 +407,10 @@ namespace EchosEther.Prologue
                     pireCoude = Mathf.Min(pireCoude, Mathf.Min(DerniereDroite.coude, DerniereGauche.coude));
                     pireEcart = Mathf.Max(pireEcart, Mathf.Max(DerniereDroite.ecart, poidsGauche > 0.99f ? DerniereGauche.ecart : 0f));
                     pireTorse = Mathf.Min(pireTorse, DistanceArme() / k);
+                    pirePeau = Mathf.Max(pirePeau, EcartPeau());
                 }
-                bool bon = pireEtirement < 0.995f && pireCoude > 20f && pireEcart < 0.01f && pireTorse > -0.01f;
-                texte.AppendLine($"{(bon ? "OK " : "À VOIR")} {nom,-22} bras tendu {pireEtirement:0.00}  coude {pireCoude:0}°  main à {pireEcart * 100f:0.0} cm  arme/torse {pireTorse * 100f:0} cm");
+                bool bon = pireEtirement < 0.995f && pireCoude > 20f && pireEcart < 0.01f && pireTorse > -0.01f && pirePeau <= SeuilPeau;
+                texte.AppendLine($"{(bon ? "OK " : "À VOIR")} {nom,-22} bras tendu {pireEtirement:0.00}  coude {pireCoude:0}°  main à {pireEcart * 100f:0.0} cm  arme/torse {pireTorse * 100f:0} cm  peau des mains à {pirePeau * 100f:0} cm");
             }
             mode = ancien;
             poidsGauche = 1f;

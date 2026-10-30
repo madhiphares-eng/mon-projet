@@ -89,6 +89,7 @@ namespace EchosEther.Prologue
             float dt = Time.deltaTime;
             if (EntreesJeu.Accroupir()) Accroupi = !Accroupi;
             if (EntreesJeu.ChoixArme() == 0) arme = !arme;
+            if (prise != null && !prise.PeauSuit) arme = false;      // le bot de prise a vu que la peau ne suit pas ses mains
             Visee = arme && EntreesJeu.Viser();
             if (arme && EntreesJeu.Recharger() && rechargement <= 0f) rechargement = 2.4f;
             rechargement -= dt;

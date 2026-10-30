@@ -97,6 +97,7 @@ Appui de la crosse en centimètres (gauche / avant / bas, pour un bras de 55 cm)
 - `PriseArme` (sur le héros, ou tout personnage Humanoid) :
   - il s'exécute après l'animation (`LateUpdate`) ;
   - `HerosPrologue` lui donne le mode : visée = Epaule, sinon Main ; pendant le rechargement, la main gauche lâche l'arme ; au tir, le canon se relève ;
-  - au démarrage, il calibre l'appui de la crosse sur les animations de visée (`Fusil_Visee`, `Fusil_Marche_Visee`, `Fusil_Accroupi_Visee`).
-- En jeu, clic droit sur le composant → **« Contrôler les prises (bot) »** : le rapport de chaque animation d'arme s'écrit dans la console.
+  - au démarrage, il calibre l'appui de la crosse sur les animations de visée (`Fusil_Visee`, `Fusil_Marche_Visee`, `Fusil_Accroupi_Visee`) ;
+  - puis il vérifie la peau, comme dans le navigateur (`BakeMesh` donne la peau déformée par les os) : si celle des mains reste à plus de 10 cm de leurs os, `PeauSuit` passe à faux, le fusil est rangé et le héros joue ses animations sans arme ; la console dit pourquoi.
+- En jeu, clic droit sur le composant → **« Contrôler les prises (bot) »** : le rapport de chaque animation d'arme s'écrit dans la console, avec l'écart de la peau des mains.
 - La scène d'essai (menu **Echos d'Ether → Prologue**) les installe déjà sur le héros.
