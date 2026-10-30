@@ -150,6 +150,8 @@ namespace EchosEther.Editeur
             prise.animateur = animateur;
             prise.arme = fusil;
             controleur.fusil = fusil.gameObject;
+            // les pieds sur le sol : ils suivent les marches et ne glissent plus (le bot des mouvements, en jeu)
+            heros.AddComponent<AncragePieds>().animateur = animateur;
 
             // ---- les caméras et la passerelle
             var cam = Object.FindFirstObjectByType<Camera>();

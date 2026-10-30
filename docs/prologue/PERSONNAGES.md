@@ -14,10 +14,11 @@
    - la bibliothèque est reciblée sur chaque squelette humain, doigts compris, quelle que soit la convention de noms (Mixamo, Character Creator, Unreal, Rigify, et même les quadrupèdes debout) ;
    - 35 personnages sur 36 la reçoivent ;
    - le seul qui ne la reçoit pas est le marcheur blindé, qui a déjà ses 41 animations à lui.
-3. **Les statues ont maintenant un squelette.** `outils/rigger-statues.py` (Blender en module Python) en a donné un aux 14 statues :
-   - 8 sont réussies (le héros, 5 espèces, 2 androïdes) ;
-   - 3 sont bonnes pour marcher et attendre, mais leurs bras se déforment dans les gestes amples : à refaire sur Mixamo ;
-   - 3 ont échoué : ce sont des décors de toute façon.
+3. **Les statues ont maintenant un squelette.** `outils/rigger-statues.py` (Blender en module Python) en a donné un à 14 statues sur 15 :
+   - le héros, 8 espèces, le chef pirate et le pirate masqué marchent, attendent et visent ;
+   - 3 androïdes faits de pièces marchent et patrouillent, sans arme tenue ;
+   - seul l'androïde-fantassin (1 800 pièces sans nom) reste un décor.
+   Le **bot des mouvements** a trouvé un bug du script, corrigé le 30 octobre : chez les modèles qui ne sont pas en mètres, la peau suivait mal les os. **Il faut relancer le script sur le Mac** (voir [`ANIMATIONS.md`](ANIMATIONS.md), § 5).
 4. **Les drones** ont un vol stationnaire fait par le code : ils montent, descendent et balaient la salle du regard.
 5. **Les couleurs de la bible dans les fichiers** : `outils/recolorer-prologue.py` recolore les textures une fois pour toutes, avec le même calcul que l'atelier. Unity ouvre ainsi les modèles déjà aux couleurs du Colosse.
 6. **13 espèces** rejoignent les détenus et les pirates :
@@ -92,10 +93,10 @@ Avec `--planches dossier/`, il dessine aussi une planche de contrôle par animat
 - attacher le modèle du fusil à l'os de la **main droite** (*hand_r*, ou *Right Hand* de l'avatar Humanoid), la poignée dans la paume, le canon dans l'axe de l'avant-bras ;
 - la main gauche tombe alors d'elle-même sur le garde-main. Pour un fusil plus long ou plus court, on la recale par cinématique inverse (`OnAnimatorIK`, `SetIKPosition(AvatarIKGoal.LeftHand, …)` sur un repère du garde-main).
 
-Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` joue, et un pistolet pour les animations `Pistol_`. Les mains y sont posées par le **bot de prise** ([`PRISES-ARMES.md`](PRISES-ARMES.md)) : 13 personnages sur 24 sont parfaits, 2 bons, et 9 sont déclarés inaptes : le bot vérifie aussi que leur peau suit leurs mains (les statues liées automatiquement et le héros provisoire ne la suivent pas).
+Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` joue, et un pistolet pour les animations `Pistol_`. Les mains y sont posées par le **bot de prise** ([`PRISES-ARMES.md`](PRISES-ARMES.md)) : 21 personnages sur 28 sont parfaits, 3 bons, et 4 sont déclarés inaptes (le crocodilien, et 3 androïdes faits de pièces aux bras trop courts). Les pieds, eux, sont posés au sol par le **bot des mouvements** ([`ANIMATIONS.md`](ANIMATIONS.md)) : 26 personnages sur 28 à moins de 1,5 cm, dans les 23 animations au sol.
 
 **Les PNJ dans Unity**, sans Animator Controller :
-- le composant `AnimationPNJ` (dans `Assets/_Projet/Scripts/Prologue/`) fait jouer à un personnage une animation en boucle, ou une suite d'animations avec des fondus enchaînés. Par exemple, `Androide_Garde` puis `Androide_Scan` pour une sentinelle, `Detenu_A_Genoux` pour un détenu sous la menace ;
+- le composant `AnimationPNJ` (dans `Assets/_Projet/Scripts/Prologue/`) fait jouer à un personnage une animation en boucle, ou une suite d'animations avec des fondus enchaînés. Par exemple, `Androide_Garde` puis `Androide_Scan` pour une sentinelle, `Detenu_A_Genoux` pour un détenu sous la menace. Il ajoute tout seul `AncragePieds`, qui pose les pieds sur le vrai sol (voir [`ANIMATIONS.md`](ANIMATIONS.md), § 6) ;
 - les composants `PriseArme` et `ArmeTenue` posent les mains exactement sur l'arme, quel que soit le personnage : c'est le bot de prise (voir [`PRISES-ARMES.md`](PRISES-ARMES.md)) ;
 - le héros, lui, a son propre contrôleur, `HerosPrologue` (voir [`VUES-ET-EFFETS.md`](VUES-ET-EFFETS.md)).
 
@@ -147,11 +148,12 @@ En vidéo : [les 23 animations du studio](personnages/videos/studio-animations.m
 |---|---|
 | `tenue-detenu` (le héros) | Réussi : il marche, attend, vise |
 | `gris-vert`, `longiligne-rouge`, `ichtyen`, `ceratopsien` | Réussi |
-| `cephalopode`, `pirate-masque`, `saurien-guerrier` | Réussi ; un léger pli sous le bras quand il est levé très haut |
-| `androide-medical`, `androide-lourd` | Réussi (quelques petites pièces flottent sur l'androïde lourd) |
-| `pirate-chef` | Raté (son long manteau) : il reste une statue, le chef qui attend. Une version animable est à faire avec Meshy |
-| `mutant-biomecanique` | Raté : il reste un spécimen de décor |
-| `androide-soldat`, `androide-fantassin`, `androide-vieux-modele` | Pièces sans nom : ils restent des décors (androïdes en réparation) |
+| `cephalopode`, `pirate-masque`, `saurien-guerrier` | Réussi (avant la correction du 30 octobre, leurs pieds et leurs mains ne suivaient pas) |
+| `androide-medical`, `androide-lourd` | Réussi (quelques petites pièces flottent sur l'androïde lourd) ; le médical ne tient pas d'arme |
+| `pirate-chef` | **Réussi depuis la correction** : il marche et vise, manteau compris |
+| `mutant-biomecanique` | **Réussi depuis la correction** : il marche et vise ; il peut aussi rester un spécimen dans une cuve |
+| `androide-soldat`, `androide-vieux-modele` | **Réussis depuis la correction** pour marcher, garder une porte, patrouiller ; des pièces décollent dans les gestes amples, pas d'arme tenue |
+| `androide-fantassin` | Raté : 1 800 pièces sans nom, il s'éparpille. Il reste un androïde en réparation dans un atelier |
 
 **Deux modèles sont cassés à la source** et sont retirés de la maquette : le pirate « Scavenger » et la combinaison étanche (`detenu-corvee-toxique`).
 - Leurs squelettes empilent des échelles (×1000, ×0,001, ×71), et chaque pièce est dans un repère différent.
@@ -176,18 +178,19 @@ Leurs remplaçants sont à faire avec Meshy : voir [`ia/PROMPTS-MESHY.md`](ia/PR
 | `androide-antiemeute` | Androïdes | Character Creator, 102 os | Oui | 20 k | **Candidat conseillé à l'androïde principal** : bleu nuit, « police » retiré |
 | `androide-patrouille` | Androïdes | Pièces animées | — | 68 k | Sa propre animation |
 | `androide-medical`, `androide-lourd` | Androïdes | Fait par le script | Oui | 21 k, 241 k | Le lourd est à alléger |
-| `androide-soldat`, `-fantassin`, `-vieux-modele` | Androïdes | Script : échec | — | 21-32 k | Décors |
+| `androide-soldat`, `androide-vieux-modele` | Androïdes | Fait par le script | Oui | 21 k, 26 k | Marchent et patrouillent, sans arme tenue |
+| `androide-fantassin` | Androïdes | Script : échec | — | 32 k | Décor (en réparation) |
 | `drone-securite` | Androïdes | Aucun | Vol par le code | 11 k | Prêt |
 | `marcheur-blinde` | Androïdes | Le sien, 21 os | Ses 41 animations | 11 k | Prêt |
 | `pirate` | — | Cassé à la source | — | 99 k | **Retiré** : à refaire avec Meshy |
 | `pirate-eva` | Pirates | Mixamo | Oui | 705 k | À alléger d'urgence |
-| `pirate-chef` | Pirates | Statue | — | 242 k | Il attend, immobile ; à refaire avec Meshy pour l'animer |
+| `pirate-chef` | Pirates | Fait par le script | Oui | 242 k | Animé ; à alléger |
 | `pirate-masque` | Pirates | Fait par le script | Oui | 925 k | À alléger |
 | `saurien-pale`, `crocodilien`, `gris-leger` | Espèces | Maison, quadrupède debout, Rigify | Oui | 7-26 k | Animés |
 | `gris-marcheur`, `gris-anime`, `mercenaire-alien` | Espèces | Mixamo, Character Creator | Oui | 50-55 k | Animés |
 | `gris-vert`, `longiligne-rouge`, `ichtyen`, `ceratopsien` | Espèces | Fait par le script | Oui | 5-290 k | Le cératopsien est à alléger |
-| `saurien-guerrier`, `cephalopode` | Espèces | Fait par le script | Oui | 34 k, 36 k | Gestes amples à refaire sur Mixamo |
-| `mutant-biomecanique` | Décor | Statue | — | 26 k | Spécimen de décor (une cuve Meshy est prévue) |
+| `saurien-guerrier`, `cephalopode` | Espèces | Fait par le script | Oui | 34 k, 36 k | Animés |
+| `mutant-biomecanique` | Espèces | Fait par le script | Oui | 26 k | Animé ; ou spécimen dans une cuve du laboratoire |
 
 Les images de chacun, à plusieurs moments de ses animations, sont dans [`personnages/`](personnages/).
 
@@ -210,7 +213,7 @@ La maquette (`outils/maquette-prologue.py`) ne pose plus aucune silhouette : par
 
 | Qui | Quoi |
 |---|---|
-| Toi, sur le Mac | Relancer `outils/telecharger-prologue.sh` : il ajoute les androïdes, les espèces et la bibliothèque d'animations. Puis, dans l'ordre : `normaliser-prologue.py`, `rigger-statues.py` (`pip install bpy scipy`), `recolorer-prologue.py` (`pip install pillow numpy`). |
+| Toi, sur le Mac | Relancer `outils/telecharger-prologue.sh` : il ajoute les androïdes, les espèces et la bibliothèque d'animations. Puis, dans l'ordre : `normaliser-prologue.py`, `rigger-statues.py` (`pip install bpy scipy`), `recolorer-prologue.py` (`pip install pillow numpy`). **Si `rigger-statues.py` a déjà tourné avant le 30 octobre, le relancer**, puis `recolorer-prologue.py` : la correction du rig ne s'applique qu'aux statues riggées de nouveau. |
 | Meshy (gratuit) | Les remplaçants et les pièces qui manquent : [`ia/PROMPTS-MESHY.md`](ia/PROMPTS-MESHY.md) (androïde de l'Empire, pirate, chef pirate animable, détenu de corvée, vieux détenu habillé…). |
 | Le Claude du PC (Blender) | Corriger le squelette de la combinaison étanche ; alléger les modèles trop lourds ; effacer « police » et « security ». |
 | L'IA 3D (avec ton jeton) | L'androïde de l'Empire à la forme exacte de la bible, et le vieux détenu rhabillé ([`ia/fiches.json`](ia/fiches.json)). |

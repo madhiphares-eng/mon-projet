@@ -112,7 +112,7 @@ function tournerMonde(os, dq) {
   os.quaternion.premultiply(pw.clone().invert().multiply(dq).multiply(pw));
   os.updateMatrixWorld(true);
 }
-function orienterMonde(os, cible) {
+export function orienterMonde(os, cible) {
   const pw = os.parent.getWorldQuaternion(q());
   os.quaternion.copy(pw.invert().multiply(cible));
   os.updateMatrixWorld(true);
@@ -123,7 +123,7 @@ function base(a, b) {
   return q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
 }
 // cinématique inverse à deux os : le poignet va sur la cible, le coude du côté du pôle
-function ik2(haut, milieu, bout, cible, pole) {
+export function ik2(haut, milieu, bout, cible, pole) {
   const S = haut.getWorldPosition(v()), E = milieu.getWorldPosition(v()), W = bout.getWorldPosition(v());
   const a = S.distanceTo(E), b = E.distanceTo(W);
   const vers = cible.clone().sub(S), dist = vers.length();

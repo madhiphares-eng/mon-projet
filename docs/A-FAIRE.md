@@ -58,7 +58,7 @@ Exporte en **GLB**, puis dépose les fichiers dans le dossier [`depot-modeles`](
 
 Dans l'ordre, sur le dossier du prologue :
 1. `normaliser-prologue.py` : la taille réelle, en mètres.
-2. `rigger-statues.py` : un squelette pour les statues. Il demande une fois : `pip install bpy scipy`.
+2. `rigger-statues.py` : un squelette pour les statues. Il demande une fois : `pip install bpy scipy`. **Relance-le même si tu l'as déjà fait** : le 30 octobre, le bot des mouvements y a trouvé un bug qui liait mal la peau des statues qui ne sont pas en mètres. Les pieds de 6 d'entre elles passaient sous le sol, et 4 autres ne s'animaient pas du tout. Il repart des originaux (`.statue.glb`), rien n'est perdu ([`prologue/ANIMATIONS.md`](prologue/ANIMATIONS.md), § 5).
 3. `recolorer-prologue.py` : les couleurs de la bible. Il demande une fois : `pip install pillow numpy`. **Relance-le même si tu l'as déjà fait** : sa version 2 refait chaque modèle depuis son original (elle corrige une teinte appliquée deux fois, assombrit les deux androïdes candidats et retire le « police » du bleu).
 
 Ensuite, dans Unity :
@@ -74,7 +74,7 @@ Les 84 animations de la bibliothèque et les 23 du studio s'appliquent alors à 
 | Quoi | Pourquoi |
 |---|---|
 | Choisir l'androïde principal : le bleu (conseillé) ou l'orange, d'après la planche [`androides-sombres.jpg`](prologue/personnages/androides-sombres.jpg) | Les deux sont déjà assombris ; l'orange se confond avec les détenus, sa variante rouge sombre non (bible, § 4) |
-| Les autres prompts Meshy : chef pirate animable, vieux détenu habillé, combinaison du Veilleur, porte, lit, console, capsule… | Remplacer tout ce que la bible marque « à remplacer » |
+| Les autres prompts Meshy : vieux détenu habillé, combinaison du Veilleur, porte, lit, console, capsule… (le chef pirate s'anime maintenant, grâce au rig corrigé) | Remplacer tout ce que la bible marque « à remplacer » |
 | Le jeton Hugging Face dans les secrets de l'environnement cloud (`HF_TOKEN`) | Le Claude du cloud fabrique alors lui-même des modèles avec une IA libre, sans limite de licence |
 | Alléger les modèles trop lourds (pirates, androïde lourd, cératopsien) | Le budget est de 60 000 faces par personnage |
 
@@ -86,3 +86,4 @@ Les 84 animations de la bibliothèque et les 23 du studio s'appliquent alors à 
 - **Les animations maison** : 23 animations fabriquées par `outils/studio-animations.py` (fusil à deux mains, androïdes, détenus, espèces).
 - **Les vues et les effets** : la vue 3e personne, la navette (cockpit, poursuite), neuf effets (fumées, flammes et explosions simulées) ; dans le navigateur et dans Unity.
 - **Le bot de prise des armes** : les mains exactement sur l'arme, pour tous les personnages, avec un contrôle automatique des os et de la peau.
+- **Le bot des mouvements** : les pieds au sol, sans flotter ni s'enfoncer, et des boucles sans à-coup, dans les 23 animations au sol des 28 personnages ; en jeu, `AncragePieds` pose les pieds sur le vrai sol ([`prologue/ANIMATIONS.md`](prologue/ANIMATIONS.md)).

@@ -10,7 +10,7 @@ Jeu d'action et d'aventure à la troisième personne, réaliste (Unity 6 HDRP). 
 | Où | Ce qu'il y a |
 |---|---|
 | [`docs/PREPRODUCTION.md`](docs/PREPRODUCTION.md) | Le jeu : l'histoire, les références, le prologue, la galaxie ouverte |
-| [`docs/prologue/`](docs/prologue/) | Le prologue : [bible de direction artistique](docs/prologue/BIBLE-DA.md), [plan du niveau](docs/prologue/PLAN-NIVEAU.md), [personnages](docs/prologue/PERSONNAGES.md), [prises d'armes](docs/prologue/PRISES-ARMES.md), [vues et effets](docs/prologue/VUES-ET-EFFETS.md). Les images sont rangées par sujet : `catalogue/`, `maquette/`, `da/`, `personnages/` (et ses vidéos), `plans/`, `prises/`, `vues/` |
+| [`docs/prologue/`](docs/prologue/) | Le prologue : [bible de direction artistique](docs/prologue/BIBLE-DA.md), [plan du niveau](docs/prologue/PLAN-NIVEAU.md), [personnages](docs/prologue/PERSONNAGES.md), [animations](docs/prologue/ANIMATIONS.md), [prises d'armes](docs/prologue/PRISES-ARMES.md), [vues et effets](docs/prologue/VUES-ET-EFFETS.md). Les images sont rangées par sujet : `catalogue/`, `maquette/`, `da/`, `personnages/` (et ses vidéos), `animations/`, `plans/`, `prises/`, `vues/` |
 | [`docs/PROLOGUE-MODELES.md`](docs/PROLOGUE-MODELES.md) | Les 101 modèles du prologue, leurs auteurs et licences |
 | [`docs/IA-3D.md`](docs/IA-3D.md), [`docs/prologue/ia/`](docs/prologue/ia/) | Fabriquer des modèles avec une IA (Meshy) ; les déposer dans [`depot-modeles/`](depot-modeles/LISEZ-MOI.md) |
 | [`docs/ASSETS.md`](docs/ASSETS.md), [`docs/UNIVERS-TECHNIQUE.md`](docs/UNIVERS-TECHNIQUE.md) | Pour la suite : les assets libres de la galaxie ouverte, la fiche technique de l'univers |

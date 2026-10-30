@@ -30,7 +30,11 @@ STATUES = {
     '01-Joueur/tenue-detenu': 'souple',
     '03-Gardes/androide-medical': 'rigide',
     '03-Gardes/androide-lourd': 'rigide',
+    '03-Gardes/androide-soldat': 'rigide',          # marche et garde ; des pièces décollent dans les gestes amples
+    '03-Gardes/androide-vieux-modele': 'rigide',    # idem : une patrouille, sans arme tenue
     '04-Pirates/pirate-masque': 'souple',
+    '04-Pirates/pirate-chef': 'souple',
+    '16-Especes/mutant-biomecanique': 'souple',
     # les autres espèces : des corps, donc des poids souples
     '16-Especes/saurien-guerrier': 'souple',
     '16-Especes/ceratopsien': 'souple',
@@ -39,9 +43,8 @@ STATUES = {
     '16-Especes/cephalopode': 'souple',
     '16-Especes/ichtyen': 'souple',
 }
-# Restent sans squelette, le script les rate : androide-soldat, androide-fantassin, androide-vieux-modele (pièces sans nom,
-# des androïdes en réparation dans les ateliers), pirate-chef (son long manteau : il attend, immobile), mutant-biomecanique
-# (un spécimen de décor). Pour les animer : Mixamo, ou les refaire avec Meshy (docs/prologue/ia/PROMPTS-MESHY.md).
+# Reste sans squelette : androide-fantassin (1 800 pièces détachées sans nom, il s'éparpille ; un androïde en réparation
+# dans un atelier). Pour l'animer : le refaire avec Meshy (docs/prologue/ia/PROMPTS-MESHY.md).
 # les pièces qui ne font pas partie du corps : socles, armes tenues à la main (on donnera l'arme à part)
 RETIRER = re.compile(r'(pcylinder|pedestal|socle|stand|base_?plate|gun|weapon|rifle|pistol)', re.I)
 # les pièces nommées d'un robot : elles suivent l'os de leur nom, sans se déformer (anglais, et le russe d'un des modèles)
@@ -146,6 +149,10 @@ def ajuster(arm, P):
     cx, cy = (P[:, 0].min() + P[:, 0].max()) / 2, np.median(P[:, 1])
     arm.scale = (s, s, s)
     arm.location = (cx, cy, zmin)
+    # l'échelle doit entrer dans les os : transform_apply ne touche que les objets sélectionnés (sans cela, sur un modèle
+    # qui n'est pas en mètres, les os restaient 10 à 20 fois trop grands pour le calcul des poids, et les pieds suivaient la cuisse)
+    bpy.ops.object.select_all(action='DESELECT')
+    arm.select_set(True)
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
     bpy.ops.object.mode_set(mode='EDIT')

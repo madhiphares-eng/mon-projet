@@ -72,6 +72,7 @@ namespace EchosEther.Prologue
             {
                 if (clips[i] == null) continue;
                 var p = AnimationClipPlayable.Create(graphe, clips[i]);
+                p.SetApplyFootIK(true);   // l'IK des pieds intégré aux Humanoid : les pieds de la cible retrouvent ceux de l'animation
                 graphe.Connect(p, 0, mixeur, i);
                 mixeur.SetInputWeight(i, 0f);
                 entrees[NomCourt(clips[i].name)] = i;

@@ -199,7 +199,8 @@ def recolorer(chemin, da):
         if not os.path.exists(origine):
             return "déjà recoloré avec un autre réglage, mais l'original manque pour recommencer"
         gltf, binaire = lire(origine)
-    elif not os.path.exists(origine):
+    else:
+        # pas encore recoloré : c'est le nouvel original (un modèle re-riggé ou re-téléchargé), il remplace l'ancien
         shutil.copy2(chemin, origine)
     retires = 0
     if da.get('inscriptions'):

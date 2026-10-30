@@ -18,6 +18,8 @@ namespace EchosEther.Prologue
         public float vitesse = 1f;
         public float fondu = 0.3f;
         public bool decaler = true;
+        [Tooltip("Ajoute l'ancrage des pieds (AncragePieds) s'il manque : les pieds suivent le sol et ne glissent plus")]
+        public bool ancrerLesPieds = true;
 
         PlayableGraph graphe;
         AnimationMixerPlayable mixeur;
@@ -28,6 +30,8 @@ namespace EchosEther.Prologue
         {
             if (animateur == null) animateur = GetComponentInChildren<Animator>();
             if (animateur == null || clips == null || clips.Length == 0) return;
+            if (ancrerLesPieds && animateur.isHuman && GetComponent<AncragePieds>() == null)
+                gameObject.AddComponent<AncragePieds>().animateur = animateur;
             graphe = PlayableGraph.Create("PNJ " + name);
             graphe.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
             mixeur = AnimationMixerPlayable.Create(graphe, clips.Length);
@@ -36,6 +40,7 @@ namespace EchosEther.Prologue
                 if (clips[i] == null) continue;
                 var p = AnimationClipPlayable.Create(graphe, clips[i]);
                 p.SetSpeed(vitesse);
+                p.SetApplyFootIK(true);   // l'IK des pieds intégré aux Humanoid : les pieds de la cible retrouvent ceux de l'animation
                 graphe.Connect(p, 0, mixeur, i);
                 mixeur.SetInputWeight(i, i == 0 ? 1f : 0f);
             }

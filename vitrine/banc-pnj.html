@@ -44,6 +44,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as Squelettes from 'three/addons/utils/SkeletonUtils.js';
 import { Prise, fabriquerArme, tenuePour, calibrerAppui, jugerPeau, cout as coutPose } from './prise-armes.js';
+import { noterPieds, analyser as analyserMouvement, mesurer as mesurerMouvement, ancrer } from './bot-mouvements.js';
 
 // Les personnages du prologue. camp : detenu, androide, pirate, heros. hauteur : la taille voulue en jeu (m).
 // ecarte : gardé pour mémoire mais retiré du jeu (raison donnée).
@@ -60,11 +61,11 @@ const PNJ = [
   { cle: '03-Gardes/androide-antiemeute', camp: 'androide', hauteur: 2.0, titre: 'Robot Police Unit (animated)', auteur: 'Jungle Jim' },
   { cle: '03-Gardes/androide-sentinelle', camp: 'androide', hauteur: 1.95, titre: 'Old War Droid Alfa 01', auteur: 'Donjuan301' },
   { cle: '03-Gardes/androide-patrouille', camp: 'androide', hauteur: 1.9, titre: 'Robot', auteur: 'dangry' },
-  { cle: '03-Gardes/androide-soldat', camp: 'androide', hauteur: 2.0, titre: 'Robo-soldier', auteur: 'efforya' },
-  { cle: '03-Gardes/androide-fantassin', camp: 'androide', hauteur: 1.95, titre: 'Robot Soldier', auteur: 'Moonlightlll' },
+  { cle: '03-Gardes/androide-soldat', camp: 'androide', hauteur: 2.0, titre: 'Robo-soldier', auteur: 'efforya', note: 'riggé par le script : il marche et garde ; des pièces décollent dans les gestes amples' },
+  { cle: '03-Gardes/androide-fantassin', camp: 'androide', hauteur: 1.95, titre: 'Robot Soldier', auteur: 'Moonlightlll', note: 'statue : 1 800 pièces sans nom, le rig automatique l’éparpille ; un androïde en réparation dans un atelier' },
   { cle: '03-Gardes/androide-lourd', camp: 'androide', hauteur: 2.6, titre: 'Security robot', auteur: '3DWorkbench' },
   { cle: '03-Gardes/androide-medical', camp: 'androide', hauteur: 1.85, titre: 'Medical Android', auteur: 'efforya' },
-  { cle: '03-Gardes/androide-vieux-modele', camp: 'androide', hauteur: 1.85, titre: 'RoboPolice', auteur: 'ilasolomon' },
+  { cle: '03-Gardes/androide-vieux-modele', camp: 'androide', hauteur: 1.85, titre: 'RoboPolice', auteur: 'ilasolomon', note: 'riggé par le script : une patrouille, sans arme tenue' },
   { cle: '03-Gardes/drone-securite', camp: 'androide', hauteur: 0.9, titre: 'Security drone', auteur: 'SteelBlue8', vol: 2.2 },
   { cle: '03-Gardes/marcheur-blinde', camp: 'androide', hauteur: 3.2, titre: 'Medium Mech Striker', auteur: 'MSGDI' },
   // les autres espèces de la galaxie : détenus et pirates qui ne sont pas humains
@@ -80,10 +81,10 @@ const PNJ = [
   { cle: '16-Especes/cephalopode', camp: 'espece', hauteur: 1.9, titre: 'Mutant Soldier', auteur: 'dakotakimble' },
   { cle: '16-Especes/ichtyen', camp: 'espece', hauteur: 1.8, titre: 'Fishman', auteur: 'w7w728115' },
   { cle: '16-Especes/mercenaire-alien', camp: 'espece', hauteur: 1.9, titre: 'Free Game Character - Alien', auteur: 'kaanTezcan' },
-  { cle: '16-Especes/mutant-biomecanique', camp: 'espece', hauteur: 2.0, titre: 'Free - Biomechanical Mutant', auteur: 'Game-Ready', note: 'statue : un spécimen de décor, dans une cuve du laboratoire' },
+  { cle: '16-Especes/mutant-biomecanique', camp: 'espece', hauteur: 2.0, titre: 'Free - Biomechanical Mutant', auteur: 'Game-Ready' },
   { cle: '04-Pirates/pirate', camp: 'pirate', hauteur: 1.85, titre: 'Scavenger', auteur: 'Vasian-Digital3D', retirer: ['Portal'], ecarte: 'squelette cassé à la source (échelles ×1000, ×0,001, ×71 empilées) : le corps ne s’affiche pas ; à remplacer (Meshy)' },
   { cle: '04-Pirates/pirate-eva', camp: 'pirate', hauteur: 1.9, titre: 'Mercenary Astronaut', auteur: 'Peter_D' },
-  { cle: '04-Pirates/pirate-chef', camp: 'pirate', hauteur: 1.95, titre: 'Space Pirate', auteur: 'Odlab', retirer: ['pCylinder1'], note: 'statue : le rig automatique rate son long manteau ; il attend immobile (Mixamo ou Meshy pour l’animer)' },
+  { cle: '04-Pirates/pirate-chef', camp: 'pirate', hauteur: 1.95, titre: 'Space Pirate', auteur: 'Odlab', retirer: ['pCylinder1'] },
   { cle: '04-Pirates/pirate-masque', camp: 'pirate', hauteur: 1.85, titre: 'post apo character', auteur: 'Am I dead?' },
 ];
 const CAMPS = { heros: 'Le héros', detenu: 'Détenus', espece: 'Autres espèces', androide: 'Sécurité : androïdes', pirate: 'Pirates' };
@@ -400,11 +401,43 @@ function preparerCible(r) {
   r.objet.updateMatrixWorld(true);
   const cib = cartographier(r.objet);
   if (!cib || cib.manque.length) return { manque: cib ? cib.manque : ['squelette'] };
-  return { cib, recibles: new Map() };
+  return { cib, recibles: new Map(), ancres: new Map() };
+}
+
+// Le bot des mouvements ancre les pieds au sol dans toutes les animations où ils doivent y rester
+// (pas les sauts, la nage, l'escalade ni les chutes, où ils le quittent pour de bon).
+let ancrage = true;
+const SANS_ANCRAGE = /^(Jump|NinjaJump|Swim|Roll|Death|LayTo|Slide|ClimbUp|Driving|Sitting|Hit_Knockback|A_TPose)/;
+const estBoucle = nom => /_Loop$/.test(nom) || (/^(Fusil|Androide|Detenu|Gris|Saurien)_/.test(nom) && !/Rechargement|Panne|Redemarrage/.test(nom));
+function poserClip(r, c, u) {
+  r.mixeur.stopAllAction();
+  r.mixeur.clipAction(c).reset().play();
+  r.mixeur.setTime(c.duration * u);
+  r.objet.updateMatrixWorld(true);
+}
+function piedsDe(r) {
+  if (r.pieds === undefined) {
+    remettre(r); r.objet.updateMatrixWorld(true);
+    r.pieds = noterPieds(r.reciblage.cib.carte, r.objet);
+  }
+  return r.pieds;
 }
 
 function recibler(r, nom) {
   const prep = r.reciblage; if (!prep?.cib) return null;
+  const brut = reciblerBrut(r, nom);
+  if (!ancrage || !brut || SANS_ANCRAGE.test(nom)) return brut;
+  if (!prep.ancres.has(nom)) {
+    const P = piedsDe(r);
+    const ancre = P ? ancrer(P, brut, u => poserClip(r, brut, u), { boucle: estBoucle(nom) }) : null;
+    r.mixeur.stopAllAction(); r.mixeur.uncacheClip(brut); remettre(r);
+    prep.ancres.set(nom, ancre || brut);
+  }
+  return prep.ancres.get(nom);
+}
+
+function reciblerBrut(r, nom) {
+  const prep = r.reciblage;
   if (prep.recibles.has(nom)) return prep.recibles.get(nom);
   const { clip, source } = biblio.sources.get(nom);
   // tout au repos
@@ -634,6 +667,37 @@ function placerArme(r) {
 }
 let armes = true;                                // les armes et leur prise (désactivables pour comparer)
 
+// le bot des mouvements : chaque personnage, chaque animation, avant et après l'ancrage des pieds
+function controlerMouvements(clips) {
+  const rapport = [];
+  for (const r of bancs) {
+    if (!r.objet || !r.reciblage?.cib || r.ecarte) continue;
+    const P = piedsDe(r);
+    if (!P) { rapport.push({ cle: r.cle, nom: r.cle.split('/')[1], camp: r.camp, sansPieds: true }); continue; }
+    const peau = r.prise?.notesPeau ? () => r.prise.peau() : null;
+    const perso = { cle: r.cle, nom: r.cle.split('/')[1], camp: r.camp, clips: {} };
+    for (const nom of clips) {
+      if (!biblio.sources.has(nom)) continue;
+      const brut = reciblerBrut(r, nom);
+      if (!brut) continue;
+      const boucle = estBoucle(nom);
+      // l'animation d'origine est analysée une fois : la version corrigée est mesurée sur les mêmes phases d'appui
+      const reference = analyserMouvement(P, u => poserClip(r, brut, u), brut.duration);
+      const avant = mesurerMouvement(P, u => poserClip(r, brut, u), brut.duration, { boucle, peau, reference });
+      let apres = null;
+      if (!SANS_ANCRAGE.test(nom)) {
+        const anc = ancrage ? recibler(r, nom) : ancrer(P, brut, u => poserClip(r, brut, u), { boucle });
+        if (anc && anc !== brut) apres = mesurerMouvement(P, u => poserClip(r, anc, u), anc.duration, { boucle, peau, reference });
+      }
+      perso.clips[nom] = { avant, apres };
+    }
+    rapport.push(perso);
+    remettre(r);
+    if (r.biblioActif) jouerBiblio(r, r.biblioActif, true);
+  }
+  return rapport;
+}
+
 // le bot : chaque personnage, chaque animation d'arme, huit instants ; il mesure ce qui ne va pas
 function controlerPrises(clips) {
   const rapport = [];
@@ -688,6 +752,19 @@ function controlerPrises(clips) {
 // pour les tests automatiques
 window.banc = {
   pret: false, bancs, cadrer: i => cadrer(bancs[i]), figer: f => { figer = f; },
+  controlerMouvements,
+  sonderAncrage: (i, nom) => {   // pour le débogage : la hauteur des hanches, avant et après l'ancrage
+    const r = bancs[i], brut = reciblerBrut(r, nom), anc = recibler(r, nom), P = piedsDe(r);
+    const piste = c => c.tracks.find(t => t.name === P.hanches.uuid + '.position');
+    const a = piste(brut), b = piste(anc);
+    return { meme: brut === anc, pistes: [brut.tracks.length, anc.tracks.length], hanchesAvant: a && Array.from(a.values.slice(0, 6)), hanchesApres: b && Array.from(b.values.slice(0, 6)),
+      parent: P.hanches.parent?.name, echelle: P.hanches.parent?.getWorldScale(new THREE.Vector3()).toArray() };
+  },
+  pieds: i => { const r = bancs[i], P = r.reciblage?.cib ? piedsDe(r) : null; return P && { k: P.k, sol: P.sol, parSommets: P.parSommets, sommets: [P.g.sommets.length, P.d.sommets.length], bas: r.objet.position.y } },
+  ancrage: oui => {   // pieds ancrés ou non (pour comparer) : les animations sont refaites à la demande
+    ancrage = !!oui;
+    for (const r of bancs) if (r.reciblage?.cib) { r.reciblage.ancres.clear(); if (r.biblioActif) jouerBiblio(r, r.biblioActif, true); }
+  },
   rapport: () => bancs.map(({ objet, mixeur, clips, repos, reciblage, clipActif, ...r }) => ({ ...r, reciblable: !!reciblage?.cib, manque: reciblage?.manque || null })),
   biblio: () => biblio.clips.slice(),
   pourTous: nom => jouerPourTous(nom),

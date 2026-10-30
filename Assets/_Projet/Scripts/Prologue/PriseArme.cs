@@ -114,7 +114,7 @@ namespace EchosEther.Prologue
             return Quaternion.LookRotation(prise.forward, prise.up) * Quaternion.Inverse(Quaternion.LookRotation(p.doigts, p.normale));
         }
 
-        static Bras Ik(Transform haut, Transform milieu, Transform bout, Vector3 cible, Vector3 pole)
+        internal static Bras Ik(Transform haut, Transform milieu, Transform bout, Vector3 cible, Vector3 pole)
         {
             Vector3 S = haut.position, E = milieu.position, W = bout.position;
             float a = Vector3.Distance(S, E), b = Vector3.Distance(E, W);
