@@ -84,6 +84,13 @@ L'Empire ne confie pas la garde du Colosse à des hommes : **toute la sécurité
 - **jamais de cyan** (il est aux Bâtisseurs) ni d'orange (il est aux détenus) : les modèles qui en ont sont recolorés ;
 - l'usure suit la règle du Chantier : sous 1,5 m, frottements et éclats ; au-dessus, l'acier reste propre.
 
+**L'androïde principal : le bleu ou l'orange, assombri** (choix de l'auteur, 30 octobre 2026). Les deux candidats sont du même auteur (Jungle Jim), animés, et le bot de prise leur met une arme en main sans défaut (`PRISES-ARMES.md`). Ils ont été assombris sans être grisés : seule leur peinture est traitée (réglage `peinture` de `tailles-modeles.json`), l'acier et les détails restent.
+
+![Les deux candidats, avant et après](personnages/androides-sombres.jpg)
+
+- **Le bleu, `androide-antiemeute`** : bleu nuit (la peinture à 60 % de sa luminosité), capteurs passés au rouge de l'Empire, inscription « police » retirée (les lettres étaient une plaque en relief posée devant le torse : ses triangles sont enlevés, le torse est intact derrière). Il respecte toutes les règles ci-dessus : c'est le choix conseillé.
+- **L'orange, `droide-securite`** : orange brûlé (30 % de sa luminosité). Attention, l'orange est la couleur des détenus : à 40 m, un androïde orange se confond avec eux. S'il est choisi, la variante **rouge sombre** (le rouge de l'Empire, même planche) garde son allure et sa lisibilité : il suffit d'ajouter `"vers": 1` à sa peinture.
+
 **La famille**, du plus courant au plus rare :
 
 | Rôle | Modèle | Où |
@@ -288,9 +295,9 @@ Les 13 derniers (10 androïdes et drones, 3 détenus) ont été ajoutés quand l
 | `detenu-figurant` | Gardé | Combinaison orange, 2 000 faces : la foule, au loin. |
 | `detenu-corvee-toxique` | Gardé | Combinaison étanche orange : les ateliers toxiques, une fois son squelette corrigé dans Blender. |
 | `garde` | À remplacer | Un garde humain : la sécurité n'est faite que d'androïdes. Remplacé par l'androïde de l'Empire (IA) et, en attendant, par les androïdes ci-dessous. |
-| `droide-securite` | Recoloré | Orange → acier sombre et rouge de l'Empire. La garde rapprochée des officiers. |
+| `droide-securite` | Recoloré | Orange → orange brûlé, assombri (ou rouge sombre de l'Empire, voir § 4). Candidat à l'androïde principal ; sinon la garde rapprochée des officiers. |
 | `androide-sentinelle` | Recoloré | Sans visage, articulations visibles : le garde de base. Désaturé. |
-| `androide-antiemeute` | Recoloré | Bleu → acier. L'inscription « police » du torse est à effacer. |
+| `androide-antiemeute` | Recoloré | Bleu → bleu nuit, capteurs rouges, inscription « police » retirée. Candidat conseillé à l'androïde principal (§ 4). |
 | `androide-patrouille` | Recoloré | Désaturé. Animé pièce par pièce. |
 | `androide-soldat` | Recoloré | Vert militaire → acier. En réparation dans les ateliers. |
 | `androide-fantassin` | Recoloré | Vert militaire → acier. Posé avec son arme : décor, ou squelette à faire. |

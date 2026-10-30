@@ -169,9 +169,9 @@ Leurs remplaçants sont à faire avec Meshy : voir [`ia/PROMPTS-MESHY.md`](ia/PR
 | `detenu-corvee-toxique` | — | Cassé à la source | — | 55 k | **Retiré** : à refaire avec Meshy |
 | `detenu-atelier` | — | Non humain | — | 35 k | **Retiré** : personnage d'un autre jeu |
 | `garde` | — | Mixamo | — | 107 k | **Retiré** : garde humain |
-| `droide-securite` | Androïdes | Character Creator, 84 os | Oui | 125 k | Garde des officiers ; à alléger |
+| `droide-securite` | Androïdes | Character Creator, 84 os | Oui | 125 k | Candidat à l'androïde principal (orange brûlé) ; à alléger |
 | `androide-sentinelle` | Androïdes | Character Creator, 265 os | Oui | 28 k | **Le garde de base** |
-| `androide-antiemeute` | Androïdes | Character Creator, 102 os | Oui | 20 k | Effacer « police » |
+| `androide-antiemeute` | Androïdes | Character Creator, 102 os | Oui | 20 k | **Candidat conseillé à l'androïde principal** : bleu nuit, « police » retiré |
 | `androide-patrouille` | Androïdes | Pièces animées | — | 68 k | Sa propre animation |
 | `androide-medical`, `androide-lourd` | Androïdes | Fait par le script | Oui | 21 k, 241 k | Le lourd est à alléger |
 | `androide-soldat`, `-fantassin`, `-vieux-modele` | Androïdes | Script : échec | — | 21-32 k | Décors |

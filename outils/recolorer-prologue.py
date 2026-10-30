@@ -8,7 +8,12 @@ couleurs du Colosse (acier sombre, un seul rouge pour l'Empire, pas de cyan hors
 Le calcul est celui de l'atelier :
   - la saturation est réduite (da.saturation, 0,7 par défaut : le style unifié) ;
   - la couleur est multipliée par une teinte froide (0,90 ; 0,94 ; 1,00), elle-même multipliée par da.teinte ;
-  - si da.emissif est donné, les parties lumineuses prennent cette couleur, à intensité égale (un voyant bleu devient ambre).
+  - si da.emissif est donné, les parties lumineuses prennent cette couleur, à intensité égale (un voyant bleu devient ambre) ;
+  - si da.peinture est donné, la peinture d'un modèle (ses pixels saturés, autour de la teinte « teinte », en degrés) est
+    traitée à part, au lieu de devenir de l'acier : sa teinte peut changer (« vers », en degrés), sa saturation et sa
+    luminosité sont multipliées (« saturation », « luminosite »). Un bleu vif devient un bleu nuit, sans griser le reste ;
+  - si da.inscriptions est donné, les triangles entièrement dans une de ses boîtes (coordonnées du maillage) sont retirés :
+    une inscription en relief posée devant une coque (« police » sur un torse).
 
 Usage :
   pip install pillow numpy
@@ -32,6 +37,9 @@ from PIL import Image
 
 DEPOT = 'https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/docs/prologue/'
 FROID = (0.90, 0.94, 1.00)
+POIDS = np.array([0.2126, 0.7152, 0.0722])
+# 2 : la couleur de base d'un matériau texturé n'est plus étalonnée deux fois (facteur et texture) ; peinture, inscriptions
+VERSION = 2
 
 
 def table(nom):
@@ -75,10 +83,48 @@ def srgb(c):
     return np.where(c <= 0.0031308, c * 12.92, 1.055 * c ** (1 / 2.4) - 0.055)
 
 
-def etalonner_rgb(rgb, saturation, teinte):
-    """rgb linéaire (…, 3) → recoloré, comme le shader de l'atelier."""
-    lum = rgb @ np.array([0.2126, 0.7152, 0.0722])
-    return (lum[..., None] + (rgb - lum[..., None]) * saturation) * np.array(teinte)
+def lisse(a, b, x):
+    t = np.clip((x - a) / (b - a), 0, 1)
+    return t * t * (3 - 2 * t)
+
+
+def teinte_deg(rgb):
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    d = mx - mn + 1e-8
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    return np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
+
+
+def changer_teinte(rgb, h):
+    """Même saturation, même valeur (TSV), autre teinte (degrés)."""
+    mx, mn = rgb.max(-1, keepdims=True), rgb.min(-1, keepdims=True)
+    k = (np.array([5, 3, 1]) + h / 60) % 6
+    return mx - (mx - mn) * np.clip(np.minimum(k, 4 - k), 0, 1)
+
+
+def desaturer(rgb, saturation):
+    lum = (rgb @ POIDS)[..., None]
+    return lum + (rgb - lum) * saturation
+
+
+def etalonnage(da):
+    """La fonction rgb linéaire (…, 3) → recoloré, comme le shader de l'atelier."""
+    saturation = da.get('saturation', 0.7)
+    teinte = np.array([FROID[i] * (da.get('teinte') or [1, 1, 1])[i] for i in range(3)])
+    peinture = da.get('peinture')
+
+    def f(rgb):
+        sortie = desaturer(rgb, saturation) * teinte
+        if peinture:
+            mx = rgb.max(-1)
+            s = (mx - rgb.min(-1)) / np.maximum(mx, 1e-4)
+            ecart = np.abs((teinte_deg(rgb) - peinture['teinte'] + 180) % 360 - 180)
+            w = lisse(0.4, 0.65, s) * (1 - lisse(30, 50, ecart)) * lisse(0.003, 0.012, mx)
+            p = changer_teinte(rgb, peinture['vers']) if 'vers' in peinture else rgb
+            p = desaturer(p, peinture.get('saturation', 1)) * peinture.get('luminosite', 1)
+            sortie = sortie + (p - sortie) * w[..., None]
+        return sortie
+    return f
 
 
 def traiter_image(octets, mime, fonction):
@@ -98,11 +144,52 @@ def traiter_image(octets, mime, fonction):
     return tampon.getvalue(), mime
 
 
+def attribut(gltf, binaire, i):
+    """Un attribut de sommets en flottants serrés : (tableau, position dans le binaire), ou (None, None)."""
+    a = gltf['accessors'][i]
+    n = {'SCALAR': 1, 'VEC2': 2, 'VEC3': 3, 'VEC4': 4}[a['type']]
+    if 'bufferView' not in a or a['componentType'] != 5126 or a.get('sparse'):
+        return None, None
+    v = gltf['bufferViews'][a['bufferView']]
+    if v.get('byteStride', 4 * n) != 4 * n:
+        return None, None
+    debut = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+    return np.frombuffer(binaire, np.float32, a['count'] * n, debut).reshape(-1, n).copy(), debut
+
+
+def retirer(gltf, binaire, boites):
+    """Retire les triangles entièrement dans une des boîtes (coordonnées du maillage) : une inscription en relief posée
+    devant une coque. Ils deviennent dégénérés (trois fois le même sommet) ; rien d'autre ne bouge dans le fichier."""
+    binaire, retires = bytearray(binaire), 0
+    for maillage in gltf.get('meshes', []):
+        for p in maillage['primitives']:
+            if 'indices' not in p or p.get('mode', 4) != 4 or 'POSITION' not in p['attributes']:
+                continue
+            pos, _ = attribut(gltf, binaire, p['attributes']['POSITION'])
+            a = gltf['accessors'][p['indices']]
+            if pos is None or 'bufferView' not in a:
+                continue
+            v = gltf['bufferViews'][a['bufferView']]
+            debut = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+            tri = np.frombuffer(binaire, {5121: np.uint8, 5123: np.uint16, 5125: np.uint32}[a['componentType']],
+                                a['count'], debut).reshape(-1, 3).copy()
+            dedans = np.zeros(len(pos), bool)
+            for b0, b1 in boites:
+                dedans |= np.all((pos >= b0) & (pos <= b1), axis=1)
+            t = dedans[tri].all(axis=1) & (tri[:, 0] != tri[:, 1])
+            tri[t] = tri[t, :1]
+            retires += int(t.sum())
+            binaire[debut:debut + tri.nbytes] = tri.tobytes()
+    return bytes(binaire), retires
+
+
 def recolorer(chemin, da):
     saturation = da.get('saturation', 0.7)
     teinte = [FROID[i] * (da.get('teinte') or [1, 1, 1])[i] for i in range(3)]
     emissif = da.get('emissif')
-    signature = {'saturation': saturation, 'teinte': [round(v, 4) for v in teinte], 'emissif': emissif}
+    signature = {'version': VERSION, 'saturation': saturation, 'teinte': [round(v, 4) for v in teinte], 'emissif': emissif,
+                 'peinture': da.get('peinture'), 'inscriptions': da.get('inscriptions')}
+    f = etalonnage(da)
     origine = chemin[:-4] + '.couleurs-origine.glb'
     gltf, binaire = lire(chemin)
     fait = gltf.get('asset', {}).get('extras', {}).get('echos_couleurs')
@@ -114,14 +201,19 @@ def recolorer(chemin, da):
         gltf, binaire = lire(origine)
     elif not os.path.exists(origine):
         shutil.copy2(chemin, origine)
+    retires = 0
+    if da.get('inscriptions'):
+        binaire, retires = retirer(gltf, binaire, da['inscriptions'])
     # quelles images servent de couleur de base, lesquelles de lumière
     couleur, lumiere = set(), set()
     for m in gltf.get('materials', []):
         pbr = m.setdefault('pbrMetallicRoughness', {})
         if 'baseColorTexture' in pbr:
+            # la texture est recolorée ; le facteur (souvent blanc) reste, sinon la teinte s'appliquerait deux fois
             couleur.add(gltf['textures'][pbr['baseColorTexture']['index']]['source'])
-        f = pbr.get('baseColorFactor', [1, 1, 1, 1])
-        pbr['baseColorFactor'] = [round(float(v), 5) for v in etalonner_rgb(np.array(f[:3]), saturation, teinte)] + [f[3]]
+        else:
+            c = pbr.get('baseColorFactor', [1, 1, 1, 1])
+            pbr['baseColorFactor'] = [round(float(v), 5) for v in f(np.array(c[:3]))] + [c[3]]
         if emissif and 'emissiveTexture' in m:
             lumiere.add(gltf['textures'][m['emissiveTexture']['index']]['source'])
         if emissif and any(m.get('emissiveFactor', [0, 0, 0])):
@@ -144,8 +236,7 @@ def recolorer(chemin, da):
         v = vues[image['bufferView']]
         octets = binaire[v.get('byteOffset', 0):v.get('byteOffset', 0) + v['byteLength']]
         if i in couleur:
-            remplacements[image['bufferView']] = traiter_image(octets, image.get('mimeType', 'image/png'),
-                                                              lambda c: etalonner_rgb(c, saturation, teinte))
+            remplacements[image['bufferView']] = traiter_image(octets, image.get('mimeType', 'image/png'), f)
         elif i in lumiere:
             remplacements[image['bufferView']] = traiter_image(octets, image.get('mimeType', 'image/png'),
                                                               lambda c: c.max(axis=-1, keepdims=True) * np.array(emissif))
@@ -167,7 +258,12 @@ def recolorer(chemin, da):
         gltf['buffers'][0]['byteLength'] = len(nouveau)
     gltf.setdefault('asset', {}).setdefault('extras', {})['echos_couleurs'] = signature
     ecrire(chemin, gltf, bytes(nouveau))
-    return f'{len(remplacements)} textures recolorées (saturation {saturation}, teinte {", ".join(f"{t:.2f}" for t in teinte)})'
+    detail = f'saturation {saturation}, teinte {", ".join(f"{t:.2f}" for t in teinte)}'
+    if da.get('peinture'):
+        detail += ', peinture à part'
+    if retires:
+        detail += f', {retires} triangles retirés'
+    return f'{len(remplacements)} textures recolorées ({detail})'
 
 
 def main():
