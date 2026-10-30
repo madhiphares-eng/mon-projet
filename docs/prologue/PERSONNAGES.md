@@ -94,6 +94,11 @@ Avec `--planches dossier/`, il dessine aussi une planche de contrôle par animat
 
 Le banc fait la même chose : il affiche un fusil quand une animation `Fusil_` joue.
 
+**Les PNJ dans Unity**, sans Animator Controller :
+- le composant `AnimationPNJ` (dans `Assets/_Projet/Scripts/Prologue/`) fait jouer à un personnage une animation en boucle, ou une suite d'animations avec des fondus enchaînés. Par exemple, `Androide_Garde` puis `Androide_Scan` pour une sentinelle, `Detenu_A_Genoux` pour un détenu sous la menace ;
+- le composant `FusilDeuxMains` met un fusil dans les mains de n'importe quel personnage Humanoid, orienté par ses deux mains ;
+- le héros, lui, a son propre contrôleur, `HerosPrologue` (voir [`VUES-ET-EFFETS.md`](VUES-ET-EFFETS.md)).
+
 **Les animations sont sur place**, comme celles de la bibliothèque : c'est le jeu qui fait avancer le personnage. Pour que les pieds ne glissent pas, la vitesse de déplacement suit celle de l'animation de départ :
 
 | Animation | Vitesse, par rapport à `Walk_Loop` |

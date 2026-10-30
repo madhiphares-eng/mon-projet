@@ -162,7 +162,7 @@ function image(dt) {
 }
 (function boucle() { requestAnimationFrame(boucle); if (!figer) image(horloge.getDelta()); })();
 // pour les tests automatiques : avancer le temps image par image, puis capturer
-window.effets = { vue, fx, champ, prop, gyro, tirer, avancer: (s, pas = 1 / 30) => { figer = true; for (let t = 0; t < s; t += pas) image(pas); }, reprendre: () => { figer = false; horloge.getDelta(); } };
+window.effets = { vue, fx, champ, prop, gyro, tirer, cadrer: (x, y, z, a, b, c) => { camera.position.set(x, y, z); orbite.target.set(a, b, c); orbite.update(); }, avancer: (s, pas = 1 / 30) => { figer = true; for (let t = 0; t < s; t += pas) image(pas); }, reprendre: () => { figer = false; horloge.getDelta(); } };
 </script>
 </body>
 </html>
