@@ -1,6 +1,6 @@
 # Bible de direction artistique : le Colosse
 
-> Le prologue d'*Échos d'Éther*, le vaisseau-prison. Version 2 du 29 octobre 2026, écrite d'après [`docs/PROMPT-DA-ET-PLAN.md`](../PROMPT-DA-ET-PLAN.md).
+> Le prologue d'*Échos d'Éther*, le vaisseau-prison. Version 2 du 29 octobre 2026, écrite d'après [`archives/prompts-termines/PROMPT-DA-ET-PLAN.md`](../../archives/prompts-termines/PROMPT-DA-ET-PLAN.md).
 > Elle remplace [`DA-vaisseau-prison.md`](DA-vaisseau-prison.md).
 > **Piste retenue** : un mélange du Monolithe et du Chantier. Les trois pistes de départ et la critique de l'existant sont à la [fin du document](#annexe--la-critique-et-les-trois-pistes).
 
@@ -494,18 +494,18 @@ La maquette du Colosse a été construite d'après le [plan du niveau](PLAN-NIVE
 ### La critique de l'existant
 
 **Ce qui marche**
-1. **La coursive habillée** ([`maquette-couloir.jpg`](maquette-couloir.jpg)) : de la profondeur, des formes qui se répètent, de la lumière intégrée. C'est l'étalon de qualité.
-2. **La salle des machines en ambre** ([`maquette-machines.jpg`](maquette-machines.jpg)) : une couleur de lumière donne son identité à une zone.
-3. **Le vaisseau-prison vu de dehors** ([`11-Vaisseaux.jpg`](11-Vaisseaux.jpg)) : une masse noire et monolithique, l'image la plus forte de l'Empire. L'intérieur ne lui ressemblait pas.
+1. **La coursive habillée** ([`maquette-couloir.jpg`](maquette/maquette-couloir.jpg)) : de la profondeur, des formes qui se répètent, de la lumière intégrée. C'est l'étalon de qualité.
+2. **La salle des machines en ambre** ([`maquette-machines.jpg`](maquette/maquette-machines.jpg)) : une couleur de lumière donne son identité à une zone.
+3. **Le vaisseau-prison vu de dehors** ([`11-Vaisseaux.jpg`](catalogue/11-Vaisseaux.jpg)) : une masse noire et monolithique, l'image la plus forte de l'Empire. L'intérieur ne lui ressemblait pas.
 
 **Ce qui ne va pas**
 
-4. **Deux mondes qui ne se parlent pas** : des modèles détaillés contre des boîtes couvertes de plaques, sans épaisseur ni structure ([`maquette-reliques.jpg`](maquette-reliques.jpg)).
+4. **Deux mondes qui ne se parlent pas** : des modèles détaillés contre des boîtes couvertes de plaques, sans épaisseur ni structure ([`maquette-reliques.jpg`](maquette/maquette-reliques.jpg)).
 5. **Aucune échelle impériale** : des salles de 3 à 12 m de haut, presque pas de verticalité.
-6. **Des objets de la Terre d'aujourd'hui** : barreaux classiques, lit en bois, ordinateur beige, garde en tenue moderne, détenu torse nu ([`maquette-cellules.jpg`](maquette-cellules.jpg)).
+6. **Des objets de la Terre d'aujourd'hui** : barreaux classiques, lit en bois, ordinateur beige, garde en tenue moderne, détenu torse nu ([`maquette-cellules.jpg`](maquette/maquette-cellules.jpg)).
 7. **Une lumière sans hiérarchie** : 274 néons presque identiques ; rien ne guide le joueur ; la nuit est noire ou brûlée.
 8. **Un cyan usé**, qui éclaire aussi l'anneau et les coursives.
-9. **Les Bâtisseurs sans langage** : un cercueil rouillé, un cristal violet, un prisme orange ([`15-Reliques.jpg`](15-Reliques.jpg)).
+9. **Les Bâtisseurs sans langage** : un cercueil rouillé, un cristal violet, un prisme orange ([`15-Reliques.jpg`](catalogue/15-Reliques.jpg)).
 10. **Aucun point de vue composé** : pas de révélation du hangar, du cœur ou de la coque.
 
 ### Les trois pistes de départ

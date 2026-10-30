@@ -71,9 +71,9 @@ namespace EchosEther.Prologue
             if (Cursor.lockState == CursorLockMode.Locked)
             {
                 Vector2 souris = Entrees.Regard();
-                float s = sensibilite * CameraOrbitale.MultiplicateurSensibilite * (Visee ? 0.6f : 1f);
+                float s = sensibilite * ReglagesCamera.Sensibilite * (Visee ? 0.6f : 1f);
                 lacet += souris.x * s;
-                tangage = Mathf.Clamp(tangage - souris.y * s * (CameraOrbitale.InverserY ? -1f : 1f), tangageMin, tangageMax);
+                tangage = Mathf.Clamp(tangage - souris.y * s * (ReglagesCamera.InverserY ? -1f : 1f), tangageMin, tangageMax);
             }
             tangage -= recul;
             recul = 0f;

@@ -1,6 +1,6 @@
 # Échos d'Éther : dossier de préproduction (refonte)
 
-> Version 3, 28 octobre 2026. Remplace `GDD.md`, gardé pour mémoire.
+> Version 3, 28 octobre 2026. Remplace l'ancien GDD, archivé dans [`archives/ancien-jeu/GDD.md`](../archives/ancien-jeu/GDD.md).
 > Budget : **0 €**, seulement des assets et des outils gratuits utilisables dans un jeu vendu.
 > Statut : **proposition à valider** (voir [Décisions à prendre](#decisions)).
 

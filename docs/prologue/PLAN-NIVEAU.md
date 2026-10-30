@@ -1,6 +1,6 @@
 # Plan du niveau du prologue : l'évasion du Colosse
 
-> Écrit d'après [`docs/PROMPT-DA-ET-PLAN.md`](../PROMPT-DA-ET-PLAN.md), avec la direction artistique de la [bible](BIBLE-DA.md).
+> Écrit d'après [`archives/prompts-termines/PROMPT-DA-ET-PLAN.md`](../../archives/prompts-termines/PROMPT-DA-ET-PLAN.md), avec la direction artistique de la [bible](BIBLE-DA.md).
 > **Où on en est** : le schéma des zones a été validé le 29 octobre 2026. Le plan à l'échelle, les mesures, les points de vue, les verrous et les modèles sont faits ; la maquette de l'atelier est construite d'après ce plan.
 
 ## Les intentions et les contraintes

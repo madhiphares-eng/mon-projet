@@ -13,6 +13,10 @@ namespace EchosEther.Combat
     {
         static EffetsCombat instance;
 
+        /// <summary>La verticale en un point, pour les étincelles qui retombent : vers le haut dans le vaisseau-prison ;
+        /// une planète ronde la remplace par la sienne.</summary>
+        public static System.Func<Vector3, Vector3> Haut = _ => Vector3.up;
+
         static EffetsCombat I
         {
             get
@@ -111,7 +115,7 @@ namespace EchosEther.Combat
         /// <summary>Étincelles d'impact sur une surface ou une créature.</summary>
         public static void Impact(Vector3 point, Vector3 normale, Color couleur, int nombre = 8, float force = 1f)
         {
-            if (normale.sqrMagnitude < 0.01f) normale = Planete.Haut(point);
+            if (normale.sqrMagnitude < 0.01f) normale = Haut(point);
             for (int i = 0; i < nombre; i++)
             {
                 var p = I.Prendre(Forme.Sphere, I.plein, point, couleur, Random.Range(0.18f, 0.4f), 1.8f);
@@ -135,13 +139,13 @@ namespace EchosEther.Combat
             var coeur = I.Prendre(Forme.Sphere, I.plein, centre, Color.Lerp(couleur, Color.white, 0.5f), 0.18f, 3f);
             coeur.echelle0 = Vector3.one * rayon * 0.6f;
             coeur.echelle1 = Vector3.one * rayon * 0.1f;
-            Impact(centre, Planete.Haut(centre), couleur, 22, 1.6f);
-            Anneau(centre, Planete.Haut(centre), rayon * 1.3f, couleur, 0.5f);
+            Impact(centre, Haut(centre), couleur, 22, 1.6f);
+            Anneau(centre, Haut(centre), rayon * 1.3f, couleur, 0.5f);
             I.Lumiere(centre, couleur, 60000f, 0.35f, rayon * 5f);
-            var jeu = GestionnaireJeu.Instance;
-            if (jeu != null)
+            var camera = Camera.main;
+            if (camera != null)
             {
-                float d = Vector3.Distance(jeu.PositionObservateur, centre);
+                float d = Vector3.Distance(camera.transform.position, centre);
                 CameraSecousse.Choc(Mathf.Clamp01(1.2f - d / (rayon * 5f)));
             }
         }
@@ -161,7 +165,7 @@ namespace EchosEther.Combat
             for (int i = 0; i < nombre; i++)
             {
                 var p = I.Prendre(Forme.Eclat, I.plein, centre + Random.insideUnitSphere * 0.4f, couleur, Random.Range(0.9f, 1.6f), 1.4f);
-                p.vitesse = (Planete.Haut(centre) * 0.8f + Random.insideUnitSphere).normalized * vitesse * Random.Range(0.5f, 1.2f);
+                p.vitesse = (Haut(centre) * 0.8f + Random.insideUnitSphere).normalized * vitesse * Random.Range(0.5f, 1.2f);
                 p.echelle0 = new Vector3(0.45f, 1.4f, 0.45f) * taille * Random.Range(0.6f, 1.4f);
                 p.echelle1 = Vector3.zero;
                 p.gravite = true;
@@ -175,7 +179,7 @@ namespace EchosEther.Combat
         public static void Etincelle(Vector3 position, Color couleur, float taille = 0.3f)
         {
             var p = I.Prendre(Forme.Sphere, I.plein, position, couleur, 0.6f, 1.5f);
-            p.vitesse = Planete.Haut(position) * 2.5f;
+            p.vitesse = Haut(position) * 2.5f;
             p.echelle0 = Vector3.one * taille;
             p.echelle1 = Vector3.zero;
         }
@@ -278,7 +282,7 @@ namespace EchosEther.Combat
                     actives.RemoveAt(i);
                     continue;
                 }
-                if (p.gravite) p.vitesse -= Planete.Haut(p.t.position) * (9f * dt);
+                if (p.gravite) p.vitesse -= Haut(p.t.position) * (9f * dt);
                 p.t.position += p.vitesse * dt;
                 if (p.etirer && p.vitesse.sqrMagnitude > 0.01f) p.t.rotation = Quaternion.LookRotation(p.vitesse);
                 if (p.rotation != 0f) p.t.rotation = Quaternion.AngleAxis(p.rotation * dt, p.axe) * p.t.rotation;

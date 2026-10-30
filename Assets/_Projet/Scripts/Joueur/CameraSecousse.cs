@@ -3,8 +3,8 @@ using UnityEngine;
 namespace EchosEther.Joueur
 {
     /// <summary>
-    /// Secoue la caméra après son placement (tremblement de la Ruche, impacts, atterrissages).
-    /// S'exécute après <see cref="CameraOrbitale"/> et <see cref="CameraNavette"/>.
+    /// Secoue la caméra après son placement (explosions, impacts, atterrissages).
+    /// S'exécute après les caméras qui la placent.
     /// </summary>
     [DefaultExecutionOrder(1000)]
     public class CameraSecousse : MonoBehaviour

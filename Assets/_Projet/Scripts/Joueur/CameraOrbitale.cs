@@ -25,8 +25,9 @@ namespace EchosEther.Joueur
         public float champVisee = 18f;
 
         /// <summary>Réglages du joueur (menu Options) : multiplicateur de sensibilité et axe vertical inversé.</summary>
-        public static float MultiplicateurSensibilite = 1f;
-        public static bool InverserY;
+        // une seule source pour les réglages de caméra, partagée avec les caméras du prologue
+        public static float MultiplicateurSensibilite { get => ReglagesCamera.Sensibilite; set => ReglagesCamera.Sensibilite = value; }
+        public static bool InverserY { get => ReglagesCamera.InverserY; set => ReglagesCamera.InverserY = value; }
         /// <summary>0 = caméra normale, 1 = visée par-dessus l'épaule (écrit par l'arsenal).</summary>
         public static float ViseeCible;
         static float reculVertical, reculHorizontal;

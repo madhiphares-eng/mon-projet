@@ -673,11 +673,11 @@
             if (-not $lien -or -not (Telecharger $lien $zip)) {
                 # repli : copies CC0 rangees dans le depot du jeu (Kenney autorise la redistribution)
                 Write-Host '    site Kenney indisponible : copies du depot du jeu'
-                $depot = 'https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/maquette/modeles/kenney-blaster-kit'
+                $depot = 'https://raw.githubusercontent.com/madhiphares-eng/mon-projet/echos-ether/ressources/kenney-blaster-kit'
                 foreach ($f in 'blaster-a.glb', 'blaster-d.glb', 'blaster-e.glb', 'blaster-l.glb', 'grenade-a.glb', 'grenade-b.glb', 'LICENCE.txt') {
                     [void](Telecharger "$depot/$f" (Join-Path $d $f))
                 }
-                [void](Telecharger 'https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/maquette/modeles/kenney-blaster-kit/Textures/colormap.png' (Join-Path $d 'Textures\colormap.png'))
+                [void](Telecharger 'https://media.githubusercontent.com/media/madhiphares-eng/mon-projet/echos-ether/ressources/kenney-blaster-kit/Textures/colormap.png' (Join-Path $d 'Textures\colormap.png'))
                 return
             }
             if (Test-Path -LiteralPath $zip) {

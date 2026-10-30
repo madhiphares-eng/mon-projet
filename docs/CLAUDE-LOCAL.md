@@ -1,7 +1,9 @@
 # Pour Claude en local : travailler sur Échos d'Éther dans Unity
 
-> **Refonte en cours (28 octobre 2026).** Le jeu commence maintenant par un prologue : le héros, amnésique, s'évade d'un vaisseau-prison ennemi attaqué par des pirates, et vole une navette.
-> Lis d'abord [`PREPRODUCTION.md`](PREPRODUCTION.md). On garde le projet existant : ses systèmes serviront.
+> **État au 30 octobre 2026.** Le jeu commence par un prologue : le héros, amnésique, s'évade du Colosse, un vaisseau-prison attaqué par des pirates, et vole une navette.
+> Lis d'abord [`PREPRODUCTION.md`](PREPRODUCTION.md), puis les priorités dans [`A-FAIRE.md`](A-FAIRE.md).
+> - Le code du prologue est dans `Assets/_Projet/Scripts/Prologue/`. Sa scène d'essai : menu **Echos d'Ether → Prologue → Créer la scène d'essai des vues** (le hangar, le héros, la navette, les effets).
+> - Le code de l'ancien jeu (l'Arpenteur, les Échardes, la planète) reste dans le projet, mais le prologue n'en dépend pas. Son mode d'emploi est dans [`archives/LISEZ-MOI.md`](../archives/LISEZ-MOI.md).
 >
 > **Ta prochaine tâche** :
 > 1. Une fois les modèles du prologue téléchargés (`outils/telecharger-prologue.ps1`, liste dans [`PROLOGUE-MODELES.md`](PROLOGUE-MODELES.md)), vérifie qu'ils s'importent tous dans `Assets/_Projet/Externes/Prologue`.
@@ -13,9 +15,10 @@
 >    - Chaque modèle de `Externes/Prologue/<cle>` est mis à l'échelle sans déformation pour tenir dans son `cadre` (un 0 laisse ce côté libre), puis posé par le bas, centré.
 >    - Le champ `repere` du fichier décrit tout. Attention : c'est le repère glTF, droitier, alors qu'Unity est gaucher. Retourne l'axe comme le fait glTFast à l'import des modèles.
 >    - Avant l'import, remets les modèles à leur taille réelle : `py outils\normaliser-prologue.py Assets\_Projet\Externes\Prologue` (Python 3 gratuit, python.org). Ils seront alors en mètres, pieds au sol.
->    - Respecte la [direction artistique](prologue/DA-vaisseau-prison.md) : un réglage de couleurs commun (*color grading* HDRP), et les recolorations `da` de [`prologue/tailles-modeles.json`](prologue/tailles-modeles.json).
+>    - Respecte la [direction artistique](prologue/BIBLE-DA.md) : un réglage de couleurs commun (*color grading* HDRP), et les recolorations `da` de [`prologue/tailles-modeles.json`](prologue/tailles-modeles.json) (`outils/recolorer-prologue.py` les applique aux fichiers).
+> 6. Ouvre la scène d'essai des vues et joue : note dans `docs/CORRECTIONS-LOCALES.md` ce qui ne va pas (prises d'armes, effets, caméras, navette). Clic droit sur le composant `PriseArme` → « Contrôler les prises (bot) » donne le rapport des mains.
 >
-> Le reste de ce fichier décrit l'ancienne version, toujours valable pour les outils.
+> Le reste de ce fichier décrit l'ancien jeu, toujours valable pour ses outils.
 
 Ce fichier est pour toi, Claude qui pilote Unity sur le PC (MCP for Unity). Une autre session de Claude, dans le cloud,
 écrit le code du jeu et le publie sur GitHub (branche `echos-ether`). Le joueur le copie dans le projet avec `outils/installer.ps1`.

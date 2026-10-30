@@ -200,7 +200,7 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 
 ## Le héros (`01-Joueur`)
 
-![Le héros](prologue/01-Joueur.jpg)
+![Le héros](prologue/catalogue/01-Joueur.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -209,7 +209,7 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 
 ## Les autres détenus (`02-Prisonniers`)
 
-![Les autres détenus](prologue/02-Prisonniers.jpg)
+![Les autres détenus](prologue/catalogue/02-Prisonniers.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -222,7 +222,7 @@ Inutile de les retélécharger : ils servent aussi au vaisseau-prison.
 
 ## La sécurité : des androïdes (`03-Gardes`)
 
-![La sécurité](prologue/03-Gardes.jpg)
+![La sécurité](prologue/catalogue/03-Gardes.jpg)
 
 La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [bible](prologue/BIBLE-DA.md), § 4). Le garde humain reste dans la liste pour mémoire, mais il n'est plus placé dans la maquette. Chaque personnage a été testé : voir [`prologue/PERSONNAGES.md`](prologue/PERSONNAGES.md).
 
@@ -243,7 +243,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Les pirates (`04-Pirates`)
 
-![Les pirates](prologue/04-Pirates.jpg)
+![Les pirates](prologue/catalogue/04-Pirates.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -255,7 +255,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Le bloc des cellules (`05-Cellules`)
 
-![Le bloc des cellules](prologue/05-Cellules.jpg)
+![Le bloc des cellules](prologue/catalogue/05-Cellules.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -268,7 +268,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Coursives et conduits (`06-Couloirs`)
 
-![Coursives et conduits](prologue/06-Couloirs.jpg)
+![Coursives et conduits](prologue/catalogue/06-Couloirs.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -282,7 +282,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## La consigne des effets saisis (`07-Consigne`)
 
-![La consigne des effets saisis](prologue/07-Consigne.jpg)
+![La consigne des effets saisis](prologue/catalogue/07-Consigne.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -292,7 +292,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## La salle des machines (`08-Machines`)
 
-![La salle des machines](prologue/08-Machines.jpg)
+![La salle des machines](prologue/catalogue/08-Machines.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -303,7 +303,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Les ordinateurs (ceux qui disjonctent) (`09-Informatique`)
 
-![Les ordinateurs (ceux qui disjonctent)](prologue/09-Informatique.jpg)
+![Les ordinateurs (ceux qui disjonctent)](prologue/catalogue/09-Informatique.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -316,7 +316,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Le hangar (`10-Hangar`)
 
-![Le hangar](prologue/10-Hangar.jpg)
+![Le hangar](prologue/catalogue/10-Hangar.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -328,7 +328,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Les vaisseaux (`11-Vaisseaux`)
 
-![Les vaisseaux](prologue/11-Vaisseaux.jpg)
+![Les vaisseaux](prologue/catalogue/11-Vaisseaux.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -341,7 +341,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Sas, brèches et vide (`12-Exterieur`)
 
-![Sas, brèches et vide](prologue/12-Exterieur.jpg)
+![Sas, brèches et vide](prologue/catalogue/12-Exterieur.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -355,7 +355,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Les armes (`13-Armes`)
 
-![Les armes](prologue/13-Armes.jpg)
+![Les armes](prologue/catalogue/13-Armes.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -370,7 +370,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Accessoires (`14-Accessoires`)
 
-![Accessoires](prologue/14-Accessoires.jpg)
+![Accessoires](prologue/catalogue/14-Accessoires.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|
@@ -381,7 +381,7 @@ La sécurité de l'Empire n'emploie que des androïdes et des drones (voir la [b
 
 ## Reliques des Bâtisseurs (l'histoire de l'Ancien) (`15-Reliques`)
 
-![Reliques des Bâtisseurs (l'histoire de l'Ancien)](prologue/15-Reliques.jpg)
+![Reliques des Bâtisseurs (l'histoire de l'Ancien)](prologue/catalogue/15-Reliques.jpg)
 
 | Nom dans le projet | Modèle | Auteur | Faces | Rôle dans le jeu |
 |---|---|---|---:|---|

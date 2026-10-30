@@ -54,8 +54,8 @@ namespace EchosEther.Prologue
                 Vector2 d = Entrees.Deplacement();
                 Gaz = Mathf.Clamp01(Gaz + d.y * dt * (d.y > 0f ? 0.6f : 0.8f));
                 Vector2 souris = Cursor.lockState == CursorLockMode.Locked ? Entrees.Regard() : Vector2.zero;
-                rotation.x += -souris.y * sensibilite * CameraOrbitale.MultiplicateurSensibilite * (CameraOrbitale.InverserY ? -1f : 1f);
-                rotation.y += souris.x * sensibilite * CameraOrbitale.MultiplicateurSensibilite;
+                rotation.x += -souris.y * sensibilite * ReglagesCamera.Sensibilite * (ReglagesCamera.InverserY ? -1f : 1f);
+                rotation.y += souris.x * sensibilite * ReglagesCamera.Sensibilite;
                 rotation.z = Mathf.Lerp(rotation.z, -d.x * roulis, 1f - Mathf.Exp(-6f * dt));
                 montee = (EntreesJeu.Monter() ? 1f : 0f) - (EntreesJeu.Descendre() ? 1f : 0f);
             }
