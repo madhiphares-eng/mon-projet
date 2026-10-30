@@ -22,6 +22,8 @@
 
 ![Les vues](vues/vues.jpg)
 
+En vidéo : [la vue 3e personne et la navette](personnages/videos/vues-3e-personne-et-navette.mp4) (18 s).
+
 ## 2. Les essayer dans le navigateur
 
 Sur le Mac, dans le dossier du jeu (celui qui contient `prologue/00-Animations`, rempli par `telecharger-prologue.sh`) :
@@ -61,6 +63,8 @@ Sans les fichiers d'animation, la page des vues marche quand même : le héros e
 ## 3. Les effets
 
 ![Les effets](vues/effets.jpg)
+
+En vidéo : [un travelling le long du banc des effets](personnages/videos/effets-colosse.mp4) (19 s), du feu à l'explosion.
 
 | Effet | Ce qu'il montre | Où dans le Colosse | Navigateur (`effets-colosse.js`) | Unity (composant) |
 |---|---|---|---|---|
