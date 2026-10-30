@@ -15,6 +15,8 @@ namespace EchosEther.Joueur
     /// Combat : clic gauche / gâchette droite tirer, clic droit / gâchette gauche viser, R / croix gauche recharger,
     /// 1 à 6, molette ou croix haut/bas pour les armes, G / LB grenade, V / R3 coup, A en AZERTY (Q en QWERTY) / RB compétence,
     /// K talents.
+    /// Prologue : C s'accroupir (manette B), X changer d'épaule (croix droite), V vue cockpit ou poursuite (croix haut),
+    /// 1 sortir ou ranger le fusil.
     /// </summary>
     public static class EntreesJeu
     {
@@ -46,6 +48,11 @@ namespace EchosEther.Joueur
         public static bool Grenade() => (K != null && Pressee(K.gKey)) || (P != null && Pressee(P.leftShoulder));
         public static bool Competence() => (K != null && Pressee(K.qKey)) || (P != null && Pressee(P.rightShoulder));
         public static bool Talents() => K != null && Pressee(K.kKey);
+
+        // le prologue (à pied dans le Colosse, puis en navette)
+        public static bool Accroupir() => (K != null && Pressee(K.cKey)) || (P != null && Pressee(P.buttonEast));
+        public static bool ChangerEpaule() => (K != null && Pressee(K.xKey)) || (P != null && Pressee(P.dpad.right));
+        public static bool ChangerVue() => (K != null && Pressee(K.vKey)) || (P != null && Pressee(P.dpad.up));
 
         /// <summary>Arme choisie au clavier (touches 1 à 6 de la rangée du haut), -1 sinon.</summary>
         public static int ChoixArme()
@@ -107,6 +114,9 @@ namespace EchosEther.Joueur
         public static bool Grenade() => Input.GetKeyDown(KeyCode.G);
         public static bool Competence() => Input.GetKeyDown(KeyCode.Q);
         public static bool Talents() => Input.GetKeyDown(KeyCode.K);
+        public static bool Accroupir() => Input.GetKeyDown(KeyCode.C);
+        public static bool ChangerEpaule() => Input.GetKeyDown(KeyCode.X);
+        public static bool ChangerVue() => Input.GetKeyDown(KeyCode.V);
 
         public static int ChoixArme()
         {
