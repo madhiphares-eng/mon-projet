@@ -1,0 +1,421 @@
+{
+ "version": 1,
+ "source": "vitrine/banc-objets.html (bot des objets, vitrine/bot-objets.js)",
+ "objets": [
+  {
+   "cle": "06-Couloirs/porte-coulissante",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "coulisser",
+     "pieces": [
+      "Object_5",
+      "Object_6",
+      "Object_4"
+     ],
+     "sens": "plus",
+     "course": 0.95
+    }
+   ],
+   "lumieres": [
+    "Mat.4"
+   ],
+   "verdict": "ok",
+   "passage": 3.33,
+   "notes": [
+    "battants trouvés par leur forme : Object_4, Object_5, Object_6",
+    "1 matériau(x) lumineux : Mat.4",
+    "3 façons d'ouvrir essayées ; gardée : plus"
+   ]
+  },
+  {
+   "cle": "12-Exterieur/cloison-etanche",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "coulisser",
+     "pieces": [
+      "Door_Door1_0",
+      "Door_Mechanics_Mat_0",
+      "Door_Door_Steel_0",
+      "Door_Extra_0"
+     ],
+     "sens": "plus",
+     "course": 0.95
+    }
+   ],
+   "lumieres": [
+    "light"
+   ],
+   "verdict": "ok",
+   "passage": 0.93,
+   "notes": [
+    "1 matériau(x) lumineux : light",
+    "3 façons d'ouvrir essayées ; gardée : plus"
+   ]
+  },
+  {
+   "cle": "05-Cellules/porte-cellule",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "coulisser",
+     "pieces": [
+      "Bars_0"
+     ],
+     "sens": "plus",
+     "course": 0.95
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": 3.51,
+   "notes": [
+    "3 façons d'ouvrir essayées ; gardée : plus"
+   ]
+  },
+  {
+   "cle": "05-Cellules/porte-isolement",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "coulisser",
+     "pieces": [
+      "Symmetry__0"
+     ],
+     "sens": "plus",
+     "course": 0.95
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": 1.11,
+   "notes": [
+    "une seule pièce : la porte glisse entière (une grille de cellule, sans cadre)",
+    "3 façons d'ouvrir essayées ; gardée : plus"
+   ]
+  },
+  {
+   "cle": "12-Exterieur/porte-sas",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "animation",
+     "clip": "Take 001",
+     "mode": "ouvrir",
+     "fin": 1,
+     "debut": 0
+    }
+   ],
+   "lumieres": [
+    "lambert2",
+    "lambert3"
+   ],
+   "verdict": "étroit",
+   "passage": 0.75,
+   "notes": [
+    "animation embarquée « Take 001 » jouée à l'ouverture, à l'envers à la fermeture",
+    "2 matériau(x) lumineux : lambert2, lambert3",
+    "dans son animation, la porte est la plus fermée à 0 % et la plus ouverte à 100 %",
+    "étroit : on y passe un par un, de profil"
+   ]
+  },
+  {
+   "cle": "07-Consigne/porte-coffre",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "animation",
+     "clip": "loop",
+     "mode": "ouvrir",
+     "fin": 0.2916666666666667,
+     "debut": 0
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": 2.01,
+   "notes": [
+    "animation embarquée « loop » jouée à l'ouverture, à l'envers à la fermeture",
+    "dans son animation, la porte est la plus fermée à 0 % et la plus ouverte à 29 %"
+   ]
+  },
+  {
+   "cle": "07-Consigne/armoire-blindee",
+   "categorie": "porte",
+   "mouvements": [
+    {
+     "type": "animation",
+     "clip": "loop",
+     "mode": "ouvrir",
+     "fin": 0.20833333333333334,
+     "debut": 0
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": 0.45,
+   "notes": [
+    "animation embarquée « loop » jouée à l'ouverture, à l'envers à la fermeture",
+    "dans son animation, la porte est la plus fermée à 0 % et la plus ouverte à 21 %"
+   ]
+  },
+  {
+   "cle": "09-Informatique/console-murale",
+   "categorie": "ecran",
+   "mouvements": [],
+   "lumieres": [
+    "Knappar",
+    "Konsoll"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "2 matériau(x) lumineux : Knappar, Konsoll"
+   ]
+  },
+  {
+   "cle": "09-Informatique/grand-ecran",
+   "categorie": "ecran",
+   "mouvements": [],
+   "lumieres": [
+    "MaterialFBXASC032FBXASC0352142148966",
+    "MaterialFBXASC032FBXASC0352142148579",
+    "MaterialFBXASC032FBXASC0352142148017"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "3 matériau(x) lumineux : MaterialFBXASC032FBXASC0352142148966, MaterialFBXASC032FBXASC0352142148579, MaterialFBXASC032FBXASC0352142148017"
+   ]
+  },
+  {
+   "cle": "09-Informatique/terminal",
+   "categorie": "ecran",
+   "mouvements": [],
+   "lumieres": [
+    "Material.012",
+    "Monitor"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "2 matériau(x) lumineux : Material.012, Monitor"
+   ]
+  },
+  {
+   "cle": "09-Informatique/baie-serveur",
+   "categorie": "ecran",
+   "mouvements": [],
+   "lumieres": [
+    "ServerMaterial"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "1 matériau(x) lumineux : ServerMaterial"
+   ]
+  },
+  {
+   "cle": "14-Accessoires/neons",
+   "categorie": "ecran",
+   "mouvements": [],
+   "lumieres": [
+    "Fluorescent_Lamp_01",
+    "Fluorescent_Lamp_02",
+    "Fluorescent_Lamp_03",
+    "Fluorescent_Lamp_04"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "4 matériau(x) lumineux : Fluorescent_Lamp_01, Fluorescent_Lamp_02, Fluorescent_Lamp_03, Fluorescent_Lamp_04"
+   ]
+  },
+  {
+   "cle": "08-Machines/generateur",
+   "categorie": "machine",
+   "mouvements": [],
+   "lumieres": [
+    "Material.001"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "aucune pièce tournante reconnue : lumières seulement",
+    "1 matériau(x) lumineux : Material.001"
+   ]
+  },
+  {
+   "cle": "08-Machines/coeur-fusion",
+   "categorie": "machine",
+   "mouvements": [
+    {
+     "type": "tourner",
+     "pieces": [
+      "Ballmesh_03___Default_0"
+     ],
+     "axe": "court",
+     "vitesse": 25
+    },
+    {
+     "type": "tourner",
+     "pieces": [
+      "Ballmesh_emission_0"
+     ],
+     "axe": "court",
+     "vitesse": -35
+    },
+    {
+     "type": "tourner",
+     "pieces": [
+      "Ballmesh_09___Default_0"
+     ],
+     "axe": "court",
+     "vitesse": 45
+    },
+    {
+     "type": "tourner",
+     "pieces": [
+      "Ballmesh_Material__61_0"
+     ],
+     "axe": "court",
+     "vitesse": -55
+    },
+    {
+     "type": "tourner",
+     "pieces": [
+      "Ballmesh_Material__62_0"
+     ],
+     "axe": "court",
+     "vitesse": 65
+    },
+    {
+     "type": "tourner",
+     "pieces": [
+      "Ballmesh_Material__63_0"
+     ],
+     "axe": "court",
+     "vitesse": -75
+    },
+    {
+     "type": "tourner",
+     "pieces": [
+      "forcefield_Material_#25_0"
+     ],
+     "axe": "court",
+     "vitesse": 85
+    }
+   ],
+   "lumieres": [
+    "emission",
+    "Material_25",
+    "Material_60"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "3 matériau(x) lumineux : emission, Material_25, Material_60"
+   ]
+  },
+  {
+   "cle": "08-Machines/pylone-energie",
+   "categorie": "machine",
+   "mouvements": [],
+   "lumieres": [
+    "initialShadingGroup"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "aucune pièce tournante reconnue : lumières seulement",
+    "1 matériau(x) lumineux : initialShadingGroup"
+   ]
+  },
+  {
+   "cle": "08-Machines/reacteur",
+   "categorie": "machine",
+   "mouvements": [],
+   "lumieres": [
+    "MAT_PalletStack_01"
+   ],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "aucune pièce tournante reconnue : lumières seulement",
+    "1 matériau(x) lumineux : MAT_PalletStack_01"
+   ]
+  },
+  {
+   "cle": "15-Reliques/anneau-relais",
+   "categorie": "machine",
+   "mouvements": [
+    {
+     "type": "tourner",
+     "pieces": [
+      "Object_3"
+     ],
+     "axe": "court",
+     "vitesse": 6
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "une seule pièce : elle tourne entière, lentement, autour de son axe court"
+   ]
+  },
+  {
+   "cle": "15-Reliques/coeur-relique",
+   "categorie": "machine",
+   "mouvements": [
+    {
+     "type": "animation",
+     "clip": "Take 01",
+     "mode": "boucle"
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": null,
+   "notes": []
+  },
+  {
+   "cle": "15-Reliques/cristal-ether",
+   "categorie": "machine",
+   "mouvements": [
+    {
+     "type": "tourner",
+     "pieces": [
+      "Rock_LP001_Material001_0"
+     ],
+     "axe": "court",
+     "vitesse": 6
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": null,
+   "notes": [
+    "une seule pièce : elle tourne entière, lentement, autour de son axe court"
+   ]
+  },
+  {
+   "cle": "03-Gardes/drone-securite",
+   "categorie": "drone",
+   "mouvements": [
+    {
+     "type": "vol",
+     "pieces": [
+      "*"
+     ]
+    }
+   ],
+   "lumieres": [],
+   "verdict": "ok",
+   "passage": null,
+   "notes": []
+  }
+ ]
+}

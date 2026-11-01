@@ -16,7 +16,7 @@ namespace EchosEther.Joueur
     /// 1 à 6, molette ou croix haut/bas pour les armes, G / LB grenade, V / R3 coup, A en AZERTY (Q en QWERTY) / RB compétence,
     /// K talents.
     /// Prologue : C s'accroupir (manette B), X changer d'épaule (croix droite), V vue cockpit ou poursuite (croix haut),
-    /// 1 sortir ou ranger le fusil.
+    /// 1 sortir ou ranger le fusil ; F8, pour essayer, change l'énergie du Colosse (normal, alarme, panne).
     /// </summary>
     public static class EntreesJeu
     {
@@ -53,6 +53,8 @@ namespace EchosEther.Joueur
         public static bool Accroupir() => (K != null && Pressee(K.cKey)) || (P != null && Pressee(P.buttonEast));
         public static bool ChangerEpaule() => (K != null && Pressee(K.xKey)) || (P != null && Pressee(P.dpad.right));
         public static bool ChangerVue() => (K != null && Pressee(K.vKey)) || (P != null && Pressee(P.dpad.up));
+        /// <summary>Pour essayer : l'énergie du Colosse passe de normal à alarme, puis à panne (F8).</summary>
+        public static bool ChangerEnergie() => K != null && Pressee(K.f8Key);
 
         /// <summary>Arme choisie au clavier (touches 1 à 6 de la rangée du haut), -1 sinon.</summary>
         public static int ChoixArme()
@@ -117,6 +119,7 @@ namespace EchosEther.Joueur
         public static bool Accroupir() => Input.GetKeyDown(KeyCode.C);
         public static bool ChangerEpaule() => Input.GetKeyDown(KeyCode.X);
         public static bool ChangerVue() => Input.GetKeyDown(KeyCode.V);
+        public static bool ChangerEnergie() => Input.GetKeyDown(KeyCode.F8);
 
         public static int ChoixArme()
         {

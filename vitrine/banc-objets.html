@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banc des objets</title>
+<style>
+  :root { --ivoire: #ece6d8; --brume: #a7a3b4; --ether: #86efe6; --ambre: #f2b26b; --rouge: #e0705a; --vert: #8fd19e; --fond: rgba(6, 7, 12, 0.86); --trait: rgba(236, 230, 216, 0.16); }
+  html, body { margin: 0; height: 100%; background: #0b0c10; color: var(--ivoire); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #panneau { position: fixed; right: 0; top: 0; bottom: 0; width: 430px; overflow-y: auto; background: var(--fond); border-left: 1px solid var(--trait); padding: 14px 16px 24px; box-sizing: border-box; font-size: 13px; }
+  h1 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 4px; color: var(--ambre); }
+  h2 { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--brume); margin: 16px 0 4px; font-weight: 600; }
+  .etats button, .outils button { background: none; border: 1px solid var(--trait); color: var(--ivoire); font: inherit; padding: 4px 10px; margin: 4px 4px 0 0; cursor: pointer; }
+  .etats button.actif { border-color: var(--ambre); color: var(--ambre); }
+  .etats button[data-etat=alarme].actif { border-color: var(--rouge); color: var(--rouge); }
+  .objet { border-top: 1px solid var(--trait); padding: 7px 0; cursor: pointer; }
+  .objet:hover { background: rgba(236, 230, 216, 0.04); }
+  .objet .meta { color: var(--brume); }
+  .ok { color: var(--vert); } .attention { color: var(--ambre); } .ko { color: var(--rouge); }
+  #etat { color: var(--brume); }
+  label { cursor: pointer; }
+  @media (max-width: 760px) { #panneau { top: auto; height: 50%; width: 100%; border-left: 0; border-top: 1px solid var(--trait); } }
+</style>
+</head>
+<body>
+<div id="panneau">
+  <h1>Banc des objets</h1>
+  <div id="etat">Ouvre la page avec ?racine=… (le dossier du prologue servi en local).</div>
+  <h2>L'énergie du Colosse</h2>
+  <div class="etats">
+    <button data-etat="normal" class="actif">Normal</button><button data-etat="alarme">Alarme</button><button data-etat="panne">Panne</button>
+  </div>
+  <div style="margin-top:8px"><label><input type="checkbox" id="approche"> Quelqu'un approche des portes</label></div>
+  <div><label><input type="checkbox" id="cycle"> Cycle automatique (pour la vidéo)</label></div>
+  <div class="outils"><button id="exporter">Exporter la recette (objets-animes.json)</button></div>
+  <h2>Le rapport du bot</h2>
+  <div id="liste"></div>
+</div>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { inspecter, proposer, animer, controler } from './bot-objets.js';
+
+// Les objets du Colosse qui bougent, avec leur cadre (la taille réelle, en mètres ; 0 : libre), comme dans l'atelier
+// (docs/prologue/tailles-modeles.json). haut : la hauteur où il est posé (le drone vole).
+const OBJETS = [
+  { cle: '06-Couloirs/porte-coulissante', cadre: [0, 3.0, 0] },
+  { cle: '12-Exterieur/cloison-etanche', cadre: [0, 2.8, 0] },
+  { cle: '05-Cellules/porte-cellule', cadre: [3.6, 3.0, 0] },
+  { cle: '05-Cellules/porte-isolement', cadre: [1.4, 2.4, 0.4] },
+  { cle: '12-Exterieur/porte-sas', cadre: [3.1, 2.6, 0] },
+  { cle: '07-Consigne/porte-coffre', cadre: [2.8, 2.8, 0] },
+  { cle: '07-Consigne/armoire-blindee', cadre: [1.6, 2.4, 1.0] },
+  { cle: '09-Informatique/console-murale', cadre: [1.5, 1.5, 0.4], haut: 0.6 },
+  { cle: '09-Informatique/grand-ecran', cadre: [3.5, 2.2, 0], haut: 0.3 },
+  { cle: '09-Informatique/terminal', cadre: [1.6, 0, 1.8] },
+  { cle: '09-Informatique/baie-serveur', cadre: [0.8, 2.2, 1.2] },
+  { cle: '14-Accessoires/neons', cadre: [1.34, 0.12, 1.64], haut: 2.6 },
+  { cle: '08-Machines/generateur', cadre: [3, 3, 3] },
+  { cle: '08-Machines/coeur-fusion', cadre: [2.5, 3.5, 2.5] },
+  { cle: '08-Machines/pylone-energie', cadre: [2.5, 4.5, 2.5] },
+  { cle: '08-Machines/reacteur', cadre: [7, 8, 7] },
+  { cle: '15-Reliques/anneau-relais', cadre: [5, 5, 5] },
+  { cle: '15-Reliques/coeur-relique', cadre: [3, 3.5, 3] },
+  { cle: '15-Reliques/cristal-ether', cadre: [0.8, 0.8, 0.8], haut: 1.0 },
+  { cle: '03-Gardes/drone-securite', cadre: [0, 0.9, 0], haut: 1.8 },
+];
+
+const params = new URLSearchParams(location.search);
+const RACINE = params.get('racine');
+const SEULEMENT = params.get('seulement');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x101216);
+const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 500);
+const rendu = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+rendu.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendu.outputColorSpace = THREE.SRGBColorSpace;
+rendu.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.prepend(rendu.domElement);
+const orbite = new OrbitControls(camera, rendu.domElement);
+// une lumière de coursive : froide et basse, pour que les lumières des objets comptent
+scene.add(new THREE.HemisphereLight(0xc9d3e0, 0x1d1a18, 0.9));
+const soleil = new THREE.DirectionalLight(0xffffff, 1.5); soleil.position.set(4, 9, 7); scene.add(soleil);
+const contre = new THREE.DirectionalLight(0x9fb4d0, 0.8); contre.position.set(-5, 4, -6); scene.add(contre);
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(400, 60), new THREE.MeshStandardMaterial({ color: 0x24272d, roughness: 0.9 }));
+sol.rotation.x = -Math.PI / 2; scene.add(sol);
+const grille = new THREE.GridHelper(400, 400, 0x353a42, 0x2b2f35); grille.position.y = 0.002; scene.add(grille);
+
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const chargeur = new GLTFLoader().setDRACOLoader(draco);
+const horloge = new THREE.Clock();
+const bancs = [];
+let etat = 'normal', proche = false, cycle = false, tempsCycle = 0, plein = false, figer = null;
+
+function redimensionner() {
+  const l = plein ? innerWidth : innerWidth - (innerWidth > 760 ? 430 : 0), h = plein || innerWidth > 760 ? innerHeight : innerHeight / 2;
+  rendu.setSize(l, h); camera.aspect = l / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', redimensionner); redimensionner();
+
+function facteurCadre(cadre, taille) {
+  const r = [0, 1, 2].filter(i => cadre[i] > 0 && taille[i] > 1e-6).map(i => cadre[i] / taille[i]);
+  return r.length ? Math.min(...r) : 1;
+}
+
+async function charger(o, x) {
+  const nom = o.cle.split('/')[1];
+  const lien = RACINE ? new URL(`${o.cle}/${nom}.glb`, RACINE).href : null;
+  if (!lien) return null;
+  const gltf = await new Promise((ok, ko) => chargeur.load(lien, ok, undefined, ko)).catch(() => null);
+  if (!gltf) return { ...o, absent: true };
+  const racine = gltf.scene;
+  racine.traverse(n => { if (n.isMesh) { n.frustumCulled = false; n.material = [].concat(n.material).map(m => m.clone()); if (n.material.length === 1) n.material = n.material[0]; } });
+  // à sa taille réelle, posé au sol, centré ; tourné pour montrer sa face (son épaisseur dans l'axe de la caméra)
+  const b0 = new THREE.Box3().setFromObject(racine), t0 = b0.getSize(new THREE.Vector3());
+  const f = facteurCadre(o.cadre, t0.toArray());
+  racine.scale.setScalar(f);
+  if (t0.x < t0.z * 0.8) racine.rotation.y = Math.PI / 2;
+  racine.updateMatrixWorld(true);
+  const b = new THREE.Box3().setFromObject(racine), t = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
+  racine.position.set(x + t.x / 2 - c.x, (o.haut || 0) - b.min.y, -c.z);
+  scene.add(racine);
+  racine.updateMatrixWorld(true);
+  const ins = inspecter(racine, gltf.animations, o.cle);
+  const recette = proposer(ins);
+  const ctrl = animer(racine, recette, gltf.animations, ins);
+  const rapport = controler(racine, recette, ctrl, ins);
+  return { ...o, nom, racine, ins, recette, ctrl, rapport, largeur: t.x, hauteur: t.y + (o.haut || 0) };
+}
+
+function afficher() {
+  const liste = document.querySelector('#liste');
+  liste.innerHTML = '';
+  bancs.forEach((r, i) => {
+    const d = document.createElement('div');
+    d.className = 'objet';
+    if (r.absent) { d.innerHTML = `<b>${r.cle.split('/')[1]}</b> <span class="meta">absent</span>`; liste.append(d); return; }
+    const R = r.rapport, classe = R.verdict === 'ok' ? 'ok' : ['fixe', 'immobile', 'étroit'].includes(R.verdict) ? 'attention' : 'ko';
+    const passage = R.passageOuvert !== undefined ? ` · passage ${R.passageFerme.toFixed(2)} → <b>${R.passageOuvert.toFixed(2)} m</b>` : '';
+    const derive = R.derive !== undefined ? ` · pivot ${R.derive} %` : '';
+    d.innerHTML = `<b>${r.nom}</b> <span class="${classe}">${R.verdict}</span><div class="meta">${r.recette.mouvements.map(m => m.type + (m.pieces ? ' ' + m.pieces.join(', ') : m.clip ? ' « ' + m.clip + ' »' : '')).join(' · ') || 'rien ne bouge'}${passage}${derive}</div><div class="meta">${R.notes.join(' ; ')}</div>`;
+    d.onclick = () => cadrer(r);
+    liste.append(d);
+  });
+}
+
+function cadrer(r) {
+  if (!r?.racine) return;
+  // de face : une porte se regarde dans son épaisseur (son axe horizontal le plus court), un peu de biais
+  const b = new THREE.Box3().setFromObject(r.racine), c = b.getCenter(new THREE.Vector3()), t = b.getSize(new THREE.Vector3());
+  const d = Math.max(t.x, t.y) * 1.45 + 1.2;
+  camera.position.set(c.x + d * 0.25, c.y + d * 0.1, c.z + Math.max(d, t.z / 2 + 1));
+  orbite.target.copy(c); orbite.update();
+}
+
+function changerEtat(e) {
+  etat = e;
+  document.querySelectorAll('.etats button').forEach(b => b.classList.toggle('actif', b.dataset.etat === e));
+}
+document.querySelectorAll('.etats button').forEach(b => b.onclick = () => changerEtat(b.dataset.etat));
+document.querySelector('#approche').onchange = e => { proche = e.target.checked; };
+document.querySelector('#cycle').onchange = e => { cycle = e.target.checked; tempsCycle = 0; };
+document.querySelector('#exporter').onclick = () => {
+  const blob = new Blob([JSON.stringify(recettes(), null, 1)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'objets-animes.json'; a.click();
+};
+
+// la recette de chaque objet, pour Unity (Assets/_Projet/Scripts/Prologue/ObjetAnime.cs)
+function recettes() {
+  const r = {};
+  for (const b of bancs) if (b.recette) r[b.cle] = { categorie: b.recette.categorie, mouvements: b.recette.mouvements, lumieres: b.recette.lumieres, verdict: b.rapport.verdict, passage: b.rapport.passageOuvert };
+  return r;
+}
+
+// le cycle de la vidéo : fermé, quelqu'un approche, l'alarme, la panne, le retour au calme
+const CYCLE = [[0, 'normal', false], [2.5, 'normal', true], [7, 'alarme', true], [12, 'panne', true], [17, 'normal', false], [20, 'normal', false]];
+(function boucle() {
+  requestAnimationFrame(boucle);
+  let dt = Math.min(horloge.getDelta(), 0.05);
+  if (figer !== null) dt = figer;
+  if (cycle) {
+    tempsCycle = (tempsCycle + dt) % 20;
+    const p = CYCLE.filter(c => c[0] <= tempsCycle).pop();
+    if (p[1] !== etat) changerEtat(p[1]);
+    proche = p[2];
+  }
+  for (const r of bancs) if (r.ctrl) r.ctrl.maj(dt, etat, proche);
+  rendu.render(scene, camera);
+})();
+
+window.bancObjets = {
+  pret: false, bancs, recettes, cadrer: i => cadrer(bancs[i]),
+  etat: e => changerEtat(e), approcher: b => { proche = !!b; }, cycle: b => { cycle = !!b; tempsCycle = 0; },
+  // pour les captures : avancer le temps d'un pas fixe à chaque image
+  pas: s => { figer = s; },
+  avancer: (s, n = 1) => { for (let k = 0; k < n; k++) for (const r of bancs) if (r.ctrl) r.ctrl.maj(s, etat, proche); },
+  vue: (x, y, z, cx, cy, cz) => { camera.position.set(x, y, z); orbite.target.set(cx, cy, cz); orbite.update(); },
+  plein: () => { plein = true; document.querySelector('#panneau').style.display = 'none'; redimensionner(); },
+  rapport: () => bancs.map(b => b.rapport || { cle: b.cle, absent: true }),
+};
+
+(async () => {
+  const liste = SEULEMENT ? OBJETS.filter(o => SEULEMENT.split(',').some(s => o.cle.endsWith('/' + s))) : OBJETS;
+  let x = 0;
+  for (const o of liste) {
+    document.querySelector('#etat').textContent = `Chargement : ${o.cle}…`;
+    const r = await charger(o, x);
+    if (!r) continue;
+    bancs.push(r);
+    x += (r.largeur || 1) + 1.5;
+  }
+  afficher();
+  const n = bancs.filter(b => b.racine).length;
+  document.querySelector('#etat').textContent = `${n} objets chargés. Change l'état d'énergie, fais approcher quelqu'un des portes, clique un objet pour le cadrer.`;
+  camera.position.set(x / 2, 6, 22); orbite.target.set(x / 2, 1.5, 0); orbite.update();
+  if (bancs[0]) cadrer(bancs[0]);
+  window.bancObjets.pret = true;
+})();
+</script>
+</body>
+</html>

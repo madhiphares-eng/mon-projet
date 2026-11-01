@@ -173,11 +173,61 @@ Les démarches sont **sur place**, comme celles de la bibliothèque : le jeu fai
 | `Mutant_Marche` | 0,51 (la jambe raide raccourcit le pas) |
 | `Gris_Marche` | 0,41 |
 
-## 8. La suite des animations
+## 8. Les objets : le bot des objets
+
+Le Colosse bouge aussi : portes, sas, armoires, consoles, machines, reliques, drones. Le **bot des objets** ([`vitrine/bot-objets.js`](../../vitrine/bot-objets.js), dans le banc des objets [`vitrine/banc-objets.html`](../../vitrine/banc-objets.html)) fait pour eux ce que le bot des mouvements fait pour les corps :
+
+1. **Il inspecte** chaque modèle : ses pièces (nom, taille, place), ses matériaux lumineux, ses animations embarquées.
+2. **Il propose une recette** :
+   - les battants d'une porte, trouvés par leur nom (`Left_Door`, `Door_*`) ou par leur forme (une plaque qui couvre une partie de l'ouverture) ;
+   - les pièces qui se recouvrent forment un seul battant (l'avant et l'arrière d'une porte, son mécanisme) ;
+   - les pièces qui tournent sur elles-mêmes (anneaux, sphères, champs de force) ;
+   - les lumières, le vol d'un drone, l'animation embarquée.
+3. **Il essaie et il mesure.** Il tire des rayons à travers la porte, tous les 3 cm de sa largeur, à trois hauteurs de passage (de 30 à 80 %). Un endroit est libre quand aucun rayon ne touche rien, cadre compris. Ainsi :
+   - pour une porte qui coulisse, il essaie chaque sens (vers un côté, l'autre, le haut) et garde le plus large passage. Le sens naturel (sur le côté) n'est quitté que pour un gain de plus de 15 % ;
+   - pour une animation embarquée, il cherche l'instant le plus fermé et l'instant le plus ouvert. Beaucoup de portes de Sketchfab commencent ouvertes, ou s'ouvrent puis se referment dans la même boucle : le coffre est le plus ouvert à 29 % de son animation, l'armoire à 21 % ;
+   - pour un meuble (armoire, casier), qui a un fond, il mesure seulement la façade dégagée.
+4. **Il anime selon l'énergie du Colosse** :
+
+| État | Portes | Machines | Lumières | Drone |
+|---|---|---|---|---|
+| **Normal** | s'ouvrent quand quelqu'un approche | tournent à leur vitesse | stables, un léger souffle | flotte, balaie lentement la salle |
+| **Alarme** | verrouillées | s'emballent (×1,8) | rouges, elles battent | balaie vite |
+| **Panne** | bloquées à demi, par à-coups | ralentissent jusqu'à presque s'arrêter, avec de l'inertie | grésillent, s'éteignent par moments | tombe et s'incline |
+
+**Le rapport (20 objets).** Passage : la plus large bande libre, fermée → ouverte.
+
+| Objet | Ce qui bouge | Passage | Verdict |
+|---|---|---|---|
+| `porte-coulissante` | 3 pièces, un battant qui coulisse | 0,03 → **3,33 m** | ✅ |
+| `cloison-etanche` | l'écoutille et son mécanisme coulissent | 0,03 → **0,93 m** | ✅ |
+| `porte-cellule` | la grille coulisse | 0,15 → **3,51 m** | ✅ |
+| `porte-isolement` | la porte coulisse | 0 → **1,11 m** | ✅ |
+| `porte-sas` | son animation (0 → 100 %) | 0,03 → **0,75 m** | étroit : une écoutille, on y passe un par un |
+| `porte-coffre` | son animation (0 → 29 %) | 0 → **2,01 m** | ✅ |
+| `armoire-blindee` | son animation (0 → 21 %) | façade 0,03 → **0,45 m** | ✅ |
+| `console-murale`, `grand-ecran`, `terminal`, `baie-serveur`, `neons` | les lumières (l'écran du terminal s'allume) | — | ✅ |
+| `generateur`, `pylone-energie`, `reacteur` | les lumières | — | ✅ |
+| `coeur-fusion` | 7 sphères et anneaux tournent sur eux-mêmes | pivot : 0 % de dérive | ✅ |
+| `anneau-relais`, `cristal-ether` | tournent lentement sur leur axe court | pivot : 0 % | ✅ |
+| `coeur-relique` | son animation, en boucle | — | ✅ |
+| `drone-securite` | il vole | — | ✅ |
+
+![Les objets dans les trois états d'énergie](animations/objets.jpg)
+
+**Dans Unity.** Les recettes sont dans [`objets-animes.json`](objets-animes.json). Elles ne contiennent que des noms de pièces et des directions géométriques : Unity retrouve les axes lui-même, d'après la forme des pièces, comme le navigateur.
+- Menu **Echos d'Ether → Prologue → Animer les objets du décor** : chaque objet de la scène qui porte le nom d'un modèle animé (`porte-coulissante`, `porte-coulissante (2)`…) reçoit le composant `ObjetAnime`, réglé. Le menu ajoute aussi l'essai de l'énergie.
+- **F8**, en jeu, fait passer le Colosse de normal à alarme, puis à panne. Le scénario, lui, appelle `EnergieColosse.Changer(Energie.Alarme)` quand les pirates attaquent.
+- Les portes s'ouvrent devant le héros et devant les PNJ (`ObjetAnime.Passants`). Une porte du scénario peut rester `verrouillee`.
+- Les animations embarquées sont lues avec `AnimationClip.SampleAnimation` : importer ces modèles **avec leurs animations**.
+- `mirroirX` (coché) : glTFast retourne l'axe X des `.glb`, donc le sens d'un battant aussi. Le décocher pour un modèle importé autrement.
+
+## 9. La suite des animations
 
 | Étape | Quoi |
 |---|---|
 | Fait | Le bot des mouvements, l'ancrage en jeu, le rig des statues corrigé : 14 statues animées proprement, seul l'androïde-fantassin reste un décor |
 | Fait | Une attente et une démarche propres à chaque espèce (§ 7), contrôlées par le bot |
 | À suivre | La vie : le regard qui suit le joueur, la respiration, les queues et les pièces qui suivent le mouvement |
-| À suivre | Les objets : portes, tourelles, drones, consoles, ventilateurs, pistons, grue, sas, avec trois états d'énergie (normal, alarme, panne) |
+| Fait | Les objets : portes, sas, armoires, consoles, machines, reliques, drone, avec trois états d'énergie (§ 8) |
+| À suivre | Des objets de plus, quand la maquette les place : tourelles, ventilateurs, pistons, grue (la recette sait les décrire) |

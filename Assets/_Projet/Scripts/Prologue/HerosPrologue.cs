@@ -84,6 +84,8 @@ namespace EchosEther.Prologue
         }
 
         void OnDestroy() { if (graphe.IsValid()) graphe.Destroy(); }
+        void OnEnable() => ObjetAnime.Inscrire(transform);      // les portes s'ouvrent devant lui
+        void OnDisable() => ObjetAnime.Desinscrire(transform);
 
         void Update()
         {
